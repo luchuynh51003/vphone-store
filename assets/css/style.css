@@ -1,0 +1,153 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+    --v-blue-dark: #0a3d62;
+    --v-blue-primary: #0066cc;
+    --v-blue-hover: #004c99;
+    --v-blue-light: #e8f3ff;
+    --v-blue-border: #cce3ff;
+    --v-white: #ffffff;
+    --v-bg-light: #f6f9fc;
+    --v-text-dark: #1e293b;
+    --v-text-muted: #64748b;
+}
+
+/* TRIỆT TIÊU 100% KHOẢNG TRẮNG ĐẦU TRANG */
+html {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 0 !important; /* ÉP MỌI KÝ TỰ ẨN TRÊN ĐẦU BODY VỀ CHIỀU CAO 0 PIXEL */
+    background-color: var(--v-bg-light);
+    color: var(--v-text-dark);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* KHÔI PHỤC CHIỀU CAO CHỮ BÌNH THƯỜNG CHO TẤT CẢ NỘI DUNG BÊN TRONG */
+body > * {
+    line-height: 1.5 !important;
+}
+
+/* THANH MENU DÍNH SÁT RẠT LÊN ĐỈNH */
+.navbar-vphone {
+    margin: 0 !important;
+    top: 0 !important;
+    background: linear-gradient(135deg, #072a48 0%, #0056b3 100%);
+    border: none !important;
+}
+
+.navbar-vphone .nav-link {
+    color: rgba(255, 255, 255, 0.85) !important;
+    transition: all 0.2s ease;
+    border-radius: 20px;
+    padding: 6px 16px !important;
+    font-size: 0.92rem;
+}
+.navbar-vphone .nav-link:hover { color: #ffffff !important; background: rgba(255, 255, 255, 0.15); }
+.navbar-vphone .nav-link.active { color: #ffffff !important; background: rgba(255, 255, 255, 0.22) !important; font-weight: 700; }
+
+/* THANH CUỘN MỎNG 7PX */
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #0066cc; }
+
+/* THẺ SẢN PHẨM */
+.product-card {
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    border-radius: 16px;
+    background: var(--v-white);
+    border: 1px solid #e2e8f0 !important;
+    height: 100%;
+}
+.product-card:hover { transform: translateY(-5px); box-shadow: 0 14px 30px rgba(0, 102, 204, 0.1) !important; border-color: var(--v-blue-border) !important; }
+
+.product-img-wrapper {
+    height: 195px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+}
+.product-img-wrapper img { max-height: 170px; object-fit: contain; }
+
+.card-prod-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #1e293b;
+    height: 42px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.35;
+    margin-bottom: 6px;
+}
+
+.specs-badge {
+    height: 26px;
+    display: flex;
+    gap: 4px;
+    overflow: hidden;
+    white-space: nowrap;
+}
+.specs-badge .badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.badge-tech-new {
+    background-color: var(--v-blue-light) !important;
+    color: var(--v-blue-primary) !important;
+    border: 1px solid var(--v-blue-border);
+    font-weight: 700;
+    font-size: 0.68rem;
+}
+
+.sidebar-vphone { width: 310px !important; }
+.sidebar-header-custom {
+    background: linear-gradient(135deg, #072a48 0%, #0056b3 100%);
+    color: #ffffff;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#vphoneLiveToast {
+    position: fixed;
+    top: 85px;
+    right: 25px;
+    z-index: 999999;
+    display: none;
+    min-width: 340px;
+    max-width: 420px;
+    background: #ffffff;
+    color: var(--v-text-dark);
+    padding: 16px 20px;
+    border-radius: 18px;
+    border: 1.5px solid var(--v-blue-border);
+    box-shadow: 0 16px 40px rgba(0, 102, 204, 0.15);
+}
+
+.btn-vphone { background-color: var(--v-blue-primary); color: #ffffff; border: none; }
+.btn-vphone:hover { background-color: var(--v-blue-hover); color: #ffffff; }
+.btn-outline-vphone { color: var(--v-blue-primary); border: 1.5px solid var(--v-blue-primary); background-color: #ffffff; }
+.btn-outline-vphone:hover { background-color: var(--v-blue-light); color: var(--v-blue-primary); }
+
+.carousel-banner-item { min-height: 380px; border-radius: 20px; display: flex; align-items: center; }
+.banner-slide-1 { background: linear-gradient(135deg, #072a48 0%, #0066cc 60%, #38bdf8 100%); }
+.banner-slide-2 { background: linear-gradient(135deg, #0f172a 0%, #1e40af 60%, #60a5fa 100%); }
+.banner-slide-3 { background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%); }
+.policy-card { background: #ffffff; border-radius: 16px; padding: 16px; border: 1px solid #e2e8f0; }
+.footer-vphone { background-color: #072a48; color: #e2e8f0; }

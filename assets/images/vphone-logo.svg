@@ -1,0 +1,14 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="vLogoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0056b3" />
+      <stop offset="100%" stop-color="#00a8ff" />
+    </linearGradient>
+  </defs>
+  <!-- Nền khiên công nghệ bo góc chuẩn thương hiệu -->
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="#ffffff" stroke="url(#vLogoGrad)" stroke-width="2.5" />
+  <!-- Chữ V xanh hoàng gia -->
+  <path d="M11 12 L21 36 L27 36 L37 12 L30 12 L24 29 L18 12 Z" fill="#0056b3" />
+  <!-- Tia sét vàng tốc độ ở giữa -->
+  <polygon points="26,8 20,22 25,22 21,34 33,18 27,18" fill="#facc15" stroke="#0056b3" stroke-width="0.8" />
+</svg>

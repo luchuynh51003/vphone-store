@@ -1,0 +1,16 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="vFavGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#072a48" />
+      <stop offset="100%" stop-color="#0066cc" />
+    </linearGradient>
+  </defs>
+  <!-- Nền vuông bo tròn góc cao cấp kiểu Apple App Icon -->
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#vFavGrad)" stroke="#38bdf8" stroke-width="2.5" />
+  
+  <!-- Chữ V màu trắng sắc sảo -->
+  <path d="M14 16 L28 48 L36 48 L50 16 L41 16 L32 39 L23 16 Z" fill="#ffffff" />
+  
+  <!-- Tia sét vàng rực rỡ tượng trưng cho công nghệ sạc nhanh & tốc độ -->
+  <polygon points="34,10 26,27 32,27 28,42 42,23 35,23" fill="#facc15" stroke="#072a48" stroke-width="1.2" />
+</svg>
