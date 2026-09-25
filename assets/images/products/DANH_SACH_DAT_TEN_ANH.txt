@@ -1,0 +1,650 @@
+DANH SACH ANH THEO DUNG MAU SAC THUC TE NGOAI DOI (assets/images/products/)
+=========================================================================
+
+[ID: 1] iPhone 18 Pro Max (Titan Space)
+   -> Mau [Titan Sa Mạc] tim anh va dat ten file: iphone-18-promax-titan-sa-mac.png
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-18-promax-titan-tu-nhien.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-18-promax-titan-den.png
+   -> Mau [Titan Trắng] tim anh va dat ten file: iphone-18-promax-titan-trang.png
+-------------------------------------------------------------------------
+[ID: 2] iPhone 18 Ultra (Tràn Viền)
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-18-ultra-titan-tu-nhien.png
+   -> Mau [Titan Bạc] tim anh va dat ten file: iphone-18-ultra-titan-bac.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-18-ultra-titan-den.png
+-------------------------------------------------------------------------
+[ID: 3] iPhone 18 Duo (Màn Gập Apple)
+   -> Mau [Bạc Silver] tim anh va dat ten file: iphone-18-duo-bac-silver.png
+   -> Mau [Xám Titan] tim anh va dat ten file: iphone-18-duo-xam-titan.png
+   -> Mau [Đen Space] tim anh va dat ten file: iphone-18-duo-den-space.png
+-------------------------------------------------------------------------
+[ID: 4] Galaxy Z Tri-Fold (Gập 3 Màn)
+   -> Mau [Vàng Gold] tim anh va dat ten file: samsung-tri-fold-vang-gold.png
+   -> Mau [Xám Titan] tim anh va dat ten file: samsung-tri-fold-xam-titan.png
+   -> Mau [Đen Phantom] tim anh va dat ten file: samsung-tri-fold-den-phantom.png
+-------------------------------------------------------------------------
+[ID: 5] Galaxy S26 Ultra (Titan AI)
+   -> Mau [Xám Titan] tim anh va dat ten file: samsung-s26-ultra-xam-titan.png
+   -> Mau [Đen Titan] tim anh va dat ten file: samsung-s26-ultra-den-titan.png
+   -> Mau [Tím Titan] tim anh va dat ten file: samsung-s26-ultra-tim-titan.png
+   -> Mau [Vàng Titan] tim anh va dat ten file: samsung-s26-ultra-vang-titan.png
+-------------------------------------------------------------------------
+[ID: 6] Huawei Mate XT (Gập 3 Đầu Tiên)
+   -> Mau [Đỏ Huyền Thoại] tim anh va dat ten file: huawei-mate-xt-do-huyen-thoai.png
+   -> Mau [Đen Tinh Tế] tim anh va dat ten file: huawei-mate-xt-den-tinh-te.png
+-------------------------------------------------------------------------
+[ID: 7] Xiaomi 16 Ultra (Leica Edition)
+   -> Mau [Đen Da Thuần] tim anh va dat ten file: xiaomi-16-ultra-den-da-thuan.png
+   -> Mau [Trắng Da Gốm] tim anh va dat ten file: xiaomi-16-ultra-trang-da-gom.png
+-------------------------------------------------------------------------
+[ID: 8] OPPO Find N5 Duo (Hologram)
+   -> Mau [Vàng Hoàng Kim] tim anh va dat ten file: oppo-find-n5-vang-hoang-kim.png
+   -> Mau [Bạc Ánh Sao] tim anh va dat ten file: oppo-find-n5-bac-anh-sao.png
+-------------------------------------------------------------------------
+[ID: 9] iPhone 17 Pro Max 256GB
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-17-pro-titan-tu-nhien.png
+   -> Mau [Titan Bạc] tim anh va dat ten file: iphone-17-pro-titan-bac.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-17-pro-titan-den.png
+-------------------------------------------------------------------------
+[ID: 10] iPhone 17 Pro 128GB
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-17-pro-titan-tu-nhien.png
+   -> Mau [Titan Bạc] tim anh va dat ten file: iphone-17-pro-titan-bac.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-17-pro-titan-den.png
+-------------------------------------------------------------------------
+[ID: 11] iPhone 17 Air (Siêu Mỏng)
+   -> Mau [Bạc Ánh Kim] tim anh va dat ten file: iphone-17-air-bac-anh-kim.png
+   -> Mau [Xanh Băng] tim anh va dat ten file: iphone-17-air-xanh-bang.png
+   -> Mau [Đen] tim anh va dat ten file: iphone-17-air-den.png
+-------------------------------------------------------------------------
+[ID: 12] iPhone 16 Pro Max
+   -> Mau [Titan Sa Mạc] tim anh va dat ten file: iphone-16-pro-titan-sa-mac.png
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-16-pro-titan-tu-nhien.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-16-pro-titan-den.png
+   -> Mau [Titan Trắng] tim anh va dat ten file: iphone-16-pro-titan-trang.png
+-------------------------------------------------------------------------
+[ID: 13] iPhone 16 Pro
+   -> Mau [Titan Sa Mạc] tim anh va dat ten file: iphone-16-pro-titan-sa-mac.png
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-16-pro-titan-tu-nhien.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-16-pro-titan-den.png
+   -> Mau [Titan Trắng] tim anh va dat ten file: iphone-16-pro-titan-trang.png
+-------------------------------------------------------------------------
+[ID: 14] iPhone 16 Plus
+   -> Mau [Xanh Lưu Ly] tim anh va dat ten file: iphone-16-plus-xanh-luu-ly.png
+   -> Mau [Hồng] tim anh va dat ten file: iphone-16-plus-hong.png
+   -> Mau [Xanh Mòng Két] tim anh va dat ten file: iphone-16-plus-xanh-mong-ket.png
+   -> Mau [Trắng] tim anh va dat ten file: iphone-16-plus-trang.png
+   -> Mau [Đen] tim anh va dat ten file: iphone-16-plus-den.png
+-------------------------------------------------------------------------
+[ID: 15] iPhone 16 Standard
+   -> Mau [Hồng] tim anh va dat ten file: iphone-16-hong.png
+   -> Mau [Xanh Mòng Két] tim anh va dat ten file: iphone-16-xanh-mong-ket.png
+   -> Mau [Xanh Lưu Ly] tim anh va dat ten file: iphone-16-xanh-luu-ly.png
+   -> Mau [Trắng] tim anh va dat ten file: iphone-16-trang.png
+   -> Mau [Đen] tim anh va dat ten file: iphone-16-den.png
+-------------------------------------------------------------------------
+[ID: 16] iPhone 15 Pro Max
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-15-pro-titan-tu-nhien.png
+   -> Mau [Titan Xanh] tim anh va dat ten file: iphone-15-pro-titan-xanh.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-15-pro-titan-den.png
+   -> Mau [Titan Trắng] tim anh va dat ten file: iphone-15-pro-titan-trang.png
+-------------------------------------------------------------------------
+[ID: 17] iPhone 15 Pro
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-15-pro-titan-tu-nhien.png
+   -> Mau [Titan Xanh] tim anh va dat ten file: iphone-15-pro-titan-xanh.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-15-pro-titan-den.png
+   -> Mau [Titan Trắng] tim anh va dat ten file: iphone-15-pro-titan-trang.png
+-------------------------------------------------------------------------
+[ID: 18] iPhone 15 Plus
+   -> Mau [Hồng] tim anh va dat ten file: iphone-15-plus-hong.png
+   -> Mau [Xanh Lam] tim anh va dat ten file: iphone-15-plus-xanh-lam.png
+   -> Mau [Vàng] tim anh va dat ten file: iphone-15-plus-vang.png
+   -> Mau [Xanh Lá] tim anh va dat ten file: iphone-15-plus-xanh-la.png
+   -> Mau [Đen] tim anh va dat ten file: iphone-15-plus-den.png
+-------------------------------------------------------------------------
+[ID: 19] iPhone 15 Standard
+   -> Mau [Hồng] tim anh va dat ten file: iphone-15-hong.png
+   -> Mau [Vàng] tim anh va dat ten file: iphone-15-vang.png
+   -> Mau [Xanh Mint] tim anh va dat ten file: iphone-15-xanh-mint.png
+   -> Mau [Xanh Lam] tim anh va dat ten file: iphone-15-xanh-lam.png
+   -> Mau [Đen] tim anh va dat ten file: iphone-15-den.png
+-------------------------------------------------------------------------
+[ID: 20] iPhone 14 Pro Max
+   -> Mau [Tím Deep Purple] tim anh va dat ten file: iphone-14-pro-tim-deep-purple.png
+   -> Mau [Vàng Gold] tim anh va dat ten file: iphone-14-pro-vang-gold.png
+   -> Mau [Bạc Silver] tim anh va dat ten file: iphone-14-pro-bac-silver.png
+   -> Mau [Đen Space] tim anh va dat ten file: iphone-14-pro-den-space.png
+-------------------------------------------------------------------------
+[ID: 21] iPhone 14 Pro
+   -> Mau [Tím Deep Purple] tim anh va dat ten file: iphone-14-pro-tim-deep-purple.png
+   -> Mau [Vàng Gold] tim anh va dat ten file: iphone-14-pro-vang-gold.png
+   -> Mau [Bạc Silver] tim anh va dat ten file: iphone-14-pro-bac-silver.png
+   -> Mau [Đen Space] tim anh va dat ten file: iphone-14-pro-den-space.png
+-------------------------------------------------------------------------
+[ID: 22] iPhone 14 Plus
+   -> Mau [Xanh Dương] tim anh va dat ten file: iphone-14-plus-xanh-duong.png
+   -> Mau [Tím] tim anh va dat ten file: iphone-14-plus-tim.png
+   -> Mau [Vàng] tim anh va dat ten file: iphone-14-plus-vang.png
+   -> Mau [Trắng Starlight] tim anh va dat ten file: iphone-14-plus-trang-starlight.png
+   -> Mau [Đen Midnight] tim anh va dat ten file: iphone-14-plus-den-midnight.png
+   -> Mau [Đỏ] tim anh va dat ten file: iphone-14-plus-do.png
+-------------------------------------------------------------------------
+[ID: 23] iPhone 14 Standard
+   -> Mau [Xanh Dương] tim anh va dat ten file: iphone-14-xanh-duong.png
+   -> Mau [Tím] tim anh va dat ten file: iphone-14-tim.png
+   -> Mau [Vàng] tim anh va dat ten file: iphone-14-vang.png
+   -> Mau [Trắng Starlight] tim anh va dat ten file: iphone-14-trang-starlight.png
+   -> Mau [Đen Midnight] tim anh va dat ten file: iphone-14-den-midnight.png
+   -> Mau [Đỏ] tim anh va dat ten file: iphone-14-do.png
+-------------------------------------------------------------------------
+[ID: 24] iPhone 13 Pro Max
+   -> Mau [Xanh Sierra Blue] tim anh va dat ten file: iphone-13-pro-xanh-sierra-blue.png
+   -> Mau [Vàng Gold] tim anh va dat ten file: iphone-13-pro-vang-gold.png
+   -> Mau [Bạc Silver] tim anh va dat ten file: iphone-13-pro-bac-silver.png
+   -> Mau [Xám Graphite] tim anh va dat ten file: iphone-13-pro-xam-graphite.png
+-------------------------------------------------------------------------
+[ID: 25] iPhone 13 Pro
+   -> Mau [Xanh Sierra Blue] tim anh va dat ten file: iphone-13-pro-xanh-sierra-blue.png
+   -> Mau [Vàng Gold] tim anh va dat ten file: iphone-13-pro-vang-gold.png
+   -> Mau [Bạc Silver] tim anh va dat ten file: iphone-13-pro-bac-silver.png
+   -> Mau [Xám Graphite] tim anh va dat ten file: iphone-13-pro-xam-graphite.png
+-------------------------------------------------------------------------
+[ID: 26] iPhone 13 Standard
+   -> Mau [Trắng Starlight] tim anh va dat ten file: iphone-13-trang-starlight.png
+   -> Mau [Đen Midnight] tim anh va dat ten file: iphone-13-den-midnight.png
+   -> Mau [Hồng] tim anh va dat ten file: iphone-13-hong.png
+   -> Mau [Xanh Lá] tim anh va dat ten file: iphone-13-xanh-la.png
+   -> Mau [Đỏ] tim anh va dat ten file: iphone-13-do.png
+   -> Mau [Xanh Dương] tim anh va dat ten file: iphone-13-xanh-duong.png
+-------------------------------------------------------------------------
+[ID: 27] iPhone 13 mini
+   -> Mau [Hồng] tim anh va dat ten file: iphone-13-mini-hong.png
+   -> Mau [Xanh Dương] tim anh va dat ten file: iphone-13-mini-xanh-duong.png
+   -> Mau [Đen Midnight] tim anh va dat ten file: iphone-13-mini-den-midnight.png
+   -> Mau [Trắng Starlight] tim anh va dat ten file: iphone-13-mini-trang-starlight.png
+   -> Mau [Xanh Lá] tim anh va dat ten file: iphone-13-mini-xanh-la.png
+   -> Mau [Đỏ] tim anh va dat ten file: iphone-13-mini-do.png
+-------------------------------------------------------------------------
+[ID: 28] iPhone 12 Pro Max
+   -> Mau [Xanh Pacific Blue] tim anh va dat ten file: iphone-12-promax-xanh-pacific-blue.png
+   -> Mau [Vàng Gold] tim anh va dat ten file: iphone-12-promax-vang-gold.png
+   -> Mau [Bạc Silver] tim anh va dat ten file: iphone-12-promax-bac-silver.png
+   -> Mau [Xám Graphite] tim anh va dat ten file: iphone-12-promax-xam-graphite.png
+-------------------------------------------------------------------------
+[ID: 29] iPhone 12 Standard
+   -> Mau [Tím] tim anh va dat ten file: iphone-12-tim.png
+   -> Mau [Xanh Lam] tim anh va dat ten file: iphone-12-xanh-lam.png
+   -> Mau [Xanh Lục] tim anh va dat ten file: iphone-12-xanh-luc.png
+   -> Mau [Đỏ] tim anh va dat ten file: iphone-12-do.png
+   -> Mau [Trắng] tim anh va dat ten file: iphone-12-trang.png
+   -> Mau [Đen] tim anh va dat ten file: iphone-12-den.png
+-------------------------------------------------------------------------
+[ID: 30] iPhone 11 Pro Max
+   -> Mau [Xanh Midnight Green] tim anh va dat ten file: iphone-11-promax-xanh-midnight-green.png
+   -> Mau [Vàng Gold] tim anh va dat ten file: iphone-11-promax-vang-gold.png
+   -> Mau [Bạc] tim anh va dat ten file: iphone-11-promax-bac.png
+   -> Mau [Xám Space] tim anh va dat ten file: iphone-11-promax-xam-space.png
+-------------------------------------------------------------------------
+[ID: 31] iPhone 11 64GB
+   -> Mau [Đen] tim anh va dat ten file: iphone-11-den.png
+   -> Mau [Trắng] tim anh va dat ten file: iphone-11-trang.png
+   -> Mau [Tím] tim anh va dat ten file: iphone-11-tim.png
+   -> Mau [Vàng] tim anh va dat ten file: iphone-11-vang.png
+   -> Mau [Xanh Lục] tim anh va dat ten file: iphone-11-xanh-luc.png
+   -> Mau [Đỏ] tim anh va dat ten file: iphone-11-do.png
+-------------------------------------------------------------------------
+[ID: 32] iPhone SE 2022 (5G)
+   -> Mau [Đen Midnight] tim anh va dat ten file: iphone-se-den-midnight.png
+   -> Mau [Trắng Starlight] tim anh va dat ten file: iphone-se-trang-starlight.png
+   -> Mau [Đỏ Product Red] tim anh va dat ten file: iphone-se-do-product-red.png
+-------------------------------------------------------------------------
+[ID: 33] Galaxy S26+ 5G
+   -> Mau [Xám Titan] tim anh va dat ten file: samsung-s26-plus-xam-titan.png
+   -> Mau [Đen Onyx] tim anh va dat ten file: samsung-s26-plus-den-onyx.png
+   -> Mau [Tím Cobalt] tim anh va dat ten file: samsung-s26-plus-tim-cobalt.png
+-------------------------------------------------------------------------
+[ID: 34] Galaxy S24 Ultra 5G
+   -> Mau [Xám Titan] tim anh va dat ten file: samsung-s24-ultra-xam-titan.png
+   -> Mau [Đen Titan] tim anh va dat ten file: samsung-s24-ultra-den-titan.png
+   -> Mau [Tím Titan] tim anh va dat ten file: samsung-s24-ultra-tim-titan.png
+   -> Mau [Vàng Titan] tim anh va dat ten file: samsung-s24-ultra-vang-titan.png
+-------------------------------------------------------------------------
+[ID: 35] Galaxy S24+ 5G
+   -> Mau [Tím Cobalt] tim anh va dat ten file: samsung-s24-plus-tim-cobalt.png
+   -> Mau [Vàng Amber] tim anh va dat ten file: samsung-s24-plus-vang-amber.png
+   -> Mau [Đen Onyx] tim anh va dat ten file: samsung-s24-plus-den-onyx.png
+   -> Mau [Xám Marble] tim anh va dat ten file: samsung-s24-plus-xam-marble.png
+-------------------------------------------------------------------------
+[ID: 36] Galaxy S24 5G
+   -> Mau [Vàng Amber] tim anh va dat ten file: samsung-s24-vang-amber.png
+   -> Mau [Xám Marble] tim anh va dat ten file: samsung-s24-xam-marble.png
+   -> Mau [Đen Onyx] tim anh va dat ten file: samsung-s24-den-onyx.png
+   -> Mau [Tím Cobalt] tim anh va dat ten file: samsung-s24-tim-cobalt.png
+-------------------------------------------------------------------------
+[ID: 37] Galaxy S24 FE 5G
+   -> Mau [Xanh Topaz] tim anh va dat ten file: samsung-s24-fe-xanh-topaz.png
+   -> Mau [Xám Graphite] tim anh va dat ten file: samsung-s24-fe-xam-graphite.png
+   -> Mau [Vàng Chanh] tim anh va dat ten file: samsung-s24-fe-vang-chanh.png
+   -> Mau [Xanh Mint] tim anh va dat ten file: samsung-s24-fe-xanh-mint.png
+-------------------------------------------------------------------------
+[ID: 38] Galaxy Z Fold6 5G
+   -> Mau [Xám Metal] tim anh va dat ten file: samsung-z-fold6-xam-metal.png
+   -> Mau [Hồng Petal] tim anh va dat ten file: samsung-z-fold6-hong-petal.png
+   -> Mau [Xanh Navy] tim anh va dat ten file: samsung-z-fold6-xanh-navy.png
+-------------------------------------------------------------------------
+[ID: 39] Galaxy Z Flip6 5G
+   -> Mau [Xanh Maya] tim anh va dat ten file: samsung-z-flip6-xanh-maya.png
+   -> Mau [Vàng Solar] tim anh va dat ten file: samsung-z-flip6-vang-solar.png
+   -> Mau [Bạc Shadow] tim anh va dat ten file: samsung-z-flip6-bac-shadow.png
+   -> Mau [Xanh Mint] tim anh va dat ten file: samsung-z-flip6-xanh-mint.png
+-------------------------------------------------------------------------
+[ID: 40] Galaxy Z Fold5 5G
+   -> Mau [Xanh Icy Blue] tim anh va dat ten file: samsung-z-fold5-xanh-icy-blue.png
+   -> Mau [Kem Ivory] tim anh va dat ten file: samsung-z-fold5-kem-ivory.png
+   -> Mau [Đen Phantom] tim anh va dat ten file: samsung-z-fold5-den-phantom.png
+-------------------------------------------------------------------------
+[ID: 41] Galaxy Z Flip5 5G
+   -> Mau [Xanh Mint] tim anh va dat ten file: samsung-z-flip5-xanh-mint.png
+   -> Mau [Tím Lavender] tim anh va dat ten file: samsung-z-flip5-tim-lavender.png
+   -> Mau [Kem Cotton] tim anh va dat ten file: samsung-z-flip5-kem-cotton.png
+   -> Mau [Xám Graphite] tim anh va dat ten file: samsung-z-flip5-xam-graphite.png
+-------------------------------------------------------------------------
+[ID: 42] Galaxy Z Fold4 5G
+   -> Mau [Xanh Titan] tim anh va dat ten file: samsung-z-fold4-xanh-titan.png
+   -> Mau [Đen Phantom] tim anh va dat ten file: samsung-z-fold4-den-phantom.png
+   -> Mau [Kem] tim anh va dat ten file: samsung-z-fold4-kem.png
+-------------------------------------------------------------------------
+[ID: 43] Galaxy S23 Ultra 5G
+   -> Mau [Đen Phantom] tim anh va dat ten file: samsung-s23-ultra-den-phantom.png
+   -> Mau [Xanh Botanic] tim anh va dat ten file: samsung-s23-ultra-xanh-botanic.png
+   -> Mau [Kem Cotton] tim anh va dat ten file: samsung-s23-ultra-kem-cotton.png
+   -> Mau [Tím Lilac] tim anh va dat ten file: samsung-s23-ultra-tim-lilac.png
+-------------------------------------------------------------------------
+[ID: 44] Galaxy S23+ 5G
+   -> Mau [Đen Phantom] tim anh va dat ten file: samsung-s23-plus-den-phantom.png
+   -> Mau [Kem Cotton] tim anh va dat ten file: samsung-s23-plus-kem-cotton.png
+   -> Mau [Xanh Botanic] tim anh va dat ten file: samsung-s23-plus-xanh-botanic.png
+   -> Mau [Tím Lilac] tim anh va dat ten file: samsung-s23-plus-tim-lilac.png
+-------------------------------------------------------------------------
+[ID: 45] Galaxy S23 5G
+   -> Mau [Đen] tim anh va dat ten file: samsung-s23-den.png
+   -> Mau [Kem] tim anh va dat ten file: samsung-s23-kem.png
+   -> Mau [Xanh] tim anh va dat ten file: samsung-s23-xanh.png
+   -> Mau [Tím] tim anh va dat ten file: samsung-s23-tim.png
+-------------------------------------------------------------------------
+[ID: 46] Galaxy S23 FE 5G
+   -> Mau [Xanh Mint] tim anh va dat ten file: samsung-s23-fe-xanh-mint.png
+   -> Mau [Trắng Cream] tim anh va dat ten file: samsung-s23-fe-trang-cream.png
+   -> Mau [Xám Than] tim anh va dat ten file: samsung-s23-fe-xam-than.png
+   -> Mau [Tím Purple] tim anh va dat ten file: samsung-s23-fe-tim-purple.png
+-------------------------------------------------------------------------
+[ID: 47] Galaxy S22 Ultra 5G
+   -> Mau [Đỏ Burgundy] tim anh va dat ten file: samsung-s22-ultra-do-burgundy.png
+   -> Mau [Trắng Phantom] tim anh va dat ten file: samsung-s22-ultra-trang-phantom.png
+   -> Mau [Đen Phantom] tim anh va dat ten file: samsung-s22-ultra-den-phantom.png
+   -> Mau [Xanh Zeta] tim anh va dat ten file: samsung-s22-ultra-xanh-zeta.png
+-------------------------------------------------------------------------
+[ID: 48] Galaxy S21 FE 5G
+   -> Mau [Xanh Olive] tim anh va dat ten file: samsung-s21-fe-xanh-olive.png
+   -> Mau [Tím Lavender] tim anh va dat ten file: samsung-s21-fe-tim-lavender.png
+   -> Mau [Trắng] tim anh va dat ten file: samsung-s21-fe-trang.png
+   -> Mau [Đen] tim anh va dat ten file: samsung-s21-fe-den.png
+-------------------------------------------------------------------------
+[ID: 49] Galaxy A55 5G
+   -> Mau [Xanh Iceblue] tim anh va dat ten file: samsung-a55-xanh-iceblue.png
+   -> Mau [Xanh Navy] tim anh va dat ten file: samsung-a55-xanh-navy.png
+   -> Mau [Tím Lilac] tim anh va dat ten file: samsung-a55-tim-lilac.png
+-------------------------------------------------------------------------
+[ID: 50] Galaxy A35 5G
+   -> Mau [Xanh Iceblue] tim anh va dat ten file: samsung-a35-xanh-iceblue.png
+   -> Mau [Vàng Chanh] tim anh va dat ten file: samsung-a35-vang-chanh.png
+   -> Mau [Xanh Navy] tim anh va dat ten file: samsung-a35-xanh-navy.png
+-------------------------------------------------------------------------
+[ID: 51] Galaxy A25 5G
+   -> Mau [Vàng Lạc Quan] tim anh va dat ten file: samsung-a25-vang-lac-quan.png
+   -> Mau [Xanh Thủy Tinh] tim anh va dat ten file: samsung-a25-xanh-thuy-tinh.png
+   -> Mau [Đen] tim anh va dat ten file: samsung-a25-den.png
+-------------------------------------------------------------------------
+[ID: 52] Galaxy A15 5G
+   -> Mau [Xanh Dương] tim anh va dat ten file: samsung-a15-xanh-duong.png
+   -> Mau [Đen] tim anh va dat ten file: samsung-a15-den.png
+   -> Mau [Vàng Nhạt] tim anh va dat ten file: samsung-a15-vang-nhat.png
+-------------------------------------------------------------------------
+[ID: 53] Galaxy A15 4G
+   -> Mau [Xanh Dương] tim anh va dat ten file: samsung-a15-xanh-duong.png
+   -> Mau [Đen] tim anh va dat ten file: samsung-a15-den.png
+   -> Mau [Vàng Nhạt] tim anh va dat ten file: samsung-a15-vang-nhat.png
+-------------------------------------------------------------------------
+[ID: 54] Galaxy A05s
+   -> Mau [Đen] tim anh va dat ten file: samsung-a05-den.png
+   -> Mau [Bạc] tim anh va dat ten file: samsung-a05-bac.png
+   -> Mau [Xanh Lá] tim anh va dat ten file: samsung-a05-xanh-la.png
+-------------------------------------------------------------------------
+[ID: 55] Galaxy A05
+   -> Mau [Đen] tim anh va dat ten file: samsung-a05-den.png
+   -> Mau [Bạc] tim anh va dat ten file: samsung-a05-bac.png
+   -> Mau [Xanh Lá] tim anh va dat ten file: samsung-a05-xanh-la.png
+-------------------------------------------------------------------------
+[ID: 56] Galaxy M55 5G
+   -> Mau [Đen Bóng Đêm] tim anh va dat ten file: samsung-m55-den-bong-dem.png
+   -> Mau [Xanh Nhạt] tim anh va dat ten file: samsung-m55-xanh-nhat.png
+-------------------------------------------------------------------------
+[ID: 57] Xiaomi 15 Pro 5G
+   -> Mau [Trắng Ngọc] tim anh va dat ten file: xiaomi-15-trang-ngoc.png
+   -> Mau [Đen Cổ Điển] tim anh va dat ten file: xiaomi-15-den-co-dien.png
+   -> Mau [Xanh Rêu] tim anh va dat ten file: xiaomi-15-xanh-reu.png
+-------------------------------------------------------------------------
+[ID: 58] Xiaomi 15 Standard
+   -> Mau [Trắng Ngọc] tim anh va dat ten file: xiaomi-15-trang-ngoc.png
+   -> Mau [Đen Cổ Điển] tim anh va dat ten file: xiaomi-15-den-co-dien.png
+   -> Mau [Xanh Rêu] tim anh va dat ten file: xiaomi-15-xanh-reu.png
+-------------------------------------------------------------------------
+[ID: 59] Xiaomi 14 Ultra 5G
+   -> Mau [Đen Da Thuần] tim anh va dat ten file: xiaomi-14-ultra-den-da-thuan.png
+   -> Mau [Trắng Da Thuần] tim anh va dat ten file: xiaomi-14-ultra-trang-da-thuan.png
+-------------------------------------------------------------------------
+[ID: 60] Xiaomi 14 Pro 5G
+   -> Mau [Titanium] tim anh va dat ten file: xiaomi-14-pro-titanium.png
+   -> Mau [Trắng] tim anh va dat ten file: xiaomi-14-pro-trang.png
+   -> Mau [Đen] tim anh va dat ten file: xiaomi-14-pro-den.png
+   -> Mau [Xanh] tim anh va dat ten file: xiaomi-14-pro-xanh.png
+-------------------------------------------------------------------------
+[ID: 61] Xiaomi 14 5G
+   -> Mau [Trắng Ngọc] tim anh va dat ten file: xiaomi-14-trang-ngoc.png
+   -> Mau [Đen Cổ Điển] tim anh va dat ten file: xiaomi-14-den-co-dien.png
+   -> Mau [Xanh Ngọc] tim anh va dat ten file: xiaomi-14-xanh-ngoc.png
+-------------------------------------------------------------------------
+[ID: 62] Xiaomi 13T Pro 5G
+   -> Mau [Xanh Tuyết Sơn] tim anh va dat ten file: xiaomi-13t-pro-xanh-tuyet-son.png
+   -> Mau [Xanh Đồng Cỏ] tim anh va dat ten file: xiaomi-13t-pro-xanh-dong-co.png
+   -> Mau [Đen] tim anh va dat ten file: xiaomi-13t-pro-den.png
+-------------------------------------------------------------------------
+[ID: 63] Xiaomi 13T 5G
+   -> Mau [Xanh Alpine] tim anh va dat ten file: xiaomi-13t-xanh-alpine.png
+   -> Mau [Đen Tuyệt Đối] tim anh va dat ten file: xiaomi-13t-den-tuyet-doi.png
+-------------------------------------------------------------------------
+[ID: 64] Redmi Note 13 Pro+ 5G
+   -> Mau [Xanh Rừng Sâu] tim anh va dat ten file: redmi-note-13-xanh-rung-sau.png
+   -> Mau [Đen Bán Dạ] tim anh va dat ten file: redmi-note-13-den-ban-da.png
+   -> Mau [Tím Aurora] tim anh va dat ten file: redmi-note-13-tim-aurora.png
+-------------------------------------------------------------------------
+[ID: 65] Redmi Note 13 Pro 5G
+   -> Mau [Xanh Rừng Sâu] tim anh va dat ten file: redmi-note-13-xanh-rung-sau.png
+   -> Mau [Đen Bán Dạ] tim anh va dat ten file: redmi-note-13-den-ban-da.png
+   -> Mau [Tím Aurora] tim anh va dat ten file: redmi-note-13-tim-aurora.png
+-------------------------------------------------------------------------
+[ID: 66] Redmi Note 13 Pro 4G
+   -> Mau [Xanh Rừng Sâu] tim anh va dat ten file: redmi-note-13-xanh-rung-sau.png
+   -> Mau [Đen Bán Dạ] tim anh va dat ten file: redmi-note-13-den-ban-da.png
+   -> Mau [Tím Aurora] tim anh va dat ten file: redmi-note-13-tim-aurora.png
+-------------------------------------------------------------------------
+[ID: 67] Redmi Note 13 5G
+   -> Mau [Trắng Băng Giá] tim anh va dat ten file: redmi-note-13-trang-bang-gia.png
+   -> Mau [Đen Than] tim anh va dat ten file: redmi-note-13-den-than.png
+   -> Mau [Xanh Ngọc] tim anh va dat ten file: redmi-note-13-xanh-ngoc.png
+-------------------------------------------------------------------------
+[ID: 68] Redmi Note 13 4G
+   -> Mau [Đen Bán Dạ] tim anh va dat ten file: redmi-note-13-den-ban-da.png
+   -> Mau [Vàng Hoàng Hôn] tim anh va dat ten file: redmi-note-13-vang-hoang-hon.png
+   -> Mau [Xanh Bạc Hà] tim anh va dat ten file: redmi-note-13-xanh-bac-ha.png
+-------------------------------------------------------------------------
+[ID: 69] Redmi 13
+   -> Mau [Xanh Biển] tim anh va dat ten file: redmi-13-xanh-bien.png
+   -> Mau [Vàng Cát] tim anh va dat ten file: redmi-13-vang-cat.png
+   -> Mau [Đen] tim anh va dat ten file: redmi-13-den.png
+-------------------------------------------------------------------------
+[ID: 70] Redmi 13C
+   -> Mau [Xanh Băng Tuyết] tim anh va dat ten file: redmi-13c-xanh-bang-tuyet.png
+   -> Mau [Xanh Tinh Vân] tim anh va dat ten file: redmi-13c-xanh-tinh-van.png
+   -> Mau [Đen] tim anh va dat ten file: redmi-13c-den.png
+-------------------------------------------------------------------------
+[ID: 71] POCO F6 Pro 5G
+   -> Mau [Đen Vũ Trụ] tim anh va dat ten file: poco-f6-den-vu-tru.png
+   -> Mau [Trắng Sương Mai] tim anh va dat ten file: poco-f6-trang-suong-mai.png
+-------------------------------------------------------------------------
+[ID: 72] POCO F6 5G
+   -> Mau [Đen Titan] tim anh va dat ten file: poco-f6-den-titan.png
+   -> Mau [Xanh Lá] tim anh va dat ten file: poco-f6-xanh-la.png
+   -> Mau [Titan] tim anh va dat ten file: poco-f6-titan.png
+-------------------------------------------------------------------------
+[ID: 73] POCO X6 Pro 5G
+   -> Mau [Vàng Da Thuần] tim anh va dat ten file: poco-x6-pro-vang-da-thuan.png
+   -> Mau [Đen] tim anh va dat ten file: poco-x6-pro-den.png
+   -> Mau [Xám] tim anh va dat ten file: poco-x6-pro-xam.png
+-------------------------------------------------------------------------
+[ID: 74] POCO X6 5G
+   -> Mau [Đen] tim anh va dat ten file: xiaomi-14-ultra-den.png
+   -> Mau [Xanh Dương] tim anh va dat ten file: xiaomi-14-ultra-xanh-duong.png
+   -> Mau [Trắng] tim anh va dat ten file: xiaomi-14-ultra-trang.png
+-------------------------------------------------------------------------
+[ID: 75] POCO M6 Pro
+   -> Mau [Tím Tinh Vân] tim anh va dat ten file: poco-m6-tim-tinh-van.png
+   -> Mau [Xanh Lam] tim anh va dat ten file: poco-m6-xanh-lam.png
+   -> Mau [Đen] tim anh va dat ten file: poco-m6-den.png
+-------------------------------------------------------------------------
+[ID: 76] POCO M6 4G
+   -> Mau [Bạc Ánh Trăng] tim anh va dat ten file: poco-m6-bac-anh-trang.png
+   -> Mau [Tím Oải Hương] tim anh va dat ten file: poco-m6-tim-oai-huong.png
+   -> Mau [Đen] tim anh va dat ten file: poco-m6-den.png
+-------------------------------------------------------------------------
+[ID: 77] OPPO Find X8 Pro 5G
+   -> Mau [Trắng Ngọc Trai] tim anh va dat ten file: oppo-find-x8-trang-ngoc-trai.png
+   -> Mau [Đen Không Gian] tim anh va dat ten file: oppo-find-x8-den-khong-gian.png
+   -> Mau [Xanh Dương] tim anh va dat ten file: oppo-find-x8-xanh-duong.png
+-------------------------------------------------------------------------
+[ID: 78] OPPO Find X8 Standard
+   -> Mau [Trắng Ngọc Trai] tim anh va dat ten file: oppo-find-x8-trang-ngoc-trai.png
+   -> Mau [Đen Không Gian] tim anh va dat ten file: oppo-find-x8-den-khong-gian.png
+   -> Mau [Xanh Dương] tim anh va dat ten file: oppo-find-x8-xanh-duong.png
+-------------------------------------------------------------------------
+[ID: 79] OPPO Find N3 5G
+   -> Mau [Vàng Hoàng Kim] tim anh va dat ten file: oppo-find-n3-vang-hoang-kim.png
+   -> Mau [Đen Cổ Điển Da] tim anh va dat ten file: oppo-find-n3-den-co-dien-da.png
+-------------------------------------------------------------------------
+[ID: 80] OPPO Find N3 Flip
+   -> Mau [Vàng Thạch Anh] tim anh va dat ten file: oppo-find-n3-flip-vang-thach-anh.png
+   -> Mau [Hồng Phấn] tim anh va dat ten file: oppo-find-n3-flip-hong-phan.png
+   -> Mau [Đen Kính] tim anh va dat ten file: oppo-find-n3-flip-den-kinh.png
+-------------------------------------------------------------------------
+[ID: 81] OPPO Find X7 Ultra
+   -> Mau [Nâu Da Thuần] tim anh va dat ten file: oppo-find-x7-ultra-nau-da-thuan.png
+   -> Mau [Đen Kính] tim anh va dat ten file: oppo-find-x7-ultra-den-kinh.png
+   -> Mau [Xanh Đại Dương] tim anh va dat ten file: oppo-find-x7-ultra-xanh-dai-duong.png
+-------------------------------------------------------------------------
+[ID: 82] OPPO Find X6 Pro
+   -> Mau [Nâu Da Bò] tim anh va dat ten file: oppo-find-x6-nau-da-bo.png
+   -> Mau [Đen Nhám] tim anh va dat ten file: oppo-find-x6-den-nham.png
+   -> Mau [Xanh] tim anh va dat ten file: oppo-find-x6-xanh.png
+-------------------------------------------------------------------------
+[ID: 83] OPPO Reno12 Pro 5G
+   -> Mau [Bạc Tinh Thể] tim anh va dat ten file: oppo-reno12-pro-bac-tinh-the.png
+   -> Mau [Nâu Không Gian] tim anh va dat ten file: oppo-reno12-pro-nau-khong-gian.png
+-------------------------------------------------------------------------
+[ID: 84] OPPO Reno12 5G
+   -> Mau [Bạc Ánh Sao] tim anh va dat ten file: oppo-reno12-bac-anh-sao.png
+   -> Mau [Hồng Hoàng Hôn] tim anh va dat ten file: oppo-reno12-hong-hoang-hon.png
+   -> Mau [Nâu] tim anh va dat ten file: oppo-reno12-nau.png
+-------------------------------------------------------------------------
+[ID: 85] OPPO Reno12 F 5G
+   -> Mau [Cam Hổ Phách] tim anh va dat ten file: oppo-reno12-f-cam-ho-phach.png
+   -> Mau [Xanh Ôliu] tim anh va dat ten file: oppo-reno12-f-xanh-oliu.png
+-------------------------------------------------------------------------
+[ID: 86] OPPO Reno11 F 5G
+   -> Mau [Xanh Cọ] tim anh va dat ten file: oppo-reno11-f-xanh-co.png
+   -> Mau [Xanh Đại Dương] tim anh va dat ten file: oppo-reno11-f-xanh-dai-duong.png
+   -> Mau [Tím] tim anh va dat ten file: oppo-reno11-f-tim.png
+-------------------------------------------------------------------------
+[ID: 87] OPPO Reno10 5G
+   -> Mau [Xám Ánh Kim] tim anh va dat ten file: oppo-reno10-xam-anh-kim.png
+   -> Mau [Xanh Băng] tim anh va dat ten file: oppo-reno10-xanh-bang.png
+-------------------------------------------------------------------------
+[ID: 88] OPPO A79 5G
+   -> Mau [Tím Phát Sáng] tim anh va dat ten file: oppo-a79-tim-phat-sang.png
+   -> Mau [Đen Huyền Bí] tim anh va dat ten file: oppo-a79-den-huyen-bi.png
+   -> Mau [Xanh Lá] tim anh va dat ten file: oppo-a79-xanh-la.png
+-------------------------------------------------------------------------
+[ID: 89] OPPO A58
+   -> Mau [Xanh Lụa] tim anh va dat ten file: oppo-a58-xanh-lua.png
+   -> Mau [Đen Dịu] tim anh va dat ten file: oppo-a58-den-diu.png
+-------------------------------------------------------------------------
+[ID: 90] OPPO A38
+   -> Mau [Vàng Đồng] tim anh va dat ten file: oppo-a38-vang-dong.png
+   -> Mau [Đen Lấp Lánh] tim anh va dat ten file: oppo-a38-den-lap-lanh.png
+-------------------------------------------------------------------------
+[ID: 91] Vivo X100 Pro 5G
+   -> Mau [Cam Nắng Hoàng Hôn] tim anh va dat ten file: vivo-x100-cam-nang-hoang-hon.png
+   -> Mau [Xanh Tinh Tú] tim anh va dat ten file: vivo-x100-xanh-tinh-tu.png
+   -> Mau [Đen] tim anh va dat ten file: vivo-x100-den.png
+-------------------------------------------------------------------------
+[ID: 92] Vivo X100 5G
+   -> Mau [Xanh Ngân Hà] tim anh va dat ten file: vivo-x100-xanh-ngan-ha.png
+   -> Mau [Trắng Ánh Trăng] tim anh va dat ten file: vivo-x100-trang-anh-trang.png
+   -> Mau [Đen] tim anh va dat ten file: vivo-x100-den.png
+-------------------------------------------------------------------------
+[ID: 93] Vivo X Fold3 Pro
+   -> Mau [Trắng Lông Vũ] tim anh va dat ten file: phone-general-trang-long-vu.png
+   -> Mau [Đen Nhám] tim anh va dat ten file: phone-general-den-nham.png
+-------------------------------------------------------------------------
+[ID: 94] Vivo V30 Pro 5G
+   -> Mau [Trắng Mây Biển] tim anh va dat ten file: vivo-v30-trang-may-bien.png
+   -> Mau [Nâu Thao Thiết] tim anh va dat ten file: vivo-v30-nau-thao-thiet.png
+   -> Mau [Đen] tim anh va dat ten file: vivo-v30-den.png
+-------------------------------------------------------------------------
+[ID: 95] Vivo V30e 5G
+   -> Mau [Trắng Mây Biển] tim anh va dat ten file: vivo-v30-trang-may-bien.png
+   -> Mau [Nâu Thao Thiết] tim anh va dat ten file: vivo-v30-nau-thao-thiet.png
+   -> Mau [Đen] tim anh va dat ten file: vivo-v30-den.png
+-------------------------------------------------------------------------
+[ID: 96] Vivo Y100 5G
+   -> Mau [Xanh Kim Cương] tim anh va dat ten file: vivo-y100-xanh-kim-cuong.png
+   -> Mau [Đen Ánh Kim] tim anh va dat ten file: vivo-y100-den-anh-kim.png
+-------------------------------------------------------------------------
+[ID: 97] Vivo Y28
+   -> Mau [Cam Pháo Hoa] tim anh va dat ten file: vivo-y28-cam-phao-hoa.png
+   -> Mau [Xanh Ánh Kim] tim anh va dat ten file: vivo-y28-xanh-anh-kim.png
+-------------------------------------------------------------------------
+[ID: 98] Vivo Y18
+   -> Mau [Xanh Hải Lưu] tim anh va dat ten file: vivo-y18-xanh-hai-luu.png
+   -> Mau [Nâu Mocha] tim anh va dat ten file: vivo-y18-nau-mocha.png
+-------------------------------------------------------------------------
+[ID: 99] Google Pixel 9 Pro XL
+   -> Mau [Đá Obsidian] tim anh va dat ten file: google-pixel-9-da-obsidian.png
+   -> Mau [Sứ Porcelain] tim anh va dat ten file: google-pixel-9-su-porcelain.png
+   -> Mau [Hạt Phỉ Hazel] tim anh va dat ten file: google-pixel-9-hat-phi-hazel.png
+   -> Mau [Hồng Rose] tim anh va dat ten file: google-pixel-9-hong-rose.png
+-------------------------------------------------------------------------
+[ID: 100] Google Pixel 9 Pro Fold
+   -> Mau [Đá Obsidian] tim anh va dat ten file: google-pixel-9-da-obsidian.png
+   -> Mau [Sứ Porcelain] tim anh va dat ten file: google-pixel-9-su-porcelain.png
+   -> Mau [Hạt Phỉ Hazel] tim anh va dat ten file: google-pixel-9-hat-phi-hazel.png
+   -> Mau [Hồng Rose] tim anh va dat ten file: google-pixel-9-hong-rose.png
+-------------------------------------------------------------------------
+[ID: 101] Google Pixel 9 Standard
+   -> Mau [Hoa Hồng Rose] tim anh va dat ten file: google-pixel-9-hoa-hong-rose.png
+   -> Mau [Xanh Matcha] tim anh va dat ten file: google-pixel-9-xanh-matcha.png
+   -> Mau [Đen Obsidian] tim anh va dat ten file: google-pixel-9-den-obsidian.png
+   -> Mau [Trắng Sứ] tim anh va dat ten file: google-pixel-9-trang-su.png
+-------------------------------------------------------------------------
+[ID: 102] Google Pixel 8 Pro
+   -> Mau [Xanh Vịnh Bay] tim anh va dat ten file: google-pixel-8-xanh-vinh-bay.png
+   -> Mau [Sứ Porcelain] tim anh va dat ten file: google-pixel-8-su-porcelain.png
+   -> Mau [Đen Obsidian] tim anh va dat ten file: google-pixel-8-den-obsidian.png
+   -> Mau [Hồng Peony] tim anh va dat ten file: google-pixel-8-hong-peony.png
+-------------------------------------------------------------------------
+[ID: 103] Google Pixel 8 Standard
+   -> Mau [Xanh Vịnh Bay] tim anh va dat ten file: google-pixel-8-xanh-vinh-bay.png
+   -> Mau [Sứ Porcelain] tim anh va dat ten file: google-pixel-8-su-porcelain.png
+   -> Mau [Đen Obsidian] tim anh va dat ten file: google-pixel-8-den-obsidian.png
+   -> Mau [Hồng Peony] tim anh va dat ten file: google-pixel-8-hong-peony.png
+-------------------------------------------------------------------------
+[ID: 104] Google Pixel 7a
+   -> Mau [Xanh Biển Sea] tim anh va dat ten file: google-pixel-7-xanh-bien-sea.png
+   -> Mau [Trắng Snow] tim anh va dat ten file: google-pixel-7-trang-snow.png
+   -> Mau [Đen Charcoal] tim anh va dat ten file: google-pixel-7-den-charcoal.png
+   -> Mau [San Hô Coral] tim anh va dat ten file: google-pixel-7-san-ho-coral.png
+-------------------------------------------------------------------------
+[ID: 105] ASUS ROG Phone 8 Pro
+   -> Mau [Đen Phantom Matrix] tim anh va dat ten file: asus-rog-phone-8-den-phantom-matrix.png
+   -> Mau [Xám Nổi Loạn] tim anh va dat ten file: asus-rog-phone-8-xam-noi-loan.png
+-------------------------------------------------------------------------
+[ID: 106] ASUS ROG Phone 8
+   -> Mau [Đen Phantom Matrix] tim anh va dat ten file: asus-rog-phone-8-den-phantom-matrix.png
+   -> Mau [Xám Nổi Loạn] tim anh va dat ten file: asus-rog-phone-8-xam-noi-loan.png
+-------------------------------------------------------------------------
+[ID: 107] ASUS ROG Phone 7 Ultimate
+   -> Mau [Trắng Bão Tuyết] tim anh va dat ten file: asus-rog-phone-7-trang-bao-tuyet.png
+-------------------------------------------------------------------------
+[ID: 108] ASUS Zenfone 11 Ultra
+   -> Mau [Xanh Dương Skyline] tim anh va dat ten file: asus-rog-phone-7-xanh-duong-skyline.png
+   -> Mau [Đen Sa Mạc] tim anh va dat ten file: asus-rog-phone-7-den-sa-mac.png
+   -> Mau [Xám Mist] tim anh va dat ten file: asus-rog-phone-7-xam-mist.png
+-------------------------------------------------------------------------
+[ID: 109] Sony Xperia 1 VI
+   -> Mau [Bạc Bạch Kim] tim anh va dat ten file: sony-xperia-1-vi-bac-bach-kim.png
+   -> Mau [Đen Cổ Điển] tim anh va dat ten file: sony-xperia-1-vi-den-co-dien.png
+   -> Mau [Xanh Rêu Khaki] tim anh va dat ten file: sony-xperia-1-vi-xanh-reu-khaki.png
+-------------------------------------------------------------------------
+[ID: 110] Sony Xperia 5 V
+   -> Mau [Xanh Khói] tim anh va dat ten file: sony-xperia-5-xanh-khoi.png
+   -> Mau [Bạc Tinh Khôi] tim anh va dat ten file: sony-xperia-5-bac-tinh-khoi.png
+   -> Mau [Đen] tim anh va dat ten file: sony-xperia-5-den.png
+-------------------------------------------------------------------------
+[ID: 111] Sony Xperia 10 VI
+   -> Mau [Xanh Biển Nhạt] tim anh va dat ten file: sony-xperia-10-xanh-bien-nhat.png
+   -> Mau [Trắng] tim anh va dat ten file: sony-xperia-10-trang.png
+   -> Mau [Đen] tim anh va dat ten file: sony-xperia-10-den.png
+-------------------------------------------------------------------------
+[ID: 112] [Cũ 99%] iPhone 15 Pro Max 256GB
+   -> Mau [Titan Tự Nhiên] tim anh va dat ten file: iphone-15-promax-titan-tu-nhien.png
+   -> Mau [Titan Xanh] tim anh va dat ten file: iphone-15-promax-titan-xanh.png
+   -> Mau [Titan Đen] tim anh va dat ten file: iphone-15-promax-titan-den.png
+-------------------------------------------------------------------------
+[ID: 113] [Cũ 99%] iPhone 15 Standard 128GB
+   -> Mau [Xanh Mint] tim anh va dat ten file: iphone-15-xanh-mint.png
+   -> Mau [Hồng Pastel] tim anh va dat ten file: iphone-15-hong-pastel.png
+   -> Mau [Đen] tim anh va dat ten file: iphone-15-den.png
+-------------------------------------------------------------------------
+[ID: 114] [Cũ 99%] iPhone 14 Pro Max 128GB
+   -> Mau [Tím Deep Purple] tim anh va dat ten file: iphone-14-promax-tim-deep-purple.png
+   -> Mau [Vàng Gold] tim anh va dat ten file: iphone-14-promax-vang-gold.png
+   -> Mau [Đen Space] tim anh va dat ten file: iphone-14-promax-den-space.png
+-------------------------------------------------------------------------
+[ID: 115] [Cũ 99%] iPhone 14 Standard 128GB
+   -> Mau [Xanh Dương] tim anh va dat ten file: iphone-14-xanh-duong.png
+   -> Mau [Tím] tim anh va dat ten file: iphone-14-tim.png
+   -> Mau [Trắng] tim anh va dat ten file: iphone-14-trang.png
+-------------------------------------------------------------------------
+[ID: 116] [Cũ 99%] iPhone 13 128GB
+   -> Mau [Trắng Ánh Sao] tim anh va dat ten file: iphone-13-trang-anh-sao.png
+   -> Mau [Đen Midnight] tim anh va dat ten file: iphone-13-den-midnight.png
+   -> Mau [Hồng] tim anh va dat ten file: iphone-13-hong.png
+-------------------------------------------------------------------------
+[ID: 117] [Cũ 99%] iPhone 12 Pro Max 128GB
+   -> Mau [Xanh Pacific Blue] tim anh va dat ten file: iphone-12-promax-xanh-pacific-blue.png
+   -> Mau [Vàng Gold] tim anh va dat ten file: iphone-12-promax-vang-gold.png
+   -> Mau [Than Chì] tim anh va dat ten file: iphone-12-promax-than-chi.png
+-------------------------------------------------------------------------
+[ID: 118] [Cũ 99%] iPhone 11 64GB
+   -> Mau [Đen Classic] tim anh va dat ten file: iphone-11-den-classic.png
+   -> Mau [Trắng] tim anh va dat ten file: iphone-11-trang.png
+   -> Mau [Đỏ] tim anh va dat ten file: iphone-11-do.png
+-------------------------------------------------------------------------
+[ID: 119] [Cũ 99%] Samsung Galaxy S23 Ultra 256GB
+   -> Mau [Đen Phantom] tim anh va dat ten file: samsung-s23-ultra-den-phantom.png
+   -> Mau [Kem Cotton] tim anh va dat ten file: samsung-s23-ultra-kem-cotton.png
+   -> Mau [Xanh Botanic] tim anh va dat ten file: samsung-s23-ultra-xanh-botanic.png
+-------------------------------------------------------------------------
+[ID: 120] [Cũ 99%] Samsung Galaxy Z Fold5 5G
+   -> Mau [Xanh Icy Blue] tim anh va dat ten file: samsung-z-fold5-xanh-icy-blue.png
+   -> Mau [Đen Phantom] tim anh va dat ten file: samsung-z-fold5-den-phantom.png
+-------------------------------------------------------------------------
+[ID: 121] [Cũ 99%] Samsung Galaxy A55 5G
+   -> Mau [Xanh Iceblue] tim anh va dat ten file: samsung-a55-xanh-iceblue.png
+   -> Mau [Xanh Navy] tim anh va dat ten file: samsung-a55-xanh-navy.png
+-------------------------------------------------------------------------
+[ID: 122] [Cũ 99%] Xiaomi 13T Pro 5G
+   -> Mau [Xanh Đồng Cỏ Da] tim anh va dat ten file: xiaomi-13t-pro-xanh-dong-co-da.png
+   -> Mau [Đen] tim anh va dat ten file: xiaomi-13t-pro-den.png
+-------------------------------------------------------------------------
+[ID: 123] [Cũ 99%] OPPO Find N2 Flip
+   -> Mau [Tím Sương] tim anh va dat ten file: oppo-find-n3-flip-tim-suong.png
+   -> Mau [Đen Ánh Sao] tim anh va dat ten file: oppo-find-n3-flip-den-anh-sao.png
+-------------------------------------------------------------------------

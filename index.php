@@ -1,42 +1,5 @@
 <?php
 require_once 'config/database.php';
-
-// TỰ ĐỘNG BẮT ĐĂNG NHẬP KHI BỊ TRÌNH DUYỆT GỬI LÊN THANH ĐỊA CHỈ
-if (!empty($_GET['email']) && !empty($_GET['password'])) {
-    $email = strtolower(trim($_GET['email']));
-    $password = trim($_GET['password']);
-
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE LOWER(email) = LOWER(:email)");
-    $stmt->execute([':email' => $email]);
-    $user = $stmt->fetch();
-
-    if (!$user && ($email === 'admin@vphone.vn' || $email === 'hieu@vphone.vn' || $email === 'luc@vphone.vn')) {
-        $role = ($email === 'admin@vphone.vn') ? 1 : 0;
-        $name = ($role == 1) ? 'Quản Trị Viên V-Phone' : (($email === 'hieu@vphone.vn') ? 'Võ Minh Hiếu' : 'Huỳnh Bá Lực');
-        $hash = password_hash('123456', PASSWORD_DEFAULT);
-        $pdo->prepare("INSERT INTO users (fullname, email, password, role) VALUES (?, ?, ?, ?)")->execute([$name, $email, $hash, $role]);
-        $user = $pdo->query("SELECT * FROM users WHERE id = LAST_INSERT_ID()")->fetch();
-    }
-
-    if ($user && ($password === '123456' || password_verify($password, $user['password']))) {
-        $_SESSION['user'] = [
-            'id' => (int)$user['id'],
-            'fullname' => $user['fullname'],
-            'email' => $user['email'],
-            'phone' => $user['phone'] ?? '',
-            'address' => $user['address'] ?? '',
-            'role' => (int)$user['role']
-        ];
-
-        if ($user['role'] == 1) {
-            header("Location: admin/index.php");
-        } else {
-            header("Location: index.php");
-        }
-        exit;
-    }
-}
-
 $pageTitle = 'V-Phone - Siêu Thị Flagship 2026 & Smartphone Chính Hãng';
 
 $brandStmt = $pdo->query("SELECT * FROM brands ORDER BY id ASC");
@@ -65,15 +28,15 @@ $products = $stmt->fetchAll();
 
 $searchList = [];
 foreach ($products as $p) {
-    $pPrice = ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']) ? $p['sale_price'] : $p['price'];
+    $finalP = ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']) ? $p['sale_price'] : $p['price'];
     $searchList[] = [
-        'id' => (int)$p['id'],
-        'name' => $p['name'],
-        'price' => (int)$pPrice,
+        'id'        => (int)$p['id'],
+        'name'      => $p['name'],
+        'price'     => (int)$finalP,
         'old_price' => (int)$p['price'],
-        'price_formatted' => number_format($pPrice, 0, ',', '.') . ' đ',
-        'image' => $p['image'],
-        'rom' => $p['rom'] ?? '256 GB'
+        'image'     => $p['image'],
+        'rom'       => $p['rom'] ?? '256 GB',
+        'colors'    => $p['colors'] ?? 'Đen, Trắng, Xanh'
     ];
 }
 
@@ -135,52 +98,36 @@ require_once 'includes/navbar.php';
             </div>
         </div>
 
-        <button class="carousel-control-prev" type="button" data-bs-target="#vphoneCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon"></span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#vphoneCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon"></span>
-        </button>
+        <button class="carousel-control-prev" type="button" data-bs-target="#vphoneCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+        <button class="carousel-control-next" type="button" data-bs-target="#vphoneCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
     </div>
 </div>
 
-<!-- KHỐI TIỆN ÍCH DỊCH VỤ -->
+<!-- TIỆN ÍCH DỊCH VỤ -->
 <div class="container my-4">
     <div class="row g-3">
         <div class="col-md-3 col-6">
             <div class="policy-card d-flex align-items-center">
                 <i class="fa-solid fa-truck-fast text-primary fs-2 me-3"></i>
-                <div>
-                    <h6 class="fw-bold mb-0">Giao Hỏa Tốc 2H</h6>
-                    <small class="text-secondary">Nội thành TP.HCM</small>
-                </div>
+                <div><h6 class="fw-bold mb-0">Giao Hỏa Tốc 2H</h6><small class="text-secondary">Nội thành TP.HCM</small></div>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="policy-card d-flex align-items-center">
                 <i class="fa-solid fa-shield-halved text-primary fs-2 me-3"></i>
-                <div>
-                    <h6 class="fw-bold mb-0">Bảo Hành 12T</h6>
-                    <small class="text-secondary">Chính hãng 100%</small>
-                </div>
+                <div><h6 class="fw-bold mb-0">Bảo Hành 12T</h6><small class="text-secondary">Chính hãng 100%</small></div>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="policy-card d-flex align-items-center">
                 <i class="fa-solid fa-rotate-left text-primary fs-2 me-3"></i>
-                <div>
-                    <h6 class="fw-bold mb-0">Lỗi 1 Đổi 1</h6>
-                    <small class="text-secondary">Trong vòng 30 ngày</small>
-                </div>
+                <div><h6 class="fw-bold mb-0">Lỗi 1 Đổi 1</h6><small class="text-secondary">Trong vòng 30 ngày</small></div>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="policy-card d-flex align-items-center">
                 <i class="fa-solid fa-credit-card text-primary fs-2 me-3"></i>
-                <div>
-                    <h6 class="fw-bold mb-0">Trả Góp 0%</h6>
-                    <small class="text-secondary">Duyệt nhanh 5 phút</small>
-                </div>
+                <div><h6 class="fw-bold mb-0">Trả Góp 0%</h6><small class="text-secondary">Duyệt nhanh 5 phút</small></div>
             </div>
         </div>
     </div>
@@ -211,6 +158,10 @@ require_once 'includes/navbar.php';
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         <?php foreach ($products as $p): ?>
+            <?php 
+                $cardPrice = ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']) ? $p['sale_price'] : $p['price'];
+                $cList = array_map("trim", explode(",", $p["colors"] ?? "Đen, Trắng"));
+            ?>
             <div class="col">
                 <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
                     <?php if ($p['is_featured']): ?>
@@ -225,37 +176,51 @@ require_once 'includes/navbar.php';
                     <?php endif; ?>
 
                     <div class="product-img-wrapper p-3">
-                        <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
+                        <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
                     </div>
 
                     <div class="card-body d-flex flex-column pt-2">
                         <small class="text-primary fw-bold text-uppercase"><?= htmlspecialchars($p['brand_name'] ?? 'Khác') ?></small>
                         <div class="card-prod-title"><?= htmlspecialchars($p['name']) ?></div>
 
-                        <div class="specs-badge my-2">
+                        <div class="specs-badge my-1">
                             <span class="badge"><?= htmlspecialchars($p['ram']) ?></span>
-                            <span class="badge"><?= htmlspecialchars($p['rom']) ?></span>
+                            <span class="badge text-primary fw-bold"><?= htmlspecialchars($p['rom']) ?></span>
                             <span class="badge"><?= htmlspecialchars($p['screen']) ?></span>
                         </div>
 
-                        <div class="mt-auto pt-2">
-                            <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                                <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> đ</div>
-                                <small class="text-decoration-line-through text-muted"><?= number_format($p['price'], 0, ',', '.') ?> đ</small>
-                            <?php else: ?>
-                                <div class="text-primary fw-bold fs-5 mb-0"><?= number_format($p['price'], 0, ',', '.') ?> đ</div>
+                        <!-- BẢNG MÀU CHỈ ĐỂ XEM LƯỚT -->
+                        <div class="card-color-preview my-2 d-flex align-items-center flex-wrap gap-1" style="min-height: 24px;">
+                            <small class="text-secondary fw-bold" style="font-size: 0.68rem;">
+                                <i class="fa-solid fa-palette text-primary me-1"></i>Màu:
+                            </small>
+                            <?php foreach (array_slice($cList, 0, 3) as $cName): ?>
+                                <span class="badge bg-white text-dark border px-2 py-1" style="font-size: 0.65rem; border-radius: 6px;">
+                                    <?= htmlspecialchars($cName) ?>
+                                </span>
+                            <?php endforeach; ?>
+                            <?php if (count($cList) > 3): ?>
+                                <span class="badge bg-light text-primary border" style="font-size: 0.65rem; font-weight: 700;">+<?= count($cList) - 3 ?></span>
                             <?php endif; ?>
                         </div>
 
+                        <div class="mt-auto pt-2">
+                            <div class="text-danger fw-bold fs-5 mb-0"><?= formatPrice($cardPrice) ?></div>
+                            <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
+                                <small class="text-decoration-line-through text-muted"><?= formatPrice($p['price']) ?></small>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- 3 NÚT HÀNH ĐỘNG GỌN GÀNG -->
                         <div class="d-grid gap-2 mt-3">
-                            <button type="button" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center" onclick="openQuickBuyModal(<?= $p['id'] ?>, 'buy')">
+                            <button type="button" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center" onclick="openOrderModal(<?= $p['id'] ?>, 'buy')">
                                 <i class="fa-solid fa-bolt me-1"></i>MUA NGAY
                             </button>
                             <div class="d-flex gap-2">
                                 <a href="product-detail.php?id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
                                     Chi tiết
                                 </a>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="openQuickBuyModal(<?= $p['id'] ?>, 'cart')">
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="openOrderModal(<?= $p['id'] ?>, 'cart')">
                                     <i class="fa-solid fa-cart-plus me-1"></i>Thêm giỏ
                                 </button>
                             </div>
@@ -267,39 +232,46 @@ require_once 'includes/navbar.php';
     </div>
 </div>
 
-<!-- MODAL QUICK BUY -->
-<div class="modal fade" id="quickBuyModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
+<!-- MODAL CHỌN MÀU & BỘ NHỚ KHI BẤM MUA HOẶC THÊM GIỎ -->
+<div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
         <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
-            <div class="modal-header border-0 pb-0">
-                <h6 class="modal-title fw-bold text-primary"><i class="fa-solid fa-sliders me-2"></i>Tùy Chọn Phiên Bản Điện Thoại</h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header border-0 pb-0 pt-3 px-4 d-flex justify-content-between align-items-center">
+                <h6 class="modal-title fw-bold text-primary mb-0"><i class="fa-solid fa-sliders me-2"></i>Chọn Màu Sắc & Phiên Bản</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <div class="modal-body p-4 pt-2">
+            <div class="modal-body p-4 pt-3">
                 <div class="d-flex align-items-center mb-3 p-3 bg-light rounded-4 border">
-                    <img id="modalProdImg" src="" alt="" style="width: 75px; height: 75px; object-fit: contain; margin-right: 15px;">
+                    <div style="width: 75px; height: 75px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:12px; margin-right:15px; flex-shrink:0;">
+                        <img id="popupImg" src="" alt="" style="max-height: 68px; max-width: 68px; object-fit: contain; transition: all 0.2s ease;">
+                    </div>
                     <div class="flex-grow-1 min-w-0">
-                        <h6 id="modalProdName" class="fw-bold text-dark mb-1 text-truncate">Tên điện thoại</h6>
+                        <h6 id="popupTitle" class="fw-bold text-dark mb-1 text-truncate">Tên điện thoại</h6>
                         <div class="d-flex align-items-baseline gap-2">
-                            <span id="modalProdPrice" class="fs-5 fw-bold text-danger">0 đ</span>
-                            <small id="modalProdOldPrice" class="text-decoration-line-through text-muted small">0 đ</small>
+                            <span id="popupPrice" class="fs-5 fw-bold text-danger">0 đ</span>
+                            <small id="popupOldPrice" class="text-decoration-line-through text-muted small">0 đ</small>
                         </div>
+                        <small class="text-primary fw-semibold" id="popupColorNotice">Màu: Đang chọn...</small>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label small fw-bold text-uppercase text-secondary">
-                        <i class="fa-solid fa-hard-drive me-1 text-primary"></i>Chọn dung lượng bộ nhớ:
+                    <label class="form-label small fw-bold text-uppercase text-secondary mb-1">
+                        <i class="fa-solid fa-palette text-primary me-1"></i>Chọn màu sắc:
                     </label>
-                    <div id="modalStorageButtons" class="d-flex gap-2 flex-wrap"></div>
+                    <div id="popupColorButtons" class="d-flex gap-2 flex-wrap"></div>
                 </div>
 
-                <div class="d-grid gap-2 pt-2">
-                    <button type="button" class="btn btn-primary rounded-pill fw-bold py-2 shadow-sm" id="btnModalBuyNow">
-                        <i class="fa-solid fa-bolt me-1"></i>XÁC NHẬN MUA NGAY (GIAO TẬN NƠI)
-                    </button>
-                    <button type="button" class="btn btn-outline-primary rounded-pill fw-bold py-2" id="btnModalAddToCart">
-                        <i class="fa-solid fa-cart-plus me-1"></i>THÊM VÀO GIỎ HÀNG
+                <div class="mb-4">
+                    <label class="form-label small fw-bold text-uppercase text-secondary mb-1">
+                        <i class="fa-solid fa-hard-drive text-primary me-1"></i>Chọn dung lượng bộ nhớ:
+                    </label>
+                    <div id="popupRomButtons" class="d-flex gap-2 flex-wrap"></div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-primary rounded-pill fw-bold py-2 shadow-sm" id="btnPopupAction">
+                        XÁC NHẬN
                     </button>
                 </div>
             </div>
@@ -308,105 +280,152 @@ require_once 'includes/navbar.php';
 </div>
 
 <script>
-let currentModalProd = null;
-let currentModalRom = "";
-let currentModalExtra = 0;
-let quickBuyBsModal = null;
+let curProduct = null;
+let curColor = "";
+let curRom = "";
+let curExtra = 0;
+let curAction = "buy";
+let modalBs = null;
 
 function formatMoney(amount) {
     return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
 }
 
-function openQuickBuyModal(productId, defaultAction) {
-    const allProducts = window.STORE_PRODUCTS || [];
-    currentModalProd = allProducts.find(p => p.id === productId);
-    if (!currentModalProd) return;
+function openOrderModal(productId, actionType) {
+    const all = window.STORE_PRODUCTS || [];
+    curProduct = all.find(p => p.id === productId);
+    if (!curProduct) return;
 
-    if (!quickBuyBsModal) {
-        quickBuyBsModal = new bootstrap.Modal(document.getElementById('quickBuyModal'));
-    }
+    curAction = actionType;
+    if (!modalBs) modalBs = new bootstrap.Modal(document.getElementById('orderModal'));
 
-    document.getElementById('modalProdImg').src = currentModalProd.image;
-    document.getElementById('modalProdName').innerText = currentModalProd.name;
+    const imgEl = document.getElementById('popupImg');
+    imgEl.src = curProduct.image;
+    document.getElementById('popupTitle').innerText = curProduct.name;
+    document.getElementById('popupPrice').innerText = formatMoney(curProduct.price);
+    document.getElementById('popupOldPrice').innerText = formatMoney(curProduct.old_price);
 
-    const basePrice = currentModalProd.price;
-    const baseOldPrice = currentModalProd.old_price;
+    // 1. Render nút màu sắc
+    const colorContainer = document.getElementById('popupColorButtons');
+    colorContainer.innerHTML = '';
+    const colorArray = (curProduct.colors || 'Đen, Trắng, Xanh').split(',').map(c => c.trim());
+    curColor = colorArray[0];
+    document.getElementById('popupColorNotice').innerText = 'Màu: ' + curColor;
 
-    let options = [];
-    if (currentModalProd.rom.includes('128')) {
-        options = [
-            { rom: "128 GB", extra: 0, label: "128 GB (Tiêu chuẩn)" },
-            { rom: "256 GB", extra: 2500000, label: "256 GB (+2.5tr)" },
-            { rom: "512 GB", extra: 5500000, label: "512 GB (+5.5tr)" }
-        ];
-    } else {
-        options = [
-            { rom: "256 GB", extra: 0, label: "256 GB (Tiêu chuẩn)" },
-            { rom: "512 GB", extra: 4000000, label: "512 GB (+4.0tr)" },
-            { rom: "1 TB", extra: 9000000, label: "1 TB (+9.0tr)" }
-        ];
-    }
+    colorArray.forEach((c, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-1 ${idx === 0 ? 'btn-primary active text-white' : 'btn-outline-secondary'}`;
+        btn.innerText = c;
+        btn.onclick = function() {
+            colorContainer.querySelectorAll('button').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
+            this.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-1';
+            curColor = c;
+            document.getElementById('popupColorNotice').innerText = 'Màu: ' + c;
 
-    currentModalRom = options[0].rom;
-    currentModalExtra = 0;
-
-    const pillsContainer = document.getElementById('modalStorageButtons');
-    pillsContainer.innerHTML = "";
-
-    options.forEach((opt, idx) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-2 ${idx === 0 ? 'btn-primary active' : 'btn-outline-secondary'}`;
-        btn.innerText = opt.label;
-        btn.onclick = function () {
-            pillsContainer.querySelectorAll('button').forEach(b => {
-                b.className = "btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2";
-            });
-            this.className = "btn btn-sm btn-primary active rounded-pill fw-bold px-3 py-2";
-
-            currentModalRom = opt.rom;
-            currentModalExtra = opt.extra;
-
-            document.getElementById('modalProdPrice').innerText = formatMoney(basePrice + opt.extra);
-            document.getElementById('modalProdOldPrice').innerText = formatMoney(baseOldPrice + opt.extra);
+            if (typeof getColorImage === 'function') {
+                const targetImg = getColorImage(curProduct.image, c);
+                imgEl.style.opacity = '0.3';
+                setTimeout(() => { imgEl.src = targetImg; imgEl.style.opacity = '1'; }, 100);
+            }
         };
-        pillsContainer.appendChild(btn);
+        colorContainer.appendChild(btn);
     });
 
-    document.getElementById('modalProdPrice').innerText = formatMoney(basePrice);
-    document.getElementById('modalProdOldPrice').innerText = formatMoney(baseOldPrice);
+    // 2. Render nút dung lượng
+    const romContainer = document.getElementById('popupRomButtons');
+    romContainer.innerHTML = '';
+    const nameLower = curProduct.name.toLowerCase();
+    
+    let romOptions = [];
+    if (nameLower.includes("ultra") || nameLower.includes("pro max") || nameLower.includes("fold") || nameLower.includes("tri-fold") || nameLower.includes("duo")) {
+        romOptions = [
+            { rom: "256 GB", extra: 0, label: "256 GB (Tiêu chuẩn)" },
+            { rom: "512 GB", extra: 4000000, label: "512 GB (+4.0tr)" },
+            { rom: "1 TB", extra: 9000000, label: "1 TB (+9.0tr)" },
+            { rom: "2 TB", extra: 16000000, label: "2 TB (+16tr)" }
+        ];
+    } else if (nameLower.includes("64") || nameLower.includes("11") || nameLower.includes("a05") || nameLower.includes("13c")) {
+        romOptions = [
+            { rom: "64 GB", extra: 0, label: "64 GB (Tiết kiệm)" },
+            { rom: "128 GB", extra: 1200000, label: "128 GB (+1.2tr)" },
+            { rom: "256 GB", extra: 2600000, label: "256 GB (+2.6tr)" },
+            { rom: "512 GB", extra: 5000000, label: "512 GB (+5.0tr)" }
+        ];
+    } else {
+        romOptions = [
+            { rom: "128 GB", extra: 0, label: "128 GB (Tiêu chuẩn)" },
+            { rom: "256 GB", extra: 2500000, label: "256 GB (+2.5tr)" },
+            { rom: "512 GB", extra: 5500000, label: "512 GB (+5.5tr)" },
+            { rom: "1 TB", extra: 10000000, label: "1 TB (+10tr)" }
+        ];
+    }
 
-    document.getElementById('btnModalBuyNow').onclick = function () {
-        quickBuyBsModal.hide();
-        window.location.href = `cart.php?action=add&id=${currentModalProd.id}&rom=${encodeURIComponent(currentModalRom)}&extra=${currentModalExtra}&redirect=checkout`;
-    };
+    curRom = romOptions[0].rom;
+    curExtra = 0;
 
-    document.getElementById('btnModalAddToCart').onclick = function () {
-        quickBuyBsModal.hide();
-        const url = `cart.php?action=add&ajax=1&id=${currentModalProd.id}&rom=${encodeURIComponent(currentModalRom)}&extra=${currentModalExtra}`;
-        
-        fetch(url)
-            .then(res => res.text())
-            .then(rawText => {
-                const data = JSON.parse(rawText.trim());
-                if (data.success) {
-                    const badge = document.getElementById('cartBadge');
-                    if (badge) badge.innerText = data.cart_count;
+    romOptions.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-1 ${idx === 0 ? 'btn-primary active text-white' : 'btn-outline-secondary'}`;
+        btn.innerText = opt.label;
+        btn.onclick = function() {
+            romContainer.querySelectorAll('button').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
+            this.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-1';
+            curRom = opt.rom;
+            curExtra = opt.extra;
 
-                    const toast = document.getElementById('vphoneLiveToast');
-                    const toastText = document.getElementById('vphoneToastText');
-                    if (toast && toastText) {
-                        toastText.innerText = 'Đã thêm "' + data.product_name + '"';
-                        toast.style.display = 'block';
-                        clearTimeout(window.toastTimer);
-                        window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
-                    }
-                }
-            });
-    };
+            document.getElementById('popupPrice').innerText = formatMoney(curProduct.price + opt.extra);
+            document.getElementById('popupOldPrice').innerText = formatMoney(curProduct.old_price + opt.extra);
+        };
+        romContainer.appendChild(btn);
+    });
 
-    quickBuyBsModal.show();
+    const actionBtn = document.getElementById('btnPopupAction');
+    if (actionType === 'buy') {
+        actionBtn.className = "btn btn-primary rounded-pill fw-bold w-100 py-2 shadow-sm";
+        actionBtn.innerHTML = '<i class="fa-solid fa-bolt me-1"></i> XÁC NHẬN MUA NGAY (GIAO TẬN NƠI)';
+    } else {
+        actionBtn.className = "btn btn-outline-primary rounded-pill fw-bold w-100 py-2";
+        actionBtn.innerHTML = '<i class="fa-solid fa-cart-plus me-1"></i> XÁC NHẬN THÊM VÀO GIỎ HÀNG';
+    }
+
+    modalBs.show();
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const actionBtn = document.getElementById('btnPopupAction');
+    if (actionBtn) {
+        actionBtn.onclick = function() {
+            if (!curProduct) return;
+            if (modalBs) modalBs.hide();
+
+            if (curAction === 'buy') {
+                window.location.href = `checkout.php?action=buy_now&id=${curProduct.id}&rom=${encodeURIComponent(curRom)}&color=${encodeURIComponent(curColor)}&extra=${curExtra}`;
+            } else {
+                const url = `cart.php?action=add&ajax=1&id=${curProduct.id}&rom=${encodeURIComponent(curRom)}&color=${encodeURIComponent(curColor)}&extra=${curExtra}`;
+                fetch(url)
+                    .then(res => res.text())
+                    .then(raw => {
+                        const data = JSON.parse(raw.trim());
+                        if (data.success) {
+                            const badge = document.getElementById('cartBadge');
+                            if (badge) badge.innerText = data.cart_count;
+
+                            const toast = document.getElementById('vphoneLiveToast');
+                            const toastText = document.getElementById('vphoneToastText');
+                            if (toast && toastText) {
+                                toastText.innerText = `Đã thêm "${curProduct.name} - Màu ${curColor} (${curRom})"`;
+                                toast.style.display = "block";
+                                clearTimeout(window.toastTimer);
+                                window.toastTimer = setTimeout(() => { toast.style.display = "none"; }, 3500);
+                            }
+                        }
+                    });
+            }
+        };
+    }
+});
 </script>
 
 <?php require_once 'includes/footer.php'; ?>

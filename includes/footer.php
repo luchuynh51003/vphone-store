@@ -128,14 +128,15 @@ document.addEventListener("DOMContentLoaded", function () {
 // HÀM THÊM GIỎ HÀNG
 let toastTimer = null;
 
-function addToCartDirect(btn, productId, productName) {
+function addToCartDirect(btn, productId, productName, chosenColor) {
+    const colorParam = chosenColor ? `&color=${encodeURIComponent(chosenColor)}` : "";
     if (btn.disabled) return;
     btn.disabled = true;
 
     const oldHtml = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Đang thêm...';
 
-    fetch('cart.php?action=add&ajax=1&id=' + productId)
+    fetch('cart.php?action=add&ajax=1&id=' + productId + colorParam)
         .then(res => res.text())
         .then(rawText => {
             const data = JSON.parse(rawText.trim());

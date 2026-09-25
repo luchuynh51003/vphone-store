@@ -9,6 +9,7 @@ $action = $_GET['action'] ?? '';
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 $key = $_GET['key'] ?? '';
 $rom = trim($_GET['rom'] ?? '');
+$color = trim($_GET['color'] ?? '');
 $extra = isset($_GET['extra']) ? (int)$_GET['extra'] : 0;
 $isAjax = isset($_GET['ajax']) && $_GET['ajax'] == 1;
 $redirect = $_GET['redirect'] ?? '';
@@ -30,13 +31,15 @@ if ($action === 'add' && $id > 0) {
 
     if ($prod) {
         $selectedRom = !empty($rom) ? $rom : $prod['rom'];
+        $cList = array_map("trim", explode(",", $prod["colors"] ?? "Đen, Trắng"));
+        $selectedColor = !empty($color) ? $color : ($cList[0] ?? 'Tiêu chuẩn');
+
         $basePrice = ($prod['sale_price'] > 0 && $prod['sale_price'] < $prod['price']) ? $prod['sale_price'] : $prod['price'];
-        
-        // TÍNH GIÁ CHUẨN XÁC THEO BỘ NHỚ
         $finalPrice = $basePrice + $extra;
 
-        // TẠO MÃ DÒNG DUY NHẤT DỰA VÀO: MÃ MÁY + GIÁ TIỀN (46tr và 55tr CHẮC CHẮN SẼ LÀ 2 DÒNG KHÁC NHAU)
-        $cartKey = $id . '_' . $finalPrice;
+        // TẠO MÃ DÒNG DUY NHẤT: ID + GIÁ + BỘ NHỚ + MÀU SẮC
+        $variantSlug = preg_replace('/[^a-zA-Z0-9]/', '', $selectedRom . $selectedColor);
+        $cartKey = $id . '_' . $finalPrice . '_' . $variantSlug;
 
         if (isset($_SESSION['cart'][$cartKey])) {
             $_SESSION['cart'][$cartKey]['quantity'] += 1;
@@ -46,6 +49,7 @@ if ($action === 'add' && $id > 0) {
                 'id' => $prod['id'],
                 'name' => $prod['name'],
                 'rom' => $selectedRom,
+                'color' => $selectedColor,
                 'price' => $finalPrice,
                 'image' => $prod['image'],
                 'quantity' => 1
@@ -72,7 +76,7 @@ if ($action === 'add' && $id > 0) {
         echo json_encode([
             'success' => true,
             'cart_count' => $totalCount,
-            'product_name' => $prod['name'] . ' (' . $selectedRom . ')'
+            'product_name' => $prod['name'] . ' - Màu ' . $selectedColor . ' (' . $selectedRom . ')'
         ], JSON_UNESCAPED_UNICODE);
         exit;
     }
@@ -81,7 +85,6 @@ if ($action === 'add' && $id > 0) {
     exit;
 }
 
-// CẬP NHẬT SỐ LƯỢNG
 if ($action === 'update' && !empty($key)) {
     $qty = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
     if ($qty > 0 && isset($_SESSION['cart'][$key])) {
@@ -92,7 +95,6 @@ if ($action === 'update' && !empty($key)) {
     exit;
 }
 
-// XÓA 1 DÒNG CỤ THỂ
 if ($action === 'delete' && !empty($key)) {
     unset($_SESSION['cart'][$key]);
     syncUserCartToDB($pdo);
@@ -129,7 +131,6 @@ require_once 'includes/navbar.php';
         </div>
     <?php else: ?>
         <div class="row g-4">
-            <!-- Cột danh sách sản phẩm -->
             <div class="col-lg-8">
                 <div class="bg-white rounded-4 shadow-sm p-4 border">
                     <div class="table-responsive">
@@ -149,10 +150,14 @@ require_once 'includes/navbar.php';
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
-                                                <img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" style="width: 50px; height: 50px; object-fit: contain;" class="me-3">
+                                                <img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" style="width: 52px; height: 52px; object-fit: contain;" class="me-3" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
                                                 <div>
                                                     <a href="product-detail.php?id=<?= $item['id'] ?>" class="text-decoration-none text-dark fw-bold small d-block"><?= htmlspecialchars($item['name']) ?></a>
-                                                    <span class="badge bg-light text-primary border mt-1">Phiên bản: <strong><?= htmlspecialchars($item['rom']) ?></strong></span>
+                                                    <!-- HIỂN THỊ CẢ BỘ NHỚ LẪN MÀU SẮC RÕ RÀNG -->
+                                                    <div class="mt-1 d-flex gap-1 flex-wrap">
+                                                        <span class="badge bg-light text-primary border" style="font-size:0.68rem;">Bản: <strong><?= htmlspecialchars($item['rom'] ?? 'Tiêu chuẩn') ?></strong></span>
+                                                        <span class="badge bg-light text-dark border" style="font-size:0.68rem;"><i class="fa-solid fa-palette text-primary me-1"></i>Màu: <strong><?= htmlspecialchars($item['color'] ?? 'Tiêu chuẩn') ?></strong></span>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </td>
@@ -164,7 +169,7 @@ require_once 'includes/navbar.php';
                                         </td>
                                         <td class="text-primary fw-bold fs-6"><?= number_format($subtotal, 0, ',', '.') ?> đ</td>
                                         <td>
-                                            <a href="cart.php?action=delete&key=<?= urlencode($cKey) ?>" class="text-danger btn btn-sm btn-light rounded-circle" title="Xóa dòng này"><i class="fa-solid fa-trash-can"></i></a>
+                                            <a href="cart.php?action=delete&key=<?= urlencode($cKey) ?>" class="text-danger btn btn-sm btn-light rounded-circle" title="Xóa món này"><i class="fa-solid fa-trash-can"></i></a>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -179,7 +184,6 @@ require_once 'includes/navbar.php';
                 </div>
             </div>
 
-            <!-- Cột tóm tắt đơn hàng -->
             <div class="col-lg-4">
                 <div class="bg-white rounded-4 shadow-sm p-4 border">
                     <h5 class="fw-bold mb-3 border-bottom pb-2">Tóm Tắt Đơn Hàng</h5>
