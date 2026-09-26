@@ -36,6 +36,20 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center small text-light opacity-50">
             <div>&copy; 2026 <strong>V-Phone Store</strong>. All rights reserved.</div>
             <div>Đồ án Chuyên ngành Công Nghệ Thông Tin</div>
+        <div class="d-flex flex-wrap justify-content-between align-items-center small text-light opacity-75 mt-3 pt-3 border-top border-light border-opacity-10">
+            <div class="d-flex align-items-center gap-2 mb-2 mb-md-0">
+                <span class="me-2 text-white small fw-bold">Hỗ trợ thanh toán:</span>
+                <span class="badge bg-white text-dark px-2 py-1 fw-bold"><i class="fa-brands fa-cc-visa text-primary me-1"></i>VISA</span>
+                <span class="badge bg-white text-dark px-2 py-1 fw-bold"><i class="fa-brands fa-cc-mastercard text-danger me-1"></i>MasterCard</span>
+                <span class="badge bg-white text-dark px-2 py-1 fw-bold"><i class="fa-brands fa-apple-pay text-dark me-1"></i>Apple Pay</span>
+                <span class="badge bg-white text-dark px-2 py-1 fw-bold text-danger">MoMo</span>
+                <span class="badge bg-white text-dark px-2 py-1 fw-bold text-primary">VNPAY</span>
+            </div>
+            <div>
+                <i class="fa-solid fa-lock text-success me-1"></i>Bảo mật thanh toán SSL 256-bit
+            </div>
+        </div>
+
         </div>
     </div>
 </footer>

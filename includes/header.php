@@ -44,6 +44,20 @@
         .search-thumb { width: 44px !important; height: 44px !important; object-fit: contain !important; border-radius: 8px !important; margin-right: 12px !important; }
         .search-name { font-size: 13.5px !important; font-weight: 600 !important; color: #0f172a !important; line-height: 1.3 !important; }
         .search-price { font-size: 13px !important; font-weight: 700 !important; color: #e74c3c !important; margin-top: 2px !important; }
-    </style>
+    
+.carousel-control-prev, 
+.carousel-control-next, 
+button[data-bs-slide="prev"], 
+button[data-bs-slide="next"],
+button[class*="carousel-control"] {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+}
+
+</style>
 </head>
 <body>

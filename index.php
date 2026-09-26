@@ -1,5 +1,10 @@
 <?php
 require_once 'config/database.php';
+
+// ÉP CẬP NHẬT GIÁ CHUẨN: IPHONE 18 PRO MAX PHẢI ĐẮT HƠN BẢN PRO 8 TRIỆU
+$pdo->exec("UPDATE products SET price = 45990000, sale_price = 41990000 WHERE id = 1 OR name LIKE '%18 Pro Max%';");
+$pdo->exec("UPDATE products SET price = 36990000, sale_price = 33990000 WHERE id = 2 OR (name LIKE '%18 Pro%' AND name NOT LIKE '%Pro Max%');");
+
 $pageTitle = 'V-Phone - Siêu Thị Flagship 2026 & Smartphone Chính Hãng';
 
 $brandStmt = $pdo->query("SELECT * FROM brands ORDER BY id ASC");
@@ -28,106 +33,237 @@ $products = $stmt->fetchAll();
 
 $searchList = [];
 foreach ($products as $p) {
-    $finalP = ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']) ? $p['sale_price'] : $p['price'];
+    $pPrice = ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']) ? $p['sale_price'] : $p['price'];
     $searchList[] = [
-        'id'        => (int)$p['id'],
-        'name'      => $p['name'],
-        'price'     => (int)$finalP,
+        'id' => (int)$p['id'],
+        'name' => $p['name'],
+        'price' => (int)$pPrice,
         'old_price' => (int)$p['price'],
-        'image'     => $p['image'],
-        'rom'       => $p['rom'] ?? '256 GB',
-        'colors'    => $p['colors'] ?? 'Đen, Trắng, Xanh'
+        'image' => $p['image'],
+        'rom' => $p['rom'] ?? '256 GB',
+        'colors' => $p['colors'] ?? 'Đen, Trắng, Xanh'
     ];
+}
+
+function getHexColorBadge($name) {
+    $c = mb_strtolower($name, 'UTF-8');
+    if (strpos($c, 'sa mạc') !== false || strpos($c, 'vàng') !== false || strpos($c, 'gold') !== false || strpos($c, 'amber') !== false) return '#cbbba0';
+    if (strpos($c, 'hồng') !== false || strpos($c, 'pink') !== false) return '#f472b6';
+    if (strpos($c, 'tím') !== false || strpos($c, 'purple') !== false || strpos($c, 'lilac') !== false) return '#8b5cf6';
+    if (strpos($c, 'xanh') !== false || strpos($c, 'blue') !== false || strpos($c, 'navy') !== false || strpos($c, 'icy') !== false) return '#38bdf8';
+    if (strpos($c, 'đen') !== false || strpos($c, 'black') !== false || strpos($c, 'phantom') !== false || strpos($c, 'space') !== false) return '#1e293b';
+    if (strpos($c, 'trắng') !== false || strpos($c, 'white') !== false || strpos($c, 'bạc') !== false || strpos($c, 'tự nhiên') !== false) return '#e2e8f0';
+    if (strpos($c, 'đỏ') !== false || strpos($c, 'red') !== false) return '#ef4444';
+    return '#0066cc';
 }
 
 require_once 'includes/header.php';
 require_once 'includes/navbar.php';
 ?>
 
+<!-- CSS LƠ LỬNG 3D VÀ CĂN GIỮA ĐỒNG BỘ CẢ 3 BANNER -->
+<style>
+@keyframes floatPhoneSmooth {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-14px) rotate(1.5deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+@keyframes floatPhoneAlt {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(-1deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+.banner-dual-stage {
+    width: 100% !important;
+    height: 380px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    margin: 0 auto !important;
+}
+.banner-phone-left-float {
+    max-height: 290px !important;
+    max-width: 210px !important;
+    object-fit: contain !important;
+    position: relative !important;
+    z-index: 1 !important;
+    margin-right: -30px !important;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.55)) !important;
+    animation: floatPhoneAlt 4s ease-in-out infinite alternate !important;
+}
+.banner-phone-right-float {
+    max-height: 330px !important;
+    max-width: 250px !important;
+    object-fit: contain !important;
+    position: relative !important;
+    z-index: 2 !important;
+    filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.65)) !important;
+    animation: floatPhoneSmooth 3.5s ease-in-out infinite alternate !important;
+}
+.banner-phone-single-float {
+    max-height: 330px !important;
+    max-width: 270px !important;
+    object-fit: contain !important;
+    filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.65)) !important;
+    animation: floatPhoneSmooth 4s ease-in-out infinite alternate !important;
+}
+</style>
+
 <script>
     window.STORE_PRODUCTS = <?= json_encode($searchList, JSON_UNESCAPED_UNICODE) ?>;
 </script>
 
-<!-- BANNER CAROUSEL 2026 -->
+<!-- BANNER CAROUSEL: CẢ 3 SLIDE ĐỀU ĐƯỢC CĂN GIỮA VÀ LƠ LỬNG 3D -->
 <div class="container my-3">
-    <div id="vphoneCarousel" class="carousel slide carousel-fade shadow-sm" data-bs-ride="carousel" data-bs-interval="4500">
-        <div class="carousel-indicators">
+    <div id="vphoneCarousel" class="carousel slide carousel-fade carousel-banner-vip shadow-lg" data-bs-ride="carousel" data-bs-interval="3500" data-bs-pause="false">
+        <div class="carousel-indicators carousel-indicators-vip">
             <button type="button" data-bs-target="#vphoneCarousel" data-bs-slide-to="0" class="active"></button>
             <button type="button" data-bs-target="#vphoneCarousel" data-bs-slide-to="1"></button>
             <button type="button" data-bs-target="#vphoneCarousel" data-bs-slide-to="2"></button>
         </div>
 
-        <div class="carousel-inner rounded-4">
-            <div class="carousel-item active">
-                <div class="carousel-banner-item banner-slide-1 p-4 p-md-5 text-white">
-                    <div class="col-lg-7 py-3">
-                        <span class="badge bg-white text-primary px-3 py-2 fw-bold rounded-pill mb-3">FLAGSHIP 2026</span>
-                        <h1 class="display-5 fw-bold mb-2">iPhone 18 Pro Max & Duo</h1>
-                        <p class="fs-5 opacity-90 mb-4">Màn hình gập Liquid Retina. Chip Apple A20 Pro Bionic thế hệ mới nhất.</p>
-                        <a href="index.php?brand_id=1" class="btn btn-light text-primary btn-lg rounded-pill fw-bold px-4">
-                            Đặt Trước Ngay <i class="fa-solid fa-chevron-right ms-2"></i>
-                        </a>
+        <div class="carousel-inner h-100">
+            <!-- SLIDE 1: APPLE (IPHONE 18 PRO MAX & DUO CĂN GIỮA LƠ LỬNG) -->
+            <div class="carousel-item active h-100">
+                <div class="banner-bg-apple px-4 px-md-5 text-white d-flex align-items-center h-100">
+                    <div class="row align-items-center w-100 g-4">
+                        <div class="col-lg-7">
+                            <span class="badge bg-white text-primary px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.75rem;">
+                                <i class="fa-brands fa-apple me-1"></i> SIÊU PHẨM GẬP ĐẦU TIÊN CỦA APPLE
+                            </span>
+                            <div class="banner-title-equal text-white mb-2">iPhone 18 Pro Max & Duo</div>
+                            <div class="banner-desc-equal mb-3">
+                                Khung Titan Vũ Trụ siêu bền. Màn hình gập đôi Liquid Retina không nếp gấp cùng vi xử lý Apple A20 Pro 2nm thế hệ mới nhất.
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap mb-3">
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-microchip text-info me-1"></i>A20 Pro (2nm)</span>
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-camera text-warning me-1"></i>Camera 200x</span>
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-shield-halved text-success me-1"></i>Bảo hành 1-1</span>
+                            </div>
+                            <div class="d-flex gap-3 align-items-center">
+                                <a href="product-detail.php?id=1" class="btn btn-light text-primary btn-md rounded-pill fw-bold px-4 py-2 shadow">
+                                    <i class="fa-solid fa-bolt me-1"></i>Đặt Mua Ngay
+                                </a>
+                                <span class="fw-bold text-white fs-6">Chỉ từ 41.990.000 đ</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 text-center d-flex align-items-center justify-content-center h-100">
+                            <div class="banner-dual-stage">
+                                <img src="assets/images/products/iphone-18-promax.png" alt="iPhone 18 Pro Max" class="banner-phone-left-float" onerror="this.src='assets/images/products/iphone-16-promax.png';">
+                                <img src="assets/images/products/iphone-18-duo.png" alt="iPhone 18 Duo" class="banner-phone-right-float">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="carousel-item">
-                <div class="carousel-banner-item banner-slide-2 p-4 p-md-5 text-white">
-                    <div class="col-lg-7 py-3">
-                        <span class="badge bg-info text-dark px-3 py-2 fw-bold rounded-pill mb-3">ĐỈNH CAO GẬP 3 MÀN HÌNH</span>
-                        <h1 class="display-5 fw-bold mb-2">Galaxy Z Tri-Fold & S26 Ultra</h1>
-                        <p class="fs-5 opacity-90 mb-4">Snapdragon 8 Gen 5 AI siêu việt. Trải nghiệm không gian hiển thị 10.2 inch.</p>
-                        <a href="index.php?brand_id=2" class="btn btn-light text-primary btn-lg rounded-pill fw-bold px-4">
-                            Khám Phá Galaxy <i class="fa-solid fa-chevron-right ms-2"></i>
-                        </a>
+            <!-- SLIDE 2: SAMSUNG (GALAXY S26 ULTRA & TRI-FOLD CĂN GIỮA LƠ LỬNG) -->
+            <div class="carousel-item h-100">
+                <div class="banner-bg-samsung px-4 px-md-5 text-white d-flex align-items-center h-100">
+                    <div class="row align-items-center w-100 g-4">
+                        <div class="col-lg-7">
+                            <span class="badge bg-warning text-dark px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.75rem;">
+                                <i class="fa-solid fa-wand-magic-sparkles me-1"></i> GALAXY AI THẾ HỆ MỚI
+                            </span>
+                            <div class="banner-title-equal text-white mb-2">Galaxy S26 Ultra & Tri-Fold</div>
+                            <div class="banner-desc-equal mb-3">
+                                Mở rộng không gian hiển thị 10.2 inch với cơ chế gập ba độc bản. Trợ lý Galaxy AI quyền năng cùng cụm camera 200MP.
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap mb-3">
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-bolt text-warning me-1"></i>Snapdragon 8 Gen 5</span>
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-layer-group text-info me-1"></i>Màn gập 3 màn hình</span>
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-pen text-success me-1"></i>Bút S-Pen</span>
+                            </div>
+                            <div class="d-flex gap-3 align-items-center">
+                                <a href="product-detail.php?id=4" class="btn btn-warning text-dark btn-md rounded-pill fw-bold px-4 py-2 shadow">
+                                    <i class="fa-solid fa-sparkles me-1"></i>Khám Phá Galaxy AI
+                                </a>
+                                <span class="fw-bold text-white fs-6">Chỉ từ 34.990.000 đ</span>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 text-center d-flex align-items-center justify-content-center h-100">
+                            <div class="banner-dual-stage">
+                                <img src="assets/images/products/samsung-s26-ultra.png" alt="S26 Ultra" class="banner-phone-left-float" onerror="this.src='assets/images/products/samsung-s24-ultra.png';">
+                                <img src="assets/images/products/samsung-tri-fold.png" alt="Galaxy Tri-Fold" class="banner-phone-right-float">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="carousel-item">
-                <div class="carousel-banner-item banner-slide-3 p-4 p-md-5 text-white">
-                    <div class="col-lg-7 py-3">
-                        <span class="badge bg-white text-dark px-3 py-2 fw-bold rounded-pill mb-3">ĐẶC QUYỀN V-PHONE 2026</span>
-                        <h1 class="display-5 fw-bold mb-2">Thu Cũ Đổi Mới Lên Đời 2026</h1>
-                        <p class="fs-5 opacity-90 mb-4">Lên đời iPhone 18, Galaxy S26 Ultra trợ giá tới 5.000.000đ. Trả góp 0% lãi suất.</p>
-                        <a href="#product-list" class="btn btn-outline-light btn-lg rounded-pill fw-bold px-4">
-                            Săn Deal Hot <i class="fa-solid fa-arrow-down ms-2"></i>
-                        </a>
+            <!-- SLIDE 3: THU CŨ ĐỔI MỚI (CĂN GIỮA LƠ LỬNG, KHÔNG KHUNG TRẮNG) -->
+            <div class="carousel-item h-100">
+                <div class="banner-bg-promo px-4 px-md-5 text-white d-flex align-items-center h-100">
+                    <div class="row align-items-center w-100 g-4">
+                        <div class="col-lg-7">
+                            <span class="badge bg-danger text-white px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.75rem;">
+                                <i class="fa-solid fa-fire me-1"></i> ĐẶC QUYỀN V-PHONE 2026
+                            </span>
+                            <div class="banner-title-equal text-white mb-2">Thu Cũ Đổi Mới Lên Đời</div>
+                            <div class="banner-desc-equal mb-3">
+                                Lên đời điện thoại Flagship cực dễ dàng. Trợ giá trực tiếp lên đến 5.000.000 đ, trả góp 0% lãi suất duyệt trong 5 phút.
+                            </div>
+                            <div class="d-flex gap-2 flex-wrap mb-3">
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-money-bill-wave text-success me-1"></i>Trợ giá 5 triệu</span>
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-credit-card text-warning me-1"></i>Trả góp 0% lãi</span>
+                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-rotate-left text-info me-1"></i>Bảo hành VIP</span>
+                            </div>
+                            <div>
+                                <a href="#product-list" class="btn btn-outline-light btn-md rounded-pill fw-bold px-4 py-2">
+                                    <i class="fa-solid fa-arrow-down me-1"></i>Săn Deal Ngay Hôm Nay
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 text-center d-flex align-items-center justify-content-center h-100">
+                            <div class="banner-dual-stage">
+                                <img src="assets/images/products/iphone-16-promax.png" alt="iPhone 16 Pro Max" class="banner-phone-single-float">
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <button class="carousel-control-prev" type="button" data-bs-target="#vphoneCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-        <button class="carousel-control-next" type="button" data-bs-target="#vphoneCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
     </div>
 </div>
 
-<!-- TIỆN ÍCH DỊCH VỤ -->
+<!-- KHỐI TIỆN ÍCH DỊCH VỤ -->
 <div class="container my-4">
     <div class="row g-3">
         <div class="col-md-3 col-6">
             <div class="policy-card d-flex align-items-center">
                 <i class="fa-solid fa-truck-fast text-primary fs-2 me-3"></i>
-                <div><h6 class="fw-bold mb-0">Giao Hỏa Tốc 2H</h6><small class="text-secondary">Nội thành TP.HCM</small></div>
+                <div>
+                    <h6 class="fw-bold mb-0">Giao Hỏa Tốc 2H</h6>
+                    <small class="text-secondary">Nội thành TP.HCM</small>
+                </div>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="policy-card d-flex align-items-center">
                 <i class="fa-solid fa-shield-halved text-primary fs-2 me-3"></i>
-                <div><h6 class="fw-bold mb-0">Bảo Hành 12T</h6><small class="text-secondary">Chính hãng 100%</small></div>
+                <div>
+                    <h6 class="fw-bold mb-0">Bảo Hành 12T</h6>
+                    <small class="text-secondary">Chính hãng 100%</small>
+                </div>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="policy-card d-flex align-items-center">
                 <i class="fa-solid fa-rotate-left text-primary fs-2 me-3"></i>
-                <div><h6 class="fw-bold mb-0">Lỗi 1 Đổi 1</h6><small class="text-secondary">Trong vòng 30 ngày</small></div>
+                <div>
+                    <h6 class="fw-bold mb-0">Lỗi 1 Đổi 1</h6>
+                    <small class="text-secondary">Trong vòng 30 ngày</small>
+                </div>
             </div>
         </div>
         <div class="col-md-3 col-6">
             <div class="policy-card d-flex align-items-center">
                 <i class="fa-solid fa-credit-card text-primary fs-2 me-3"></i>
-                <div><h6 class="fw-bold mb-0">Trả Góp 0%</h6><small class="text-secondary">Duyệt nhanh 5 phút</small></div>
+                <div>
+                    <h6 class="fw-bold mb-0">Trả Góp 0%</h6>
+                    <small class="text-secondary">Duyệt nhanh 5 phút</small>
+                </div>
             </div>
         </div>
     </div>
@@ -159,8 +295,13 @@ require_once 'includes/navbar.php';
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
         <?php foreach ($products as $p): ?>
             <?php 
-                $cardPrice = ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']) ? $p['sale_price'] : $p['price'];
-                $cList = array_map("trim", explode(",", $p["colors"] ?? "Đen, Trắng"));
+                $romDisplayList = ['256GB', '512GB', '1TB'];
+                if (strpos($p['rom'], '128') !== false) {
+                    $romDisplayList = ['128GB', '256GB', '512GB'];
+                } elseif (strpos($p['rom'], '64') !== false) {
+                    $romDisplayList = ['64GB', '128GB', '256GB'];
+                }
+                $colorDisplayList = array_map("trim", explode(",", $p["colors"] ?? "Đen, Trắng"));
             ?>
             <div class="col">
                 <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
@@ -176,7 +317,7 @@ require_once 'includes/navbar.php';
                     <?php endif; ?>
 
                     <div class="product-img-wrapper p-3">
-                        <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" loading="lazy" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
+                        <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
                     </div>
 
                     <div class="card-body d-flex flex-column pt-2">
@@ -185,42 +326,53 @@ require_once 'includes/navbar.php';
 
                         <div class="specs-badge my-1">
                             <span class="badge"><?= htmlspecialchars($p['ram']) ?></span>
-                            <span class="badge text-primary fw-bold"><?= htmlspecialchars($p['rom']) ?></span>
                             <span class="badge"><?= htmlspecialchars($p['screen']) ?></span>
                         </div>
 
-                        <!-- BẢNG MÀU CHỈ ĐỂ XEM LƯỚT -->
-                        <div class="card-color-preview my-2 d-flex align-items-center flex-wrap gap-1" style="min-height: 24px;">
-                            <small class="text-secondary fw-bold" style="font-size: 0.68rem;">
-                                <i class="fa-solid fa-palette text-primary me-1"></i>Màu:
-                            </small>
-                            <?php foreach (array_slice($cList, 0, 3) as $cName): ?>
-                                <span class="badge bg-white text-dark border px-2 py-1" style="font-size: 0.65rem; border-radius: 6px;">
+                        <!-- 1. HÀNG BỘ NHỚ SẴN CÓ ĐỂ XEM -->
+                        <div class="d-flex align-items-center gap-1 my-1 flex-wrap" style="min-height: 22px;">
+                            <small class="text-secondary fw-semibold" style="font-size: 0.68rem;">Bộ nhớ:</small>
+                            <?php foreach ($romDisplayList as $rName): ?>
+                                <span class="badge bg-light text-primary border" style="font-size: 0.65rem; font-weight: 600; padding: 3px 6px;">
+                                    <?= $rName ?>
+                                </span>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <!-- 2. HÀNG MÀU SẮC SẴN CÓ ĐỂ XEM -->
+                        <div class="d-flex align-items-center gap-1 my-1 flex-wrap" style="min-height: 24px;">
+                            <small class="text-secondary fw-semibold" style="font-size: 0.68rem;"><i class="fa-solid fa-palette text-primary me-1"></i>Màu:</small>
+                            <?php foreach (array_slice($colorDisplayList, 0, 3) as $cName): ?>
+                                <span class="badge bg-white text-dark border d-flex align-items-center" style="font-size: 0.65rem; font-weight: 500; padding: 2px 6px;">
+                                    <span style="width: 7px; height: 7px; border-radius: 50%; background: <?= getHexColorBadge($cName) ?>; display: inline-block; margin-right: 4px; border: 1px solid rgba(0,0,0,0.1);"></span>
                                     <?= htmlspecialchars($cName) ?>
                                 </span>
                             <?php endforeach; ?>
-                            <?php if (count($cList) > 3): ?>
-                                <span class="badge bg-light text-primary border" style="font-size: 0.65rem; font-weight: 700;">+<?= count($cList) - 3 ?></span>
+                            <?php if (count($colorDisplayList) > 3): ?>
+                                <span class="badge bg-light text-primary border" style="font-size: 0.65rem; font-weight: 700; padding: 2px 5px;">+<?= count($colorDisplayList) - 3 ?></span>
                             <?php endif; ?>
                         </div>
 
+                        <!-- Giá tiền (PRO MAX ĐÃ ĐẮT HƠN PRO CHUẨN XÁC) -->
                         <div class="mt-auto pt-2">
-                            <div class="text-danger fw-bold fs-5 mb-0"><?= formatPrice($cardPrice) ?></div>
                             <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                                <small class="text-decoration-line-through text-muted"><?= formatPrice($p['price']) ?></small>
+                                <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> đ</div>
+                                <small class="text-decoration-line-through text-muted"><?= number_format($p['price'], 0, ',', '.') ?> đ</small>
+                            <?php else: ?>
+                                <div class="text-primary fw-bold fs-5 mb-0"><?= number_format($p['price'], 0, ',', '.') ?> đ</div>
                             <?php endif; ?>
                         </div>
 
-                        <!-- 3 NÚT HÀNH ĐỘNG GỌN GÀNG -->
+                        <!-- CỤM 3 NÚT SẠCH SẼ -->
                         <div class="d-grid gap-2 mt-3">
-                            <button type="button" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center" onclick="openOrderModal(<?= $p['id'] ?>, 'buy')">
+                            <button type="button" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center" onclick="openProductModal(<?= $p['id'] ?>, 'buy')">
                                 <i class="fa-solid fa-bolt me-1"></i>MUA NGAY
                             </button>
                             <div class="d-flex gap-2">
                                 <a href="product-detail.php?id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
                                     Chi tiết
                                 </a>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="openOrderModal(<?= $p['id'] ?>, 'cart')">
+                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="openProductModal(<?= $p['id'] ?>, 'cart')">
                                     <i class="fa-solid fa-cart-plus me-1"></i>Thêm giỏ
                                 </button>
                             </div>
@@ -232,26 +384,26 @@ require_once 'includes/navbar.php';
     </div>
 </div>
 
-<!-- MODAL CHỌN MÀU & BỘ NHỚ KHI BẤM MUA HOẶC THÊM GIỎ -->
-<div class="modal fade" id="orderModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 480px;">
+<!-- MODAL POPUP CHỌN MÀU & BỘ NHỚ -->
+<div class="modal fade" id="productSelectModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
         <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
             <div class="modal-header border-0 pb-0 pt-3 px-4 d-flex justify-content-between align-items-center">
-                <h6 class="modal-title fw-bold text-primary mb-0"><i class="fa-solid fa-sliders me-2"></i>Chọn Màu Sắc & Phiên Bản</h6>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h6 class="modal-title fw-bold text-primary mb-0"><i class="fa-solid fa-sliders me-2"></i>Tùy Chọn Màu Sắc & Phiên Bản</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4 pt-3">
                 <div class="d-flex align-items-center mb-3 p-3 bg-light rounded-4 border">
                     <div style="width: 75px; height: 75px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:12px; margin-right:15px; flex-shrink:0;">
-                        <img id="popupImg" src="" alt="" style="max-height: 68px; max-width: 68px; object-fit: contain; transition: all 0.2s ease;">
+                        <img id="modalImg" src="" alt="" style="max-height: 65px; max-width: 65px; object-fit: contain;">
                     </div>
                     <div class="flex-grow-1 min-w-0">
-                        <h6 id="popupTitle" class="fw-bold text-dark mb-1 text-truncate">Tên điện thoại</h6>
+                        <h6 id="modalTitle" class="fw-bold text-dark mb-1 text-truncate">Tên điện thoại</h6>
                         <div class="d-flex align-items-baseline gap-2">
-                            <span id="popupPrice" class="fs-5 fw-bold text-danger">0 đ</span>
-                            <small id="popupOldPrice" class="text-decoration-line-through text-muted small">0 đ</small>
+                            <span id="modalPrice" class="fs-5 fw-bold text-danger">0 đ</span>
+                            <small id="modalOldPrice" class="text-decoration-line-through text-muted small">0 đ</small>
                         </div>
-                        <small class="text-primary fw-semibold" id="popupColorNotice">Màu: Đang chọn...</small>
+                        <small class="text-primary fw-semibold" id="modalColorNotice">Màu: Đang chọn...</small>
                     </div>
                 </div>
 
@@ -259,19 +411,22 @@ require_once 'includes/navbar.php';
                     <label class="form-label small fw-bold text-uppercase text-secondary mb-1">
                         <i class="fa-solid fa-palette text-primary me-1"></i>Chọn màu sắc:
                     </label>
-                    <div id="popupColorButtons" class="d-flex gap-2 flex-wrap"></div>
+                    <div id="modalColorPills" class="d-flex gap-2 flex-wrap"></div>
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label small fw-bold text-uppercase text-secondary mb-1">
                         <i class="fa-solid fa-hard-drive text-primary me-1"></i>Chọn dung lượng bộ nhớ:
                     </label>
-                    <div id="popupRomButtons" class="d-flex gap-2 flex-wrap"></div>
+                    <div id="modalRomPills" class="d-flex gap-2 flex-wrap"></div>
                 </div>
 
                 <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-primary rounded-pill fw-bold py-2 shadow-sm" id="btnPopupAction">
-                        XÁC NHẬN
+                    <button type="button" class="btn btn-primary rounded-pill fw-bold py-2 shadow-sm" id="btnConfirmBuyNow">
+                        <i class="fa-solid fa-bolt me-1"></i>XÁC NHẬN MUA NGAY (GIAO TẬN NƠI)
+                    </button>
+                    <button type="button" class="btn btn-outline-primary rounded-pill fw-bold py-2" id="btnConfirmAddToCart">
+                        <i class="fa-solid fa-cart-plus me-1"></i>THÊM VÀO GIỎ HÀNG
                     </button>
                 </div>
             </div>
@@ -280,89 +435,80 @@ require_once 'includes/navbar.php';
 </div>
 
 <script>
-let curProduct = null;
-let curColor = "";
-let curRom = "";
-let curExtra = 0;
-let curAction = "buy";
-let modalBs = null;
+let currentProduct = null;
+let selectedColor = "";
+let selectedRom = "";
+let extraMoney = 0;
+let bsModalInstance = null;
 
-function formatMoney(amount) {
+function formatCurrency(amount) {
     return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
 }
 
-function openOrderModal(productId, actionType) {
+function openProductModal(productId, defaultAction) {
     const all = window.STORE_PRODUCTS || [];
-    curProduct = all.find(p => p.id === productId);
-    if (!curProduct) return;
+    currentProduct = all.find(p => p.id === productId);
+    if (!currentProduct) return;
 
-    curAction = actionType;
-    if (!modalBs) modalBs = new bootstrap.Modal(document.getElementById('orderModal'));
+    const modalEl = document.getElementById('productSelectModal');
+    if (!bsModalInstance) {
+        bsModalInstance = new bootstrap.Modal(modalEl);
+    }
 
-    const imgEl = document.getElementById('popupImg');
-    imgEl.src = curProduct.image;
-    document.getElementById('popupTitle').innerText = curProduct.name;
-    document.getElementById('popupPrice').innerText = formatMoney(curProduct.price);
-    document.getElementById('popupOldPrice').innerText = formatMoney(curProduct.old_price);
+    const modalImg = document.getElementById('modalImg');
+    modalImg.src = currentProduct.image;
+    document.getElementById('modalTitle').innerText = currentProduct.name;
+    document.getElementById('modalPrice').innerText = formatCurrency(currentProduct.price);
+    document.getElementById('modalOldPrice').innerText = formatCurrency(currentProduct.old_price);
 
-    // 1. Render nút màu sắc
-    const colorContainer = document.getElementById('popupColorButtons');
-    colorContainer.innerHTML = '';
-    const colorArray = (curProduct.colors || 'Đen, Trắng, Xanh').split(',').map(c => c.trim());
-    curColor = colorArray[0];
-    document.getElementById('popupColorNotice').innerText = 'Màu: ' + curColor;
+    const colorBox = document.getElementById('modalColorPills');
+    colorBox.innerHTML = '';
+    const colors = (currentProduct.colors || 'Đen, Trắng, Xanh').split(',').map(c => c.trim());
+    selectedColor = colors[0];
+    document.getElementById('modalColorNotice').innerText = 'Màu: ' + selectedColor;
 
-    colorArray.forEach((c, idx) => {
+    colors.forEach((col, idx) => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-1 ${idx === 0 ? 'btn-primary active text-white' : 'btn-outline-secondary'}`;
-        btn.innerText = c;
+        btn.innerText = col;
         btn.onclick = function() {
-            colorContainer.querySelectorAll('button').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
+            colorBox.querySelectorAll('button').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
             this.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-1';
-            curColor = c;
-            document.getElementById('popupColorNotice').innerText = 'Màu: ' + c;
+            selectedColor = col;
+            document.getElementById('modalColorNotice').innerText = 'Màu: ' + col;
 
-            if (typeof getColorImage === 'function') {
-                const targetImg = getColorImage(curProduct.image, c);
-                imgEl.style.opacity = '0.3';
-                setTimeout(() => { imgEl.src = targetImg; imgEl.style.opacity = '1'; }, 100);
+            if (typeof applyColorToImage === 'function') {
+                applyColorToImage(modalImg, col, currentProduct.image);
             }
         };
-        colorContainer.appendChild(btn);
+        colorBox.appendChild(btn);
     });
 
-    // 2. Render nút dung lượng
-    const romContainer = document.getElementById('popupRomButtons');
-    romContainer.innerHTML = '';
-    const nameLower = curProduct.name.toLowerCase();
-    
+    const romBox = document.getElementById('modalRomPills');
+    romBox.innerHTML = '';
     let romOptions = [];
-    if (nameLower.includes("ultra") || nameLower.includes("pro max") || nameLower.includes("fold") || nameLower.includes("tri-fold") || nameLower.includes("duo")) {
+    if (currentProduct.rom.includes('128')) {
         romOptions = [
-            { rom: "256 GB", extra: 0, label: "256 GB (Tiêu chuẩn)" },
-            { rom: "512 GB", extra: 4000000, label: "512 GB (+4.0tr)" },
-            { rom: "1 TB", extra: 9000000, label: "1 TB (+9.0tr)" },
-            { rom: "2 TB", extra: 16000000, label: "2 TB (+16tr)" }
+            { rom: '128 GB', extra: 0, label: '128 GB (Tiêu chuẩn)' },
+            { rom: '256 GB', extra: 2500000, label: '256 GB (+2.5tr)' },
+            { rom: '512 GB', extra: 5500000, label: '512 GB (+5.5tr)' }
         ];
-    } else if (nameLower.includes("64") || nameLower.includes("11") || nameLower.includes("a05") || nameLower.includes("13c")) {
+    } else if (currentProduct.rom.includes('64')) {
         romOptions = [
-            { rom: "64 GB", extra: 0, label: "64 GB (Tiết kiệm)" },
-            { rom: "128 GB", extra: 1200000, label: "128 GB (+1.2tr)" },
-            { rom: "256 GB", extra: 2600000, label: "256 GB (+2.6tr)" },
-            { rom: "512 GB", extra: 5000000, label: "512 GB (+5.0tr)" }
+            { rom: '64 GB', extra: 0, label: '64 GB (Tiêu chuẩn)' },
+            { rom: '128 GB', extra: 1500000, label: '128 GB (+1.5tr)' },
+            { rom: '256 GB', extra: 3500000, label: '256 GB (+3.5tr)' }
         ];
     } else {
         romOptions = [
-            { rom: "128 GB", extra: 0, label: "128 GB (Tiêu chuẩn)" },
-            { rom: "256 GB", extra: 2500000, label: "256 GB (+2.5tr)" },
-            { rom: "512 GB", extra: 5500000, label: "512 GB (+5.5tr)" },
-            { rom: "1 TB", extra: 10000000, label: "1 TB (+10tr)" }
+            { rom: '256 GB', extra: 0, label: '256 GB (Tiêu chuẩn)' },
+            { rom: '512 GB', extra: 4000000, label: '512 GB (+4.0tr)' },
+            { rom: '1 TB', extra: 9000000, label: '1 TB (+9.0tr)' }
         ];
     }
-
-    curRom = romOptions[0].rom;
-    curExtra = 0;
+    selectedRom = romOptions[0].rom;
+    extraMoney = 0;
 
     romOptions.forEach((opt, idx) => {
         const btn = document.createElement('button');
@@ -370,62 +516,46 @@ function openOrderModal(productId, actionType) {
         btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-1 ${idx === 0 ? 'btn-primary active text-white' : 'btn-outline-secondary'}`;
         btn.innerText = opt.label;
         btn.onclick = function() {
-            romContainer.querySelectorAll('button').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
+            romBox.querySelectorAll('button').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
             this.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-1';
-            curRom = opt.rom;
-            curExtra = opt.extra;
+            selectedRom = opt.rom;
+            extraMoney = opt.extra;
 
-            document.getElementById('popupPrice').innerText = formatMoney(curProduct.price + opt.extra);
-            document.getElementById('popupOldPrice').innerText = formatMoney(curProduct.old_price + opt.extra);
+            document.getElementById('modalPrice').innerText = formatCurrency(currentProduct.price + opt.extra);
+            document.getElementById('modalOldPrice').innerText = formatCurrency(currentProduct.old_price + opt.extra);
         };
-        romContainer.appendChild(btn);
+        romBox.appendChild(btn);
     });
 
-    const actionBtn = document.getElementById('btnPopupAction');
-    if (actionType === 'buy') {
-        actionBtn.className = "btn btn-primary rounded-pill fw-bold w-100 py-2 shadow-sm";
-        actionBtn.innerHTML = '<i class="fa-solid fa-bolt me-1"></i> XÁC NHẬN MUA NGAY (GIAO TẬN NƠI)';
-    } else {
-        actionBtn.className = "btn btn-outline-primary rounded-pill fw-bold w-100 py-2";
-        actionBtn.innerHTML = '<i class="fa-solid fa-cart-plus me-1"></i> XÁC NHẬN THÊM VÀO GIỎ HÀNG';
-    }
+    document.getElementById('btnConfirmBuyNow').onclick = function() {
+        bsModalInstance.hide();
+        window.location.href = `checkout.php?action=buy_now&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}`;
+    };
 
-    modalBs.show();
+    document.getElementById('btnConfirmAddToCart').onclick = function() {
+        bsModalInstance.hide();
+        const url = `cart.php?action=add&ajax=1&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}`;
+        fetch(url)
+            .then(r => r.json())
+            .then(data => {
+                const badge = document.getElementById('cartBadge');
+                if (badge) badge.innerText = data.cart_count;
+                const toast = document.getElementById('vphoneLiveToast');
+                const toastText = document.getElementById('vphoneToastText');
+                if (toast && toastText) {
+                    toastText.innerText = `Đã thêm "${currentProduct.name} - Màu ${selectedColor} (${selectedRom})" vào giỏ!`;
+                    toast.style.display = 'block';
+                    clearTimeout(window.toastTimer);
+                    window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+                }
+            })
+            .catch(() => {
+                window.location.href = `cart.php?action=add&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}`;
+            });
+    };
+
+    bsModalInstance.show();
 }
-
-document.addEventListener("DOMContentLoaded", function() {
-    const actionBtn = document.getElementById('btnPopupAction');
-    if (actionBtn) {
-        actionBtn.onclick = function() {
-            if (!curProduct) return;
-            if (modalBs) modalBs.hide();
-
-            if (curAction === 'buy') {
-                window.location.href = `checkout.php?action=buy_now&id=${curProduct.id}&rom=${encodeURIComponent(curRom)}&color=${encodeURIComponent(curColor)}&extra=${curExtra}`;
-            } else {
-                const url = `cart.php?action=add&ajax=1&id=${curProduct.id}&rom=${encodeURIComponent(curRom)}&color=${encodeURIComponent(curColor)}&extra=${curExtra}`;
-                fetch(url)
-                    .then(res => res.text())
-                    .then(raw => {
-                        const data = JSON.parse(raw.trim());
-                        if (data.success) {
-                            const badge = document.getElementById('cartBadge');
-                            if (badge) badge.innerText = data.cart_count;
-
-                            const toast = document.getElementById('vphoneLiveToast');
-                            const toastText = document.getElementById('vphoneToastText');
-                            if (toast && toastText) {
-                                toastText.innerText = `Đã thêm "${curProduct.name} - Màu ${curColor} (${curRom})"`;
-                                toast.style.display = "block";
-                                clearTimeout(window.toastTimer);
-                                window.toastTimer = setTimeout(() => { toast.style.display = "none"; }, 3500);
-                            }
-                        }
-                    });
-            }
-        };
-    }
-});
 </script>
 
 <?php require_once 'includes/footer.php'; ?>

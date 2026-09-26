@@ -185,6 +185,26 @@ require_once 'includes/navbar.php';
 </div>
 
 <script>
+function getColorExtraJs(name) {
+    const c = name.toLowerCase();
+    if (c.includes("sa mạc") || c.includes("burgundy") || c.includes("hoàng kim") || c.includes("trời đêm")) return 500000;
+    if (c.includes("hồng") || c.includes("glacier") || c.includes("mòng két") || c.includes("lưu ly")) return 300000;
+    return 0;
+}
+
+let currentColorExtra = 0;
+let currentStorageExtra = 0;
+
+function recalculateDetailPrice() {
+    const totalAdd = currentColorExtra + currentStorageExtra;
+    const finalP = basePrice + totalAdd;
+    const finalOldP = baseOldPrice + totalAdd;
+
+    document.getElementById('displayPrice').innerText = formatCurrency(finalP);
+    document.getElementById('displayOldPrice').innerText = formatCurrency(finalOldP);
+    const savingTag = document.getElementById('displaySavingTag');
+    if (savingTag) savingTag.innerText = 'Tiết kiệm ' + formatCurrency(finalOldP - finalP);
+}
 const basePrice = <?= (int)$basePrice ?>;
 const baseOldPrice = <?= (int)$baseOldPrice ?>;
 const prodName = "<?= htmlspecialchars(addslashes($product['name'])) ?>";
@@ -204,7 +224,9 @@ function selectDetailColor(btn, colorName) {
     btn.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-2 detail-color-btn d-flex align-items-center';
 
     currentSelectedColor = colorName;
-    document.getElementById('chosenColorText').innerText = colorName;
+    currentColorExtra = getColorExtraJs(colorName);
+    document.getElementById('chosenColorText').innerText = colorName + (currentColorExtra > 0 ? " (+" + formatCurrency(currentColorExtra) + ")" : "");
+    recalculateDetailPrice();
 
     // Đổi ảnh máy to bên trái
     const mainImg = document.getElementById('detailMainImg');
@@ -263,14 +285,9 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             this.className = "btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-2 storage-btn";
 
-            currentExtraMoney = opt.extra;
+            currentStorageExtra = opt.extra;
             currentSelectedRom = opt.rom;
-
-            // Nhảy tiền ngay lập tức
-            const newPrice = basePrice + opt.extra;
-            const newOldPrice = baseOldPrice + opt.extra;
-            document.getElementById('displayPrice').innerText = formatCurrency(newPrice);
-            document.getElementById('displayOldPrice').innerText = formatCurrency(newOldPrice);
+            recalculateDetailPrice();
             
             const savingTag = document.getElementById('displaySavingTag');
             if (savingTag) savingTag.innerText = 'Tiết kiệm ' + formatCurrency(newOldPrice - newPrice);
@@ -285,14 +302,14 @@ document.addEventListener("DOMContentLoaded", function () {
 // 3. NÚT THÊM GIỎ HÀNG: LƯU ĐÚNG MÀU ĐÃ CHỌN VÀ BỘ NHỚ
 function addToCartFromDetailPage(btn, productId) {
     const fullNameWithVariant = `${prodName} - Màu ${currentSelectedColor} (${currentSelectedRom})`;
-    const url = `cart.php?action=add&ajax=1&id=${productId}&color=${encodeURIComponent(currentSelectedColor)}&rom=${encodeURIComponent(currentSelectedRom)}&extra=${currentExtraMoney}`;
+    const url = `cart.php?action=add&ajax=1&id=${productId}&color=${encodeURIComponent(currentSelectedColor)}&rom=${encodeURIComponent(currentSelectedRom)}&extra=${currentColorExtra + currentStorageExtra}`;
     
     addToCartDirect(btn, productId, fullNameWithVariant, currentSelectedColor);
 }
 
 // 4. NÚT MUA NGAY: ĐƯA ĐÚNG MÀU ĐÃ CHỌN VÀO THẲNG THANH TOÁN
 function buyNowFromDetail(productId) {
-    window.location.href = `checkout.php?action=buy_now&id=${productId}&color=${encodeURIComponent(currentSelectedColor)}&rom=${encodeURIComponent(currentSelectedRom)}&extra=${currentExtraMoney}`;
+    window.location.href = `checkout.php?action=buy_now&id=${productId}&color=${encodeURIComponent(currentSelectedColor)}&rom=${encodeURIComponent(currentSelectedRom)}&extra=${currentColorExtra + currentStorageExtra}`;
 }
 </script>
 

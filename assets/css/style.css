@@ -169,3 +169,421 @@ body > * {
 .footer-vphone { background-color: #072a48; color: #e2e8f0; }
 
 .card-color-palette { overflow: hidden; white-space: nowrap; }
+
+
+/* BANNER 2 CỘT SỐNG ĐỘNG */
+.carousel-banner-item {
+    min-height: 420px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 12px 35px rgba(0, 76, 153, 0.15);
+}
+.banner-vibrant-1 { background: linear-gradient(135deg, #051626 0%, #0056b3 50%, #0ea5e9 100%); }
+.banner-vibrant-2 { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #2563eb 100%); }
+.banner-vibrant-3 { background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #0284c7 100%); }
+
+/* HIỆU ỨNG ĐIỆN THOẠI BAY BỒNG BỀNH 3D */
+@keyframes floatPhoneAnim {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(1.5deg); }
+}
+.floating-phone-showcase {
+    animation: floatPhoneAnim 4.5s ease-in-out infinite;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.45));
+}
+
+/* KHỐI TIỆN ÍCH CÓ VÒNG TRÒN PHÁT SÁNG */
+.policy-card-vibrant {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 18px 20px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.25s ease;
+}
+.policy-card-vibrant:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 102, 204, 0.12);
+    border-color: #93c5fd;
+}
+.policy-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: #e8f3ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 14px;
+    flex-shrink: 0;
+}
+
+
+/* TÁCH NỀN TRẮNG CHO ẢNH TRONG BANNER */
+.floating-phone-showcase {
+    mix-blend-mode: normal !important;
+    animation: floatPhoneAnim 4.5s ease-in-out infinite;
+    
+}
+
+
+/* BANNER ĐỒNG BỘ HIỆN ĐẠI */
+.carousel-banner-item {
+    min-height: 400px !important;
+    border-radius: 24px !important;
+    position: relative;
+    overflow: hidden;
+}
+.banner-slide-ip18 {
+    background: linear-gradient(135deg, #071e33 0%, #0056b3 55%, #0284c7 100%) !important;
+}
+.banner-slide-trifold {
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4338ca 100%) !important;
+}
+.banner-slide-duo {
+    background: linear-gradient(135deg, #09090b 0%, #1c1917 50%, #78350f 100%) !important;
+}
+
+.floating-phone-showcase {
+    max-height: 310px !important;
+    width: auto !important;
+    object-fit: contain !important;
+    mix-blend-mode: normal !important;
+    filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.45)) !important;
+    animation: floatPhoneAnim 4.5s ease-in-out infinite;
+}
+
+.banner-glass-badge {
+    background: rgba(255, 255, 255, 0.16) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+    backdrop-filter: blur(10px) !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    padding: 7px 15px !important;
+    border-radius: 50px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+
+/* NÚT ĐIỀU HƯỚNG CAROUSEL TRÒN KÍNH MỜ SANG TRỌNG */
+
+
+
+
+
+/* KHUNG BANNER CHUẨN SHOWROOM */
+#vphoneCarousel {
+    position: relative !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    box-shadow: 0 10px 30px rgba(0, 76, 153, 0.15) !important;
+}
+
+.carousel-banner-item {
+    min-height: 410px !important;
+    border-radius: 24px !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.banner-theme-1 { background: linear-gradient(135deg, #071e33 0%, #0056b3 55%, #0284c7 100%) !important; }
+.banner-theme-2 { background: linear-gradient(135deg, #091a2e 0%, #1e3a8a 55%, #2563eb 100%) !important; }
+.banner-theme-3 { background: linear-gradient(135deg, #081d30 0%, #004d99 50%, #0284c7 100%) !important; }
+
+/* BỆ TRƯNG BÀY SHOWROOM BO TRÒN SANG TRỌNG CHO ĐIỆN THOẠI */
+
+
+/* DUY NHẤT 1 CẶP NÚT ĐIỀU HƯỚNG TRÒN NẰM GỌN TRONG MÉP BANNER */
+
+.carousel-btn-prev { left: 16px !important; }
+.carousel-btn-next { right: 16px !important; }
+
+
+/* ẢNH ĐIỆN THOẠI TRẦN TRÊN BANNER (KHÔNG KHUNG, TỰ NHIÊN) */
+.banner-clean-phone {
+    max-height: 310px !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    background: transparent !important;
+    border: none !important;
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4)) !important;
+}
+
+/* ĐÚNG 1 CẶP NÚT CHUYỂN SLIDE GỌN GÀNG */
+
+
+
+/* ẨN TOÀN BỘ ICON MẶC ĐỊNH GÂY LỖI CỦA BOOTSTRAP */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    display: none !important;
+}
+
+/* KHUNG BANNER CHÍNH XÁC */
+#vphoneCarousel {
+    position: relative !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+}
+
+/* ĐÚNG 1 CẶP NÚT TRÒN DUY NHẤT CĂN CHÍNH GIỮA CHIỀU CAO BANNER */
+.vphone-arrow-btn {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    z-index: 30 !important;
+    cursor: pointer !important;
+    transition: all 0.25s ease !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+    border-style: solid !important;
+}
+
+.vphone-arrow-btn:hover {
+    background: rgba(255, 255, 255, 0.5) !important;
+    transform: translateY(-50%) scale(1.1) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
+}
+
+.vphone-arrow-prev { left: 16px !important; right: auto !important; }
+.vphone-arrow-next { right: 16px !important; left: auto !important; }
+
+/* ẢNH ĐIỆN THOẠI TRẦN KHÔNG KHUNG */
+.banner-clean-phone {
+    max-height: 310px !important;
+    max-width: 100% !important;
+    object-fit: contain !important;
+    background: transparent !important;
+    border: none !important;
+    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4)) !important;
+}
+
+/* ========================================================================= */
+/* BANNER CAROUSEL VIP 3D HIỆU ỨNG APPLE & SAMSUNG UNPACKED                  */
+/* ========================================================================= */
+.carousel-banner-vip {
+    min-height: 450px;
+    border-radius: 28px !important;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0, 86, 179, 0.25) !important;
+}
+
+.banner-bg-apple {
+    background: radial-gradient(circle at 85% 50%, rgba(56, 189, 248, 0.25) 0%, transparent 60%),
+                linear-gradient(135deg, #020d1e 0%, #072a48 50%, #0056b3 100%);
+}
+
+.banner-bg-samsung {
+    background: radial-gradient(circle at 85% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 60%),
+                linear-gradient(135deg, #090e1a 0%, #172554 50%, #1d4ed8 100%);
+}
+
+.banner-bg-promo {
+    background: radial-gradient(circle at 85% 50%, rgba(245, 158, 11, 0.25) 0%, transparent 60%),
+                linear-gradient(135deg, #18032e 0%, #311059 50%, #0066cc 100%);
+}
+
+/* HIỆU ỨNG ĐIỆN THOẠI LƠ LỬNG BỒNG BỀNH 3D */
+.banner-floating-phone {
+    max-height: 380px !important;
+    max-width: 100% !important;
+    object-fit: contain;
+    filter: drop-shadow(0 25px 35px rgba(0, 0, 0, 0.55));
+    animation: phoneFloat3D 4s ease-in-out infinite alternate;
+}
+
+@keyframes phoneFloat3D {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-12px) rotate(1.5deg); }
+}
+
+/* KÍNH MỜ GLASSMORPHISM CHO CÁC TAG THÔNG SỐ */
+.glass-spec-pill {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(10px);
+    color: #ffffff !important;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+/* THANH CHỈ SỐ SLIDE PHẲNG CHUẨN APPLE */
+.carousel-indicators-vip {
+    margin-bottom: 22px !important;
+}
+.carousel-indicators-vip [data-bs-target] {
+    width: 32px !important;
+    height: 5px !important;
+    border-radius: 10px !important;
+    background-color: rgba(255, 255, 255, 0.35) !important;
+    border: none !important;
+    transition: all 0.35s ease !important;
+}
+.carousel-indicators-vip .active {
+    width: 65px !important;
+    background-color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* KHÓA CỨNG CHIỀU CAO BANNER 100% KHÔNG GIẬT KHUNG */
+.carousel-banner-vip,
+.carousel-banner-vip .carousel-inner,
+.carousel-banner-vip .carousel-item {
+    height: 430px !important;
+    max-height: 430px !important;
+    min-height: 430px !important;
+}
+
+/* KHUNG HIỂN THỊ SẢN PHẨM ĐỒNG BỘ 100% CÙNG KÍCH THƯỚC */
+.banner-stage-box {
+    width: 320px !important;
+    height: 320px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.banner-stage-img {
+    max-width: 280px !important;
+    max-height: 280px !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    border-radius: 14px;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.45));
+    transition: transform 0.4s ease;
+}
+
+.banner-stage-box:hover .banner-stage-img {
+    transform: scale(1.05);
+}
+
+.banner-title-equal {
+    font-size: 2.3rem !important;
+    font-weight: 800 !important;
+    line-height: 1.25 !important;
+    letter-spacing: -0.5px;
+    height: 60px;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.banner-desc-equal {
+    font-size: 0.95rem !important;
+    line-height: 1.55 !important;
+    height: 45px;
+    overflow: hidden;
+    opacity: 0.9;
+}
+
+/* XÓA BỎ KHUNG HÌNH - CHO ĐIỆN THOẠI ĐỨNG TỰ DO TRÊN NỀN BANNER */
+.banner-dual-stage {
+    height: 380px !important;
+    width: 100% !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.hero-phone-back {
+    position: absolute !important;
+    left: 20px !important;
+    bottom: 25px !important;
+    max-height: 290px !important;
+    max-width: 200px !important;
+    object-fit: contain !important;
+    z-index: 1 !important;
+    filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.5));
+    transition: transform 0.3s ease;
+}
+
+.hero-phone-front {
+    position: absolute !important;
+    right: 15px !important;
+    bottom: 10px !important;
+    max-height: 330px !important;
+    max-width: 250px !important;
+    object-fit: contain !important;
+    z-index: 2 !important;
+    filter: drop-shadow(0 20px 35px rgba(0, 0, 0, 0.6));
+    transition: transform 0.3s ease;
+}
+
+.banner-dual-stage:hover .hero-phone-back {
+    transform: translateY(-8px) scale(1.02);
+}
+.banner-dual-stage:hover .hero-phone-front {
+    transform: translateY(-10px) scale(1.03);
+}
+
+/* HIỆU ỨNG LƠ LỬNG 3D BỒNG BỀNH TỰ ĐỘNG CHUẨN KEYNOTE */
+@keyframes floatPhoneSmooth {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(1.5deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+
+@keyframes floatPhoneAlt {
+    0% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-9px) rotate(-1deg); }
+    100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* KHUNG CHỨA 2 MÁY CĂN CHÍNH GIỮA CỘT PHẢI */
+.banner-center-right-stage {
+    width: 100% !important;
+    height: 380px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    margin: 0 auto !important;
+}
+
+.banner-phone-left-float {
+    max-height: 290px !important;
+    max-width: 210px !important;
+    object-fit: contain !important;
+    position: relative !important;
+    z-index: 1 !important;
+    margin-right: -35px !important;
+    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.55)) !important;
+    animation: floatPhoneAlt 5s ease-in-out infinite !important;
+}
+
+.banner-phone-right-float {
+    max-height: 330px !important;
+    max-width: 250px !important;
+    object-fit: contain !important;
+    position: relative !important;
+    z-index: 2 !important;
+    filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.65)) !important;
+    animation: floatPhoneSmooth 4s ease-in-out infinite !important;
+}
