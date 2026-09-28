@@ -51,7 +51,7 @@ if ($action === 'add' && $id > 0) {
                 'rom' => $selectedRom,
                 'color' => $selectedColor,
                 'price' => $finalPrice,
-                'image' => $prod['image'],
+                'image' => (!empty($_GET['img']) ? $_GET['img'] : $prod['image']),
                 'quantity' => 1
             ];
         }

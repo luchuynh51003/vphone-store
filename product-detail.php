@@ -15,22 +15,7 @@ $basePrice = ($product['sale_price'] > 0 && $product['sale_price'] < $product['p
 $baseOldPrice = $product['price'];
 $saving = ($product['sale_price'] > 0 && $product['sale_price'] < $product['price']) ? ($product['price'] - $product['sale_price']) : 0;
 
-// Danh sách màu sắc từ CSDL
 $colorList = array_map('trim', explode(',', $product['colors'] ?? 'Đen, Trắng, Xanh'));
-if (empty($colorList[0])) $colorList = ['Đen', 'Trắng'];
-$firstColor = $colorList[0];
-
-// Hàm lấy mã màu HEX
-function getColorHexPhp($name) {
-    $c = mb_strtolower($name, 'UTF-8');
-    if (strpos($c, 'sa mạc') !== false || strpos($c, 'vàng') !== false || strpos($c, 'gold') !== false) return '#cbbba0';
-    if (strpos($c, 'hồng') !== false || strpos($c, 'pink') !== false) return '#f472b6';
-    if (strpos($c, 'tím') !== false || strpos($c, 'purple') !== false) return '#8b5cf6';
-    if (strpos($c, 'xanh') !== false || strpos($c, 'blue') !== false || strpos($c, 'navy') !== false) return '#38bdf8';
-    if (strpos($c, 'đen') !== false || strpos($c, 'black') !== false || strpos($c, 'phantom') !== false) return '#1e293b';
-    if (strpos($c, 'trắng') !== false || strpos($c, 'white') !== false || strpos($c, 'bạc') !== false || strpos($c, 'tự nhiên') !== false) return '#e2e8f0';
-    return '#0066cc';
-}
 
 $relStmt = $pdo->prepare("SELECT * FROM products WHERE brand_id = :bid AND id != :id LIMIT 4");
 $relStmt->execute([':bid' => $product['brand_id'], ':id' => $id]);
@@ -40,7 +25,6 @@ require_once 'includes/header.php';
 require_once 'includes/navbar.php';
 ?>
 
-<!-- Đường dẫn Breadcrumb -->
 <div class="container my-3">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb py-2 px-3 bg-white rounded-4 shadow-sm mb-0">
@@ -51,10 +35,9 @@ require_once 'includes/navbar.php';
     </nav>
 </div>
 
-<!-- KHU VỰC CHI TIẾT SẢN PHẨM -->
 <div class="container my-4">
     <div class="row g-4">
-        <!-- CỘT TRÁI: ẢNH MÁY TO RÕ (TỰ ĐỔI MÀU THEO NÚT BẤM) -->
+        <!-- Cột trái: Ảnh to đổi màu trực tiếp -->
         <div class="col-lg-5">
             <div class="bg-white p-4 rounded-4 shadow-sm text-center position-relative border">
                 <?php if ($product['is_featured']): ?>
@@ -64,12 +47,12 @@ require_once 'includes/navbar.php';
                 <?php endif; ?>
 
                 <div class="detail-img-box my-3 py-3" style="min-height: 360px; display: flex; align-items: center; justify-content: center;">
-                    <img id="detailMainImg" 
+                    <img id="detailMainProductImage" 
                          src="<?= htmlspecialchars($product['image']) ?>" 
+                         data-base-src="<?= htmlspecialchars($product['image']) ?>"
                          alt="<?= htmlspecialchars($product['name']) ?>" 
                          class="img-fluid" 
-                         style="max-height: 340px; object-fit: contain; transition: all 0.25s ease;"
-                         onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
+                         style="max-height: 340px; object-fit: contain; transition: all 0.25s ease;">
                 </div>
 
                 <div class="d-flex justify-content-center gap-2 mt-2">
@@ -80,7 +63,7 @@ require_once 'includes/navbar.php';
             </div>
         </div>
 
-        <!-- CỘT PHẢI: GIÁ BÁN, CHỌN MÀU SẮC, CHỌN BỘ NHỚ NHẢY TIỀN -->
+        <!-- Cột phải: Giá, Chọn Màu Sắc, Chọn Dung Lượng -->
         <div class="col-lg-7">
             <div class="bg-white p-4 rounded-4 shadow-sm h-100 d-flex flex-column border">
                 <span class="badge badge-tech-new align-self-start px-3 py-1 mb-2 rounded-pill">
@@ -88,13 +71,11 @@ require_once 'includes/navbar.php';
                 </span>
                 <h3 class="fw-bold text-dark mb-2"><?= htmlspecialchars($product['name']) ?></h3>
 
-                <!-- Đánh giá sao -->
                 <div class="d-flex align-items-center gap-2 text-warning mb-3 small">
                     <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
                     <span class="text-secondary">(4.9/5 - 128 lượt mua đánh giá)</span>
                 </div>
 
-                <!-- Bảng giá tiền nhảy số -->
                 <div class="p-3 rounded-4 bg-light my-2 border">
                     <div class="d-flex align-items-baseline gap-3 flex-wrap">
                         <h2 class="text-danger fw-bold mb-0" id="displayPrice"><?= number_format($basePrice, 0, ',', '.') ?> đ</h2>
@@ -102,56 +83,59 @@ require_once 'includes/navbar.php';
                         <span class="badge bg-danger rounded-pill px-2 py-1" id="displaySavingTag">Tiết kiệm <?= number_format($saving, 0, ',', '.') ?> đ</span>
                     </div>
                     <div class="small text-success mt-2 fw-semibold">
-                        <i class="fa-solid fa-circle-check me-1"></i>Còn <?= $product['quantity'] ?> máy sẵn hàng tại kho - Miễn phí giao tận nơi
+                        <i class="fa-solid fa-circle-check me-1"></i>Còn <?= $product['quantity'] ?> máy sẵn hàng tại kho - Miễn phí giao hàng
                     </div>
                 </div>
 
-                <!-- 1. MỤC CHỌN MÀU SẮC (CÓ CHẤM TRÒN MÀU THẬT & ĐỔI ẢNH MÁY TO BÊN TRÁI) -->
-                <div class="my-3">
+                <!-- 1. CHỌN MÀU SẮC (BẤM VÀO ĐỔI ĐÚNG ẢNH MÀU CỦA BẠN) -->
+                <div class="my-2">
                     <label class="fw-bold mb-2 small text-uppercase text-secondary">
-                        <i class="fa-solid fa-palette text-primary me-1"></i>Chọn màu sắc: <span id="chosenColorText" class="text-primary fw-bold"><?= htmlspecialchars($firstColor) ?></span>
+                        <i class="fa-solid fa-palette me-1 text-primary"></i>Chọn màu sắc: <span class="text-primary fw-bold" id="selectedColorDisplayLabel"><?= htmlspecialchars($colorList[0] ?? 'Tiêu chuẩn') ?></span>
                     </label>
-                    <div class="d-flex gap-2 flex-wrap" id="detailColorButtonsGroup">
-                        <?php foreach ($colorList as $idx => $cName): ?>
-                            <?php $hex = getColorHexPhp($cName); ?>
-                            <button type="button" 
-                                    class="btn btn-sm rounded-pill fw-bold px-3 py-2 detail-color-btn d-flex align-items-center <?= $idx === 0 ? 'btn-primary active text-white' : 'btn-outline-secondary' ?>" 
-                                    data-color="<?= htmlspecialchars($cName) ?>"
-                                    onclick="selectDetailColor(this, '<?= htmlspecialchars(addslashes($cName)) ?>')">
-                                <span style="width:13px; height:13px; border-radius:50%; background:<?= $hex ?>; display:inline-block; margin-right:7px; border:1px solid rgba(0,0,0,0.2);"></span>
-                                <?= htmlspecialchars($cName) ?>
+                    <div class="d-flex gap-2 flex-wrap" id="detailColorPillsGroup">
+                        <?php foreach ($colorList as $idx => $colorName): ?>
+                            <button type="button" class="btn btn-sm rounded-pill fw-bold px-3 py-2 btn-detail-color <?= $idx === 0 ? 'btn-primary active text-white' : 'btn-outline-secondary' ?>" data-color="<?= htmlspecialchars($colorName) ?>">
+                                <?= htmlspecialchars($colorName) ?>
                             </button>
                         <?php endforeach; ?>
                     </div>
                 </div>
 
-                <!-- 2. MỤC CHỌN PHIÊN BẢN BỘ NHỚ (BẤM ĐỔI LÀ GIÁ TIỀN NHẢY NGAY) -->
+                <!-- 2. CHỌN BỘ NHỚ -->
                 <div class="my-2">
                     <label class="fw-bold mb-2 small text-uppercase text-secondary">
-                        <i class="fa-solid fa-hard-drive text-primary me-1"></i>Chọn phiên bản bộ nhớ (Bấm để đổi giá):
+                        <i class="fa-solid fa-hard-drive me-1 text-primary"></i>Chọn dung lượng bộ nhớ:
                     </label>
-                    <div class="d-flex gap-2 flex-wrap" id="detailStorageButtonsGroup">
-                        <!-- Sẽ được Javascript tự động điền đủ 4 mức: 256GB, 512GB, 1TB, 2TB -->
+                    <div class="d-flex gap-2 flex-wrap" id="storageButtonsGroup">
+                        <button type="button" class="btn btn-primary rounded-pill px-3 py-2 fw-bold storage-btn active" data-extra="0" data-rom="256 GB">
+                            256 GB <small class="fw-normal">(Tiêu chuẩn)</small>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold storage-btn" data-extra="3500000" data-rom="512 GB">
+                            512 GB <small class="text-primary fw-semibold">(+3.5tr)</small>
+                        </button>
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-bold storage-btn" data-extra="8000000" data-rom="1 TB">
+                            1 TB <small class="text-primary fw-semibold">(+8.0tr)</small>
+                        </button>
                     </div>
                 </div>
 
                 <div class="border border-primary border-opacity-25 rounded-4 p-3 my-2 bg-light">
-                    <h6 class="fw-bold text-primary mb-2"><i class="fa-solid fa-gift me-2"></i>Đặc Quyền Mua Hàng Tại V-Phone:</h6>
+                    <h6 class="fw-bold text-primary mb-2"><i class="fa-solid fa-gift me-2"></i>Đặc Quyền Tại V-Phone:</h6>
                     <ul class="list-unstyled small mb-0 d-flex flex-column gap-1 text-secondary">
-                        <li><i class="fa-solid fa-check text-primary me-2"></i>Bảo hành chính hãng toàn diện 12 tháng 1 đổi 1.</li>
-                        <li><i class="fa-solid fa-check text-primary me-2"></i>Thu cũ đổi mới trợ giá trực tiếp lên đến 5.000.000 đ.</li>
+                        <li><i class="fa-solid fa-check text-primary me-2"></i>Bảo hành chính hãng toàn diện 12 tháng.</li>
+                        <li><i class="fa-solid fa-check text-primary me-2"></i>Thu cũ đổi mới trợ giá tới 5.000.000 đ.</li>
                     </ul>
                 </div>
 
                 <!-- 2 NÚT HÀNH ĐỘNG -->
                 <div class="row g-2 mt-auto pt-3">
                     <div class="col-md-7 col-12">
-                        <button type="button" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3" onclick="buyNowFromDetail(<?= $product['id'] ?>)">
+                        <button type="button" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3" onclick="buyNow(<?= $product['id'] ?>)">
                             <i class="fa-solid fa-bag-shopping me-2"></i>MUA NGAY (GIAO TẬN NƠI)
                         </button>
                     </div>
                     <div class="col-md-5 col-12">
-                        <button type="button" class="btn btn-outline-vphone btn-lg w-100 rounded-pill fw-bold py-3" onclick="addToCartFromDetailPage(this, <?= $product['id'] ?>)">
+                        <button type="button" class="btn btn-outline-vphone btn-lg w-100 rounded-pill fw-bold py-3" onclick="addToCartFromDetail(this, <?= $product['id'] ?>)">
                             <i class="fa-solid fa-cart-plus me-2"></i>Thêm vào giỏ
                         </button>
                     </div>
@@ -159,157 +143,111 @@ require_once 'includes/navbar.php';
             </div>
         </div>
     </div>
-
-    <!-- BẢNG THÔNG SỐ KỸ THUẬT -->
-    <div class="my-5">
-        <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm border">
-            <h4 class="fw-bold text-dark border-bottom pb-3 mb-4">
-                <i class="fa-solid fa-sliders text-primary me-2"></i>Bảng Thông Số Kỹ Thuật Chi Tiết
-            </h4>
-            <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <table class="table table-striped table-hover align-middle border rounded-3 overflow-hidden">
-                        <tbody>
-                            <tr><th class="text-secondary py-3 ps-3 w-40">Màn hình:</th><td class="fw-semibold py-3"><?= htmlspecialchars($product['screen']) ?></td></tr>
-                            <tr><th class="text-secondary py-3 ps-3">Chipset CPU:</th><td class="fw-semibold py-3"><?= htmlspecialchars($product['cpu']) ?></td></tr>
-                            <tr><th class="text-secondary py-3 ps-3">Bộ nhớ RAM:</th><td class="fw-semibold py-3"><?= htmlspecialchars($product['ram']) ?></td></tr>
-                            <tr><th class="text-secondary py-3 ps-3">Bộ nhớ trong:</th><td class="fw-bold text-primary py-3" id="tableRomValue"><?= htmlspecialchars($product['rom']) ?></td></tr>
-                            <tr><th class="text-secondary py-3 ps-3">Dung lượng Pin:</th><td class="fw-semibold py-3"><?= htmlspecialchars($product['battery']) ?></td></tr>
-                            <tr><th class="text-secondary py-3 ps-3">Màu sắc sẵn có:</th><td class="fw-semibold py-3"><?= htmlspecialchars($product['colors'] ?? 'Đen, Trắng, Xanh') ?></td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
-function getColorExtraJs(name) {
-    const c = name.toLowerCase();
-    if (c.includes("sa mạc") || c.includes("burgundy") || c.includes("hoàng kim") || c.includes("trời đêm")) return 500000;
-    if (c.includes("hồng") || c.includes("glacier") || c.includes("mòng két") || c.includes("lưu ly")) return 300000;
-    return 0;
-}
-
-let currentColorExtra = 0;
-let currentStorageExtra = 0;
-
-function recalculateDetailPrice() {
-    const totalAdd = currentColorExtra + currentStorageExtra;
-    const finalP = basePrice + totalAdd;
-    const finalOldP = baseOldPrice + totalAdd;
-
-    document.getElementById('displayPrice').innerText = formatCurrency(finalP);
-    document.getElementById('displayOldPrice').innerText = formatCurrency(finalOldP);
-    const savingTag = document.getElementById('displaySavingTag');
-    if (savingTag) savingTag.innerText = 'Tiết kiệm ' + formatCurrency(finalOldP - finalP);
-}
 const basePrice = <?= (int)$basePrice ?>;
 const baseOldPrice = <?= (int)$baseOldPrice ?>;
-const prodName = "<?= htmlspecialchars(addslashes($product['name'])) ?>";
-let currentSelectedColor = "<?= htmlspecialchars(addslashes($firstColor)) ?>";
 let currentSelectedRom = "256 GB";
 let currentExtraMoney = 0;
+let currentSelectedColor = "<?= htmlspecialchars($colorList[0] ?? 'Tiêu chuẩn') ?>";
 
 function formatCurrency(number) {
     return new Intl.NumberFormat('vi-VN').format(number) + ' đ';
 }
 
-// 1. HÀM CHỌN MÀU SẮC & ĐỔI ẢNH MÁY TO BÊN TRÁI
-function selectDetailColor(btn, colorName) {
-    document.querySelectorAll('.detail-color-btn').forEach(b => {
-        b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2 detail-color-btn d-flex align-items-center';
-    });
-    btn.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-2 detail-color-btn d-flex align-items-center';
-
-    currentSelectedColor = colorName;
-    currentColorExtra = getColorExtraJs(colorName);
-    document.getElementById('chosenColorText').innerText = colorName + (currentColorExtra > 0 ? " (+" + formatCurrency(currentColorExtra) + ")" : "");
-    recalculateDetailPrice();
-
-    // Đổi ảnh máy to bên trái
-    const mainImg = document.getElementById('detailMainImg');
-    if (mainImg && typeof getColorImage === 'function') {
-        const newSrc = getColorImage(mainImg.getAttribute('src'), colorName);
-        mainImg.style.opacity = '0.3';
-        setTimeout(() => {
-            mainImg.src = newSrc;
-            mainImg.style.opacity = '1';
-        }, 120);
-    }
+function toColorSlug(str) {
+    str = str.toLowerCase();
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+    str = str.replace(/đ/g, "d");
+    str = str.replace(/[^a-z0-9]/g, "-");
+    str = str.replace(/-+/g, "-");
+    return str.replace(/^-|-$/g, "");
 }
 
-// 2. RENDER ĐẦY ĐỦ CÁC MỨC DUNG LƯỢNG BỘ NHỚ (256GB, 512GB, 1TB, 2TB)
-document.addEventListener("DOMContentLoaded", function () {
-    const romContainer = document.getElementById("detailStorageButtonsGroup");
-    if (!romContainer) return;
+// HÀM CHUYỂN ĐÚNG FILE ẢNH MÀU BẠN ĐÃ LƯU
+function switchProductImageByColor(colorName) {
+    const mainImg = document.getElementById('detailMainProductImage');
+    if (!mainImg) return;
 
-    let options = [];
-    const nameLower = prodName.toLowerCase();
+    const baseSrc = mainImg.getAttribute('data-base-src') || mainImg.src;
+    const dot = baseSrc.lastIndexOf('.');
+    if (dot === -1) return;
 
-    if (nameLower.includes("ultra") || nameLower.includes("pro max") || nameLower.includes("fold") || nameLower.includes("tri-fold") || nameLower.includes("duo")) {
-        options = [
-            { rom: "256 GB", extra: 0, label: "256 GB (Tiêu chuẩn)" },
-            { rom: "512 GB", extra: 4000000, label: "512 GB (+4.0tr)" },
-            { rom: "1 TB", extra: 9000000, label: "1 TB (+9.0tr)" },
-            { rom: "2 TB", extra: 16000000, label: "2 TB (+16tr)" }
-        ];
-    } else if (nameLower.includes("64") || nameLower.includes("11") || nameLower.includes("a05") || nameLower.includes("13c")) {
-        options = [
-            { rom: "64 GB", extra: 0, label: "64 GB (Tiết kiệm)" },
-            { rom: "128 GB", extra: 1200000, label: "128 GB (+1.2tr)" },
-            { rom: "256 GB", extra: 2600000, label: "256 GB (+2.6tr)" },
-            { rom: "512 GB", extra: 5000000, label: "512 GB (+5.0tr)" }
-        ];
-    } else {
-        options = [
-            { rom: "128 GB", extra: 0, label: "128 GB (Tiêu chuẩn)" },
-            { rom: "256 GB", extra: 2500000, label: "256 GB (+2.5tr)" },
-            { rom: "512 GB", extra: 5500000, label: "512 GB (+5.5tr)" },
-            { rom: "1 TB", extra: 10000000, label: "1 TB (+10tr)" }
-        ];
-    }
+    const basePath = baseSrc.substring(0, dot);
+    const ext = baseSrc.substring(dot);
+    const colSlug = toColorSlug(colorName);
 
-    currentSelectedRom = options[0].rom;
-    currentExtraMoney = 0;
+    // Tên file ảnh màu: ví dụ assets/images/products/iphone-18-promax-xanh-glacier-blue.png
+    const targetFile = `${basePath}-${colSlug}${ext}`;
 
-    options.forEach((opt, idx) => {
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-2 storage-btn ${idx === 0 ? "btn-primary active text-white" : "btn-outline-secondary"}`;
-        btn.innerText = opt.label;
-        btn.onclick = function() {
-            romContainer.querySelectorAll(".storage-btn").forEach(b => {
-                b.className = "btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2 storage-btn";
-            });
-            this.className = "btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-2 storage-btn";
+    const tester = new Image();
+    tester.src = targetFile;
+    tester.onload = function() {
+        mainImg.style.opacity = '0.2';
+        setTimeout(() => {
+            mainImg.src = targetFile;
+            mainImg.style.opacity = '1';
+        }, 120);
+    };
+    tester.onerror = function() {
+        // Nếu chưa có file ảnh riêng thì giữ nguyên ảnh gốc
+        mainImg.src = baseSrc;
+    };
+}
 
-            currentStorageExtra = opt.extra;
-            currentSelectedRom = opt.rom;
-            recalculateDetailPrice();
-            
-            const savingTag = document.getElementById('displaySavingTag');
-            if (savingTag) savingTag.innerText = 'Tiết kiệm ' + formatCurrency(newOldPrice - newPrice);
+// Bắt sự kiện chọn MÀU SẮC
+document.querySelectorAll('.btn-detail-color').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.btn-detail-color').forEach(b => {
+            b.className = "btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2 btn-detail-color";
+        });
+        this.className = "btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-2 btn-detail-color";
 
-            const tableRom = document.getElementById('tableRomValue');
-            if (tableRom) tableRom.innerText = opt.rom;
-        };
-        romContainer.appendChild(btn);
+        currentSelectedColor = this.getAttribute('data-color');
+        document.getElementById('selectedColorDisplayLabel').innerText = currentSelectedColor;
+
+        // GỌI ĐỔI ẢNH MÀU NGAY LẬP TỨC
+        switchProductImageByColor(currentSelectedColor);
     });
 });
 
-// 3. NÚT THÊM GIỎ HÀNG: LƯU ĐÚNG MÀU ĐÃ CHỌN VÀ BỘ NHỚ
-function addToCartFromDetailPage(btn, productId) {
-    const fullNameWithVariant = `${prodName} - Màu ${currentSelectedColor} (${currentSelectedRom})`;
-    const url = `cart.php?action=add&ajax=1&id=${productId}&color=${encodeURIComponent(currentSelectedColor)}&rom=${encodeURIComponent(currentSelectedRom)}&extra=${currentColorExtra + currentStorageExtra}`;
+// Bắt sự kiện chọn BỘ NHỚ
+document.querySelectorAll('.storage-btn').forEach(btn => {
+    btn.addEventListener('click', function () {
+        document.querySelectorAll('.storage-btn').forEach(b => {
+            b.className = "btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2 storage-btn";
+        });
+        this.className = "btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-2 storage-btn";
+
+        currentExtraMoney = parseInt(this.getAttribute('data-extra')) || 0;
+        currentSelectedRom = this.getAttribute('data-rom') || "256 GB";
+
+        const newPrice = basePrice + currentExtraMoney;
+        const newOldPrice = baseOldPrice + currentExtraMoney;
+
+        document.getElementById('displayPrice').innerText = formatCurrency(newPrice);
+        document.getElementById('displayOldPrice').innerText = formatCurrency(newOldPrice);
+    });
+});
+
+function addToCartFromDetail(btn, productId) {
+    const mainImg = document.getElementById('detailMainProductImage');
+    const currentImgSrc = mainImg ? mainImg.src : "";
+    const url = `cart.php?action=add&ajax=1&id=${productId}&rom=${encodeURIComponent(currentSelectedRom)}&color=${encodeURIComponent(currentSelectedColor)}&extra=${currentExtraMoney}&img=${encodeURIComponent(currentImgSrc)}`;
     
-    addToCartDirect(btn, productId, fullNameWithVariant, currentSelectedColor);
+    addToCartDirect(btn, productId, "<?= htmlspecialchars(addslashes($product['name'])) ?> - Màu " + currentSelectedColor, currentSelectedColor);
 }
 
-// 4. NÚT MUA NGAY: ĐƯA ĐÚNG MÀU ĐÃ CHỌN VÀO THẲNG THANH TOÁN
-function buyNowFromDetail(productId) {
-    window.location.href = `checkout.php?action=buy_now&id=${productId}&color=${encodeURIComponent(currentSelectedColor)}&rom=${encodeURIComponent(currentSelectedRom)}&extra=${currentColorExtra + currentStorageExtra}`;
+function buyNow(productId) {
+    const mainImg = document.getElementById('detailMainProductImage');
+    const currentImgSrc = mainImg ? mainImg.src : "";
+    window.location.href = `checkout.php?action=buy_now&id=${productId}&color=${encodeURIComponent(currentSelectedColor)}&rom=${encodeURIComponent(currentSelectedRom)}&extra=${currentExtraMoney}&img=${encodeURIComponent(currentImgSrc)}`;
 }
 </script>
 

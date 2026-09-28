@@ -36,7 +36,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'buy_now' && isset($_GET['id']
             'rom' => $rom,
             'color' => $color,
             'price' => $basePrice + $extra,
-            'image' => $prod['image'],
+            'image' => (!empty($_GET['img']) ? $_GET['img'] : $prod['image']),
             'quantity' => 1
         ];
 

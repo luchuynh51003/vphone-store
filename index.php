@@ -1,7 +1,7 @@
 <?php
 require_once 'config/database.php';
 
-// ÉP CẬP NHẬT GIÁ CHUẨN: IPHONE 18 PRO MAX PHẢI ĐẮT HƠN BẢN PRO 8 TRIỆU
+// Ép giá Pro Max đắt hơn bản Pro chuẩn thị trường
 $pdo->exec("UPDATE products SET price = 45990000, sale_price = 41990000 WHERE id = 1 OR name LIKE '%18 Pro Max%';");
 $pdo->exec("UPDATE products SET price = 36990000, sale_price = 33990000 WHERE id = 2 OR (name LIKE '%18 Pro%' AND name NOT LIKE '%Pro Max%');");
 
@@ -61,7 +61,6 @@ require_once 'includes/header.php';
 require_once 'includes/navbar.php';
 ?>
 
-<!-- CSS LƠ LỬNG 3D VÀ CĂN GIỮA ĐỒNG BỘ CẢ 3 BANNER -->
 <style>
 @keyframes floatPhoneSmooth {
     0% { transform: translateY(0px) rotate(0deg); }
@@ -114,7 +113,7 @@ require_once 'includes/navbar.php';
     window.STORE_PRODUCTS = <?= json_encode($searchList, JSON_UNESCAPED_UNICODE) ?>;
 </script>
 
-<!-- BANNER CAROUSEL: CẢ 3 SLIDE ĐỀU ĐƯỢC CĂN GIỮA VÀ LƠ LỬNG 3D -->
+<!-- BANNER CAROUSEL CẢ 3 SLIDE ĐỒNG BỘ CĂN GIỮA VÀ LƠ LỬNG 3D -->
 <div class="container my-3">
     <div id="vphoneCarousel" class="carousel slide carousel-fade carousel-banner-vip shadow-lg" data-bs-ride="carousel" data-bs-interval="3500" data-bs-pause="false">
         <div class="carousel-indicators carousel-indicators-vip">
@@ -124,7 +123,7 @@ require_once 'includes/navbar.php';
         </div>
 
         <div class="carousel-inner h-100">
-            <!-- SLIDE 1: APPLE (IPHONE 18 PRO MAX & DUO CĂN GIỮA LƠ LỬNG) -->
+            <!-- SLIDE 1: APPLE -->
             <div class="carousel-item active h-100">
                 <div class="banner-bg-apple px-4 px-md-5 text-white d-flex align-items-center h-100">
                     <div class="row align-items-center w-100 g-4">
@@ -134,7 +133,7 @@ require_once 'includes/navbar.php';
                             </span>
                             <div class="banner-title-equal text-white mb-2">iPhone 18 Pro Max & Duo</div>
                             <div class="banner-desc-equal mb-3">
-                                Khung Titan Vũ Trụ siêu bền. Màn hình gập đôi Liquid Retina không nếp gấp cùng vi xử lý Apple A20 Pro 2nm thế hệ mới nhất.
+                                Khung Titan Vũ Trụ mạ PVD siêu bền. Màn hình gập đôi Liquid Retina không nếp gấp cùng vi xử lý Apple A20 Pro 2nm thế hệ mới nhất.
                             </div>
                             <div class="d-flex gap-2 flex-wrap mb-3">
                                 <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-microchip text-info me-1"></i>A20 Pro (2nm)</span>
@@ -158,7 +157,7 @@ require_once 'includes/navbar.php';
                 </div>
             </div>
 
-            <!-- SLIDE 2: SAMSUNG (GALAXY S26 ULTRA & TRI-FOLD CĂN GIỮA LƠ LỬNG) -->
+            <!-- SLIDE 2: SAMSUNG -->
             <div class="carousel-item h-100">
                 <div class="banner-bg-samsung px-4 px-md-5 text-white d-flex align-items-center h-100">
                     <div class="row align-items-center w-100 g-4">
@@ -192,7 +191,7 @@ require_once 'includes/navbar.php';
                 </div>
             </div>
 
-            <!-- SLIDE 3: THU CŨ ĐỔI MỚI (CĂN GIỮA LƠ LỬNG, KHÔNG KHUNG TRẮNG) -->
+            <!-- SLIDE 3: THU CŨ ĐỔI MỚI -->
             <div class="carousel-item h-100">
                 <div class="banner-bg-promo px-4 px-md-5 text-white d-flex align-items-center h-100">
                     <div class="row align-items-center w-100 g-4">
@@ -329,7 +328,6 @@ require_once 'includes/navbar.php';
                             <span class="badge"><?= htmlspecialchars($p['screen']) ?></span>
                         </div>
 
-                        <!-- 1. HÀNG BỘ NHỚ SẴN CÓ ĐỂ XEM -->
                         <div class="d-flex align-items-center gap-1 my-1 flex-wrap" style="min-height: 22px;">
                             <small class="text-secondary fw-semibold" style="font-size: 0.68rem;">Bộ nhớ:</small>
                             <?php foreach ($romDisplayList as $rName): ?>
@@ -339,7 +337,6 @@ require_once 'includes/navbar.php';
                             <?php endforeach; ?>
                         </div>
 
-                        <!-- 2. HÀNG MÀU SẮC SẴN CÓ ĐỂ XEM -->
                         <div class="d-flex align-items-center gap-1 my-1 flex-wrap" style="min-height: 24px;">
                             <small class="text-secondary fw-semibold" style="font-size: 0.68rem;"><i class="fa-solid fa-palette text-primary me-1"></i>Màu:</small>
                             <?php foreach (array_slice($colorDisplayList, 0, 3) as $cName): ?>
@@ -353,7 +350,6 @@ require_once 'includes/navbar.php';
                             <?php endif; ?>
                         </div>
 
-                        <!-- Giá tiền (PRO MAX ĐÃ ĐẮT HƠN PRO CHUẨN XÁC) -->
                         <div class="mt-auto pt-2">
                             <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
                                 <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> đ</div>
@@ -384,7 +380,9 @@ require_once 'includes/navbar.php';
     </div>
 </div>
 
-<!-- MODAL POPUP CHỌN MÀU & BỘ NHỚ -->
+<!-- ========================================================================= -->
+<!-- MODAL POPUP CHỌN MÀU ĐỔI ĐÚNG FILE ẢNH & CHỌN BỘ NHỚ NHẢY TIỀN -->
+<!-- ========================================================================= -->
 <div class="modal fade" id="productSelectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
         <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
@@ -395,7 +393,7 @@ require_once 'includes/navbar.php';
             <div class="modal-body p-4 pt-3">
                 <div class="d-flex align-items-center mb-3 p-3 bg-light rounded-4 border">
                     <div style="width: 75px; height: 75px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:12px; margin-right:15px; flex-shrink:0;">
-                        <img id="modalImg" src="" alt="" style="max-height: 65px; max-width: 65px; object-fit: contain;">
+                        <img id="modalImg" src="" alt="" style="max-height: 65px; max-width: 65px; object-fit: contain; transition: all 0.2s ease;">
                     </div>
                     <div class="flex-grow-1 min-w-0">
                         <h6 id="modalTitle" class="fw-bold text-dark mb-1 text-truncate">Tên điện thoại</h6>
@@ -407,6 +405,7 @@ require_once 'includes/navbar.php';
                     </div>
                 </div>
 
+                <!-- 1. CHỌN MÀU SẮC -->
                 <div class="mb-3">
                     <label class="form-label small fw-bold text-uppercase text-secondary mb-1">
                         <i class="fa-solid fa-palette text-primary me-1"></i>Chọn màu sắc:
@@ -414,6 +413,7 @@ require_once 'includes/navbar.php';
                     <div id="modalColorPills" class="d-flex gap-2 flex-wrap"></div>
                 </div>
 
+                <!-- 2. CHỌN BỘ NHỚ -->
                 <div class="mb-4">
                     <label class="form-label small fw-bold text-uppercase text-secondary mb-1">
                         <i class="fa-solid fa-hard-drive text-primary me-1"></i>Chọn dung lượng bộ nhớ:
@@ -445,6 +445,45 @@ function formatCurrency(amount) {
     return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
 }
 
+function toColorSlug(str) {
+    str = str.toLowerCase();
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+    str = str.replace(/đ/g, "d");
+    str = str.replace(/[^a-z0-9]/g, "-");
+    str = str.replace(/-+/g, "-");
+    return str.replace(/^-|-$/g, "");
+}
+
+function getExactColorImageFile(baseImg, colorName) {
+    if (!colorName || colorName === "Tiêu chuẩn") return baseImg;
+    const dot = baseImg.lastIndexOf(".");
+    if (dot === -1) return baseImg;
+    const basePath = baseImg.substring(0, dot);
+    const ext = baseImg.substring(dot);
+    return `${basePath}-${toColorSlug(colorName)}${ext}`;
+}
+
+function changeModalImageByColor(imgElement, baseImg, colorName) {
+    const targetFile = getExactColorImageFile(baseImg, colorName);
+    const tester = new Image();
+    tester.src = targetFile;
+    tester.onload = function() {
+        imgElement.style.opacity = "0.3";
+        setTimeout(() => {
+            imgElement.src = targetFile;
+            imgElement.style.opacity = "1";
+        }, 100);
+    };
+    tester.onerror = function() {
+        imgElement.src = baseImg;
+    };
+}
+
 function openProductModal(productId, defaultAction) {
     const all = window.STORE_PRODUCTS || [];
     currentProduct = all.find(p => p.id === productId);
@@ -461,11 +500,15 @@ function openProductModal(productId, defaultAction) {
     document.getElementById('modalPrice').innerText = formatCurrency(currentProduct.price);
     document.getElementById('modalOldPrice').innerText = formatCurrency(currentProduct.old_price);
 
+    // Render nút màu
     const colorBox = document.getElementById('modalColorPills');
     colorBox.innerHTML = '';
     const colors = (currentProduct.colors || 'Đen, Trắng, Xanh').split(',').map(c => c.trim());
     selectedColor = colors[0];
     document.getElementById('modalColorNotice').innerText = 'Màu: ' + selectedColor;
+
+    // Load ảnh màu mặc định
+    changeModalImageByColor(modalImg, currentProduct.image, selectedColor);
 
     colors.forEach((col, idx) => {
         const btn = document.createElement('button');
@@ -478,13 +521,13 @@ function openProductModal(productId, defaultAction) {
             selectedColor = col;
             document.getElementById('modalColorNotice').innerText = 'Màu: ' + col;
 
-            if (typeof applyColorToImage === 'function') {
-                applyColorToImage(modalImg, col, currentProduct.image);
-            }
+            // Đổi ảnh đúng file màu bạn đã tải
+            changeModalImageByColor(modalImg, currentProduct.image, col);
         };
         colorBox.appendChild(btn);
     });
 
+    // Render nút dung lượng
     const romBox = document.getElementById('modalRomPills');
     romBox.innerHTML = '';
     let romOptions = [];
@@ -529,12 +572,14 @@ function openProductModal(productId, defaultAction) {
 
     document.getElementById('btnConfirmBuyNow').onclick = function() {
         bsModalInstance.hide();
-        window.location.href = `checkout.php?action=buy_now&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}`;
+        const currentChosenImg = modalImg.src;
+        window.location.href = `checkout.php?action=buy_now&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}&img=${encodeURIComponent(currentChosenImg)}`;
     };
 
     document.getElementById('btnConfirmAddToCart').onclick = function() {
         bsModalInstance.hide();
-        const url = `cart.php?action=add&ajax=1&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}`;
+        const currentChosenImg = modalImg.src;
+        const url = `cart.php?action=add&ajax=1&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}&img=${encodeURIComponent(currentChosenImg)}`;
         fetch(url)
             .then(r => r.json())
             .then(data => {
@@ -543,14 +588,14 @@ function openProductModal(productId, defaultAction) {
                 const toast = document.getElementById('vphoneLiveToast');
                 const toastText = document.getElementById('vphoneToastText');
                 if (toast && toastText) {
-                    toastText.innerText = `Đã thêm "${currentProduct.name} - Màu ${selectedColor} (${selectedRom})" vào giỏ!`;
+                    toastText.innerText = `Đã thêm "${currentProduct.name} - Màu ${selectedColor}" vào giỏ!`;
                     toast.style.display = 'block';
                     clearTimeout(window.toastTimer);
                     window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
                 }
             })
             .catch(() => {
-                window.location.href = `cart.php?action=add&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}`;
+                window.location.href = `cart.php?action=add&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}&img=${encodeURIComponent(currentChosenImg)}`;
             });
     };
 
