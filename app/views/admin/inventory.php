@@ -1,6 +1,6 @@
 ﻿<?php
 $pageTitle = 'Quản Lý Tồn Kho - V-Phone Admin';
-require_once 'includes/header.php';
+require_once 'app/views/includes/header.php';
 
 $message = '';
 
@@ -21,15 +21,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_stock'])) {
     }
 }
 
-// Tính tổng tồn, sắp hết và hết hàng trong một lượt quét.
-$stockStats = $pdo->query("SELECT
-    COALESCE(SUM(quantity), 0) AS total_stock,
-    COALESCE(SUM(CASE WHEN quantity > 0 AND quantity <= 5 THEN 1 ELSE 0 END), 0) AS low_stock,
-    COALESCE(SUM(CASE WHEN quantity = 0 THEN 1 ELSE 0 END), 0) AS out_of_stock
-    FROM products")->fetch();
-$totalStock = (int)$stockStats['total_stock'];
-$lowStock = (int)$stockStats['low_stock'];
-$outOfStock = (int)$stockStats['out_of_stock'];
+// Thống kê tồn kho
+$totalStock = $pdo->query("SELECT SUM(quantity) FROM products")->fetchColumn() ?: 0;
+$lowStock = $pdo->query("SELECT COUNT(*) FROM products WHERE quantity > 0 AND quantity <= 5")->fetchColumn() ?: 0;
+$outOfStock = $pdo->query("SELECT COUNT(*) FROM products WHERE quantity = 0")->fetchColumn() ?: 0;
 
 // Lọc sản phẩm
 $filter = $_GET['filter'] ?? 'all';
@@ -160,10 +155,10 @@ $stockList = $pdo->query($querySql)->fetchAll();
                             <form method="POST" action="inventory.php" class="d-flex align-items-center gap-1">
                                 <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
                                 <input type="hidden" name="update_stock" value="1">
-                                
+
                                 <input type="number" name="set_quantity" value="<?= $p['quantity'] ?>" min="0" max="999" class="form-control form-control-sm text-center fw-bold rounded-pill" style="width: 75px;" title="Chỉnh số lượng trực tiếp">
                                 <button type="submit" class="btn btn-primary btn-sm rounded-pill px-2 fw-semibold" title="Lưu số lượng mới">Lưu</button>
-                                
+
                                 <button type="submit" name="add_quantity" value="10" class="btn btn-outline-success btn-sm rounded-pill px-2 small fw-bold">+10</button>
                                 <button type="submit" name="add_quantity" value="50" class="btn btn-outline-info btn-sm rounded-pill px-2 small fw-bold">+50</button>
                             </form>
@@ -175,4 +170,4 @@ $stockList = $pdo->query($querySql)->fetchAll();
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'app/views/includes/footer.php'; ?>

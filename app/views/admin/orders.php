@@ -1,6 +1,6 @@
 <?php
 $pageTitle = 'Quản Lý Đơn Hàng - V-Phone Admin';
-require_once 'includes/header.php';
+require_once 'app/views/includes/header.php';
 
 $message = '';
 
@@ -12,24 +12,14 @@ if (isset($_POST['update_status'])) {
     $message = "Đã cập nhật trạng thái đơn hàng #VP-$orderId thành công!";
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order'])) {
-    $orderId = (int)($_POST['order_id'] ?? 0);
+if (isset($_GET['delete_order'])) {
+    $orderId = (int)$_GET['delete_order'];
     $del = $pdo->prepare("DELETE FROM orders WHERE id = ?");
     $del->execute([$orderId]);
     $message = "Đã xóa đơn hàng #VP-$orderId thành công!";
 }
 
 $orders = $pdo->query("SELECT * FROM orders ORDER BY id DESC")->fetchAll();
-$detailsByOrder = [];
-if ($orders) {
-    $orderIds = array_column($orders, 'id');
-    $placeholders = implode(',', array_fill(0, count($orderIds), '?'));
-    $detailsStmt = $pdo->prepare("SELECT order_id, product_name, quantity FROM order_details WHERE order_id IN ($placeholders) ORDER BY id");
-    $detailsStmt->execute($orderIds);
-    foreach ($detailsStmt->fetchAll() as $detail) {
-        $detailsByOrder[$detail['order_id']][] = $detail;
-    }
-}
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -64,7 +54,12 @@ if ($orders) {
                 </thead>
                 <tbody>
                     <?php foreach ($orders as $o): ?>
-                        <?php $details = $detailsByOrder[$o['id']] ?? []; ?>
+                        <?php
+                            // Lấy danh sách máy có trong đơn kèm màu và dung lượng
+                            $items = $pdo->prepare("SELECT * FROM order_details WHERE order_id = ?");
+                            $items->execute([$o['id']]);
+                            $details = $items->fetchAll();
+                        ?>
                         <tr>
                             <td class="fw-bold text-primary">#VP-<?= $o['id'] ?></td>
                             <td>
@@ -94,13 +89,9 @@ if ($orders) {
                                 </form>
                             </td>
                             <td>
-                                <form method="POST" action="orders.php" class="d-inline" id="deleteOrderForm<?= (int)$o['id'] ?>">
-                                    <input type="hidden" name="order_id" value="<?= (int)$o['id'] ?>">
-                                    <input type="hidden" name="delete_order" value="1">
-                                </form>
-                                <button type="button" class="btn btn-outline-danger btn-sm rounded-circle" title="Xóa đơn" aria-label="Xóa đơn VP-<?= (int)$o['id'] ?>" data-bs-toggle="modal" data-bs-target="#adminDeleteConfirmModal" data-confirm-form="deleteOrderForm<?= (int)$o['id'] ?>" data-confirm-message="Xóa đơn hàng VP-<?= (int)$o['id'] ?>?">
+                                <a href="orders.php?delete_order=<?= $o['id'] ?>" class="btn btn-outline-danger btn-sm rounded-circle" onclick="return confirm('Bạn có chắc muốn xóa đơn này?');" title="Xóa đơn">
                                     <i class="fa-solid fa-trash-can"></i>
-                                </button>
+                                </a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -110,4 +101,4 @@ if ($orders) {
     <?php endif; ?>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'app/views/includes/footer.php'; ?>

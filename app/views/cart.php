@@ -1,122 +1,6 @@
 <?php
-require_once 'config/database.php';
-
-if (!isset($_SESSION['cart'])) {
-    $_SESSION['cart'] = [];
-}
-
-$action = $_GET['action'] ?? '';
-$id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
-$key = $_GET['key'] ?? '';
-$rom = trim($_GET['rom'] ?? '');
-$color = trim($_GET['color'] ?? '');
-$extra = isset($_GET['extra']) ? (int)$_GET['extra'] : 0;
-$isAjax = isset($_GET['ajax']) && $_GET['ajax'] == 1;
-$redirect = $_GET['redirect'] ?? '';
-
-function syncUserCartToDB($pdo) {
-    if (isset($_SESSION['user']['id'])) {
-        $userId = $_SESSION['user']['id'];
-        $cartJson = json_encode($_SESSION['cart'], JSON_UNESCAPED_UNICODE);
-        $stmt = $pdo->prepare("UPDATE users SET cart_data = ? WHERE id = ?");
-        $stmt->execute([$cartJson, $userId]);
-    }
-}
-
-// XỬ LÝ THÊM VÀO GIỎ
-if ($action === 'add' && $id > 0) {
-    $stmt = $pdo->prepare("SELECT * FROM products WHERE id = :id");
-    $stmt->execute([':id' => $id]);
-    $prod = $stmt->fetch();
-
-    if ($prod) {
-        $selectedRom = !empty($rom) ? $rom : $prod['rom'];
-        $cList = array_map("trim", explode(",", $prod["colors"] ?? "Đen, Trắng"));
-        $selectedColor = !empty($color) ? $color : ($cList[0] ?? 'Tiêu chuẩn');
-
-        $basePrice = ($prod['sale_price'] > 0 && $prod['sale_price'] < $prod['price']) ? $prod['sale_price'] : $prod['price'];
-        $finalPrice = $basePrice + $extra;
-
-        // TẠO MÃ DÒNG DUY NHẤT: ID + GIÁ + BỘ NHỚ + MÀU SẮC
-        $variantSlug = preg_replace('/[^a-zA-Z0-9]/', '', $selectedRom . $selectedColor);
-        $cartKey = $id . '_' . $finalPrice . '_' . $variantSlug;
-
-        if (isset($_SESSION['cart'][$cartKey])) {
-            $_SESSION['cart'][$cartKey]['quantity'] += 1;
-        } else {
-            $_SESSION['cart'][$cartKey] = [
-                'cart_key' => $cartKey,
-                'id' => $prod['id'],
-                'name' => $prod['name'],
-                'rom' => $selectedRom,
-                'color' => $selectedColor,
-                'price' => $finalPrice,
-                'image' => (!empty($_GET['img']) ? $_GET['img'] : $prod['image']),
-                'quantity' => 1
-            ];
-        }
-
-        syncUserCartToDB($pdo);
-    }
-
-    if ($redirect === 'checkout') {
-        header('Location: checkout.php');
-        exit;
-    }
-
-    if ($isAjax) {
-        if (ob_get_length()) ob_clean();
-        header('Content-Type: application/json; charset=utf-8');
-        
-        $totalCount = 0;
-        foreach ($_SESSION['cart'] as $item) {
-            $totalCount += $item['quantity'];
-        }
-
-        echo json_encode([
-            'success' => true,
-            'cart_count' => $totalCount,
-            'product_name' => $prod['name'] . ' - Màu ' . $selectedColor . ' (' . $selectedRom . ')'
-        ], JSON_UNESCAPED_UNICODE);
-        exit;
-    }
-
-    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'cart.php'));
-    exit;
-}
-
-if ($action === 'update' && !empty($key)) {
-    $qty = isset($_POST['quantity']) ? (int)$_POST['quantity'] : 1;
-    if ($qty > 0 && isset($_SESSION['cart'][$key])) {
-        $_SESSION['cart'][$key]['quantity'] = $qty;
-    }
-    syncUserCartToDB($pdo);
-    header('Location: cart.php');
-    exit;
-}
-
-if ($action === 'delete' && !empty($key)) {
-    unset($_SESSION['cart'][$key]);
-    syncUserCartToDB($pdo);
-    header('Location: cart.php');
-    exit;
-}
-
-if ($action === 'clear') {
-    $_SESSION['cart'] = [];
-    syncUserCartToDB($pdo);
-    header('Location: cart.php');
-    exit;
-}
-
-$pageTitle = 'Giỏ hàng của bạn - V-Phone';
-$totalMoney = 0;
-foreach ($_SESSION['cart'] as $item) {
-    $totalMoney += $item['price'] * $item['quantity'];
-}
-
-require_once 'includes/header.php';
-require_once 'includes/navbar.php';
+require_once 'app/views/includes/header.php';
+require_once 'app/views/includes/navbar.php';
 ?>
 
 <div class="container my-4">
@@ -152,7 +36,7 @@ require_once 'includes/navbar.php';
                                             <div class="d-flex align-items-center">
                                                 <img src="<?= htmlspecialchars($item['image']) ?>" alt="<?= htmlspecialchars($item['name']) ?>" style="width: 52px; height: 52px; object-fit: contain;" class="me-3" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
                                                 <div>
-                                                    <a href="product-detail.php?id=<?= $item['id'] ?>" class="text-decoration-none text-dark fw-bold small d-block"><?= htmlspecialchars($item['name']) ?></a>
+                                                    <a href="index.php?page=detail&id=<?= $item['id'] ?>" class="text-decoration-none text-dark fw-bold small d-block"><?= htmlspecialchars($item['name']) ?></a>
                                                     <!-- HIỂN THỊ CẢ BỘ NHỚ LẪN MÀU SẮC RÕ RÀNG -->
                                                     <div class="mt-1 d-flex gap-1 flex-wrap">
                                                         <span class="badge bg-light text-primary border" style="font-size:0.68rem;">Bản: <strong><?= htmlspecialchars($item['rom'] ?? 'Tiêu chuẩn') ?></strong></span>
@@ -163,13 +47,15 @@ require_once 'includes/navbar.php';
                                         </td>
                                         <td class="text-danger fw-bold fs-6"><?= number_format($item['price'], 0, ',', '.') ?> đ</td>
                                         <td>
-                                            <form action="cart.php?action=update&key=<?= urlencode($cKey) ?>" method="POST" class="d-flex align-items-center">
+                                            <form action="index.php?page=cart&action=update&key=<?= urlencode($cKey) ?>" method="POST" class="d-flex align-items-center">
                                                 <input type="number" name="quantity" value="<?= $item['quantity'] ?>" min="1" max="99" class="form-control form-control-sm text-center fw-bold" onchange="this.form.submit()">
                                             </form>
                                         </td>
                                         <td class="text-primary fw-bold fs-6"><?= number_format($subtotal, 0, ',', '.') ?> đ</td>
                                         <td>
-                                            <a href="cart.php?action=delete&key=<?= urlencode($cKey) ?>" class="text-danger btn btn-sm btn-light rounded-circle" title="Xóa món này"><i class="fa-solid fa-trash-can"></i></a>
+                                            <button type="button" class="text-danger btn btn-sm btn-light rounded-circle" title="Xóa món này" data-bs-toggle="modal" data-bs-target="#cartConfirmModal" data-cart-action="delete" data-cart-key="<?= htmlspecialchars($cKey) ?>" data-cart-name="<?= htmlspecialchars($item['name']) ?>">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -179,7 +65,7 @@ require_once 'includes/navbar.php';
 
                     <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
                         <a href="index.php" class="btn btn-outline-secondary btn-sm rounded-pill"><i class="fa-solid fa-arrow-left me-1"></i>Chọn thêm điện thoại khác</a>
-                        <a href="cart.php?action=clear" class="btn btn-outline-danger btn-sm rounded-pill" onclick="return confirm('Bạn có chắc muốn làm rỗng toàn bộ giỏ hàng?');">Xóa toàn bộ</a>
+                        <button type="button" class="btn btn-outline-danger btn-sm rounded-pill" data-bs-toggle="modal" data-bs-target="#cartConfirmModal" data-cart-action="clear">Xóa toàn bộ</button>
                     </div>
                 </div>
             </div>
@@ -201,7 +87,7 @@ require_once 'includes/navbar.php';
                         <span class="fs-4 fw-bold text-danger"><?= number_format($totalMoney, 0, ',', '.') ?> đ</span>
                     </div>
 
-                    <a href="checkout.php" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3">
+                    <a href="index.php?page=checkout" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3">
                         TIẾN HÀNH ĐẶT HÀNG <i class="fa-solid fa-arrow-right ms-2"></i>
                     </a>
                 </div>
@@ -210,4 +96,45 @@ require_once 'includes/navbar.php';
     <?php endif; ?>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<div class="modal fade" id="cartConfirmModal" tabindex="-1" aria-labelledby="cartConfirmTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+            <div class="modal-body p-4 p-md-5 text-center">
+                <div class="d-flex align-items-center justify-content-center rounded-circle bg-danger bg-opacity-10 text-danger mx-auto mb-3" style="width: 58px; height: 58px;">
+                    <i class="fa-solid fa-trash-can fs-4"></i>
+                </div>
+                <h5 class="fw-bold mb-2" id="cartConfirmTitle">Xác nhận xóa</h5>
+                <p class="text-secondary mb-4" id="cartConfirmMessage">Bạn có chắc muốn xóa sản phẩm này?</p>
+                <form method="POST" action="index.php?page=cart" class="d-flex justify-content-center gap-2">
+                    <input type="hidden" name="action" id="cartConfirmAction">
+                    <input type="hidden" name="key" id="cartConfirmKey">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Giữ lại</button>
+                    <button type="submit" class="btn btn-danger rounded-pill px-4" id="cartConfirmSubmit">Xóa sản phẩm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const confirmModal = document.getElementById('cartConfirmModal');
+    if (!confirmModal) return;
+
+    confirmModal.addEventListener('show.bs.modal', function (event) {
+        const trigger = event.relatedTarget;
+        const action = trigger.dataset.cartAction;
+        const isClear = action === 'clear';
+
+        document.getElementById('cartConfirmAction').value = action;
+        document.getElementById('cartConfirmKey').value = trigger.dataset.cartKey || '';
+        document.getElementById('cartConfirmTitle').textContent = isClear ? 'Xóa toàn bộ giỏ hàng?' : 'Xóa sản phẩm?';
+        document.getElementById('cartConfirmMessage').textContent = isClear
+            ? 'Tất cả sản phẩm trong giỏ sẽ bị xóa. Bạn có chắc muốn tiếp tục?'
+            : `Xóa "${trigger.dataset.cartName}" khỏi giỏ hàng?`;
+        document.getElementById('cartConfirmSubmit').textContent = isClear ? 'Xóa toàn bộ' : 'Xóa sản phẩm';
+    });
+});
+</script>
+
+<?php require_once 'app/views/includes/footer.php'; ?>

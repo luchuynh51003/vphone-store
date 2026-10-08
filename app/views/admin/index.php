@@ -1,20 +1,13 @@
 ﻿<?php
 $pageTitle = 'Dashboard Quản Trị - V-Phone';
-require_once 'includes/header.php';
+require_once 'app/views/includes/header.php';
 
-// Tính các chỉ số trong một lượt đọc mỗi bảng.
-$stats = $pdo->query("SELECT
-    COUNT(*) AS total_orders,
-    COALESCE(SUM(CASE WHEN status = 'Đã giao thành công' THEN total_money ELSE 0 END), 0) AS total_revenue,
-    COALESCE(SUM(CASE WHEN status = 'Chờ xử lý' THEN 1 ELSE 0 END), 0) AS pending_orders,
-    (SELECT COUNT(*) FROM products) AS total_products,
-    (SELECT COUNT(*) FROM users WHERE role = 0) AS total_users
-    FROM orders")->fetch();
-$totalRevenue = $stats['total_revenue'];
-$totalOrders = (int)$stats['total_orders'];
-$pendingOrders = (int)$stats['pending_orders'];
-$totalProducts = (int)$stats['total_products'];
-$totalUsers = (int)$stats['total_users'];
+// Thống kê số liệu
+$totalRevenue = $pdo->query("SELECT SUM(total_money) FROM orders WHERE status = 'Đã giao thành công'")->fetchColumn() ?: 0;
+$totalOrders = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn() ?: 0;
+$pendingOrders = $pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'Chờ xử lý'")->fetchColumn() ?: 0;
+$totalProducts = $pdo->query("SELECT COUNT(*) FROM products")->fetchColumn() ?: 0;
+$totalUsers = $pdo->query("SELECT COUNT(*) FROM users WHERE role = 0")->fetchColumn() ?: 0;
 
 // Lấy 5 đơn hàng mới nhất cần duyệt
 $recentOrders = $pdo->query("SELECT * FROM orders ORDER BY id DESC LIMIT 5")->fetchAll();
@@ -131,4 +124,4 @@ $recentOrders = $pdo->query("SELECT * FROM orders ORDER BY id DESC LIMIT 5")->fe
     <?php endif; ?>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'app/views/includes/footer.php'; ?>

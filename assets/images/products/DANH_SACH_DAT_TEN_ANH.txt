@@ -19,7 +19,7 @@ va tha vao thu muc assets/images/products/, web se tu dong nhan dien khi khach b
    • Mau Đen                   => iphone-18-promax-den.png
    • Mau Bạc                  => iphone-18-promax-bac.png
 
-3. iPhone 18 Duo (Màn Gập Apple)
+3. iPhone Duo (Màn Gập Apple)
    • Anh mac dinh => iphone-18-duo.png
    • Mau Trắng Ánh Sao       => iphone-18-duo-trang-anh-sao.png
    • Mau Trời Đêm           => iphone-18-duo-troi-dem.png

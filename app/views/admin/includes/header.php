@@ -2,7 +2,7 @@
 require_once '../config/database.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1) {
-    header('Location: ../index.php?show_login=1');
+    header('Location: ../login.php');
     exit;
 }
 
@@ -32,14 +32,12 @@ $alertStock = $pdo->query("SELECT COUNT(*) FROM products WHERE quantity <= 5")->
         .admin-sidebar {
             width: 260px;
             min-height: 100vh;
-            height: 100vh;
             background: var(--admin-dark);
             color: #ffffff;
             position: fixed;
             top: 0;
             left: 0;
             z-index: 1000;
-            overflow-y: auto;
         }
         .admin-content {
             margin-left: 260px;
@@ -71,7 +69,7 @@ $alertStock = $pdo->query("SELECT COUNT(*) FROM products WHERE quantity <= 5")->
             margin-right: 12px;
         }
         @media (max-width: 991px) {
-            .admin-sidebar { position: relative; width: 100%; min-height: auto; height: auto; }
+            .admin-sidebar { position: relative; width: 100%; min-height: auto; }
             .admin-content { margin-left: 0; padding: 15px; }
         }
     </style>
@@ -102,9 +100,6 @@ $alertStock = $pdo->query("SELECT COUNT(*) FROM products WHERE quantity <= 5")->
             <a href="products.php" class="admin-nav-link <?= ($adminPage === 'products.php') ? 'active' : '' ?>">
                 <i class="fa-solid fa-mobile-screen"></i> Quản lý Sản phẩm
             </a>
-            <a href="brands.php" class="admin-nav-link <?= ($adminPage === 'brands.php') ? 'active' : '' ?>">
-                <i class="fa-solid fa-tags"></i> Quản lý Thương hiệu
-            </a>
 
             <!-- MỤC QUẢN LÝ TỒN KHO MỚI THÊM CÓ SỐ CẢNH BÁO -->
             <a href="inventory.php" class="admin-nav-link <?= ($adminPage === 'inventory.php') ? 'active' : '' ?>">
@@ -120,21 +115,14 @@ $alertStock = $pdo->query("SELECT COUNT(*) FROM products WHERE quantity <= 5")->
             <a href="users.php" class="admin-nav-link <?= ($adminPage === 'users.php') ? 'active' : '' ?>">
                 <i class="fa-solid fa-users"></i> Quản lý Khách hàng
             </a>
-            <a href="vouchers.php" class="admin-nav-link <?= ($adminPage === 'vouchers.php') ? 'active' : '' ?>">
-                <i class="fa-solid fa-ticket"></i> Quản lý Voucher
-            </a>
-            <a href="news.php" class="admin-nav-link <?= ($adminPage === 'news.php') ? 'active' : '' ?>">
-                <i class="fa-solid fa-newspaper"></i> Quản lý Tin tức
-            </a>
             <hr class="border-secondary my-3">
             <a href="../index.php" class="admin-nav-link text-info">
                 <i class="fa-solid fa-store"></i> Xem Website bán hàng
             </a>
-            <a href="../index.php?page=logout" class="admin-nav-link text-danger">
+            <a href="../logout.php" class="admin-nav-link text-danger">
                 <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
             </a>
         </nav>
     </div>
 
     <div class="admin-content flex-grow-1">
-

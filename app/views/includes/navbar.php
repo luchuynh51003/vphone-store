@@ -1,21 +1,18 @@
 <?php
-$currentPage = basename($_SERVER['PHP_SELF']);
+$currentPage = $_GET['page'] ?? 'home';
 $cartCount = 0;
 if (!empty($_SESSION['cart'])) {
-    foreach ($_SESSION['cart'] as $item) {
-        $cartCount += $item['quantity'];
-    }
+    foreach ($_SESSION['cart'] as $item) { $cartCount += $item['quantity']; }
 }
 $currentUser = $_SESSION['user'] ?? null;
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark navbar-vphone sticky-top shadow-sm py-2">
-    <!-- NÚT 3 GẠCH TRÒN SÁT MÉP TRÁI NGOÀI CÙNG -->
-    <button class="btn btn-light rounded-circle shadow-sm ms-3 me-2 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenuLeft" style="width: 40px; height: 40px; flex-shrink: 0;" title="Mở danh mục">
+    <!-- Nút 3 gạch mở danh mục -->
+    <button class="btn btn-light rounded-circle shadow-sm ms-3 me-2 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenuLeft" style="width: 42px; height: 42px; flex-shrink: 0;" title="Mở danh mục">
         <i class="fa-solid fa-bars fs-5 text-primary"></i>
     </button>
 
     <div class="container ps-0">
-        <!-- LOGO V-PHONE ĐỒ HỌA MỚI -->
         <a class="navbar-brand fw-bold text-white d-flex align-items-center fs-4 me-3" href="index.php">
             <img src="assets/images/vphone-logo.svg" alt="V-Phone" style="width: 36px; height: 36px; margin-right: 8px;" class="shadow-sm rounded-3">
             <span>V-Phone</span>
@@ -26,7 +23,6 @@ $currentUser = $_SESSION['user'] ?? null;
         </button>
 
         <div class="collapse navbar-collapse" id="navbarContent">
-            <!-- Ô TÌM KIẾM -->
             <div class="position-relative mx-auto my-2 my-lg-0 col-12 col-lg-5 search-wrapper">
                 <form action="index.php" method="GET" autocomplete="off">
                     <div class="input-group bg-white rounded-pill p-1 shadow-sm">
@@ -41,23 +37,20 @@ $currentUser = $_SESSION['user'] ?? null;
                 </div>
             </div>
 
-            <!-- MENU PHẢI -->
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-2">
                 <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'index.php') ? 'active' : '' ?>" href="index.php">
+                    <a class="nav-link <?= ($currentPage === 'home') ? 'active' : '' ?>" href="index.php">
                         <i class="fa-solid fa-house me-1"></i>Trang chủ
                     </a>
                 </li>
 
-                <!-- Nút Giỏ Hàng -->
                 <li class="nav-item">
-                    <a class="nav-link position-relative <?= ($currentPage === 'cart.php') ? 'active' : '' ?>" href="cart.php" id="cartNavLink">
+                    <a class="nav-link position-relative <?= ($currentPage === 'cart') ? 'active' : '' ?>" href="index.php?page=cart" id="cartNavLink">
                         <i class="fa-solid fa-cart-shopping me-1"></i>Giỏ hàng
                         <span class="badge bg-danger rounded-pill ms-1" id="cartBadge"><?= $cartCount ?></span>
                     </a>
                 </li>
 
-                <!-- Nút Tài Khoản -->
                 <?php if ($currentUser): ?>
                     <li class="nav-item dropdown ms-lg-2">
                         <a class="nav-link dropdown-toggle bg-white bg-opacity-10 rounded-pill px-3 text-white" href="#" role="button" data-bs-toggle="dropdown">
@@ -73,8 +66,8 @@ $currentUser = $_SESSION['user'] ?? null;
                                     </a>
                                 </li>
                             <?php endif; ?>
-                            <li><a class="dropdown-item py-2" href="cart.php"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Giỏ hàng của tôi</a></li>
-                            <li><a class="dropdown-item py-2 text-danger" href="logout.php"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
+                            <li><a class="dropdown-item py-2" href="index.php?page=cart"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Giỏ hàng của tôi</a></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="index.php?page=logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
                         </ul>
                     </li>
                 <?php else: ?>
@@ -113,7 +106,7 @@ $currentUser = $_SESSION['user'] ?? null;
                 <div id="authAlert" class="alert d-none small py-2 rounded-3 mb-3"></div>
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="tab-login">
-                        <form id="formModalLogin" method="POST" action="login.php">
+                        <form id="formModalLogin" method="POST" action="index.php?page=auth&action=login">
                             <div class="mb-3">
                                 <label class="form-label small fw-semibold">Email tài khoản</label>
                                 <input type="email" name="email" class="form-control rounded-pill" required placeholder="name@vphone.vn">
@@ -122,16 +115,14 @@ $currentUser = $_SESSION['user'] ?? null;
                                 <label class="form-label small fw-semibold">Mật khẩu</label>
                                 <input type="password" name="password" class="form-control rounded-pill" required placeholder="Nhập mật khẩu">
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm mb-3" id="btnLoginSubmit">
-                                ĐĂNG NHẬP NGAY
-                            </button>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm mb-3">ĐĂNG NHẬP NGAY</button>
                             <div class="p-2 rounded-3 bg-light text-secondary small text-center">
                                 Gợi ý test: <strong>admin@vphone.vn</strong> hoặc <strong>hieu@vphone.vn</strong> (Pass: <strong>123456</strong>)
                             </div>
                         </form>
                     </div>
                     <div class="tab-pane fade" id="tab-register">
-                        <form id="formModalRegister" method="POST" action="register.php">
+                        <form id="formModalRegister" method="POST" action="index.php?page=auth&action=register">
                             <div class="mb-2">
                                 <label class="form-label small fw-semibold">Họ và tên *</label>
                                 <input type="text" name="fullname" class="form-control rounded-pill" required placeholder="Ví dụ: Nguyễn Văn A">
@@ -148,9 +139,7 @@ $currentUser = $_SESSION['user'] ?? null;
                                 <label class="form-label small fw-semibold">Mật khẩu *</label>
                                 <input type="password" name="password" class="form-control rounded-pill" required placeholder="Tối thiểu 6 ký tự">
                             </div>
-                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm" id="btnRegisterSubmit">
-                                TẠO TÀI KHOẢN
-                            </button>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm">TẠO TÀI KHOẢN</button>
                         </form>
                     </div>
                 </div>
@@ -159,9 +148,8 @@ $currentUser = $_SESSION['user'] ?? null;
     </div>
 </div>
 
-<!-- MENU TRƯỢT GÓC TRÁI (ĐÃ GẮN LOGO MỚI + CĂN ĐỀU CHUẨN XÁC) -->
+<!-- MENU TRƯỢT GÓC TRÁI -->
 <div class="offcanvas offcanvas-start sidebar-vphone shadow-lg" tabindex="-1" id="sidebarMenuLeft">
-    <!-- ĐẦU HEADER CỦA SIDEBAR CÓ LOGO ĐỒ HỌA MỚI -->
     <div class="sidebar-header-custom">
         <div class="d-flex align-items-center">
             <img src="assets/images/vphone-logo.svg" alt="V-Phone" style="width: 32px; height: 32px; margin-right: 10px;">
@@ -192,22 +180,22 @@ $currentUser = $_SESSION['user'] ?? null;
             <a href="index.php" class="list-group-item list-group-item-action d-flex align-items-center py-2">
                 <i class="fa-solid fa-house text-primary me-3" style="width:20px;"></i> Trang chủ V-Phone
             </a>
-            <a href="news.php" class="list-group-item list-group-item-action d-flex align-items-center py-2 text-primary fw-bold">
+            <a href="index.php?page=news" class="list-group-item list-group-item-action d-flex align-items-center py-2 text-primary fw-bold">
                 <i class="fa-solid fa-newspaper text-primary me-3" style="width:20px;"></i> Tin tức công nghệ
             </a>
-            <a href="used-phones.php" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 text-danger fw-bold">
+            <a href="index.php?page=used-phones" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 text-danger fw-bold">
                 <div><i class="fa-solid fa-tags text-danger me-3" style="width:20px;"></i> Kho máy cũ 99%</div>
                 <span class="badge bg-danger rounded-pill">-50%</span>
             </a>
         </div>
 
-        <div class="text-uppercase fw-bold text-secondary small mb-2"><i class="fa-solid fa-mobile-screen me-2 text-primary"></i>Điện Thoại Mới 2026</div>
+        <div class="text-uppercase fw-bold text-secondary small mb-2"><i class="fa-solid fa-mobile-screen me-2 text-primary"></i>Thương Hiệu</div>
         <div class="list-group list-group-flush mb-4 rounded-3 border">
             <a href="index.php?brand_id=1" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-brands fa-apple text-dark me-3" style="width:20px;"></i> Apple (iPhone 18, 17, 16)
+                <i class="fa-brands fa-apple text-dark me-3" style="width:20px;"></i> Apple (iPhone)
             </a>
             <a href="index.php?brand_id=2" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-solid fa-mobile-screen text-primary me-3" style="width:20px;"></i> Samsung Galaxy (S26, Fold)
+                <i class="fa-solid fa-mobile-screen text-primary me-3" style="width:20px;"></i> Samsung Galaxy
             </a>
             <a href="index.php?brand_id=3" class="list-group-item list-group-item-action d-flex align-items-center py-2">
                 <i class="fa-solid fa-bolt text-warning me-3" style="width:20px;"></i> Xiaomi Flagship
@@ -216,18 +204,7 @@ $currentUser = $_SESSION['user'] ?? null;
                 <i class="fa-solid fa-camera text-success me-3" style="width:20px;"></i> OPPO Camera Phone
             </a>
             <a href="index.php?brand_id=5" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-solid fa-layer-group text-danger me-3" style="width:20px;"></i> Huawei Tri-Fold (Gập 3)
-            </a>
-        </div>
-
-        <div class="text-uppercase fw-bold text-secondary small mb-2"><i class="fa-solid fa-gear me-2 text-primary"></i>Tiện Ích & Giỏ Hàng</div>
-        <div class="list-group list-group-flush mb-3 rounded-3 border">
-            <a href="cart.php" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2">
-                <div><i class="fa-solid fa-cart-shopping text-primary me-3" style="width:20px;"></i> Giỏ hàng của bạn</div>
-                <span class="badge bg-danger rounded-pill"><?= $cartCount ?></span>
-            </a>
-            <a href="checkout.php" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-solid fa-credit-card text-success me-3" style="width:20px;"></i> Thanh toán đơn hàng
+                <i class="fa-solid fa-layer-group text-danger me-3" style="width:20px;"></i> Huawei Tri-Fold
             </a>
         </div>
 
@@ -237,5 +214,3 @@ $currentUser = $_SESSION['user'] ?? null;
         </div>
     </div>
 </div>
-
-

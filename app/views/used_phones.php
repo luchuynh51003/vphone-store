@@ -41,8 +41,8 @@ foreach ($usedProducts as $p) {
     ];
 }
 
-require_once 'includes/header.php';
-require_once 'includes/navbar.php';
+require_once 'app/views/includes/header.php';
+require_once 'app/views/includes/navbar.php';
 ?>
 
 <script>
@@ -71,9 +71,9 @@ require_once 'includes/navbar.php';
 <div class="container my-4">
     <div class="bg-white p-3 rounded-4 shadow-sm d-flex flex-wrap gap-2 align-items-center border">
         <span class="fw-bold text-primary me-2"><i class="fa-solid fa-filter me-1"></i>Hãng máy cũ:</span>
-        <a href="used-phones.php" class="btn btn-sm <?= $brandId == 0 ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">Tất cả máy cũ</a>
+        <a href="index.php?page=used-phones" class="btn btn-sm <?= $brandId == 0 ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">Tất cả máy cũ</a>
         <?php foreach ($brands as $b): ?>
-            <a href="used-phones.php?brand_id=<?= $b['id'] ?>" class="btn btn-sm <?= $brandId == $b['id'] ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">
+            <a href="index.php?page=used-phones?brand_id=<?= $b['id'] ?>" class="btn btn-sm <?= $brandId == $b['id'] ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">
                 <?= htmlspecialchars($b['name']) ?> Cũ
             </a>
         <?php endforeach; ?>
@@ -128,11 +128,11 @@ require_once 'includes/navbar.php';
 
                         <!-- 3 NÚT HÀNH ĐỘNG CHUẨN -->
                         <div class="d-grid gap-2 mt-3">
-                            <a href="cart.php?action=add&id=<?= $p['id'] ?>&redirect=checkout" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center">
+                            <a href="index.php?page=cart&action=add&id=<?= $p['id'] ?>&redirect=checkout" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center">
                                 <i class="fa-solid fa-bolt me-1"></i>MUA NGAY
                             </a>
                             <div class="d-flex gap-2">
-                                <a href="product-detail.php?id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
+                                <a href="index.php?page=detail&id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
                                     Chi tiết
                                 </a>
                                 <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="addToCartDirect(this, <?= $p['id'] ?>, '<?= htmlspecialchars(addslashes($p['name'])) ?>')">
@@ -147,4 +147,4 @@ require_once 'includes/navbar.php';
     </div>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'app/views/includes/footer.php'; ?>

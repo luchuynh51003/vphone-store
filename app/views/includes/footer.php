@@ -17,7 +17,6 @@
                 <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
                     <li><a href="#" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Chính sách bảo hành toàn diện 12 tháng</a></li>
                     <li><a href="#" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Chính sách đổi trả 1 - 1 trong 30 ngày</a></li>
-                    <li><a href="#" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Giao hàng hỏa tốc 2 giờ nội thành</a></li>
                 </ul>
             </div>
 
@@ -26,7 +25,6 @@
                 <div class="d-flex flex-column gap-2 small opacity-75">
                     <p class="mb-0"><i class="fa-solid fa-phone-volume me-2 text-info"></i>Hotline: <strong>1800 6868</strong> (Miễn phí 8:00 - 21:30)</p>
                     <p class="mb-0"><i class="fa-solid fa-envelope me-2 text-info"></i>Email: cskh@vphone.vn</p>
-                    <p class="mb-0"><i class="fa-solid fa-location-dot me-2 text-info"></i>Hệ thống cửa hàng: TP. Hồ Chí Minh</p>
                 </div>
             </div>
         </div>
@@ -36,20 +34,6 @@
         <div class="d-flex flex-wrap justify-content-between align-items-center small text-light opacity-50">
             <div>&copy; 2026 <strong>V-Phone Store</strong>. All rights reserved.</div>
             <div>Đồ án Chuyên ngành Công Nghệ Thông Tin</div>
-        <div class="d-flex flex-wrap justify-content-between align-items-center small text-light opacity-75 mt-3 pt-3 border-top border-light border-opacity-10">
-            <div class="d-flex align-items-center gap-2 mb-2 mb-md-0">
-                <span class="me-2 text-white small fw-bold">Hỗ trợ thanh toán:</span>
-                <span class="badge bg-white text-dark px-2 py-1 fw-bold"><i class="fa-brands fa-cc-visa text-primary me-1"></i>VISA</span>
-                <span class="badge bg-white text-dark px-2 py-1 fw-bold"><i class="fa-brands fa-cc-mastercard text-danger me-1"></i>MasterCard</span>
-                <span class="badge bg-white text-dark px-2 py-1 fw-bold"><i class="fa-brands fa-apple-pay text-dark me-1"></i>Apple Pay</span>
-                <span class="badge bg-white text-dark px-2 py-1 fw-bold text-danger">MoMo</span>
-                <span class="badge bg-white text-dark px-2 py-1 fw-bold text-primary">VNPAY</span>
-            </div>
-            <div>
-                <i class="fa-solid fa-lock text-success me-1"></i>Bảo mật thanh toán SSL 256-bit
-            </div>
-        </div>
-
         </div>
     </div>
 </footer>
@@ -62,7 +46,7 @@
         </div>
         <div style="flex-grow:1; min-width:0;">
             <div id="vphoneToastText" style="font-weight:700; font-size:13.5px; color:#1e293b; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Đã thêm vào giỏ!</div>
-            <a href="cart.php" style="color:#0066cc; text-decoration:none; font-size:12.5px; font-weight:600;">Xem giỏ hàng ngay &rarr;</a>
+            <a href="index.php?page=cart" style="color:#0066cc; text-decoration:none; font-size:12.5px; font-weight:600;">Xem giỏ hàng ngay &rarr;</a>
         </div>
         <button type="button" style="background:none; border:none; color:#94a3b8; font-size:20px; line-height:1; cursor:pointer;" onclick="document.getElementById('vphoneLiveToast').style.display='none'">&times;</button>
     </div>
@@ -72,6 +56,57 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const loginForm = document.getElementById('formModalLogin');
+    const registerForm = document.getElementById('formModalRegister');
+    const authAlert = document.getElementById('authAlert');
+    const authModalElement = document.getElementById('unifiedAuthModal');
+
+    if (new URLSearchParams(window.location.search).get('show_login') === '1' && authModalElement && window.bootstrap) {
+        bootstrap.Modal.getOrCreateInstance(authModalElement).show();
+    }
+
+    [loginForm, registerForm].forEach(form => {
+        if (!form) return;
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            if (authAlert) {
+                authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
+                authAlert.textContent = '';
+            }
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: new FormData(form),
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const result = await response.json();
+
+                if (!result.success) {
+                    if (authAlert) {
+                        authAlert.textContent = result.message || 'Không thể đăng nhập.';
+                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    }
+                    return;
+                }
+
+                if (result.is_admin) {
+                    window.location.href = 'admin/index.php';
+                } else if (result.redirect) {
+                    window.location.href = result.redirect;
+                } else {
+                    window.location.reload();
+                }
+            } catch (error) {
+                if (authAlert) {
+                    authAlert.textContent = 'Có lỗi kết nối. Vui lòng thử lại.';
+                    authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                }
+            }
+        });
+    });
+
     const searchInput = document.getElementById("searchInput");
     const searchDropdown = document.getElementById("searchDropdown");
     const searchResultsList = document.getElementById("searchResultsList");
@@ -79,7 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (searchInput && searchDropdown && searchResultsList) {
         searchInput.addEventListener("input", function () {
             const query = this.value.trim().toLowerCase();
-
             if (query.length === 0) {
                 searchDropdown.classList.add("d-none");
                 searchResultsList.innerHTML = "";
@@ -87,7 +121,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             searchDropdown.classList.remove("d-none");
-
             const allProducts = window.STORE_PRODUCTS || [];
             const isSS = (query === 'ss' || query === 'sam');
             const isIP = (query === 'ip');
@@ -100,21 +133,16 @@ document.addEventListener("DOMContentLoaded", function () {
             }).slice(0, 6);
 
             if (matched.length === 0) {
-                searchResultsList.innerHTML = `
-                    <div style="padding:16px; text-align:center; color:#64748b; font-size:13px;">
-                        <i class="fa-solid fa-circle-question me-1 text-primary"></i> Không tìm thấy máy phù hợp.
-                    </div>`;
+                searchResultsList.innerHTML = `<div style="padding:16px; text-align:center; color:#64748b; font-size:13px;"><i class="fa-solid fa-circle-question me-1 text-primary"></i> Không tìm thấy máy phù hợp.</div>`;
                 return;
             }
 
             let html = "";
             matched.forEach(item => {
-                // ĐỊNH DẠNG GIÁ TIỀN CÓ DẤU CHẤM VÀ CHỮ đ CHUẨN XÁC
                 const formattedPrice = new Intl.NumberFormat('vi-VN').format(item.price) + ' đ';
-
                 html += `
-                    <a href="product-detail.php?id=${item.id}" class="search-item">
-                        <img src="${item.image}" alt="${item.name}" class="search-thumb">
+                    <a href="index.php?page=detail&id=${item.id}" class="search-item">
+                        <img src="${item.image}" alt="${item.name}" class="search-thumb" onerror="this.src='assets/images/products/iphone-16.png';">
                         <div style="flex-grow:1; min-width:0;">
                             <div class="search-name">${item.name}</div>
                             <div class="search-price">${formattedPrice}</div>
@@ -123,11 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     </a>`;
             });
 
-            html += `
-                <a href="index.php?keyword=${encodeURIComponent(this.value.trim())}" style="display:block; padding:10px; text-align:center; background:#f8fafc; color:#0066cc; font-size:12.5px; font-weight:700; text-decoration:none; border-top:1px solid #f1f5f9;">
-                    Xem tất cả kết quả cho "${this.value.trim()}" &rarr;
-                </a>`;
-
+            html += `<a href="index.php?keyword=${encodeURIComponent(this.value.trim())}" style="display:block; padding:10px; text-align:center; background:#f8fafc; color:#0066cc; font-size:12.5px; font-weight:700; text-decoration:none; border-top:1px solid #f1f5f9;">Xem tất cả kết quả &rarr;</a>`;
             searchResultsList.innerHTML = html;
         });
 
@@ -138,62 +162,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
-
-// HÀM THÊM GIỎ HÀNG
-let toastTimer = null;
-
-function addToCartDirect(btn, productId, productName, chosenColor) {
-    const colorParam = chosenColor ? `&color=${encodeURIComponent(chosenColor)}` : "";
-    if (btn.disabled) return;
-    btn.disabled = true;
-
-    const oldHtml = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-1"></i>Đang thêm...';
-
-    fetch('cart.php?action=add&ajax=1&id=' + productId + colorParam)
-        .then(res => res.text())
-        .then(rawText => {
-            const data = JSON.parse(rawText.trim());
-
-            if (data.success) {
-                btn.innerHTML = '<i class="fa-solid fa-check me-1"></i>Đã thêm!';
-                btn.style.backgroundColor = '#004799';
-                btn.style.borderColor = '#004799';
-                btn.style.color = '#ffffff';
-
-                const badge = document.getElementById('cartBadge');
-                if (badge) {
-                    badge.innerText = data.cart_count;
-                }
-
-                const toast = document.getElementById('vphoneLiveToast');
-                const toastText = document.getElementById('vphoneToastText');
-                if (toast && toastText) {
-                    toastText.innerText = 'Đã thêm "' + productName + '"';
-                    toast.style.display = 'block';
-
-                    clearTimeout(toastTimer);
-                    toastTimer = setTimeout(() => {
-                        toast.style.display = 'none';
-                    }, 3500);
-                }
-
-                setTimeout(() => {
-                    btn.innerHTML = oldHtml;
-                    btn.style.backgroundColor = '';
-                    btn.style.borderColor = '';
-                    btn.style.color = '';
-                    btn.disabled = false;
-                }, 1200);
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            btn.innerHTML = oldHtml;
-            btn.disabled = false;
-        });
-}
 </script>
 </body>
 </html>
-

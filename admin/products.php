@@ -3,17 +3,20 @@ $pageTitle = 'Quản Lý Sản Phẩm - V-Phone Admin';
 require_once 'includes/header.php';
 
 $message = '';
+$editId = (int)($_GET['edit_id'] ?? 0);
+$editingProduct = null;
 
 // 1. XỬ LÝ XÓA SẢN PHẨM
-if (isset($_GET['delete_id'])) {
-    $delId = (int)$_GET['delete_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
+    $delId = (int)($_POST['product_id'] ?? 0);
     $del = $pdo->prepare("DELETE FROM products WHERE id = ?");
     $del->execute([$delId]);
     $message = 'Đã xóa sản phẩm thành công!';
 }
 
-// 2. XỬ LÝ THÊM SẢN PHẨM MỚI
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
+// Thêm hoặc cập nhật thông tin sản phẩm
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
+    $productId = (int)($_POST['product_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
     $brand_id = (int)$_POST['brand_id'];
     $price = (float)$_POST['price'];
@@ -24,20 +27,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_product'])) {
     $ram = trim($_POST['ram'] ?? '8 GB');
     $rom = trim($_POST['rom'] ?? '256 GB');
     $battery = trim($_POST['battery'] ?? '5000 mAh');
+    $colors = trim($_POST['colors'] ?? 'Đen, Trắng');
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     $is_used = isset($_POST['is_used']) ? 1 : 0;
     $condition_desc = $is_used ? 'Đẹp 99%' : 'Mới 100%';
 
     if (!empty($name) && $price > 0) {
-        $stmt = $pdo->prepare("INSERT INTO products (brand_id, name, price, sale_price, image, screen, cpu, ram, rom, battery, is_featured, is_used, condition_desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$brand_id, $name, $price, $sale_price, $image, $screen, $cpu, $ram, $rom, $battery, $is_featured, $is_used, $condition_desc]);
-        $message = 'Đã thêm điện thoại mới thành công!';
+        if ($productId > 0) {
+            $stmt = $pdo->prepare("UPDATE products SET brand_id = ?, name = ?, price = ?, sale_price = ?, image = ?, screen = ?, cpu = ?, ram = ?, rom = ?, battery = ?, colors = ?, is_featured = ?, is_used = ?, condition_desc = ? WHERE id = ?");
+            $stmt->execute([$brand_id, $name, $price, $sale_price, $image, $screen, $cpu, $ram, $rom, $battery, $colors, $is_featured, $is_used, $condition_desc, $productId]);
+            $message = 'Đã cập nhật sản phẩm.';
+        } else {
+            $stmt = $pdo->prepare("INSERT INTO products (brand_id, name, price, sale_price, image, screen, cpu, ram, rom, battery, colors, is_featured, is_used, condition_desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$brand_id, $name, $price, $sale_price, $image, $screen, $cpu, $ram, $rom, $battery, $colors, $is_featured, $is_used, $condition_desc]);
+            $message = 'Đã thêm điện thoại mới thành công!';
+        }
+        $editId = 0;
     }
 }
 
 // Lấy danh sách sản phẩm và thương hiệu
 $brands = $pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
 $products = $pdo->query("SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id ORDER BY p.id DESC")->fetchAll();
+if ($editId > 0) {
+    $editStmt = $pdo->prepare('SELECT * FROM products WHERE id = ?');
+    $editStmt->execute([$editId]);
+    $editingProduct = $editStmt->fetch() ?: null;
+}
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -75,12 +91,10 @@ $products = $pdo->query("SELECT p.*, b.name as brand_name FROM products p LEFT J
             <tbody>
                 <?php foreach ($products as $p): ?>
                     <tr>
-                        <td>
-                            <img src="../<?= htmlspecialchars($p['image']) ?>" alt="" style="width: 48px; height: 48px; object-fit: contain;">
-                        </td>
+                        <td><img src="../<?= htmlspecialchars($p['image']) ?>" alt="" style="width: 48px; height: 48px; object-fit: contain;"></td>
                         <td>
                             <div class="fw-bold text-dark"><?= htmlspecialchars($p['name']) ?></div>
-                            <small class="text-secondary"><?= $p['ram'] ?> - <?= $p['rom'] ?> | <?= $p['screen'] ?></small>
+                            <small class="text-secondary"><?= htmlspecialchars($p['ram']) ?> - <?= htmlspecialchars($p['rom']) ?> | <?= htmlspecialchars($p['screen']) ?></small>
                         </td>
                         <td><span class="badge bg-light text-primary border"><?= htmlspecialchars($p['brand_name'] ?? 'Khác') ?></span></td>
                         <td class="text-muted text-decoration-line-through small"><?= number_format($p['price'], 0, ',', '.') ?> đ</td>
@@ -94,10 +108,9 @@ $products = $pdo->query("SELECT p.*, b.name as brand_name FROM products p LEFT J
                                 <span class="badge bg-light text-secondary border">Mới 100%</span>
                             <?php endif; ?>
                         </td>
-                        <td>
-                            <a href="products.php?delete_id=<?= $p['id'] ?>" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="return confirm('Bạn có chắc muốn xóa điện thoại này?');">
-                                <i class="fa-solid fa-trash me-1"></i>Xóa
-                            </a>
+                        <td class="text-nowrap">
+                            <a href="products.php?edit_id=<?= (int)$p['id'] ?>" class="btn btn-outline-primary btn-sm" title="Sửa sản phẩm" aria-label="Sửa <?= htmlspecialchars($p['name']) ?>"><i class="fa-solid fa-pen"></i></a>
+                            <button type="button" class="btn btn-outline-danger btn-sm" title="Xóa sản phẩm" aria-label="Xóa <?= htmlspecialchars($p['name']) ?>" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-product-id="<?= (int)$p['id'] ?>" data-product-name="<?= htmlspecialchars($p['name']) ?>"><i class="fa-solid fa-trash"></i></button>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -111,65 +124,70 @@ $products = $pdo->query("SELECT p.*, b.name as brand_name FROM products p LEFT J
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content rounded-4 border-0 shadow-lg">
             <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold text-primary"><i class="fa-solid fa-plus-circle me-2"></i>Thêm Điện Thoại Mới</h5>
+                <h5 class="modal-title fw-bold text-primary"><i class="fa-solid fa-mobile-screen-button me-2"></i><?= $editingProduct ? 'Sửa Thông Tin Điện Thoại' : 'Thêm Điện Thoại Mới' ?></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="products.php">
+                <input type="hidden" name="product_id" value="<?= (int)($editingProduct['id'] ?? 0) ?>">
                 <div class="modal-body p-4">
                     <div class="row g-3">
                         <div class="col-md-8">
                             <label class="form-label small fw-bold">Tên Điện Thoại *</label>
-                            <input type="text" name="name" class="form-control rounded-pill" required placeholder="Ví dụ: iPhone 18 Pro Max 512GB">
+                            <input type="text" name="name" class="form-control rounded-pill" required placeholder="Ví dụ: iPhone 18 Pro Max 512GB" value="<?= htmlspecialchars($editingProduct['name'] ?? '') ?>">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold">Hãng Sản Xuất *</label>
                             <select name="brand_id" class="form-select rounded-pill">
                                 <?php foreach ($brands as $b): ?>
-                                    <option value="<?= $b['id'] ?>"><?= htmlspecialchars($b['name']) ?></option>
+                                    <option value="<?= $b['id'] ?>" <?= (int)($editingProduct['brand_id'] ?? 0) === (int)$b['id'] ? 'selected' : '' ?>><?= htmlspecialchars($b['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Giá Gốc Niêm Yết (VNĐ) *</label>
-                            <input type="number" name="price" class="form-control rounded-pill" required placeholder="35000000">
+                            <input type="number" name="price" class="form-control rounded-pill" required placeholder="35000000" value="<?= htmlspecialchars((string)($editingProduct['price'] ?? '')) ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Giá Bán Khuyến Mãi (VNĐ)</label>
-                            <input type="number" name="sale_price" class="form-control rounded-pill" placeholder="32000000">
+                            <input type="number" name="sale_price" class="form-control rounded-pill" placeholder="32000000" value="<?= htmlspecialchars((string)($editingProduct['sale_price'] ?? '')) ?>">
                         </div>
                         <div class="col-12">
                             <label class="form-label small fw-bold">Đường Dẫn Ảnh</label>
-                            <input type="text" name="image" class="form-control rounded-pill" value="assets/images/products/iphone-16-promax.png">
+                            <input type="text" name="image" class="form-control rounded-pill" value="<?= htmlspecialchars($editingProduct['image'] ?? 'assets/images/products/iphone-16-promax.png') ?>">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold">RAM</label>
-                            <input type="text" name="ram" class="form-control rounded-pill" value="12 GB">
+                            <input type="text" name="ram" class="form-control rounded-pill" value="<?= htmlspecialchars($editingProduct['ram'] ?? '12 GB') ?>">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold">Bộ Nhớ ROM</label>
-                            <input type="text" name="rom" class="form-control rounded-pill" value="256 GB">
+                            <input type="text" name="rom" class="form-control rounded-pill" value="<?= htmlspecialchars($editingProduct['rom'] ?? '256 GB') ?>">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label small fw-bold">Dung Lượng Pin</label>
-                            <input type="text" name="battery" class="form-control rounded-pill" value="5000 mAh">
+                            <input type="text" name="battery" class="form-control rounded-pill" value="<?= htmlspecialchars($editingProduct['battery'] ?? '5000 mAh') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Chipset CPU</label>
-                            <input type="text" name="cpu" class="form-control rounded-pill" value="Snapdragon 8 Gen 5 / Apple A20">
+                            <input type="text" name="cpu" class="form-control rounded-pill" value="<?= htmlspecialchars($editingProduct['cpu'] ?? 'Snapdragon 8 Gen 5 / Apple A20') ?>">
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-bold">Màn Hình</label>
-                            <input type="text" name="screen" class="form-control rounded-pill" value="6.8 inch 120Hz">
+                            <input type="text" name="screen" class="form-control rounded-pill" value="<?= htmlspecialchars($editingProduct['screen'] ?? '6.8 inch 120Hz') ?>">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Màu sắc (phân cách bằng dấu phẩy)</label>
+                            <input type="text" name="colors" class="form-control rounded-pill" value="<?= htmlspecialchars($editingProduct['colors'] ?? 'Đen, Trắng') ?>">
                         </div>
                         <div class="col-md-6">
                             <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="isFeat">
+                                <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="isFeat" <?= !empty($editingProduct['is_featured']) ? 'checked' : '' ?>>
                                 <label class="form-check-label fw-bold small" for="isFeat">Gắn nhãn Flagship 2026</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-check mt-2">
-                                <input class="form-check-input" type="checkbox" name="is_used" value="1" id="isUsed">
+                                <input class="form-check-input" type="checkbox" name="is_used" value="1" id="isUsed" <?= !empty($editingProduct['is_used']) ? 'checked' : '' ?>>
                                 <label class="form-check-label fw-bold small text-success" for="isUsed">Hàng cũ Like New 99%</label>
                             </div>
                         </div>
@@ -177,11 +195,43 @@ $products = $pdo->query("SELECT p.*, b.name as brand_name FROM products p LEFT J
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Đóng</button>
-                    <button type="submit" name="add_product" class="btn btn-primary rounded-pill px-4 fw-bold">Lưu Sản Phẩm</button>
+                    <button type="submit" name="save_product" value="1" class="btn btn-primary rounded-pill px-4 fw-bold">Lưu Sản Phẩm</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-body p-4 text-center">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width:56px;height:56px"><i class="fa-solid fa-trash"></i></div>
+                <h5 class="fw-bold" id="deleteProductTitle">Xóa sản phẩm?</h5>
+                <p class="text-secondary" id="deleteProductMessage"></p>
+                <form method="POST" action="products.php" class="d-flex justify-content-center gap-2">
+                    <input type="hidden" name="product_id" id="deleteProductId">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" name="delete_product" value="1" class="btn btn-danger rounded-pill px-4">Xóa sản phẩm</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const deleteModal = document.getElementById('deleteProductModal');
+    deleteModal?.addEventListener('show.bs.modal', function (event) {
+        const trigger = event.relatedTarget;
+        document.getElementById('deleteProductId').value = trigger.dataset.productId;
+        document.getElementById('deleteProductMessage').textContent = `Sản phẩm "${trigger.dataset.productName}" sẽ bị xóa khỏi cửa hàng.`;
+    });
+
+    <?php if ($editingProduct): ?>
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('addProductModal')).show();
+    <?php endif; ?>
+});
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

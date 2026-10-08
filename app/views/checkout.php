@@ -1,10 +1,14 @@
 <?php
 require_once 'config/database.php';
+$appliedVoucher = $appliedVoucher ?? null;
+$subtotal = $subtotal ?? ($totalMoney ?? 0);
+$discountAmount = $discountAmount ?? 0;
+$voucherMessage = $voucherMessage ?? '';
 $pageTitle = 'Thanh toán đơn hàng - V-Phone';
 
 // 1. Bắt buộc đăng nhập
 if (!isset($_SESSION['user'])) {
-    header('Location: login.php?redirect=checkout.php');
+    header('Location: login.php?redirect=index.php?page=checkout');
     exit;
 }
 
@@ -40,7 +44,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'buy_now' && isset($_GET['id']
             'quantity' => 1
         ];
 
-        header('Location: checkout.php?mode=buy_now');
+        header('Location: index.php?page=checkout?mode=buy_now');
         exit;
     }
 }
@@ -101,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Nếu không phải vừa đặt hàng xong mà không có món nào thì về giỏ
 if (!$orderSuccess && empty($itemsToCheckout)) {
-    header('Location: cart.php');
+    header('Location: index.php?page=cart');
     exit;
 }
 
@@ -112,8 +116,8 @@ if (!empty($itemsToCheckout)) {
     }
 }
 
-require_once 'includes/header.php';
-require_once 'includes/navbar.php';
+require_once 'app/views/includes/header.php';
+require_once 'app/views/includes/navbar.php';
 ?>
 
 <div class="container my-5">
@@ -148,7 +152,7 @@ require_once 'includes/navbar.php';
             <?php endif; ?>
         </div>
 
-        <form method="POST" action="checkout.php<?= $isBuyNowMode ? '?mode=buy_now' : '' ?>">
+        <form method="POST" action="index.php?page=checkout<?= $isBuyNowMode ? '&mode=buy_now' : '' ?>">
             <div class="row g-4">
                 <div class="col-lg-7">
                     <div class="bg-white p-4 rounded-4 shadow-sm border">
@@ -202,7 +206,37 @@ require_once 'includes/navbar.php';
                             <?php endforeach; ?>
                         </div>
 
+                        <div class="border rounded-3 p-3 mb-3 bg-light">
+                            <label for="voucherCode" class="form-label fw-bold small mb-2">
+                                <i class="fa-solid fa-ticket text-primary me-1"></i>Mã giảm giá
+                            </label>
+                            <div class="input-group">
+                                <input type="text" id="voucherCode" name="voucher_code" class="form-control text-uppercase" placeholder="Nhập mã voucher" value="<?= htmlspecialchars($appliedVoucher['code'] ?? '') ?>">
+                                <button type="submit" name="apply_voucher" value="1" formnovalidate class="btn btn-outline-primary fw-semibold">Áp dụng</button>
+                            </div>
+                            <?php if (!empty($voucherMessage)): ?>
+                                <div class="small mt-2 <?= $appliedVoucher ? 'text-success' : 'text-danger' ?>"><?= htmlspecialchars($voucherMessage) ?></div>
+                            <?php endif; ?>
+                            <?php if ($appliedVoucher): ?>
+                                <button type="submit" name="remove_voucher" value="1" formnovalidate class="btn btn-link btn-sm text-danger px-0 pb-0">Gỡ mã</button>
+                            <?php else: ?>
+                                <div class="small text-muted mt-2">
+                                    Mã: VPHONE5 (từ 500.000đ), VPHONE10 (từ 1 triệu), VPHONE15 (từ 5 triệu), FLASH20 (từ 10 triệu), WELCOME50 (từ 500.000đ), GIAM100K (từ 1 triệu), GIAM200K (từ 2 triệu), GIAM500K (từ 5 triệu).
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
                         <hr>
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-secondary">Tạm tính:</span>
+                            <span><?= number_format($subtotal, 0, ',', '.') ?> đ</span>
+                        </div>
+                        <?php if ($appliedVoucher && $discountAmount > 0): ?>
+                            <div class="d-flex justify-content-between mb-2 small text-success">
+                                <span>Voucher <?= htmlspecialchars($appliedVoucher['code']) ?>:</span>
+                                <span>-<?= number_format($discountAmount, 0, ',', '.') ?> đ</span>
+                            </div>
+                        <?php endif; ?>
                         <div class="d-flex justify-content-between mb-2 small text-secondary">
                             <span>Phí vận chuyển:</span>
                             <span class="text-success fw-bold">MIỄN PHÍ</span>
@@ -222,4 +256,4 @@ require_once 'includes/navbar.php';
     <?php endif; ?>
 </div>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php require_once 'app/views/includes/footer.php'; ?>
