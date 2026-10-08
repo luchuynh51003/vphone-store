@@ -25,11 +25,11 @@ va tha vao thu muc assets/images/products/, web se tu dong nhan dien khi khach b
    • Mau Trời Đêm           => iphone-18-duo-troi-dem.png
 
 4. iPhone 18 Standard
-   • Anh mac dinh => iphone-16.png
-   • Mau Xanh Băng             => iphone-16-xanh-bang.png
-   • Mau Hồng                 => iphone-16-hong.png
-   • Mau Trắng                => iphone-16-trang.png
-   • Mau Đen                   => iphone-16-den.png
+   • Anh mac dinh => iphone-18.png
+   • Mau Xanh Băng             => iphone-18-xanh-bang.png
+   • Mau Hồng                 => iphone-18-hong.png
+   • Mau Bạc                  => iphone-18-bac.png (dùng ảnh sản phẩm mặc định)
+   • Mau Đen                   => iphone-18-den.png
 
 5. Galaxy Z Tri-Fold (Gập 3 Màn)
    • Anh mac dinh => samsung-tri-fold.png

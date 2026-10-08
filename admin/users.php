@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $pageTitle = 'Quản Lý Khách Hàng - V-Phone Admin';
 require_once 'includes/header.php';
 
@@ -34,42 +34,60 @@ $users = $pdo->query("SELECT * FROM users ORDER BY id ASC")->fetchAll();
     </div>
 <?php endif; ?>
 
-<div class="card border-0 rounded-4 shadow-sm bg-white p-4">
+<div class="admin-table-card">
+    <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                <i class="fa-solid fa-users text-primary"></i> Danh Sách Thành Viên & Quản Trị
+            </h5>
+            <small class="text-secondary">Tổng cộng <?= count($users) ?> tài khoản trong hệ thống V-Phone</small>
+        </div>
+    </div>
+
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light">
+        <table class="table admin-table align-middle mb-0">
+            <thead>
                 <tr>
-                    <th>ID</th>
+                    <th style="width: 60px;">ID</th>
                     <th>Họ và Tên</th>
                     <th>Email</th>
                     <th>Số Điện Thoại</th>
                     <th>Địa Chỉ</th>
                     <th>Vai Trò</th>
-                    <th>Hành Động</th>
+                    <th class="text-end">Hành Động</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($users as $u): ?>
                     <tr>
-                        <td class="fw-bold text-secondary"><?= $u['id'] ?></td>
-                        <td class="fw-bold text-dark"><?= htmlspecialchars($u['fullname']) ?></td>
-                        <td><?= htmlspecialchars($u['email']) ?></td>
-                        <td><?= htmlspecialchars($u['phone'] ?? 'Chưa cập nhật') ?></td>
-                        <td class="small text-secondary"><?= htmlspecialchars($u['address'] ?? 'Chưa cập nhật') ?></td>
+                        <td class="fw-bold text-muted">#<?= $u['id'] ?></td>
                         <td>
-                            <?php if ($u['role'] == 1): ?>
-                                <span class="badge bg-danger rounded-pill px-3 py-1"><i class="fa-solid fa-shield-halved me-1"></i>Admin</span>
-                            <?php else: ?>
-                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-1">Khách Hàng</span>
-                            <?php endif; ?>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: <?= $u['role'] == 1 ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #0066cc, #0284c7)' ?>; font-weight: 700; font-size: 0.8rem;">
+                                    <?= mb_substr(htmlspecialchars($u['fullname']), 0, 1, 'UTF-8') ?>
+                                </div>
+                                <div class="fw-bold text-dark"><?= htmlspecialchars($u['fullname']) ?></div>
+                            </div>
+                        </td>
+                        <td><span class="text-secondary"><?= htmlspecialchars($u['email']) ?></span></td>
+                        <td><span class="fw-medium text-dark"><?= htmlspecialchars($u['phone'] ?: 'Chưa cập nhật') ?></span></td>
+                        <td class="small text-secondary text-truncate" style="max-width: 200px;">
+                            <?= htmlspecialchars($u['address'] ?: 'Chưa cập nhật') ?>
                         </td>
                         <td>
+                            <?php if ($u['role'] == 1): ?>
+                                <span class="badge badge-soft-danger rounded-pill px-3 py-1"><i class="fa-solid fa-shield-halved me-1"></i>Admin</span>
+                            <?php else: ?>
+                                <span class="badge badge-soft-primary rounded-pill px-3 py-1">Khách Hàng</span>
+                            <?php endif; ?>
+                        </td>
+                        <td class="text-end">
                             <?php if ($u['id'] != $_SESSION['user']['id']): ?>
-                                <a href="users.php?toggle_role_id=<?= $u['id'] ?>" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                                    Đổi vai trò
+                                <a href="users.php?toggle_role_id=<?= $u['id'] ?>" class="btn btn-light border text-secondary btn-sm rounded-pill px-3 fw-bold">
+                                    <i class="fa-solid fa-repeat me-1"></i>Đổi vai trò
                                 </a>
                             <?php else: ?>
-                                <span class="text-muted small">Tài khoản của bạn</span>
+                                <span class="badge bg-light text-muted border rounded-pill px-3 py-1 small">Bạn</span>
                             <?php endif; ?>
                         </td>
                     </tr>

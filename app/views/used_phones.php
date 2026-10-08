@@ -8,6 +8,18 @@ $brands = $brandStmt->fetchAll();
 $brandId = isset($_GET['brand_id']) ? (int)$_GET['brand_id'] : 0;
 $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 
+// Đảm bảo cột is_used và condition_desc tồn tại an toàn
+try {
+    $col1 = $pdo->query("SHOW COLUMNS FROM products LIKE 'is_used'")->fetch();
+    if (!$col1) {
+        $pdo->exec('ALTER TABLE products ADD COLUMN is_used TINYINT(1) DEFAULT 0');
+    }
+    $col2 = $pdo->query("SHOW COLUMNS FROM products LIKE 'condition_desc'")->fetch();
+    if (!$col2) {
+        $pdo->exec("ALTER TABLE products ADD COLUMN condition_desc VARCHAR(255) DEFAULT 'Đẹp 99%'");
+    }
+} catch (Exception $e) {}
+
 // Chỉ lấy các sản phẩm là Hàng cũ (is_used = 1)
 $sql = "SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id WHERE p.is_used = 1";
 $params = [];
@@ -73,7 +85,7 @@ require_once 'app/views/includes/navbar.php';
         <span class="fw-bold text-primary me-2"><i class="fa-solid fa-filter me-1"></i>Hãng máy cũ:</span>
         <a href="index.php?page=used-phones" class="btn btn-sm <?= $brandId == 0 ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">Tất cả máy cũ</a>
         <?php foreach ($brands as $b): ?>
-            <a href="index.php?page=used-phones?brand_id=<?= $b['id'] ?>" class="btn btn-sm <?= $brandId == $b['id'] ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">
+            <a href="index.php?page=used-phones&brand_id=<?= $b['id'] ?>" class="btn btn-sm <?= $brandId == $b['id'] ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">
                 <?= htmlspecialchars($b['name']) ?> Cũ
             </a>
         <?php endforeach; ?>
@@ -89,62 +101,89 @@ require_once 'app/views/includes/navbar.php';
         <span class="badge bg-white text-secondary border px-3 py-2 rounded-pill"><?= count($usedProducts) ?> máy có sẵn</span>
     </div>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-        <?php foreach ($usedProducts as $p): ?>
-            <div class="col">
-                <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
-                    <!-- TAG MÁY CŨ 99% NỔI BẬT -->
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 position-absolute top-0 end-0 m-3 px-2 py-1 rounded-pill fw-bold">
-                        <i class="fa-solid fa-circle-check me-1"></i><?= htmlspecialchars($p['condition_desc'] ?? 'Đẹp 99%') ?>
-                    </span>
+    <?php if (empty($usedProducts)): ?>
+        <div class="bg-white p-5 rounded-4 shadow-sm text-center border my-4">
+            <div class="d-inline-flex p-4 rounded-circle bg-light text-primary mb-3">
+                <i class="fa-solid fa-mobile-screen fs-1"></i>
+            </div>
+            <h5 class="fw-bold text-dark">Chưa có sản phẩm máy cũ nào phù hợp</h5>
+            <p class="text-secondary small mb-4">Hiện danh mục này tạm thời chưa có máy hoặc đang được kiểm tra chất lượng. Bạn có thể xem toàn bộ máy cũ hoặc các mẫu mới chính hãng.</p>
+            <a href="index.php?page=used-phones" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm">
+                <i class="fa-solid fa-rotate-left me-1"></i>Xem tất cả máy cũ
+            </a>
+        </div>
+    <?php else: ?>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <?php foreach ($usedProducts as $p): ?>
+                <div class="col">
+                    <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
+                        <!-- TAG MÁY CŨ 99% NỔI BẬT -->
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 position-absolute top-0 end-0 m-3 px-2 py-1 rounded-pill fw-bold">
+                            <i class="fa-solid fa-circle-check me-1"></i><?= htmlspecialchars($p['condition_desc'] ?? 'Đẹp 99%') ?>
+                        </span>
 
-                    <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                        <?php $percent = round((($p['price'] - $p['sale_price']) / $p['price']) * 100); ?>
-                        <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 rounded-pill">-<?= $percent ?>%</span>
-                    <?php endif; ?>
+                        <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
+                            <?php $percent = round((($p['price'] - $p['sale_price']) / $p['price']) * 100); ?>
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 rounded-pill">-<?= $percent ?>%</span>
+                        <?php endif; ?>
 
-                    <div class="product-img-wrapper p-3">
-                        <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
-                    </div>
-
-                    <div class="card-body d-flex flex-column pt-2">
-                        <small class="text-primary fw-bold text-uppercase"><?= htmlspecialchars($p['brand_name'] ?? 'Khác') ?> CŨ</small>
-                        <h6 class="card-title fw-bold my-1 text-truncate-2 text-dark"><?= htmlspecialchars($p['name']) ?></h6>
-
-                        <div class="specs-badge my-2 d-flex flex-wrap gap-1">
-                            <span class="badge"><?= htmlspecialchars($p['ram']) ?></span>
-                            <span class="badge"><?= htmlspecialchars($p['rom']) ?></span>
-                            <span class="badge bg-info bg-opacity-10 text-primary border border-info border-opacity-25">Bảo hành 6T</span>
+                        <div class="product-img-wrapper p-3">
+                            <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
                         </div>
 
-                        <div class="mt-auto pt-2">
-                            <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                                <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> đ</div>
-                                <small class="text-decoration-line-through text-muted"><?= number_format($p['price'], 0, ',', '.') ?> đ (Giá mới)</small>
-                            <?php else: ?>
-                                <div class="text-primary fw-bold fs-5 mb-0"><?= number_format($p['price'], 0, ',', '.') ?> đ</div>
-                            <?php endif; ?>
-                        </div>
+                        <div class="card-body d-flex flex-column pt-2">
+                            <small class="text-primary fw-bold text-uppercase"><?= htmlspecialchars($p['brand_name'] ?? 'Khác') ?> CŨ</small>
+                            <h6 class="card-title fw-bold my-1 text-truncate-2 text-dark"><?= htmlspecialchars($p['name']) ?></h6>
 
-                        <!-- 3 NÚT HÀNH ĐỘNG CHUẨN -->
-                        <div class="d-grid gap-2 mt-3">
-                            <a href="index.php?page=cart&action=add&id=<?= $p['id'] ?>&redirect=checkout" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center">
-                                <i class="fa-solid fa-bolt me-1"></i>MUA NGAY
-                            </a>
-                            <div class="d-flex gap-2">
-                                <a href="index.php?page=detail&id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
-                                    Chi tiết
-                                </a>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="addToCartDirect(this, <?= $p['id'] ?>, '<?= htmlspecialchars(addslashes($p['name'])) ?>')">
-                                    <i class="fa-solid fa-cart-plus me-1"></i>Thêm giỏ
-                                </button>
+                            <div class="specs-badge my-2 d-flex flex-wrap gap-1">
+                                <span class="badge"><?= htmlspecialchars($p['ram']) ?></span>
+                                <span class="badge"><?= htmlspecialchars($p['rom']) ?></span>
+                                <span class="badge bg-info bg-opacity-10 text-primary border border-info border-opacity-25">Bảo hành 6T</span>
+                            </div>
+
+                            <div class="mt-auto pt-2">
+                                <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
+                                    <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> đ</div>
+                                    <small class="text-decoration-line-through text-muted"><?= number_format($p['price'], 0, ',', '.') ?> đ (Giá mới)</small>
+                                <?php else: ?>
+                                    <div class="text-primary fw-bold fs-5 mb-0"><?= number_format($p['price'], 0, ',', '.') ?> đ</div>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- 3 NÚT HÀNH ĐỘNG CHUẨN -->
+                            <div class="d-grid gap-2 mt-3">
+                                <?php if ((int)$p['quantity'] <= 0): ?>
+                                    <button type="button" class="btn btn-secondary btn-sm rounded-pill fw-bold py-2 text-center" disabled>
+                                        <i class="fa-solid fa-ban me-1"></i>HẾT HÀNG
+                                    </button>
+                                    <div class="d-flex gap-2">
+                                        <a href="index.php?page=detail&id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
+                                            Chi tiết
+                                        </a>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill flex-grow-1 fw-bold" disabled>
+                                            <i class="fa-solid fa-cart-plus me-1"></i>Hết hàng
+                                        </button>
+                                    </div>
+                                <?php else: ?>
+                                    <a href="index.php?page=checkout&action=buy_now&id=<?= $p['id'] ?>" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center">
+                                        <i class="fa-solid fa-bolt me-1"></i>MUA NGAY
+                                    </a>
+                                    <div class="d-flex gap-2">
+                                        <a href="index.php?page=detail&id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
+                                            Chi tiết
+                                        </a>
+                                        <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="addToCartDirect(this, <?= $p['id'] ?>, '<?= htmlspecialchars(addslashes($p['name'])) ?>')">
+                                            <i class="fa-solid fa-cart-plus me-1"></i>Thêm giỏ
+                                        </button>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 <?php require_once 'app/views/includes/footer.php'; ?>

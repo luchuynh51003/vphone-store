@@ -80,22 +80,27 @@ $articles = $pdo->query('SELECT * FROM articles ORDER BY id DESC')->fetchAll();
     </div>
 <?php endif; ?>
 
-<section class="bg-white border rounded-4 shadow-sm p-4 mb-4">
-    <h5 class="fw-bold mb-3"><?= $editingArticle ? 'Sửa bài viết' : 'Tạo bài viết' ?></h5>
+<section class="card border-0 rounded-4 shadow-sm p-4 mb-4 bg-white">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="rounded-3 p-2 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+            <i class="fa-solid fa-newspaper"></i>
+        </div>
+        <h5 class="fw-bold mb-0 text-dark"><?= $editingArticle ? 'Sửa bài viết tin tức' : 'Tạo bài viết mới' ?></h5>
+    </div>
     <form method="POST" action="news.php<?= $editingArticle ? '?edit_id=' . (int)$editingArticle['id'] : '' ?>">
         <input type="hidden" name="article_id" value="<?= (int)($editingArticle['id'] ?? 0) ?>">
         <div class="row g-3">
             <div class="col-lg-8">
-                <label for="articleTitle" class="form-label small fw-semibold">Tiêu đề</label>
-                <input id="articleTitle" name="title" class="form-control" maxlength="255" required value="<?= htmlspecialchars($editingArticle['title'] ?? '') ?>">
+                <label for="articleTitle" class="form-label small fw-semibold">Tiêu đề bài viết</label>
+                <input id="articleTitle" name="title" class="form-control rounded-3" maxlength="255" required value="<?= htmlspecialchars($editingArticle['title'] ?? '') ?>">
             </div>
             <div class="col-lg-2 col-md-6">
                 <label for="articleBadge" class="form-label small fw-semibold">Nhãn</label>
-                <input id="articleBadge" name="badge" class="form-control" maxlength="80" value="<?= htmlspecialchars($editingArticle['badge'] ?? 'TIN MỚI') ?>">
+                <input id="articleBadge" name="badge" class="form-control rounded-3" maxlength="80" value="<?= htmlspecialchars($editingArticle['badge'] ?? 'TIN MỚI') ?>">
             </div>
             <div class="col-lg-2 col-md-6">
                 <label for="badgeClass" class="form-label small fw-semibold">Màu nhãn</label>
-                <select id="badgeClass" name="badge_class" class="form-select">
+                <select id="badgeClass" name="badge_class" class="form-select rounded-3">
                     <?php foreach ($badgeClasses as $class => $label): ?>
                         <option value="<?= htmlspecialchars($class) ?>" <?= ($editingArticle['badge_class'] ?? 'bg-primary') === $class ? 'selected' : '' ?>><?= htmlspecialchars($label) ?></option>
                     <?php endforeach; ?>
@@ -103,59 +108,83 @@ $articles = $pdo->query('SELECT * FROM articles ORDER BY id DESC')->fetchAll();
             </div>
             <div class="col-md-3">
                 <label for="articleDate" class="form-label small fw-semibold">Ngày hiển thị</label>
-                <input id="articleDate" name="article_date" class="form-control" required placeholder="24/09/2026" value="<?= htmlspecialchars($editingArticle['article_date'] ?? date('d/m/Y')) ?>">
+                <input id="articleDate" name="article_date" class="form-control rounded-3" required placeholder="24/09/2026" value="<?= htmlspecialchars($editingArticle['article_date'] ?? date('d/m/Y')) ?>">
             </div>
             <div class="col-md-3">
                 <label for="readTime" class="form-label small fw-semibold">Thời gian đọc</label>
-                <input id="readTime" name="read_time" class="form-control" value="<?= htmlspecialchars($editingArticle['read_time'] ?? '5 phút đọc') ?>">
+                <input id="readTime" name="read_time" class="form-control rounded-3" value="<?= htmlspecialchars($editingArticle['read_time'] ?? '5 phút đọc') ?>">
             </div>
             <div class="col-md-6">
                 <label for="articleImage" class="form-label small fw-semibold">Đường dẫn ảnh</label>
-                <input id="articleImage" name="image" class="form-control" required value="<?= htmlspecialchars($editingArticle['image'] ?? '') ?>" placeholder="assets/images/products/iphone-18-promax.png">
+                <input id="articleImage" name="image" class="form-control rounded-3" required value="<?= htmlspecialchars($editingArticle['image'] ?? '') ?>" placeholder="assets/images/products/iphone-18-promax.png">
             </div>
             <div class="col-12">
                 <label for="articleSummary" class="form-label small fw-semibold">Tóm tắt</label>
-                <textarea id="articleSummary" name="summary" class="form-control" rows="2" required><?= htmlspecialchars($editingArticle['summary'] ?? '') ?></textarea>
+                <textarea id="articleSummary" name="summary" class="form-control rounded-3" rows="2" required><?= htmlspecialchars($editingArticle['summary'] ?? '') ?></textarea>
             </div>
             <div class="col-12">
                 <label for="articleContent" class="form-label small fw-semibold">Nội dung</label>
-                <textarea id="articleContent" name="content" class="form-control" rows="8" required><?= htmlspecialchars($editingArticle['content'] ?? '') ?></textarea>
+                <textarea id="articleContent" name="content" class="form-control rounded-3" rows="8" required><?= htmlspecialchars($editingArticle['content'] ?? '') ?></textarea>
             </div>
-            <div class="col-12 d-flex align-items-center justify-content-between">
+            <div class="col-12 d-flex align-items-center justify-content-between pt-2">
                 <div class="form-check">
                     <input type="checkbox" id="articlePublished" name="is_published" value="1" class="form-check-input" <?= !isset($editingArticle['is_published']) || $editingArticle['is_published'] ? 'checked' : '' ?>>
-                    <label for="articlePublished" class="form-check-label fw-semibold">Xuất bản trên website</label>
+                    <label for="articlePublished" class="form-check-label fw-bold small text-dark">Xuất bản trên website</label>
                 </div>
                 <div class="d-flex gap-2">
-                    <?php if ($editingArticle): ?><a href="news.php" class="btn btn-light">Hủy sửa</a><?php endif; ?>
-                    <button type="submit" name="save_article" value="1" class="btn btn-primary fw-semibold"><i class="fa-solid fa-floppy-disk me-1"></i>Lưu bài viết</button>
+                    <?php if ($editingArticle): ?><a href="news.php" class="btn btn-light rounded-pill px-4">Hủy sửa</a><?php endif; ?>
+                    <button type="submit" name="save_article" value="1" class="btn btn-primary rounded-pill px-4 fw-bold"><i class="fa-solid fa-floppy-disk me-1"></i>Lưu bài viết</button>
                 </div>
             </div>
         </div>
     </form>
 </section>
 
-<section class="bg-white border rounded-4 shadow-sm p-4">
+<div class="admin-table-card">
+    <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                <i class="fa-solid fa-newspaper text-primary"></i> Danh Sách Bài Viết Đã Đăng
+            </h5>
+            <small class="text-secondary">Tổng cộng <?= count($articles) ?> bài viết trong hệ thống</small>
+        </div>
+    </div>
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light"><tr><th>Bài viết</th><th>Nhãn</th><th>Ngày</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr></thead>
+        <table class="table admin-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Bài viết</th>
+                    <th>Nhãn</th>
+                    <th>Ngày</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
             <tbody>
                 <?php foreach ($articles as $article): ?>
                     <tr>
                         <td>
-                            <div class="fw-semibold"><?= htmlspecialchars($article['title']) ?></div>
-                            <small class="text-muted"><?= htmlspecialchars($article['read_time']) ?></small>
+                            <div class="fw-semibold text-dark fs-6"><?= htmlspecialchars($article['title']) ?></div>
+                            <small class="text-muted"><i class="fa-regular fa-clock me-1"></i><?= htmlspecialchars($article['read_time']) ?></small>
                         </td>
-                        <td><span class="badge <?= htmlspecialchars($article['badge_class']) ?>"><?= htmlspecialchars($article['badge']) ?></span></td>
-                        <td><?= htmlspecialchars($article['article_date']) ?></td>
-                        <td><span class="badge <?= $article['is_published'] ? 'bg-success' : 'bg-secondary' ?>"><?= $article['is_published'] ? 'Đã xuất bản' : 'Bản nháp' ?></span></td>
+                        <td><span class="badge <?= htmlspecialchars($article['badge_class']) ?> rounded-pill px-3 py-1"><?= htmlspecialchars($article['badge']) ?></span></td>
+                        <td><span class="text-secondary small"><?= htmlspecialchars($article['article_date']) ?></span></td>
+                        <td>
+                            <?php if ($article['is_published']): ?>
+                                <span class="badge badge-soft-success rounded-pill px-3 py-1">Đã xuất bản</span>
+                            <?php else: ?>
+                                <span class="badge badge-soft-secondary rounded-pill px-3 py-1">Bản nháp</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="text-end text-nowrap">
-                            <a href="news.php?edit_id=<?= (int)$article['id'] ?>" class="btn btn-sm btn-outline-primary" aria-label="Sửa bài viết"><i class="fa-solid fa-pen"></i></a>
+                            <a href="news.php?edit_id=<?= (int)$article['id'] ?>" class="btn btn-sm btn-light border text-primary rounded-pill px-2 py-1 me-1" aria-label="Sửa bài viết">
+                                <i class="fa-solid fa-pen"></i> Sửa
+                            </a>
                             <form method="POST" action="news.php" class="d-inline" id="deleteArticleForm<?= (int)$article['id'] ?>">
                                 <input type="hidden" name="article_id" value="<?= (int)$article['id'] ?>">
                                 <input type="hidden" name="delete_article" value="1">
                             </form>
-                            <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Xóa bài viết" data-bs-toggle="modal" data-bs-target="#adminDeleteConfirmModal" data-confirm-form="deleteArticleForm<?= (int)$article['id'] ?>" data-confirm-message="Xóa bài viết <?= htmlspecialchars($article['title']) ?>?">
+                            <button type="button" class="btn btn-sm btn-light border text-danger rounded-pill px-2 py-1" aria-label="Xóa bài viết" data-bs-toggle="modal" data-bs-target="#adminDeleteConfirmModal" data-confirm-form="deleteArticleForm<?= (int)$article['id'] ?>" data-confirm-message="Xóa bài viết <?= htmlspecialchars($article['title']) ?>?">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </td>
@@ -164,6 +193,6 @@ $articles = $pdo->query('SELECT * FROM articles ORDER BY id DESC')->fetchAll();
             </tbody>
         </table>
     </div>
-</section>
+</div>
 
 <?php require_once 'includes/footer.php'; ?>

@@ -11,7 +11,8 @@ class HomeController {
         $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 
         $brands = $this->pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
-        $products = $prodModel->getAll($brandId, $keyword);
+        // Tải toàn bộ sản phẩm để frontend có thể lọc tức thì khi bấm chuyển hãng mà không cần reload trang
+        $products = $prodModel->getAll(0, $keyword);
 
         $pageTitle = 'V-Phone - Siêu Thị Flagship 2026 & Smartphone Chính Hãng';
         require_once 'app/views/home.php';

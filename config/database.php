@@ -14,3 +14,5 @@ try {
 } catch (PDOException $e) {
     die("Lỗi kết nối CSDL: " . $e->getMessage());
 }
+
+require_once __DIR__ . '/../app/views/includes/functions.php';

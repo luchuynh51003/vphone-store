@@ -3,7 +3,7 @@ class OrderModel {
     private PDO $pdo;
     public function __construct(PDO $pdo) { $this->pdo = $pdo; }
 
-    public function create(int $userId, string $fullname, string $phone, string $address, ?string $note, int|float $totalMoney, string $method) {
+    public function create(?int $userId, string $fullname, string $phone, string $address, ?string $note, int|float $totalMoney, string $method) {
         $stmt = $this->pdo->prepare("INSERT INTO orders (user_id, fullname, phone, address, note, total_money, payment_method, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Chờ xử lý')");
         $stmt->execute([$userId, $fullname, $phone, $address, $note, $totalMoney, $method]);
         return $this->pdo->lastInsertId();

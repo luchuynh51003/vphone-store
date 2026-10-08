@@ -1,4 +1,4 @@
-﻿document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const searchDropdown = document.getElementById("searchDropdown");
     const searchResultsList = document.getElementById("searchResultsList");
@@ -22,12 +22,13 @@
 
             let html = "";
             matched.forEach(item => {
+                const formattedPrice = item.price_formatted || (new Intl.NumberFormat('vi-VN').format(item.price) + ' đ');
                 html += `
-                    <a href="product-detail.php?id=${item.id}" class="search-item">
+                    <a href="index.php?page=detail&id=${item.id}" class="search-item">
                         <img src="${item.image}" alt="${item.name}" class="search-thumb">
                         <div class="search-info">
                             <div class="search-title">${item.name}</div>
-                            <div class="search-price">${item.price}</div>
+                            <div class="search-price">${formattedPrice}</div>
                         </div>
                         <i class="fa-solid fa-chevron-right text-muted small ms-2"></i>
                     </a>`;

@@ -1,4 +1,5 @@
 <?php
+require_once 'app/views/includes/functions.php';
 $products = $products ?? [];
 $brands = $brands ?? [];
 $brandId = $brandId ?? 0;
@@ -7,14 +8,22 @@ $keyword = $keyword ?? '';
 $searchList = [];
 foreach ($products as $p) {
     $pPrice = ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']) ? $p['sale_price'] : $p['price'];
+    $storageOptions = json_decode($p['storage_options'] ?? '', true);
+    if (!is_array($storageOptions) || !$storageOptions) {
+        $storageOptions = getStorageTiers($p['name'], $p['rom'] ?? '256 GB');
+    }
     $searchList[] = [
         'id' => (int)$p['id'],
         'name' => $p['name'],
         'price' => (int)$pPrice,
         'old_price' => (int)$p['price'],
+        'price_formatted' => number_format($pPrice, 0, ',', '.') . ' đ',
         'image' => $p['image'],
         'rom' => $p['rom'] ?? '256 GB',
-        'colors' => $p['colors'] ?? 'Đen, Trắng, Xanh'
+        'storage_options' => $storageOptions,
+        'colors' => $p['colors'] ?? 'Đen, Trắng, Xanh',
+        'quantity' => (int)($p['quantity'] ?? 0),
+        'color_quantities' => json_decode($p['color_quantities'] ?? '', true) ?: []
     ];
 }
 
@@ -190,41 +199,154 @@ require_once 'app/views/includes/navbar.php';
     </div>
 </div>
 
-<!-- BỘ LỌC THƯƠNG HIỆU -->
+<style>
+@keyframes fadeInProduct {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.product-col-card {
+    transition: all 0.25s ease;
+}
+
+/* KHUNG BỘ LỌC THƯƠNG HIỆU CHUẨN KÍCH THƯỚC ĐỒNG BỘ */
+.brand-filter-wrapper {
+    background: #ffffff;
+    border: 1px solid #eef2f6;
+    border-radius: 18px;
+    padding: 10px 14px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+}
+.brand-filter-scroll {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 2px;
+    -webkit-overflow-scrolling: touch;
+}
+.brand-filter-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* NÚT BỘ LỌC THƯƠNG HIỆU - CHIỀU CAO CHUẨN 40PX, CÂN ĐỐI HOÀN TOÀN */
+.btn-brand-pill {
+    height: 40px;
+    min-width: 86px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 16px;
+    border-radius: 999px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #334155;
+    font-weight: 600;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    cursor: pointer;
+}
+.btn-brand-pill:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+.btn-brand-pill.active {
+    background: #0066cc !important;
+    border-color: #0066cc !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 102, 204, 0.35) !important;
+}
+
+/* ĐỊNH DẠNG LOGO CÂN ĐỐI TỈ LỆ THỰC TẾ */
+.brand-pill-icon {
+    height: 18px;
+    width: auto;
+    max-width: 22px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+}
+.brand-pill-wordmark {
+    height: 14px;
+    width: auto;
+    max-width: 82px;
+    object-fit: contain;
+    display: block;
+    flex-shrink: 0;
+}
+.brand-logo-apple { max-height: 18px; max-width: 18px; }
+.brand-logo-samsung { max-height: 14px; max-width: 85px; }
+.brand-logo-xiaomi { max-height: 18px; max-width: 18px; border-radius: 4px; }
+.brand-logo-oppo { max-height: 14px; max-width: 82px; }
+.brand-logo-vivo { max-height: 14px; max-width: 54px; }
+.brand-logo-google { max-height: 18px; max-width: 18px; }
+.brand-logo-asus { max-height: 18px; max-width: 26px; }
+.brand-logo-sony { max-height: 14px; max-width: 80px; }
+.brand-logo-huawei { max-height: 19px; max-width: 20px; }
+
+/* KHI ACTIVE: CHUYỂN LOGO ĐƠN SẮC SANG MÀU TRẮNG TINH TẾ */
+.btn-brand-pill.active .brand-logo-invert {
+    filter: brightness(0) invert(1) !important;
+}
+.btn-brand-pill.active .pill-icon-all {
+    color: #ffffff !important;
+}
+</style>
+
+<!-- BỘ LỌC THƯƠNG HIỆU (LOGO CHÍNH HÃNG - ĐỒNG BỘ 100% KÍCH THƯỚC) -->
 <div class="container my-4">
-    <div class="bg-white p-3 rounded-4 shadow-sm d-flex flex-wrap gap-2 align-items-center">
-        <span class="fw-bold text-primary me-2"><i class="fa-solid fa-filter me-1"></i>Thương hiệu:</span>
-        <a href="index.php" class="btn btn-sm <?= $brandId == 0 ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">Tất cả</a>
-        <?php foreach ($brands as $b): ?>
-            <a href="index.php?brand_id=<?= $b['id'] ?>" class="btn btn-sm <?= $brandId == $b['id'] ? 'btn-primary' : 'btn-outline-secondary' ?> rounded-pill px-3">
-                <?= htmlspecialchars($b['name']) ?>
+    <div class="brand-filter-wrapper">
+        <div class="brand-filter-scroll" id="brandFilterBar">
+            <span class="fw-bold text-primary me-1 d-none d-lg-inline-flex align-items-center" style="font-size:0.85rem;">
+                <i class="fa-solid fa-filter me-1"></i>Hãng:
+            </span>
+            <a href="index.php" class="btn btn-brand-pill <?= $brandId == 0 ? 'active btn-primary text-white' : 'btn-outline-secondary' ?>" data-brand-id="0" data-brand-name="">
+                <i class="fa-solid fa-layer-group text-primary pill-icon-all"></i>
+                <span>Tất cả</span>
             </a>
-        <?php endforeach; ?>
+            <?php foreach ($brands as $b): ?>
+                <?= renderBrandFilterPill($b, $brandId) ?>
+            <?php endforeach; ?>
+        </div>
     </div>
 </div>
 
 <!-- DANH SÁCH ĐIỆN THOẠI -->
 <div class="container" id="product-list">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold mb-0 text-dark">
+        <h4 class="fw-bold mb-0 text-dark" id="productListTitle">
             <i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>
             <?= !empty($keyword) ? 'Kết quả tìm kiếm: "' . htmlspecialchars($keyword) . '"' : 'Flagship 2026 & Điện Thoại Mới Nhất' ?>
         </h4>
-        <span class="badge bg-white text-secondary border px-3 py-2 rounded-pill"><?= count($products) ?> sản phẩm</span>
+        <span class="badge bg-white text-secondary border px-3 py-2 rounded-pill" id="productCountBadge"><?= count($products) ?> sản phẩm</span>
     </div>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="productGridContainer">
+        <div id="noProductNotice" class="col-12 text-center py-5 d-none w-100">
+            <i class="fa-solid fa-box-open fa-3x text-muted mb-3 d-block"></i>
+            <h5 class="fw-bold text-secondary">Chưa có sản phẩm nào thuộc thương hiệu này</h5>
+            <p class="text-muted small">Vui lòng chọn thương hiệu khác hoặc bấm "Tất cả" để xem danh mục.</p>
+        </div>
         <?php foreach ($products as $p): ?>
             <?php
-                $romDisplayList = ['256GB', '512GB', '1TB'];
-                if (strpos($p['rom'], '128') !== false) {
-                    $romDisplayList = ['128GB', '256GB', '512GB'];
-                } elseif (strpos($p['rom'], '64') !== false) {
-                    $romDisplayList = ['64GB', '128GB', '256GB'];
+                $storageDisplayList = json_decode($p['storage_options'] ?? '', true);
+                if (!is_array($storageDisplayList) || !$storageDisplayList) {
+                    $storageDisplayList = getStorageTiers($p['name'], $p['rom'] ?? '256 GB');
                 }
+                $romDisplayList = array_column($storageDisplayList, 'rom');
                 $colorDisplayList = array_map("trim", explode(",", $p["colors"] ?? "Đen, Trắng"));
             ?>
-            <div class="col">
+            <div class="col product-col-card" data-brand-id="<?= (int)$p['brand_id'] ?>" data-brand-name="<?= htmlspecialchars($p['brand_name'] ?? '') ?>">
                 <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
                     <?php if ($p['is_featured']): ?>
                         <span class="badge badge-tech-new position-absolute top-0 end-0 m-3 px-2 py-1 rounded-pill">
@@ -285,17 +407,31 @@ require_once 'app/views/includes/navbar.php';
 
                         <!-- CỤM 3 NÚT SẠCH SẼ -->
                         <div class="d-grid gap-2 mt-3">
-                            <button type="button" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center" onclick="openProductModal(<?= $p['id'] ?>, 'buy')">
-                                <i class="fa-solid fa-bolt me-1"></i>MUA NGAY
-                            </button>
-                            <div class="d-flex gap-2">
-                                <a href="index.php?page=detail&id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
-                                    Chi tiết
-                                </a>
-                                <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="openProductModal(<?= $p['id'] ?>, 'cart')">
-                                    <i class="fa-solid fa-cart-plus me-1"></i>Thêm giỏ
+                            <?php if ((int)$p['quantity'] <= 0): ?>
+                                <button type="button" class="btn btn-secondary btn-sm rounded-pill fw-bold py-2 text-center" disabled>
+                                    <i class="fa-solid fa-ban me-1"></i>HẾT HÀNG
                                 </button>
-                            </div>
+                                <div class="d-flex gap-2">
+                                    <a href="index.php?page=detail&id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
+                                        Chi tiết
+                                    </a>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill flex-grow-1 fw-bold" disabled>
+                                        <i class="fa-solid fa-cart-plus me-1"></i>Hết hàng
+                                    </button>
+                                </div>
+                            <?php else: ?>
+                                <button type="button" class="btn btn-vphone btn-sm rounded-pill fw-bold py-2 shadow-sm text-center" onclick="openProductModal(<?= $p['id'] ?>, 'buy')">
+                                    <i class="fa-solid fa-bolt me-1"></i>MUA NGAY
+                                </button>
+                                <div class="d-flex gap-2">
+                                    <a href="index.php?page=detail&id=<?= $p['id'] ?>" class="btn btn-outline-vphone btn-sm rounded-pill flex-grow-1 fw-semibold text-center">
+                                        Chi tiết
+                                    </a>
+                                    <button type="button" class="btn btn-outline-primary btn-sm rounded-pill flex-grow-1 fw-bold" onclick="openProductModal(<?= $p['id'] ?>, 'cart')">
+                                        <i class="fa-solid fa-cart-plus me-1"></i>Thêm giỏ
+                                    </button>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -365,12 +501,38 @@ function formatCurrency(amount) {
     return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
 }
 
+function getStorageTiersJS(prodName, defaultRom) {
+    const name = (prodName || '').toLowerCase();
+    const rom = (defaultRom || '').toLowerCase();
+    if (name.includes('ultra') || name.includes('pro max') || name.includes('fold') || name.includes('tri-fold') || name.includes('duo')) {
+        return [
+            { rom: '256 GB', extra: 0, label: '256 GB (Tiêu chuẩn)' },
+            { rom: '512 GB', extra: 4000000, label: '512 GB (+4.0tr)' },
+            { rom: '1 TB', extra: 9000000, label: '1 TB (+9.0tr)' }
+        ];
+    }
+    if (rom.includes('64')) {
+        return [
+            { rom: '64 GB', extra: 0, label: '64 GB (Tiêu chuẩn)' },
+            { rom: '128 GB', extra: 1200000, label: '128 GB (+1.2tr)' },
+            { rom: '256 GB', extra: 2600000, label: '256 GB (+2.6tr)' }
+        ];
+    }
+    return [
+        { rom: '128 GB', extra: 0, label: '128 GB (Tiêu chuẩn)' },
+        { rom: '256 GB', extra: 2500000, label: '256 GB (+2.5tr)' },
+        { rom: '512 GB', extra: 5500000, label: '512 GB (+5.5tr)' }
+    ];
+}
+
 function getModalColorImage(product, colorName) {
     const productName = (product.name || '').toLowerCase();
     const color = (colorName || '').toLowerCase();
+    const isIphone18Pro = productName.includes('iphone 18 pro');
+    const isDuo = productName.includes('duo');
 
-    // Các ảnh biến thể iPhone 18 hiện có trong assets/images/products.
-    if (productName.includes('iphone 18')) {
+    // Ảnh biến thể iPhone 18 Pro Max
+    if (isIphone18Pro) {
         if (color.includes('glacier blue') || color.includes('xanh glacier')) {
             return 'assets/images/products/iphone-18-promax-xanh-glacier-blue.png';
         }
@@ -383,6 +545,10 @@ function getModalColorImage(product, colorName) {
         if (color.includes('đen') || color.includes('black')) {
             return 'assets/images/products/iphone-18-promax-den.png';
         }
+    }
+
+    // Ảnh biến thể iPhone Duo / iPhone 18 Duo
+    if (isDuo || productName.includes('iphone 18')) {
         if (color.includes('trắng ánh sao') || color.includes('ánh sao')) {
             return 'assets/images/products/iphone-18-duo-trang-anh-sao.png';
         }
@@ -393,6 +559,7 @@ function getModalColorImage(product, colorName) {
 
     return product.image;
 }
+
 
 function openProductModal(productId, defaultAction) {
     const all = window.STORE_PRODUCTS || [];
@@ -412,50 +579,71 @@ function openProductModal(productId, defaultAction) {
     const colorBox = document.getElementById('modalColorPills');
     colorBox.innerHTML = '';
     const colors = (currentProduct.colors || 'Đen, Trắng, Xanh').split(',').map(c => c.trim());
-    selectedColor = colors[0];
+
+    const colorStockMap = {};
+    if (Array.isArray(currentProduct.color_quantities)) {
+        currentProduct.color_quantities.forEach(cq => {
+            if (cq && cq.color) colorStockMap[cq.color] = parseInt(cq.quantity, 10);
+        });
+    }
+
+    let firstAvail = null;
+    colors.forEach(col => {
+        if (firstAvail === null && (colorStockMap[col] === undefined || colorStockMap[col] > 0)) {
+            firstAvail = col;
+        }
+    });
+    selectedColor = firstAvail || colors[0];
     modalImg.src = getModalColorImage(currentProduct, selectedColor);
     document.getElementById('modalColorNotice').innerText = 'Màu: ' + selectedColor;
 
-    colors.forEach((col, idx) => {
+    colors.forEach((col) => {
+        const isOutOfStock = colorStockMap[col] !== undefined && colorStockMap[col] <= 0;
         const btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-1 ${idx === 0 ? 'btn-primary active text-white' : 'btn-outline-secondary'}`;
-        btn.innerText = col;
-        btn.onclick = function() {
-            colorBox.querySelectorAll('button').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
-            this.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-1';
-            selectedColor = col;
-            document.getElementById('modalColorNotice').innerText = 'Màu: ' + col;
-
-            modalImg.src = getModalColorImage(currentProduct, col);
-        };
+        if (isOutOfStock) {
+            btn.className = 'btn btn-sm rounded-pill fw-bold px-3 py-1 btn-outline-secondary opacity-50';
+            btn.disabled = true;
+            btn.style.cursor = 'not-allowed';
+            btn.style.textDecoration = 'line-through';
+            btn.innerText = col + ' (Hết)';
+        } else {
+            const isSelected = col === selectedColor;
+            btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-1 ${isSelected ? 'btn-primary active text-white' : 'btn-outline-secondary'}`;
+            btn.innerText = col;
+            btn.onclick = function() {
+                colorBox.querySelectorAll('button:not([disabled])').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
+                this.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-1';
+                selectedColor = col;
+                document.getElementById('modalColorNotice').innerText = 'Màu: ' + col;
+                document.getElementById('modalImg').src = getModalColorImage(currentProduct, col);
+            };
+        }
         colorBox.appendChild(btn);
     });
 
     const romBox = document.getElementById('modalRomPills');
     romBox.innerHTML = '';
-    let romOptions = [];
-    if (currentProduct.rom.includes('128')) {
-        romOptions = [
-            { rom: '128 GB', extra: 0, label: '128 GB (Tiêu chuẩn)' },
-            { rom: '256 GB', extra: 2500000, label: '256 GB (+2.5tr)' },
-            { rom: '512 GB', extra: 5500000, label: '512 GB (+5.5tr)' }
-        ];
-    } else if (currentProduct.rom.includes('64')) {
-        romOptions = [
-            { rom: '64 GB', extra: 0, label: '64 GB (Tiêu chuẩn)' },
-            { rom: '128 GB', extra: 1500000, label: '128 GB (+1.5tr)' },
-            { rom: '256 GB', extra: 3500000, label: '256 GB (+3.5tr)' }
-        ];
-    } else {
-        romOptions = [
-            { rom: '256 GB', extra: 0, label: '256 GB (Tiêu chuẩn)' },
-            { rom: '512 GB', extra: 4000000, label: '512 GB (+4.0tr)' },
-            { rom: '1 TB', extra: 9000000, label: '1 TB (+9.0tr)' }
-        ];
+    let romOptions = Array.isArray(currentProduct.storage_options) ? currentProduct.storage_options : [];
+    if (!romOptions.length) {
+        if (currentProduct.rom.includes('128')) {
+            romOptions = [
+                { rom: '128 GB', extra: 0, label: '128 GB (Tiêu chuẩn)' },
+                { rom: '256 GB', extra: 2500000, label: '256 GB (+2.5tr)' },
+                { rom: '512 GB', extra: 5500000, label: '512 GB (+5.5tr)' }
+            ];
+        } else if (currentProduct.rom.includes('64')) {
+            romOptions = [
+                { rom: '64 GB', extra: 0, label: '64 GB (Tiêu chuẩn)' },
+                { rom: '128 GB', extra: 1500000, label: '128 GB (+1.5tr)' },
+                { rom: '256 GB', extra: 3500000, label: '256 GB (+3.5tr)' }
+            ];
+        } else {
+            romOptions = getStorageTiersJS(currentProduct.name, currentProduct.rom);
+        }
     }
     selectedRom = romOptions[0].rom;
-    extraMoney = 0;
+    extraMoney = Number(romOptions[0].extra) || 0;
 
     romOptions.forEach((opt, idx) => {
         const btn = document.createElement('button');
@@ -475,21 +663,41 @@ function openProductModal(productId, defaultAction) {
     });
 
     document.getElementById('btnConfirmBuyNow').onclick = function() {
+        if (currentProduct && currentProduct.quantity <= 0) {
+            alert('Sản phẩm "' + currentProduct.name + '" hiện đã hết hàng!');
+            return;
+        }
         bsModalInstance.hide();
-        window.location.href = `index.php?page=checkout&action=buy_now&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}`;
+        const selectedImage = getModalColorImage(currentProduct, selectedColor);
+        window.location.href = `index.php?page=checkout&action=buy_now&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}&img=${encodeURIComponent(selectedImage)}`;
     };
 
     document.getElementById('btnConfirmAddToCart').onclick = function() {
+        if (currentProduct && currentProduct.quantity <= 0) {
+            alert('Sản phẩm "' + currentProduct.name + '" hiện đã hết hàng!');
+            return;
+        }
         bsModalInstance.hide();
         const selectedImage = getModalColorImage(currentProduct, selectedColor);
         const url = `index.php?page=cart&action=add&ajax=1&id=${currentProduct.id}&color=${encodeURIComponent(selectedColor)}&rom=${encodeURIComponent(selectedRom)}&extra=${extraMoney}&img=${encodeURIComponent(selectedImage)}`;
         fetch(url)
             .then(r => r.json())
             .then(data => {
-                const badge = document.getElementById('cartBadge');
-                if (badge) badge.innerText = data.cart_count;
                 const toast = document.getElementById('vphoneLiveToast');
                 const toastText = document.getElementById('vphoneToastText');
+                if (data.success === false) {
+                    if (toast && toastText) {
+                        toastText.innerText = data.message || 'Không thể thêm vào giỏ hàng!';
+                        toast.style.display = 'block';
+                        clearTimeout(window.toastTimer);
+                        window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+                    } else {
+                        alert(data.message || 'Không thể thêm vào giỏ hàng!');
+                    }
+                    return;
+                }
+                const badge = document.getElementById('cartBadge');
+                if (badge) badge.innerText = data.cart_count;
                 if (toast && toastText) {
                     toastText.innerText = `Đã thêm "${currentProduct.name} - Màu ${selectedColor} (${selectedRom})" vào giỏ!`;
                     toast.style.display = 'block';
@@ -504,6 +712,122 @@ function openProductModal(productId, defaultAction) {
 
     bsModalInstance.show();
 }
+
+// BỘ LỌC THƯƠNG HIỆU TỨC THÌ (KHÔNG LOAD LẠI TRANG)
+function filterProductsByBrand(brandId, brandName, updateHistory = true) {
+    brandId = parseInt(brandId, 10);
+    let visibleCount = 0;
+
+    // 1. Cập nhật nút active
+    document.querySelectorAll('.btn-brand-pill').forEach(btn => {
+        const bId = parseInt(btn.dataset.brandId, 10);
+        if (bId === brandId) {
+            btn.classList.add('active', 'btn-primary', 'text-white');
+            btn.classList.remove('btn-outline-secondary');
+        } else {
+            btn.classList.remove('active', 'btn-primary', 'text-white');
+            btn.classList.add('btn-outline-secondary');
+        }
+    });
+
+    // 2. Ẩn/Hiện sản phẩm theo hãng với hiệu ứng fade nhẹ
+    const cards = document.querySelectorAll('.product-col-card');
+    cards.forEach(card => {
+        const cardBrandId = parseInt(card.dataset.brandId, 10);
+        if (brandId === 0 || cardBrandId === brandId) {
+            card.classList.remove('d-none');
+            card.style.animation = 'fadeInProduct 0.25s ease forwards';
+            visibleCount++;
+        } else {
+            card.classList.add('d-none');
+        }
+    });
+
+    // 3. Hiển thị thông báo nếu thương hiệu chưa có sản phẩm
+    const emptyNotice = document.getElementById('noProductNotice');
+    if (emptyNotice) {
+        if (visibleCount === 0) {
+            emptyNotice.classList.remove('d-none');
+        } else {
+            emptyNotice.classList.add('d-none');
+        }
+    }
+
+    // 4. Cập nhật badge số lượng
+    const countBadge = document.getElementById('productCountBadge');
+    if (countBadge) countBadge.innerText = visibleCount + ' sản phẩm';
+
+    // 5. Cập nhật tiêu đề danh sách
+    const titleEl = document.getElementById('productListTitle');
+    if (titleEl) {
+        if (brandId === 0) {
+            titleEl.innerHTML = '<i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>Flagship 2026 & Điện Thoại Mới Nhất';
+        } else {
+            const displayBrand = brandName || (document.querySelector(`.btn-brand-pill[data-brand-id="${brandId}"]`)?.innerText.trim() || 'Thương hiệu');
+            titleEl.innerHTML = `<i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>Điện Thoại ${displayBrand}`;
+        }
+    }
+
+    // 6. Cập nhật URL trình duyệt (Back/Forward vẫn chuẩn, không reload trang)
+    if (updateHistory) {
+        const newUrl = brandId === 0 ? 'index.php' : `index.php?brand_id=${brandId}`;
+        window.history.pushState({ brandId: brandId, brandName: brandName }, '', newUrl);
+    }
+}
+
+// Lắng nghe sự kiện click các nút thương hiệu
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.btn-brand-pill').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const bId = this.dataset.brandId;
+            const bName = this.dataset.brandName || this.innerText.trim();
+            filterProductsByBrand(bId, bName, true);
+        });
+    });
+
+    // Lắng nghe click trong sidebar trượt góc trái
+    document.querySelectorAll('#sidebarMenuLeft a[href*="brand_id="]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const hrefUrl = this.getAttribute('href');
+            const match = hrefUrl.match(/brand_id=(\d+)/);
+            if (match) {
+                e.preventDefault();
+                const bId = match[1];
+                const labelEl = this.querySelector('.sidebar-brand-label');
+                const bName = labelEl ? labelEl.innerText.trim() : this.innerText.trim();
+                const activePill = document.querySelector(`.btn-brand-pill[data-brand-id="${bId}"]`);
+                const brandDisplayName = activePill ? (activePill.dataset.brandName || activePill.innerText.trim()) : bName;
+                const offcanvasEl = document.getElementById('sidebarMenuLeft');
+                if (offcanvasEl && window.bootstrap) {
+                    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                    if (bsOffcanvas) bsOffcanvas.hide();
+                }
+                filterProductsByBrand(bId, brandDisplayName, true);
+                const targetSec = document.getElementById('product-list');
+                if (targetSec) targetSec.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+
+    // Lọc ngay khi mở trang nếu URL có sẵn brand_id
+    const initialParams = new URLSearchParams(window.location.search);
+    const initialBrandId = initialParams.get('brand_id');
+    if (initialBrandId) {
+        const activeBtn = document.querySelector(`.btn-brand-pill[data-brand-id="${initialBrandId}"]`);
+        const bName = activeBtn ? (activeBtn.dataset.brandName || activeBtn.innerText.trim()) : '';
+        filterProductsByBrand(initialBrandId, bName, false);
+    }
+});
+
+// Bắt nút Back / Forward trên trình duyệt
+window.addEventListener('popstate', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const bId = urlParams.get('brand_id') || 0;
+    const activeBtn = document.querySelector(`.btn-brand-pill[data-brand-id="${bId}"]`);
+    const bName = activeBtn ? (activeBtn.dataset.brandName || activeBtn.innerText.trim()) : '';
+    filterProductsByBrand(bId, bName, false);
+});
 </script>
 
 <?php require_once 'app/views/includes/footer.php'; ?>

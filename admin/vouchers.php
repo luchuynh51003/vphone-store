@@ -77,80 +77,130 @@ $vouchers = $pdo->query('SELECT * FROM vouchers ORDER BY id DESC')->fetchAll();
     </div>
 <?php endif; ?>
 
-<section class="bg-white border rounded-4 shadow-sm p-4 mb-4">
-    <h5 class="fw-bold mb-3"><?= $editingVoucher ? 'Sửa voucher' : 'Tạo voucher mới' ?></h5>
+<section class="card border-0 rounded-4 shadow-sm p-4 mb-4 bg-white">
+    <div class="d-flex align-items-center gap-2 mb-3">
+        <div class="rounded-3 p-2 bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+            <i class="fa-solid fa-ticket"></i>
+        </div>
+        <h5 class="fw-bold mb-0 text-dark"><?= $editingVoucher ? 'Chỉnh sửa mã voucher' : 'Tạo mã voucher mới' ?></h5>
+    </div>
     <form method="POST" action="vouchers.php<?= $editingVoucher ? '?edit_id=' . (int)$editingVoucher['id'] : '' ?>">
         <input type="hidden" name="voucher_id" value="<?= (int)($editingVoucher['id'] ?? 0) ?>">
         <div class="row g-3">
             <div class="col-md-3">
                 <label for="voucherCode" class="form-label small fw-semibold">Mã voucher</label>
-                <input id="voucherCode" name="code" class="form-control text-uppercase" maxlength="40" required value="<?= htmlspecialchars($editingVoucher['code'] ?? '') ?>" placeholder="VD: SALE10">
+                <input id="voucherCode" name="code" class="form-control rounded-3 text-uppercase fw-bold text-primary" maxlength="40" required value="<?= htmlspecialchars($editingVoucher['code'] ?? '') ?>" placeholder="VD: SALE10">
             </div>
             <div class="col-md-2">
                 <label for="voucherType" class="form-label small fw-semibold">Loại giảm</label>
-                <select id="voucherType" name="discount_type" class="form-select">
+                <select id="voucherType" name="discount_type" class="form-select rounded-3">
                     <option value="percent" <?= ($editingVoucher['discount_type'] ?? 'percent') === 'percent' ? 'selected' : '' ?>>Phần trăm (%)</option>
                     <option value="fixed" <?= ($editingVoucher['discount_type'] ?? '') === 'fixed' ? 'selected' : '' ?>>Số tiền (đ)</option>
                 </select>
             </div>
             <div class="col-md-2">
                 <label for="voucherValue" class="form-label small fw-semibold">Mức giảm</label>
-                <input id="voucherValue" type="number" name="discount_value" class="form-control" min="1" required value="<?= (int)($editingVoucher['discount_value'] ?? 10) ?>">
+                <input id="voucherValue" type="number" name="discount_value" class="form-control rounded-3 fw-bold" min="1" required value="<?= (int)($editingVoucher['discount_value'] ?? 10) ?>">
             </div>
             <div class="col-md-2">
                 <label for="voucherMin" class="form-label small fw-semibold">Đơn tối thiểu (đ)</label>
-                <input id="voucherMin" type="number" name="minimum_order" class="form-control" min="0" value="<?= (int)($editingVoucher['minimum_order'] ?? 0) ?>">
+                <input id="voucherMin" type="number" name="minimum_order" class="form-control rounded-3" min="0" value="<?= (int)($editingVoucher['minimum_order'] ?? 0) ?>">
             </div>
             <div class="col-md-3">
                 <label for="voucherMax" class="form-label small fw-semibold">Giảm tối đa (đ, tùy chọn)</label>
-                <input id="voucherMax" type="number" name="max_discount" class="form-control" min="0" value="<?= htmlspecialchars((string)($editingVoucher['max_discount'] ?? '')) ?>">
+                <input id="voucherMax" type="number" name="max_discount" class="form-control rounded-3" min="0" value="<?= htmlspecialchars((string)($editingVoucher['max_discount'] ?? '')) ?>">
             </div>
             <div class="col-md-3">
-                <label for="voucherStarts" class="form-label small fw-semibold">Bắt đầu</label>
-                <input id="voucherStarts" type="datetime-local" name="starts_at" class="form-control" value="<?= !empty($editingVoucher['starts_at']) ? date('Y-m-d\\TH:i', strtotime($editingVoucher['starts_at'])) : '' ?>">
+                <label for="voucherStarts" class="form-label small fw-semibold">Bắt đầu hiệu lực</label>
+                <input id="voucherStarts" type="datetime-local" name="starts_at" class="form-control rounded-3" value="<?= !empty($editingVoucher['starts_at']) ? date('Y-m-d\\TH:i', strtotime($editingVoucher['starts_at'])) : '' ?>">
             </div>
             <div class="col-md-3">
                 <label for="voucherExpires" class="form-label small fw-semibold">Hết hạn</label>
-                <input id="voucherExpires" type="datetime-local" name="expires_at" class="form-control" value="<?= !empty($editingVoucher['expires_at']) ? date('Y-m-d\\TH:i', strtotime($editingVoucher['expires_at'])) : '' ?>">
+                <input id="voucherExpires" type="datetime-local" name="expires_at" class="form-control rounded-3" value="<?= !empty($editingVoucher['expires_at']) ? date('Y-m-d\\TH:i', strtotime($editingVoucher['expires_at'])) : '' ?>">
             </div>
             <div class="col-md-3">
-                <label for="voucherLimit" class="form-label small fw-semibold">Giới hạn lượt (để trống = không giới hạn)</label>
-                <input id="voucherLimit" type="number" name="usage_limit" class="form-control" min="1" value="<?= htmlspecialchars((string)($editingVoucher['usage_limit'] ?? '')) ?>">
+                <label for="voucherLimit" class="form-label small fw-semibold">Giới hạn lượt (trống = vô hạn)</label>
+                <input id="voucherLimit" type="number" name="usage_limit" class="form-control rounded-3" min="1" value="<?= htmlspecialchars((string)($editingVoucher['usage_limit'] ?? '')) ?>">
             </div>
             <div class="col-md-3 d-flex align-items-end">
                 <div class="form-check mb-2">
                     <input type="checkbox" name="is_active" value="1" class="form-check-input" id="voucherActive" <?= !isset($editingVoucher['is_active']) || $editingVoucher['is_active'] ? 'checked' : '' ?>>
-                    <label for="voucherActive" class="form-check-label fw-semibold">Đang hoạt động</label>
+                    <label for="voucherActive" class="form-check-label fw-bold small text-dark">Đang kích hoạt</label>
                 </div>
             </div>
         </div>
         <div class="mt-3 d-flex gap-2">
-            <button type="submit" name="save_voucher" value="1" class="btn btn-primary fw-semibold"><i class="fa-solid fa-floppy-disk me-1"></i><?= $editingVoucher ? 'Lưu thay đổi' : 'Tạo voucher' ?></button>
-            <?php if ($editingVoucher): ?><a href="vouchers.php" class="btn btn-light">Hủy sửa</a><?php endif; ?>
+            <button type="submit" name="save_voucher" value="1" class="btn btn-primary rounded-pill px-4 fw-bold">
+                <i class="fa-solid fa-floppy-disk me-1"></i><?= $editingVoucher ? 'Lưu thay đổi' : 'Tạo voucher' ?>
+            </button>
+            <?php if ($editingVoucher): ?>
+                <a href="vouchers.php" class="btn btn-light rounded-pill px-4">Hủy sửa</a>
+            <?php endif; ?>
         </div>
     </form>
 </section>
 
-<section class="bg-white border rounded-4 shadow-sm p-4">
+<div class="admin-table-card">
+    <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+        <div>
+            <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                <i class="fa-solid fa-ticket-simple text-primary"></i> Danh Sách Mã Khuyến Mãi
+            </h5>
+            <small class="text-secondary">Tổng cộng <?= count($vouchers) ?> mã trong cơ sở dữ liệu</small>
+        </div>
+    </div>
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-            <thead class="table-light"><tr><th>Mã</th><th>Mức giảm</th><th>Đơn tối thiểu</th><th>Đã dùng</th><th>Thời hạn</th><th>Trạng thái</th><th class="text-end">Thao tác</th></tr></thead>
+        <table class="table admin-table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Mã Voucher</th>
+                    <th>Mức Giảm</th>
+                    <th>Đơn Tối Thiểu</th>
+                    <th>Lượt Dùng</th>
+                    <th>Hạn Dùng</th>
+                    <th>Trạng Thái</th>
+                    <th class="text-end">Thao Tác</th>
+                </tr>
+            </thead>
             <tbody>
                 <?php foreach ($vouchers as $voucher): ?>
                     <tr>
-                        <td class="fw-bold text-primary"><?= htmlspecialchars($voucher['code']) ?></td>
-                        <td><?= $voucher['discount_type'] === 'percent' ? (int)$voucher['discount_value'] . '%' : number_format($voucher['discount_value'], 0, ',', '.') . ' đ' ?><?php if ($voucher['max_discount'] !== null): ?><small class="text-muted d-block">Tối đa <?= number_format($voucher['max_discount'], 0, ',', '.') ?> đ</small><?php endif; ?></td>
-                        <td><?= number_format($voucher['minimum_order'], 0, ',', '.') ?> đ</td>
-                        <td><?= (int)$voucher['used_count'] ?><?= $voucher['usage_limit'] !== null ? ' / ' . (int)$voucher['usage_limit'] : '' ?></td>
-                        <td class="small"><?= $voucher['expires_at'] ? htmlspecialchars($voucher['expires_at']) : 'Không thời hạn' ?></td>
-                        <td><span class="badge <?= $voucher['is_active'] ? 'bg-success' : 'bg-secondary' ?>"><?= $voucher['is_active'] ? 'Đang bật' : 'Đã tắt' ?></span></td>
+                        <td>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fw-bold font-monospace fs-6">
+                                <?= htmlspecialchars($voucher['code']) ?>
+                            </span>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-danger fs-6">
+                                <?= $voucher['discount_type'] === 'percent' ? (int)$voucher['discount_value'] . '%' : number_format($voucher['discount_value'], 0, ',', '.') . ' đ' ?>
+                            </div>
+                            <?php if ($voucher['max_discount'] !== null): ?>
+                                <small class="text-muted d-block">Tối đa <?= number_format($voucher['max_discount'], 0, ',', '.') ?> đ</small>
+                            <?php endif; ?>
+                        </td>
+                        <td><span class="fw-medium text-dark"><?= number_format($voucher['minimum_order'], 0, ',', '.') ?> đ</span></td>
+                        <td>
+                            <span class="badge bg-light text-secondary border rounded-pill px-2 py-1">
+                                <?= (int)$voucher['used_count'] ?><?= $voucher['usage_limit'] !== null ? ' / ' . (int)$voucher['usage_limit'] : '' ?>
+                            </span>
+                        </td>
+                        <td class="small text-secondary"><?= $voucher['expires_at'] ? htmlspecialchars($voucher['expires_at']) : 'Vô thời hạn' ?></td>
+                        <td>
+                            <?php if ($voucher['is_active']): ?>
+                                <span class="badge badge-soft-success rounded-pill px-3 py-1">Đang bật</span>
+                            <?php else: ?>
+                                <span class="badge badge-soft-secondary rounded-pill px-3 py-1">Đã tắt</span>
+                            <?php endif; ?>
+                        </td>
                         <td class="text-end text-nowrap">
-                            <a href="vouchers.php?edit_id=<?= (int)$voucher['id'] ?>" class="btn btn-sm btn-outline-primary" aria-label="Sửa voucher <?= htmlspecialchars($voucher['code']) ?>"><i class="fa-solid fa-pen"></i></a>
+                            <a href="vouchers.php?edit_id=<?= (int)$voucher['id'] ?>" class="btn btn-sm btn-light border text-primary rounded-pill px-2 py-1 me-1" aria-label="Sửa voucher <?= htmlspecialchars($voucher['code']) ?>">
+                                <i class="fa-solid fa-pen"></i> Sửa
+                            </a>
                             <form method="POST" action="vouchers.php" class="d-inline" id="deleteVoucherForm<?= (int)$voucher['id'] ?>">
                                 <input type="hidden" name="voucher_id" value="<?= (int)$voucher['id'] ?>">
                                 <input type="hidden" name="delete_voucher" value="1">
                             </form>
-                            <button type="button" class="btn btn-sm btn-outline-danger" aria-label="Xóa voucher <?= htmlspecialchars($voucher['code']) ?>" data-bs-toggle="modal" data-bs-target="#adminDeleteConfirmModal" data-confirm-form="deleteVoucherForm<?= (int)$voucher['id'] ?>" data-confirm-message="Xóa voucher <?= htmlspecialchars($voucher['code']) ?>?">
+                            <button type="button" class="btn btn-sm btn-light border text-danger rounded-pill px-2 py-1" aria-label="Xóa voucher <?= htmlspecialchars($voucher['code']) ?>" data-bs-toggle="modal" data-bs-target="#adminDeleteConfirmModal" data-confirm-form="deleteVoucherForm<?= (int)$voucher['id'] ?>" data-confirm-message="Xóa voucher <?= htmlspecialchars($voucher['code']) ?>?">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </td>
@@ -159,6 +209,6 @@ $vouchers = $pdo->query('SELECT * FROM vouchers ORDER BY id DESC')->fetchAll();
             </tbody>
         </table>
     </div>
-</section>
+</div>
 
 <?php require_once 'includes/footer.php'; ?>

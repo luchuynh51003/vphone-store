@@ -162,6 +162,52 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+// THÊM NHANH VÀO GIỎ HÀNG VỚI TOAST V-PHONE TRÊN MỌI TRANG
+window.addToCartDirect = function(btn, productId, productName) {
+    const origHtml = btn ? btn.innerHTML : '';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>Đang thêm...';
+    }
+
+    fetch(`index.php?page=cart&action=add&ajax=1&id=${productId}`)
+        .then(r => r.json())
+        .then(data => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+            const toast = document.getElementById('vphoneLiveToast');
+            const toastText = document.getElementById('vphoneToastText');
+            if (data.success === false) {
+                if (toast && toastText) {
+                    toastText.innerText = data.message || 'Không thể thêm vào giỏ!';
+                    toast.style.display = 'block';
+                    clearTimeout(window.toastTimer);
+                    window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+                } else {
+                    alert(data.message || 'Không thể thêm vào giỏ!');
+                }
+                return;
+            }
+            const badge = document.getElementById('cartBadge');
+            if (badge) badge.innerText = data.cart_count;
+            if (toast && toastText) {
+                toastText.innerText = `Đã thêm "${productName}" vào giỏ!`;
+                toast.style.display = 'block';
+                clearTimeout(window.toastTimer);
+                window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+            }
+        })
+        .catch(() => {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
+            window.location.href = `index.php?page=cart&action=add&id=${productId}`;
+        });
+};
 </script>
 </body>
 </html>

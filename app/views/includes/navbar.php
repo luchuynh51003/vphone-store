@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/functions.php';
 $currentPage = $_GET['page'] ?? 'home';
 $cartCount = 0;
 if (!empty($_SESSION['cart'])) {
@@ -189,23 +190,24 @@ $currentUser = $_SESSION['user'] ?? null;
             </a>
         </div>
 
-        <div class="text-uppercase fw-bold text-secondary small mb-2"><i class="fa-solid fa-mobile-screen me-2 text-primary"></i>Thương Hiệu</div>
-        <div class="list-group list-group-flush mb-4 rounded-3 border">
-            <a href="index.php?brand_id=1" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-brands fa-apple text-dark me-3" style="width:20px;"></i> Apple (iPhone)
-            </a>
-            <a href="index.php?brand_id=2" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-solid fa-mobile-screen text-primary me-3" style="width:20px;"></i> Samsung Galaxy
-            </a>
-            <a href="index.php?brand_id=3" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-solid fa-bolt text-warning me-3" style="width:20px;"></i> Xiaomi Flagship
-            </a>
-            <a href="index.php?brand_id=4" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-solid fa-camera text-success me-3" style="width:20px;"></i> OPPO Camera Phone
-            </a>
-            <a href="index.php?brand_id=5" class="list-group-item list-group-item-action d-flex align-items-center py-2">
-                <i class="fa-solid fa-layer-group text-danger me-3" style="width:20px;"></i> Huawei Tri-Fold
-            </a>
+        <div class="text-uppercase fw-bold text-secondary small mb-2"><i class="fa-solid fa-mobile-screen me-2 text-primary"></i>Thương Hiệu Chính Hãng</div>
+        <div class="list-group list-group-flush mb-4 rounded-3 border overflow-hidden">
+            <?php
+            $sidebarBrands = [
+                1 => ['name' => 'Apple', 'label' => 'Apple (iPhone)'],
+                2 => ['name' => 'Samsung', 'label' => 'Samsung Galaxy'],
+                3 => ['name' => 'Xiaomi', 'label' => 'Xiaomi Flagship'],
+                4 => ['name' => 'OPPO', 'label' => 'OPPO Camera Phone'],
+                5 => ['name' => 'Vivo', 'label' => 'Vivo Smartphone'],
+                6 => ['name' => 'Google Pixel', 'label' => 'Google Pixel'],
+                7 => ['name' => 'ASUS ROG', 'label' => 'ASUS ROG Gaming'],
+                8 => ['name' => 'Sony', 'label' => 'Sony Xperia'],
+                9 => ['name' => 'Huawei & Honor', 'label' => 'Huawei & Honor']
+            ];
+            ?>
+            <?php foreach ($sidebarBrands as $bId => $bData): ?>
+                <?= renderSidebarBrandItem($bId, $bData) ?>
+            <?php endforeach; ?>
         </div>
 
         <div class="p-3 bg-light rounded-4 text-secondary small border">
