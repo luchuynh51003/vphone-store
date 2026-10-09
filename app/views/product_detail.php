@@ -16,6 +16,7 @@ if (!$firstAvailableColor && !empty($colorList)) {
     $firstAvailableColor = $colorList[0];
 }
 require_once 'app/views/includes/functions.php';
+$initialImage = getProductColorImage((int)$product['id'], $firstAvailableColor, $product['image']);
 $storageOptions = json_decode($product['storage_options'] ?? '', true);
 if (!is_array($storageOptions) || !$storageOptions) {
     $storageOptions = getStorageTiers($product['name'] ?? '', $product['rom'] ?? '256 GB');
@@ -47,7 +48,7 @@ require_once 'app/views/includes/navbar.php';
                 <?php endif; ?>
 
                 <div class="detail-img-box my-3 py-3" style="min-height: 360px; display: flex; align-items: center; justify-content: center;">
-                    <img id="detailMainImg" src="<?= htmlspecialchars($product['image']) ?>" alt="" class="img-fluid" style="max-height: 340px; object-fit: contain; transition: all 0.25s ease;">
+                    <img id="detailMainImg" src="<?= htmlspecialchars($initialImage) ?>" alt="<?= htmlspecialchars($product['name']) ?>" class="img-fluid" style="max-height: 340px; object-fit: contain; transition: all 0.25s ease;">
                 </div>
 
                 <div class="d-flex justify-content-center gap-2 mt-2">
@@ -101,10 +102,12 @@ require_once 'app/views/includes/navbar.php';
                             ?>
                             <?php if ($isOutOfStockColor): ?>
                                 <button type="button" class="btn btn-sm rounded-pill fw-bold px-3 py-2 color-pill-btn btn-outline-secondary opacity-50" disabled title="Màu này tạm hết hàng" style="cursor: not-allowed; text-decoration: line-through;">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: <?= getColorHexValue($cName) ?>; display: inline-block; margin-right: 6px; border: 1px solid rgba(0,0,0,0.15); vertical-align: middle;"></span>
                                     <?= htmlspecialchars($cName) ?> <span class="badge bg-secondary ms-1" style="font-size:0.6rem;">Hết</span>
                                 </button>
                             <?php else: ?>
                                 <button type="button" class="btn btn-sm rounded-pill fw-bold px-3 py-2 color-pill-btn <?= $isActive ? 'btn-primary active' : 'btn-outline-secondary' ?>" data-color="<?= htmlspecialchars($cName) ?>" onclick="selectDetailColor(this, '<?= htmlspecialchars(addslashes($cName)) ?>')">
+                                    <span style="width: 8px; height: 8px; border-radius: 50%; background: <?= getColorHexValue($cName) ?>; display: inline-block; margin-right: 6px; border: 1px solid rgba(0,0,0,0.15); vertical-align: middle;"></span>
                                     <?= htmlspecialchars($cName) ?>
                                     <?php if (isset($colorStockMap[$cName])): ?>
                                         <span class="badge bg-light text-primary border ms-1" style="font-size:0.6rem;"><?= $colorStockMap[$cName] ?></span>
@@ -257,34 +260,24 @@ require_once 'app/views/includes/navbar.php';
 </div>
 
 <script>
+window.PRODUCT_COLOR_MAP = <?= json_encode(getAllProductColorMap(), JSON_UNESCAPED_UNICODE) ?>;
+window.CURRENT_PRODUCT_ID = <?= (int)$product['id'] ?>;
 const basePrice = <?= (int)$basePrice ?>;
 const baseOldPrice = <?= (int)$baseOldPrice ?>;
-const isIphone18Pro = <?= json_encode(strpos($product['name'], 'iPhone 18 Pro') === 0) ?>;
 let currentSelectedRom = <?= json_encode($storageOptions[0]['rom'] ?? '256 GB', JSON_UNESCAPED_UNICODE) ?>;
 let currentExtraMoney = <?= (int)($storageOptions[0]['extra'] ?? 0) ?>;
 let currentSelectedColor = "<?= htmlspecialchars($firstAvailableColor ?? ($colorList[0] ?? 'Tiêu chuẩn')) ?>";
 const originalImgPath = "<?= htmlspecialchars($product['image']) ?>";
 
-// BẢN ĐỒ KHỚP ĐÚNG CÁC FILE ẢNH MÀU BẠN ĐÃ TẠO
+// BẢN ĐỒ KHỚP ĐÚNG CÁC FILE ẢNH MÀU THỰC TẾ
 function resolveColorImage(colorName) {
-    const c = colorName.toLowerCase();
-
-    // Khớp các file bạn vừa tải trong thư mục
-    if (isIphone18Pro && (c.includes("glacier blue") || c.includes("xanh glacier"))) return "assets/images/products/iphone-18-promax-xanh-glacier-blue.png";
-    if (isIphone18Pro && (c.includes("burgundy") || c.includes("đỏ"))) return "assets/images/products/iphone-18-promax-do-burgundy.png";
-    if (isIphone18Pro && (c.includes("bạc") || c.includes("silver"))) return "assets/images/products/iphone-18-promax-bac.png";
-    if (isIphone18Pro && (c.includes("đen") || c.includes("black"))) return "assets/images/products/iphone-18-promax-den.png";
-    if (c.includes("trắng ánh sao") || c.includes("ánh sao")) return "assets/images/products/iphone-18-duo-trang-anh-sao.png";
-    if (c.includes("trời đêm")) return "assets/images/products/iphone-18-duo-troi-dem.png";
-    if (c.includes("sa mạc")) return "assets/images/products/iphone-16-promax-sa-mac.png";
-    if (c.includes("tự nhiên")) return "assets/images/products/iphone-16-promax-tu-nhien.png";
-    if (c.includes("hồng")) return "assets/images/products/iphone-16-hong.png";
-    if (c.includes("mòng két")) return "assets/images/products/iphone-16-xanh-mong-ket.png";
-    if (c.includes("lưu ly")) return "assets/images/products/iphone-16-xanh-luu-ly.png";
-    if (c.includes("xám titan") || c.includes("xám")) return "assets/images/products/samsung-s24-ultra-xam.jpg";
-    if (c.includes("tím titan") || c.includes("tím")) return "assets/images/products/samsung-s24-ultra-tim.jpg";
-    if (c.includes("vàng")) return "assets/images/products/samsung-s24-ultra-vang.jpg";
-
+    const color = (colorName || '').trim();
+    if (window.PRODUCT_COLOR_MAP && window.CURRENT_PRODUCT_ID) {
+        const pMap = window.PRODUCT_COLOR_MAP[window.CURRENT_PRODUCT_ID];
+        if (pMap && pMap[color]) {
+            return pMap[color];
+        }
+    }
     return originalImgPath;
 }
 

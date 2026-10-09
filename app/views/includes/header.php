@@ -8,7 +8,7 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NCIgaGVpZ2h0PSI2NCIgdmlld0JveD0iMCAwIDY0IDY0Ij48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHJ4PSIxNiIgZmlsbD0iIzAwNTZiMyIgc3Ryb2tlPSIjMzhkZng4IiBzdHJva2Utd2lkdGg9IjMiLz48cGF0aCBkPSJNMTQgMTYgTDI4IDQ4IEwzNiA0OCBMNTAgMTYgTDQxIDE2IEwzMiAzOSBMMjMgMTYgWiIgZmlsbD0iI2ZmZmZmZiIvPjxwb2x5Z29uIHBvaW50cz0iMzQsMTAgMjYsMjcgMzIsMjcgMjgsNDIgNDIsMjMgMzUsMjMiIGZpbGw9IiNmYWNjMTUiLz48L3N2Zz4=">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/style.css?v=20261009_v9">
 
     <style>
         html, body { margin: 0 !important; padding: 0 !important; }

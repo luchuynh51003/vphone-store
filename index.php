@@ -62,6 +62,12 @@ switch ($page) {
         (new CartController($pdo))->checkout();
         break;
 
+    case 'orders':
+    case 'tracking':
+        require_once 'app/controllers/OrderController.php';
+        (new OrderController($pdo))->index();
+        break;
+
     case 'auth':
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $authRedirect = ($_GET['redirect'] ?? '') === 'checkout' ? '&redirect=checkout' : '';

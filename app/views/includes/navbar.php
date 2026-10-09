@@ -52,6 +52,12 @@ $currentUser = $_SESSION['user'] ?? null;
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link <?= in_array($currentPage, ['orders', 'tracking']) ? 'active' : '' ?>" href="index.php?page=orders" title="Tra cứu & theo dõi đơn hàng">
+                        <i class="fa-solid fa-truck-fast me-1"></i>Tra cứu đơn
+                    </a>
+                </li>
+
                 <?php if ($currentUser): ?>
                     <li class="nav-item dropdown ms-lg-2">
                         <a class="nav-link dropdown-toggle bg-white bg-opacity-10 rounded-pill px-3 text-white" href="#" role="button" data-bs-toggle="dropdown">
@@ -67,6 +73,7 @@ $currentUser = $_SESSION['user'] ?? null;
                                     </a>
                                 </li>
                             <?php endif; ?>
+                            <li><a class="dropdown-item py-2 fw-semibold" href="index.php?page=orders"><i class="fa-solid fa-truck-ramp-box me-2 text-primary"></i>Đơn hàng của tôi</a></li>
                             <li><a class="dropdown-item py-2" href="index.php?page=cart"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Giỏ hàng của tôi</a></li>
                             <li><a class="dropdown-item py-2 text-danger" href="index.php?page=logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
                         </ul>
@@ -188,7 +195,11 @@ $currentUser = $_SESSION['user'] ?? null;
                 <div><i class="fa-solid fa-tags text-danger me-3" style="width:20px;"></i> Kho máy cũ 99%</div>
                 <span class="badge bg-danger rounded-pill">-50%</span>
             </a>
+            <a href="index.php?page=orders" class="list-group-item list-group-item-action d-flex align-items-center py-2 text-dark fw-semibold">
+                <i class="fa-solid fa-truck-fast text-info me-3" style="width:20px;"></i> Tra cứu / Theo dõi đơn hàng
+            </a>
         </div>
+
 
         <div class="text-uppercase fw-bold text-secondary small mb-2"><i class="fa-solid fa-mobile-screen me-2 text-primary"></i>Thương Hiệu Chính Hãng</div>
         <div class="list-group list-group-flush mb-4 rounded-3 border overflow-hidden">

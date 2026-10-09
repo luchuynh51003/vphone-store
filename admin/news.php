@@ -1,5 +1,5 @@
 <?php
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
 require_once '../app/models/ArticleModel.php';
 
 $pageTitle = 'Quản Lý Tin Tức - V-Phone Admin';

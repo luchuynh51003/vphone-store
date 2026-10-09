@@ -15,9 +15,11 @@
             <div class="col-lg-4 col-md-6">
                 <h6 class="text-uppercase fw-bold text-white mb-3 tracking-wide">Hỗ Trợ Khách Hàng</h6>
                 <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
+                    <li><a href="index.php?page=orders" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Tra cứu & theo dõi tiến trình đơn hàng</a></li>
                     <li><a href="#" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Chính sách bảo hành toàn diện 12 tháng</a></li>
                     <li><a href="#" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Chính sách đổi trả 1 - 1 trong 30 ngày</a></li>
                 </ul>
+
             </div>
 
             <div class="col-lg-4 col-md-12">
@@ -142,7 +144,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const formattedPrice = new Intl.NumberFormat('vi-VN').format(item.price) + ' đ';
                 html += `
                     <a href="index.php?page=detail&id=${item.id}" class="search-item">
-                        <img src="${item.image}" alt="${item.name}" class="search-thumb" onerror="this.src='assets/images/products/iphone-16.png';">
+                        <img src="${item.image}" alt="${item.name}" class="search-thumb">
                         <div style="flex-grow:1; min-width:0;">
                             <div class="search-name">${item.name}</div>
                             <div class="search-price">${formattedPrice}</div>

@@ -33,17 +33,25 @@ function getStorageTiers($prodName, $defaultRom) {
     }
 }
 
-// LẤY MÃ MÀU HEX CHUẨN XÁC
+// LẤY MÃ MÀU HEX CHUẨN XÁC THEO MÀU SẮC CHÍNH HÃNG
 function getColorHexValue($name) {
-    $c = mb_strtolower($name, 'UTF-8');
-    if (strpos($c, 'sa mạc') !== false || strpos($c, 'vàng') !== false || strpos($c, 'gold') !== false) return '#cbbba0';
-    if (strpos($c, 'hồng') !== false || strpos($c, 'pink') !== false) return '#f472b6';
-    if (strpos($c, 'tím') !== false || strpos($c, 'purple') !== false) return '#8b5cf6';
-    if (strpos($c, 'xanh') !== false || strpos($c, 'blue') !== false || strpos($c, 'navy') !== false) return '#38bdf8';
-    if (strpos($c, 'đen') !== false || strpos($c, 'black') !== false || strpos($c, 'phantom') !== false) return '#1e293b';
-    if (strpos($c, 'trắng') !== false || strpos($c, 'white') !== false || strpos($c, 'bạc') !== false || strpos($c, 'tự nhiên') !== false) return '#e2e8f0';
-    if (strpos($c, 'đỏ') !== false || strpos($c, 'red') !== false) return '#ef4444';
-    return '#0066cc';
+    $c = mb_strtolower(trim((string)$name), 'UTF-8');
+    if (strpos($c, 'cam') !== false || strpos($c, 'orange') !== false || strpos($c, 'ánh dương') !== false || strpos($c, 'hoàng hôn') !== false) return '#ea580c';
+    if (strpos($c, 'matcha') !== false) return '#65a30d';
+    if (strpos($c, 'mòng két') !== false || strpos($c, 'teal') !== false) return '#0d9488';
+    if (strpos($c, 'lục bảo') !== false || strpos($c, 'ngọc bích') !== false || strpos($c, 'sơn lâm') !== false || strpos($c, 'jade') !== false || strpos($c, 'rêu') !== false || strpos($c, 'botanic') !== false || strpos($c, 'xanh lục') !== false) return '#059669';
+    if (strpos($c, 'lưu ly') !== false || strpos($c, 'navy') !== false || strpos($c, 'xanh đậm') !== false || strpos($c, 'deep blue') !== false) return '#1e3a8a';
+    if (strpos($c, 'sa mạc') !== false || strpos($c, 'vàng') !== false || strpos($c, 'gold') !== false || strpos($c, 'amber') !== false || strpos($c, 'cá tính') !== false || strpos($c, 'lemon') !== false || strpos($c, 'biển cát') !== false || strpos($c, 'solar') !== false || strpos($c, 'hoàng kim') !== false) return '#f59e0b';
+    if (strpos($c, 'hồng') !== false || strpos($c, 'pink') !== false || strpos($c, 'rosé') !== false || strpos($c, 'ngọc trai') !== false || strpos($c, 'rose') !== false || strpos($c, 'phấn') !== false) return '#f472b6';
+    if (strpos($c, 'tím') !== false || strpos($c, 'purple') !== false || strpos($c, 'lilac') !== false || strpos($c, 'cobalt') !== false || strpos($c, 'coral') !== false || strpos($c, 'cực quang') !== false) return '#8b5cf6';
+    if (strpos($c, 'kem') !== false || strpos($c, 'ivory') !== false || strpos($c, 'cotton') !== false) return '#f5f0e1';
+    if (strpos($c, 'trời đêm') !== false || strpos($c, 'midnight') !== false) return '#1e293b';
+    if (strpos($c, 'xanh') !== false || strpos($c, 'blue') !== false || strpos($c, 'sky') !== false || strpos($c, 'icy') !== false || strpos($c, 'topaz') !== false || strpos($c, 'iceblue') !== false || strpos($c, 'lạc quan') !== false || strpos($c, 'đại dương') !== false || strpos($c, 'tinh tú') !== false || strpos($c, 'maya') !== false || strpos($c, 'mint') !== false || strpos($c, 'glacier') !== false) return '#38bdf8';
+    if (strpos($c, 'đen') !== false || strpos($c, 'black') !== false || strpos($c, 'phantom') !== false || strpos($c, 'space') !== false || strpos($c, 'obsidian') !== false || strpos($c, 'graphite') !== false || strpos($c, 'huyền vũ') !== false || strpos($c, 'bóng đêm') !== false || strpos($c, 'đá') !== false || strpos($c, 'bản lĩnh') !== false || strpos($c, 'kính') !== false || strpos($c, 'da thuần') !== false || strpos($c, 'không gian') !== false || strpos($c, 'cổ điển') !== false || strpos($c, 'vũ trụ') !== false) return '#1e293b';
+    if (strpos($c, 'trắng') !== false || strpos($c, 'white') !== false || strpos($c, 'bạc') !== false || strpos($c, 'silver') !== false || strpos($c, 'tự nhiên') !== false || strpos($c, 'porcelain') !== false || strpos($c, 'sứ') !== false || strpos($c, 'xỉu') !== false || strpos($c, 'ngân hà') !== false || strpos($c, 'ánh sao') !== false || strpos($c, 'starlight') !== false || strpos($c, 'da gốm') !== false || strpos($c, 'bach kim') !== false || strpos($c, 'bạch kim') !== false) return '#e2e8f0';
+    if (strpos($c, 'xám') !== false || strpos($c, 'gray') !== false || strpos($c, 'grey') !== false || strpos($c, 'metal') !== false || strpos($c, 'marble') !== false || strpos($c, 'opal') !== false || strpos($c, 'hazel') !== false || strpos($c, 'titan') !== false) return '#94a3b8';
+    if (strpos($c, 'đỏ') !== false || strpos($c, 'red') !== false || strpos($c, 'burgundy') !== false || strpos($c, 'ruihong') !== false || strpos($c, 'scarlet') !== false) return '#ef4444';
+    return '#64748b';
 }
 
 // LẤY ĐƯỜNG DẪN LOGO THƯƠNG HIỆU DO NGƯỜI DÙNG TẢI LÊN
@@ -165,5 +173,16 @@ function renderSidebarBrandItem(int $brandId, array $brandData): string {
     $html .= '<i class="fa-solid fa-chevron-right text-muted small opacity-50 ms-auto"></i>';
     $html .= '</a>';
     return $html;
+}
+
+// BẢN ĐỒ ÁNH XẠ MÀU SẮC SANG ĐÚNG ẢNH THỰC TẾ
+require_once __DIR__ . '/../../data/product_color_map.php';
+
+function getProductColorImage(int $productId, string $colorName, string $fallback = ''): string {
+    $map = getAllProductColorMap();
+    if (isset($map[$productId][$colorName])) {
+        return $map[$productId][$colorName];
+    }
+    return $fallback;
 }
 

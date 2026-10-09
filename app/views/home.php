@@ -28,15 +28,7 @@ foreach ($products as $p) {
 }
 
 function getHexColorBadge(string $name): string {
-    $c = mb_strtolower($name, 'UTF-8');
-    if (strpos($c, 'sa mạc') !== false || strpos($c, 'vàng') !== false || strpos($c, 'gold') !== false || strpos($c, 'amber') !== false) return '#cbbba0';
-    if (strpos($c, 'hồng') !== false || strpos($c, 'pink') !== false) return '#f472b6';
-    if (strpos($c, 'tím') !== false || strpos($c, 'purple') !== false || strpos($c, 'lilac') !== false) return '#8b5cf6';
-    if (strpos($c, 'xanh') !== false || strpos($c, 'blue') !== false || strpos($c, 'navy') !== false || strpos($c, 'icy') !== false) return '#38bdf8';
-    if (strpos($c, 'đen') !== false || strpos($c, 'black') !== false || strpos($c, 'phantom') !== false || strpos($c, 'space') !== false) return '#1e293b';
-    if (strpos($c, 'trắng') !== false || strpos($c, 'white') !== false || strpos($c, 'bạc') !== false || strpos($c, 'tự nhiên') !== false) return '#e2e8f0';
-    if (strpos($c, 'đỏ') !== false || strpos($c, 'red') !== false) return '#ef4444';
-    return '#0066cc';
+    return getColorHexValue($name);
 }
 
 require_once 'app/views/includes/header.php';
@@ -45,6 +37,7 @@ require_once 'app/views/includes/navbar.php';
 
 <script>
     window.STORE_PRODUCTS = <?= json_encode($searchList, JSON_UNESCAPED_UNICODE) ?>;
+    window.PRODUCT_COLOR_MAP = <?= json_encode(getAllProductColorMap(), JSON_UNESCAPED_UNICODE) ?>;
 </script>
 
 <!-- BANNER CAROUSEL 2026 -->
@@ -60,8 +53,8 @@ require_once 'app/views/includes/navbar.php';
             <div class="carousel-item active h-100">
                 <div class="banner-bg-apple px-4 px-md-5 text-white d-flex align-items-center h-100">
                     <div class="row align-items-center w-100 g-4">
-                        <div class="col-lg-7">
-                            <span class="badge bg-white text-primary px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.75rem;">
+                        <div class="col-lg-7 col-md-7">
+                            <span class="badge bg-white text-primary px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.78rem;">
                                 <i class="fa-brands fa-apple me-1"></i> SIÊU PHẨM GẬP ĐẦU TIÊN CỦA APPLE
                             </span>
                             <div class="banner-title-equal text-white mb-2">iPhone 18 Pro Max & iPhone Duo</div>
@@ -69,19 +62,20 @@ require_once 'app/views/includes/navbar.php';
                                 Khung Titan Vũ Trụ siêu bền. Màn hình gập đôi Liquid Retina không nếp gấp cùng vi xử lý Apple A20 Pro 2nm thế hệ mới nhất.
                             </div>
                             <div class="d-flex gap-2 flex-wrap mb-3">
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-microchip text-info me-1"></i>A20 Pro (2nm)</span>
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-camera text-warning me-1"></i>Camera 200x</span>
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-shield-halved text-success me-1"></i>Bảo hành 1-1</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-microchip text-info me-1"></i>A20 Pro (2nm)</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-camera text-warning me-1"></i>Camera 200x</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-shield-halved text-success me-1"></i>Bảo hành 1-1</span>
                             </div>
-                            <div class="d-flex gap-3 align-items-center">
+                            <div class="d-flex gap-3 align-items-center flex-wrap">
                                 <a href="index.php?page=detail&id=1" class="btn btn-light text-primary btn-md rounded-pill fw-bold px-4 py-2 shadow">
                                     <i class="fa-solid fa-bolt me-1"></i>Đặt Mua Ngay
                                 </a>
                                 <span class="fw-bold text-white fs-6">Chỉ từ 41.990.000 đ</span>
                             </div>
                         </div>
-                        <div class="col-lg-5 text-center d-flex align-items-center justify-content-center h-100">
-                            <div class="banner-dual-stage">
+                        <div class="col-lg-5 col-md-5 text-center d-flex align-items-center justify-content-center justify-content-lg-end h-100 position-relative pe-lg-3">
+                            <div class="banner-stage-glow banner-glow-apple"></div>
+                            <div class="banner-dual-stage banner-stage-apple">
                                 <img src="assets/images/products/iphone-18-promax.png" alt="iPhone 18 Pro Max" class="banner-phone-left-float" onerror="this.src='assets/images/products/iphone-16-promax.png';">
                                 <img src="assets/images/products/iphone-18-duo.png" alt="iPhone Duo" class="banner-phone-right-float">
                             </div>
@@ -93,29 +87,30 @@ require_once 'app/views/includes/navbar.php';
             <div class="carousel-item h-100">
                 <div class="banner-bg-samsung px-4 px-md-5 text-white d-flex align-items-center h-100">
                     <div class="row align-items-center w-100 g-4">
-                        <div class="col-lg-7">
-                            <span class="badge bg-warning text-dark px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.75rem;">
+                        <div class="col-lg-7 col-md-7">
+                            <span class="badge bg-warning text-dark px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.78rem;">
                                 <i class="fa-solid fa-wand-magic-sparkles me-1"></i> GALAXY AI THẾ HỆ MỚI
                             </span>
                             <div class="banner-title-equal text-white mb-2">Galaxy S26 Ultra & Tri-Fold</div>
                             <div class="banner-desc-equal mb-3">
-                                Mở rộng không gian hiển thị 10.2 inch với cơ chế gập ba độc bản. Trợ lý Galaxy AI quyền năng cùng cụm camera 200MP.
+                                Mở rộng không gian hiển thị 10.2 inch với cơ chế gập ba độc bản. Trợ lý Galaxy AI quyền năng cùng cụm camera 200MP đột phá.
                             </div>
                             <div class="d-flex gap-2 flex-wrap mb-3">
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-bolt text-warning me-1"></i>Snapdragon 8 Gen 5</span>
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-layer-group text-info me-1"></i>Màn gập 3 màn hình</span>
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-pen text-success me-1"></i>Bút S-Pen</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-bolt text-warning me-1"></i>Snapdragon 8 Gen 5</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-layer-group text-info me-1"></i>Màn Gập 3 Độc Bản 10.2"</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-pen text-success me-1"></i>Bút S-Pen Quyền Năng</span>
                             </div>
-                            <div class="d-flex gap-3 align-items-center">
-                                <a href="index.php?page=detail&id=4" class="btn btn-warning text-dark btn-md rounded-pill fw-bold px-4 py-2 shadow">
-                                    <i class="fa-solid fa-sparkles me-1"></i>Khám Phá Galaxy AI
+                            <div class="d-flex gap-3 align-items-center flex-wrap">
+                                <a href="index.php?page=detail&id=6" class="btn btn-warning text-dark btn-md rounded-pill fw-bold px-4 py-2 shadow">
+                                    <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Khám Phá Galaxy AI
                                 </a>
                                 <span class="fw-bold text-white fs-6">Chỉ từ 34.990.000 đ</span>
                             </div>
                         </div>
-                        <div class="col-lg-5 text-center d-flex align-items-center justify-content-center h-100">
-                            <div class="banner-dual-stage">
-                                <img src="assets/images/products/samsung-s26-ultra.png" alt="S26 Ultra" class="banner-phone-left-float" onerror="this.src='assets/images/products/samsung-s24-ultra.png';">
+                        <div class="col-lg-5 col-md-5 text-center d-flex align-items-center justify-content-center justify-content-lg-end h-100 position-relative pe-lg-3">
+                            <div class="banner-stage-glow banner-glow-samsung"></div>
+                            <div class="banner-dual-stage banner-stage-samsung">
+                                <img src="assets/images/products/samsung-s26-ultra.png" alt="Galaxy S26 Ultra" class="banner-phone-left-float">
                                 <img src="assets/images/products/samsung-tri-fold.png" alt="Galaxy Tri-Fold" class="banner-phone-right-float">
                             </div>
                         </div>
@@ -126,27 +121,29 @@ require_once 'app/views/includes/navbar.php';
             <div class="carousel-item h-100">
                 <div class="banner-bg-promo px-4 px-md-5 text-white d-flex align-items-center h-100">
                     <div class="row align-items-center w-100 g-4">
-                        <div class="col-lg-7">
-                            <span class="badge bg-danger text-white px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.75rem;">
+                        <div class="col-lg-7 col-md-7">
+                            <span class="badge bg-danger text-white px-3 py-1 mb-2 fw-bold rounded-pill shadow-sm" style="font-size:0.78rem;">
                                 <i class="fa-solid fa-fire me-1"></i> ĐẶC QUYỀN V-PHONE 2026
                             </span>
                             <div class="banner-title-equal text-white mb-2">Thu Cũ Đổi Mới Lên Đời</div>
                             <div class="banner-desc-equal mb-3">
-                                Lên đời điện thoại Flagship cực dễ dàng. Trợ giá trực tiếp lên đến 5.000.000 đ, trả góp 0% lãi suất duyệt trong 5 phút.
+                                Lên đời điện thoại Flagship cực dễ dàng. Trợ giá trực tiếp lên đến 5.000.000 đ, duyệt hồ sơ trong 5 phút, trả góp 0% lãi suất.
                             </div>
                             <div class="d-flex gap-2 flex-wrap mb-3">
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-money-bill-wave text-success me-1"></i>Trợ giá 5 triệu</span>
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-credit-card text-warning me-1"></i>Trả góp 0% lãi</span>
-                                <span class="badge glass-spec-pill px-3 py-1 rounded-pill"><i class="fa-solid fa-rotate-left text-info me-1"></i>Bảo hành VIP</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-money-bill-wave text-success me-1"></i>Trợ giá 5 triệu</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-credit-card text-warning me-1"></i>Trả góp 0% lãi</span>
+                                <span class="badge glass-spec-pill"><i class="fa-solid fa-shield-halved text-info me-1"></i>Bảo hành VIP 1-1</span>
                             </div>
-                            <div>
-                                <a href="#product-list" class="btn btn-outline-light btn-md rounded-pill fw-bold px-4 py-2">
+                            <div class="d-flex gap-3 align-items-center flex-wrap">
+                                <a href="#product-list" class="btn btn-outline-light btn-md rounded-pill fw-bold px-4 py-2 shadow-sm">
                                     <i class="fa-solid fa-arrow-down me-1"></i>Săn Deal Ngay Hôm Nay
                                 </a>
+                                <span class="fw-bold text-white fs-6">Trợ giá đến 5.000.000 đ</span>
                             </div>
                         </div>
-                        <div class="col-lg-5 text-center d-flex align-items-center justify-content-center h-100">
-                            <div class="banner-dual-stage">
+                        <div class="col-lg-5 col-md-5 text-center d-flex align-items-center justify-content-center justify-content-lg-end h-100 position-relative pe-lg-3">
+                            <div class="banner-stage-glow banner-glow-promo"></div>
+                            <div class="banner-dual-stage banner-stage-promo justify-content-center">
                                 <img src="assets/images/products/iphone-16-promax.png" alt="iPhone 16 Pro Max" class="banner-phone-single-float">
                             </div>
                         </div>
@@ -359,7 +356,7 @@ require_once 'app/views/includes/navbar.php';
                         <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 rounded-pill">-<?= $percent ?>%</span>
                     <?php endif; ?>
 
-                    <div class="product-img-wrapper p-3">
+                    <div class="product-img-wrapper">
                         <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
                     </div>
 
@@ -525,39 +522,36 @@ function getStorageTiersJS(prodName, defaultRom) {
     ];
 }
 
+function getJsColorHex(name) {
+    const c = (name || '').toLowerCase();
+    if (c.includes('cam') || c.includes('orange') || c.includes('ánh dương') || c.includes('hoàng hôn')) return '#ea580c';
+    if (c.includes('matcha')) return '#65a30d';
+    if (c.includes('mòng két') || c.includes('teal')) return '#0d9488';
+    if (c.includes('lục bảo') || c.includes('ngọc bích') || c.includes('sơn lâm') || c.includes('jade') || c.includes('rêu') || c.includes('botanic') || c.includes('xanh lục')) return '#059669';
+    if (c.includes('lưu ly') || c.includes('navy') || c.includes('xanh đậm') || c.includes('deep blue')) return '#1e3a8a';
+    if (c.includes('sa mạc') || c.includes('vàng') || c.includes('gold') || c.includes('amber') || c.includes('cá tính') || c.includes('lemon') || c.includes('biển cát') || c.includes('solar') || c.includes('hoàng kim')) return '#f59e0b';
+    if (c.includes('hồng') || c.includes('pink') || c.includes('rosé') || c.includes('ngọc trai') || c.includes('rose') || c.includes('phấn')) return '#f472b6';
+    if (c.includes('tím') || c.includes('purple') || c.includes('lilac') || c.includes('cobalt') || c.includes('coral') || c.includes('cực quang')) return '#8b5cf6';
+    if (c.includes('kem') || c.includes('ivory') || c.includes('cotton')) return '#f5f0e1';
+    if (c.includes('trời đêm') || c.includes('midnight')) return '#1e293b';
+    if (c.includes('xanh') || c.includes('blue') || c.includes('sky') || c.includes('icy') || c.includes('topaz') || c.includes('iceblue') || c.includes('lạc quan') || c.includes('đại dương') || c.includes('tinh tú') || c.includes('maya') || c.includes('mint') || c.includes('glacier')) return '#38bdf8';
+    if (c.includes('đen') || c.includes('black') || c.includes('phantom') || c.includes('space') || c.includes('obsidian') || c.includes('graphite') || c.includes('huyền vũ') || c.includes('bóng đêm') || c.includes('đá') || c.includes('bản lĩnh') || c.includes('kính') || c.includes('da thuần') || c.includes('không gian') || c.includes('cổ điển') || c.includes('vũ trụ')) return '#1e293b';
+    if (c.includes('trắng') || c.includes('white') || c.includes('bạc') || c.includes('silver') || c.includes('tự nhiên') || c.includes('porcelain') || c.includes('sứ') || c.includes('xỉu') || c.includes('ngân hà') || c.includes('ánh sao') || c.includes('starlight') || c.includes('da gốm') || c.includes('bach kim') || c.includes('bạch kim')) return '#e2e8f0';
+    if (c.includes('xám') || c.includes('gray') || c.includes('grey') || c.includes('metal') || c.includes('marble') || c.includes('opal') || c.includes('hazel') || c.includes('titan')) return '#94a3b8';
+    if (c.includes('đỏ') || c.includes('red') || c.includes('burgundy') || c.includes('ruihong') || c.includes('scarlet')) return '#ef4444';
+    return '#64748b';
+}
+
 function getModalColorImage(product, colorName) {
-    const productName = (product.name || '').toLowerCase();
-    const color = (colorName || '').toLowerCase();
-    const isIphone18Pro = productName.includes('iphone 18 pro');
-    const isDuo = productName.includes('duo');
+    if (!product) return 'assets/images/products/iphone-16.png';
+    const pId = parseInt(product.id, 10);
+    const color = (colorName || '').trim();
 
-    // Ảnh biến thể iPhone 18 Pro Max
-    if (isIphone18Pro) {
-        if (color.includes('glacier blue') || color.includes('xanh glacier')) {
-            return 'assets/images/products/iphone-18-promax-xanh-glacier-blue.png';
-        }
-        if (color.includes('burgundy') || color.includes('đỏ')) {
-            return 'assets/images/products/iphone-18-promax-do-burgundy.png';
-        }
-        if (color.includes('bạc') || color.includes('silver')) {
-            return 'assets/images/products/iphone-18-promax-bac.png';
-        }
-        if (color.includes('đen') || color.includes('black')) {
-            return 'assets/images/products/iphone-18-promax-den.png';
-        }
+    if (window.PRODUCT_COLOR_MAP && window.PRODUCT_COLOR_MAP[pId] && window.PRODUCT_COLOR_MAP[pId][color]) {
+        return window.PRODUCT_COLOR_MAP[pId][color];
     }
 
-    // Ảnh biến thể iPhone Duo / iPhone 18 Duo
-    if (isDuo || productName.includes('iphone 18')) {
-        if (color.includes('trắng ánh sao') || color.includes('ánh sao')) {
-            return 'assets/images/products/iphone-18-duo-trang-anh-sao.png';
-        }
-        if (color.includes('trời đêm')) {
-            return 'assets/images/products/iphone-18-duo-troi-dem.png';
-        }
-    }
-
-    return product.image;
+    return product.image || 'assets/images/products/iphone-16.png';
 }
 
 
@@ -601,16 +595,17 @@ function openProductModal(productId, defaultAction) {
         const isOutOfStock = colorStockMap[col] !== undefined && colorStockMap[col] <= 0;
         const btn = document.createElement('button');
         btn.type = 'button';
+        const dot = `<span style="width:7px;height:7px;border-radius:50%;background:${getJsColorHex(col)};display:inline-block;margin-right:5px;border:1px solid rgba(0,0,0,0.15);vertical-align:middle;"></span>`;
         if (isOutOfStock) {
             btn.className = 'btn btn-sm rounded-pill fw-bold px-3 py-1 btn-outline-secondary opacity-50';
             btn.disabled = true;
             btn.style.cursor = 'not-allowed';
             btn.style.textDecoration = 'line-through';
-            btn.innerText = col + ' (Hết)';
+            btn.innerHTML = `${dot}${col} <span class="badge bg-secondary ms-1" style="font-size:0.6rem;">Hết</span>`;
         } else {
             const isSelected = col === selectedColor;
             btn.className = `btn btn-sm rounded-pill fw-bold px-3 py-1 ${isSelected ? 'btn-primary active text-white' : 'btn-outline-secondary'}`;
-            btn.innerText = col;
+            btn.innerHTML = `${dot}${col}`;
             btn.onclick = function() {
                 colorBox.querySelectorAll('button:not([disabled])').forEach(b => b.className = 'btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-1');
                 this.className = 'btn btn-sm btn-primary active text-white rounded-pill fw-bold px-3 py-1';

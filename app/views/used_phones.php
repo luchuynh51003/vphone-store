@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 $pageTitle = 'Kho Máy Cũ Giá Rẻ - V-Phone Outlet';
 
 $brandStmt = $pdo->query("SELECT * FROM brands ORDER BY id ASC");
@@ -127,7 +127,7 @@ require_once 'app/views/includes/navbar.php';
                             <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 rounded-pill">-<?= $percent ?>%</span>
                         <?php endif; ?>
 
-                        <div class="product-img-wrapper p-3">
+                        <div class="product-img-wrapper">
                             <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
                         </div>
 

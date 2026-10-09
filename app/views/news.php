@@ -1,5 +1,5 @@
 <?php
-require_once 'config/database.php';
+require_once __DIR__ . '/../../config/database.php';
 require_once 'app/models/ArticleModel.php';
 $pageTitle = 'Tin Tức & Đánh Giá Công Nghệ - V-Phone Tech';
 $articleModel = new ArticleModel($pdo);

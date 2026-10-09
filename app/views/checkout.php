@@ -109,8 +109,11 @@ require_once 'app/views/includes/navbar.php';
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center gap-3">
-                <a href="index.php" class="btn btn-primary rounded-pill px-4 fw-bold py-2 shadow-sm">
+            <div class="d-flex flex-wrap justify-content-center gap-3">
+                <a href="index.php?page=orders&order_code=<?= (int)$orderId ?><?= !empty($deliveryPhone) ? '&phone=' . rawurlencode($deliveryPhone) : '' ?>" class="btn btn-primary rounded-pill px-4 fw-bold py-2 shadow-sm">
+                    <i class="fa-solid fa-truck-ramp-box me-2"></i>Theo dõi đơn hàng này
+                </a>
+                <a href="index.php" class="btn btn-outline-secondary rounded-pill px-4 fw-bold py-2">
                     <i class="fa-solid fa-store me-2"></i>Tiếp tục mua sắm
                 </a>
             </div>

@@ -5,7 +5,7 @@ class ProductController {
 
     public function detail() {
         $pdo = $this->pdo; // Khởi tạo biến $pdo để View sử dụng trực tiếp
-        require_once 'config/database.php';
+        require_once __DIR__ . '/../../config/database.php';
         require_once 'app/models/ProductModel.php';
         (new ProductModel($pdo))->ensureStorageOptionsColumn();
 

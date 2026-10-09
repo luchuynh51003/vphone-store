@@ -122,7 +122,13 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                 <small class="text-muted d-block text-truncate" style="max-width: 220px;" title="<?= htmlspecialchars($o['address']) ?>">
                                     <i class="fa-solid fa-location-dot me-1"></i><?= htmlspecialchars($o['address']) ?>
                                 </small>
+                                <?php if (!empty($o['note'])): ?>
+                                    <small class="text-primary d-block mt-1 text-truncate" style="max-width: 220px;" title="<?= htmlspecialchars($o['note']) ?>">
+                                        <i class="fa-regular fa-note-sticky me-1"></i><?= htmlspecialchars($o['note']) ?>
+                                    </small>
+                                <?php endif; ?>
                             </td>
+
                             <td style="min-width: 260px;">
                                 <?php foreach ($details as $d): ?>
                                     <div class="mb-1 d-flex align-items-center gap-2">

@@ -1,6 +1,6 @@
 <?php
 require_once '../app/models/VoucherModel.php';
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
 
 $pageTitle = 'Quản Lý Voucher - V-Phone Admin';
 require_once 'includes/header.php';
