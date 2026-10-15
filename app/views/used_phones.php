@@ -117,17 +117,17 @@ require_once 'app/views/includes/navbar.php';
             <?php foreach ($usedProducts as $p): ?>
                 <div class="col">
                     <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
-                        <!-- TAG MÁY CŨ 99% NỔI BẬT -->
-                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 position-absolute top-0 end-0 m-3 px-2 py-1 rounded-pill fw-bold">
-                            <i class="fa-solid fa-circle-check me-1"></i><?= htmlspecialchars($p['condition_desc'] ?? 'Đẹp 99%') ?>
-                        </span>
+                        <div class="product-img-wrapper position-relative">
+                            <!-- TAG MÁY CŨ 99% NỔI BẬT -->
+                            <span class="badge badge-used-phone position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;" title="Hàng Cũ Like New 99%">
+                                <i class="fa-solid fa-recycle me-1"></i><?= htmlspecialchars(!empty($p['condition_desc']) && $p['condition_desc'] !== 'Mới 100%' ? $p['condition_desc'] : 'Máy cũ 99%') ?>
+                            </span>
 
-                        <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                            <?php $percent = round((($p['price'] - $p['sale_price']) / $p['price']) * 100); ?>
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 rounded-pill">-<?= $percent ?>%</span>
-                        <?php endif; ?>
+                            <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
+                                <?php $percent = round((($p['price'] - $p['sale_price']) / $p['price']) * 100); ?>
+                                <span class="badge badge-sale-percent position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;">-<?= $percent ?>%</span>
+                            <?php endif; ?>
 
-                        <div class="product-img-wrapper">
                             <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>">
                         </div>
 

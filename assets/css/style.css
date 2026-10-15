@@ -120,12 +120,50 @@ body > * {
     border: 1px solid #e2e8f0 !important;
 }
 
-.badge-tech-new {
-    background-color: var(--v-blue-light) !important;
-    color: var(--v-blue-primary) !important;
-    border: 1px solid var(--v-blue-border);
-    font-weight: 700;
-    font-size: 0.68rem;
+.badge-tech-new,
+.badge-flagship {
+    background: linear-gradient(135deg, #091e3a 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    box-shadow: 0 4px 14px rgba(29, 78, 216, 0.35) !important;
+    font-weight: 700 !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.2px;
+    display: inline-flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+    z-index: 5 !important;
+}
+
+.badge-used-phone {
+    background: linear-gradient(135deg, #064e3b 0%, #059669 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.45) !important;
+    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important;
+    font-weight: 700 !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.2px;
+    display: inline-flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+    z-index: 5 !important;
+}
+
+.badge-sale-percent {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+    font-weight: 800 !important;
+    font-size: 0.72rem !important;
+    letter-spacing: 0.2px;
+    display: inline-flex !important;
+    align-items: center !important;
+    white-space: nowrap !important;
+    line-height: 1.2 !important;
+    z-index: 5 !important;
 }
 
 .sidebar-vphone { width: 320px !important; }

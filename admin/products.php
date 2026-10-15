@@ -355,11 +355,13 @@ select.fm-input { appearance: auto; }
                         </td>
                         <td>
                             <?php if ($p['is_used']): ?>
-                                <span class="badge badge-soft-success rounded-pill px-3 py-1">Máy cũ 99%</span>
-                            <?php elseif ($p['is_featured']): ?>
-                                <span class="badge badge-soft-primary rounded-pill px-3 py-1">Flagship 2026</span>
-                            <?php else: ?>
-                                <span class="badge badge-soft-secondary rounded-pill px-3 py-1">Mới 100%</span>
+                                <span class="badge badge-soft-success rounded-pill px-2 py-1"><i class="fa-solid fa-recycle me-1"></i>Máy cũ 99%</span>
+                            <?php endif; ?>
+                            <?php if ($p['is_featured']): ?>
+                                <span class="badge badge-soft-primary rounded-pill px-2 py-1"><i class="fa-solid fa-crown text-warning me-1"></i>Flagship 2026</span>
+                            <?php endif; ?>
+                            <?php if (!$p['is_used'] && !$p['is_featured']): ?>
+                                <span class="badge badge-soft-secondary rounded-pill px-2 py-1">Mới 100%</span>
                             <?php endif; ?>
                         </td>
                         <td class="text-end text-nowrap">

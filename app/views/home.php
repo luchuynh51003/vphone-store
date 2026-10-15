@@ -300,12 +300,28 @@ require_once 'app/views/includes/navbar.php';
 }
 </style>
 
-<!-- BỘ LỌC THƯƠNG HIỆU (LOGO CHÍNH HÃNG - ĐỒNG BỘ 100% KÍCH THƯỚC) -->
+<!-- BỘ LỌC THƯƠNG HIỆU & PHÂN LOẠI (FLAGSHIP / HÀNG CŨ / HÃNG) -->
 <div class="container my-4">
+    <!-- Hàng lọc nhanh: Tất cả, Flagship 2026, Hàng Cũ 99% -->
+    <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+        <span class="fw-bold text-secondary small d-none d-md-inline-flex align-items-center me-1">
+            <i class="fa-solid fa-filter text-primary me-1"></i>Bộ lọc nhanh:
+        </span>
+        <button type="button" class="btn btn-sm btn-filter-type active rounded-pill px-3 py-1 fw-bold btn-primary text-white" data-filter-type="all">
+            <i class="fa-solid fa-border-all me-1"></i>Tất cả điện thoại
+        </button>
+        <button type="button" class="btn btn-sm btn-filter-type rounded-pill px-3 py-1 fw-bold btn-outline-secondary bg-white text-dark border" data-filter-type="flagship">
+            <i class="fa-solid fa-crown text-warning me-1"></i>⭐ Flagship 2026
+        </button>
+        <button type="button" class="btn btn-sm btn-filter-type rounded-pill px-3 py-1 fw-bold btn-outline-secondary bg-white text-dark border" data-filter-type="used">
+            <i class="fa-solid fa-recycle text-success me-1"></i>♻️ Hàng Cũ Like New
+        </button>
+    </div>
+
     <div class="brand-filter-wrapper">
         <div class="brand-filter-scroll" id="brandFilterBar">
             <span class="fw-bold text-primary me-1 d-none d-lg-inline-flex align-items-center" style="font-size:0.85rem;">
-                <i class="fa-solid fa-filter me-1"></i>Hãng:
+                <i class="fa-solid fa-mobile-screen-button me-1"></i>Hãng:
             </span>
             <a href="index.php" class="btn btn-brand-pill <?= $brandId == 0 ? 'active btn-primary text-white' : 'btn-outline-secondary' ?>" data-brand-id="0" data-brand-name="">
                 <i class="fa-solid fa-layer-group text-primary pill-icon-all"></i>
@@ -331,8 +347,8 @@ require_once 'app/views/includes/navbar.php';
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4" id="productGridContainer">
         <div id="noProductNotice" class="col-12 text-center py-5 d-none w-100">
             <i class="fa-solid fa-box-open fa-3x text-muted mb-3 d-block"></i>
-            <h5 class="fw-bold text-secondary">Chưa có sản phẩm nào thuộc thương hiệu này</h5>
-            <p class="text-muted small">Vui lòng chọn thương hiệu khác hoặc bấm "Tất cả" để xem danh mục.</p>
+            <h5 class="fw-bold text-secondary">Chưa có sản phẩm nào thuộc tiêu chí này</h5>
+            <p class="text-muted small">Vui lòng chọn tiêu chí khác hoặc bấm "Tất cả điện thoại" để xem toàn bộ danh mục.</p>
         </div>
         <?php foreach ($products as $p): ?>
             <?php
@@ -343,20 +359,26 @@ require_once 'app/views/includes/navbar.php';
                 $romDisplayList = array_column($storageDisplayList, 'rom');
                 $colorDisplayList = array_map("trim", explode(",", $p["colors"] ?? "Đen, Trắng"));
             ?>
-            <div class="col product-col-card" data-brand-id="<?= (int)$p['brand_id'] ?>" data-brand-name="<?= htmlspecialchars($p['brand_name'] ?? '') ?>">
+            <div class="col product-col-card" data-brand-id="<?= (int)$p['brand_id'] ?>" data-brand-name="<?= htmlspecialchars($p['brand_name'] ?? '') ?>" data-is-featured="<?= (int)$p['is_featured'] ?>" data-is-used="<?= (int)$p['is_used'] ?>">
                 <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
-                    <?php if ($p['is_featured']): ?>
-                        <span class="badge badge-tech-new position-absolute top-0 end-0 m-3 px-2 py-1 rounded-pill">
-                            <i class="fa-solid fa-bolt me-1 text-primary"></i>2026 NEW
-                        </span>
-                    <?php endif; ?>
+                    <div class="product-img-wrapper position-relative">
+                        <!-- NHÃN FLAGSHIP 2026 HOẶC HÀNG CŨ 99% -->
+                        <?php if (!empty($p['is_used'])): ?>
+                            <span class="badge badge-used-phone position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;" title="Hàng Cũ Like New 99%">
+                                <i class="fa-solid fa-recycle me-1"></i><?= htmlspecialchars(!empty($p['condition_desc']) && $p['condition_desc'] !== 'Mới 100%' ? $p['condition_desc'] : 'Máy cũ 99%') ?>
+                            </span>
+                        <?php elseif (!empty($p['is_featured'])): ?>
+                            <span class="badge badge-flagship position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;" title="⭐ Flagship 2026">
+                                <i class="fa-solid fa-crown text-warning me-1"></i>Flagship 2026
+                            </span>
+                        <?php endif; ?>
 
-                    <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                        <?php $percent = round((($p['price'] - $p['sale_price']) / $p['price']) * 100); ?>
-                        <span class="badge bg-danger position-absolute top-0 start-0 m-3 px-2 py-1 rounded-pill">-<?= $percent ?>%</span>
-                    <?php endif; ?>
+                        <!-- NHÃN GIẢM GIÁ -X% -->
+                        <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
+                            <?php $percent = round((($p['price'] - $p['sale_price']) / $p['price']) * 100); ?>
+                            <span class="badge badge-sale-percent position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;">-<?= $percent ?>%</span>
+                        <?php endif; ?>
 
-                    <div class="product-img-wrapper">
                         <img src="<?= htmlspecialchars($p['image']) ?>" alt="<?= htmlspecialchars($p['name']) ?>" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
                     </div>
 
@@ -708,28 +730,27 @@ function openProductModal(productId, defaultAction) {
     bsModalInstance.show();
 }
 
-// BỘ LỌC THƯƠNG HIỆU TỨC THÌ (KHÔNG LOAD LẠI TRANG)
-function filterProductsByBrand(brandId, brandName, updateHistory = true) {
-    brandId = parseInt(brandId, 10);
+// BỘ LỌC KẾT HỢP: THƯƠNG HIỆU & PHÂN LOẠI (FLAGSHIP / HÀNG CŨ / TẤT CẢ)
+let currentBrandId = <?= (int)$brandId ?>;
+let currentFilterType = 'all';
+
+function applyProductFilters() {
     let visibleCount = 0;
-
-    // 1. Cập nhật nút active
-    document.querySelectorAll('.btn-brand-pill').forEach(btn => {
-        const bId = parseInt(btn.dataset.brandId, 10);
-        if (bId === brandId) {
-            btn.classList.add('active', 'btn-primary', 'text-white');
-            btn.classList.remove('btn-outline-secondary');
-        } else {
-            btn.classList.remove('active', 'btn-primary', 'text-white');
-            btn.classList.add('btn-outline-secondary');
-        }
-    });
-
-    // 2. Ẩn/Hiện sản phẩm theo hãng với hiệu ứng fade nhẹ
     const cards = document.querySelectorAll('.product-col-card');
     cards.forEach(card => {
         const cardBrandId = parseInt(card.dataset.brandId, 10);
-        if (brandId === 0 || cardBrandId === brandId) {
+        const cardIsFeatured = parseInt(card.dataset.isFeatured || '0', 10);
+        const cardIsUsed = parseInt(card.dataset.isUsed || '0', 10);
+
+        const matchBrand = (currentBrandId === 0 || cardBrandId === currentBrandId);
+        let matchType = true;
+        if (currentFilterType === 'flagship') {
+            matchType = (cardIsFeatured === 1);
+        } else if (currentFilterType === 'used') {
+            matchType = (cardIsUsed === 1);
+        }
+
+        if (matchBrand && matchType) {
             card.classList.remove('d-none');
             card.style.animation = 'fadeInProduct 0.25s ease forwards';
             visibleCount++;
@@ -738,7 +759,6 @@ function filterProductsByBrand(brandId, brandName, updateHistory = true) {
         }
     });
 
-    // 3. Hiển thị thông báo nếu thương hiệu chưa có sản phẩm
     const emptyNotice = document.getElementById('noProductNotice');
     if (emptyNotice) {
         if (visibleCount === 0) {
@@ -748,30 +768,66 @@ function filterProductsByBrand(brandId, brandName, updateHistory = true) {
         }
     }
 
-    // 4. Cập nhật badge số lượng
     const countBadge = document.getElementById('productCountBadge');
     if (countBadge) countBadge.innerText = visibleCount + ' sản phẩm';
 
-    // 5. Cập nhật tiêu đề danh sách
     const titleEl = document.getElementById('productListTitle');
     if (titleEl) {
-        if (brandId === 0) {
-            titleEl.innerHTML = '<i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>Flagship 2026 & Điện Thoại Mới Nhất';
-        } else {
-            const displayBrand = brandName || (document.querySelector(`.btn-brand-pill[data-brand-id="${brandId}"]`)?.innerText.trim() || 'Thương hiệu');
-            titleEl.innerHTML = `<i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>Điện Thoại ${displayBrand}`;
-        }
-    }
+        let typeText = '';
+        if (currentFilterType === 'flagship') typeText = '⭐ Flagship 2026';
+        else if (currentFilterType === 'used') typeText = '♻️ Hàng Cũ Like New 99%';
 
-    // 6. Cập nhật URL trình duyệt (Back/Forward vẫn chuẩn, không reload trang)
-    if (updateHistory) {
-        const newUrl = brandId === 0 ? 'index.php' : `index.php?brand_id=${brandId}`;
-        window.history.pushState({ brandId: brandId, brandName: brandName }, '', newUrl);
+        if (currentBrandId === 0) {
+            titleEl.innerHTML = `<i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>${typeText ? typeText + ' - Toàn Bộ Thương Hiệu' : 'Flagship 2026 & Điện Thoại Mới Nhất'}`;
+        } else {
+            const activeBrandBtn = document.querySelector(`.btn-brand-pill[data-brand-id="${currentBrandId}"]`);
+            const displayBrand = activeBrandBtn?.dataset.brandName || activeBrandBtn?.innerText.trim() || 'Thương hiệu';
+            titleEl.innerHTML = `<i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>Điện Thoại ${displayBrand} ${typeText ? '(' + typeText + ')' : ''}`;
+        }
     }
 }
 
-// Lắng nghe sự kiện click các nút thương hiệu
+function filterProductsByBrand(brandId, brandName, updateHistory = true) {
+    currentBrandId = parseInt(brandId, 10);
+
+    // 1. Cập nhật nút active
+    document.querySelectorAll('.btn-brand-pill').forEach(btn => {
+        const bId = parseInt(btn.dataset.brandId, 10);
+        if (bId === currentBrandId) {
+            btn.classList.add('active', 'btn-primary', 'text-white');
+            btn.classList.remove('btn-outline-secondary');
+        } else {
+            btn.classList.remove('active', 'btn-primary', 'text-white');
+            btn.classList.add('btn-outline-secondary');
+        }
+    });
+
+    applyProductFilters();
+
+    // Cập nhật URL trình duyệt (Back/Forward vẫn chuẩn, không reload trang)
+    if (updateHistory) {
+        const newUrl = currentBrandId === 0 ? 'index.php' : `index.php?brand_id=${currentBrandId}`;
+        window.history.pushState({ brandId: currentBrandId, brandName: brandName }, '', newUrl);
+    }
+}
+
+// Lắng nghe sự kiện click
 document.addEventListener('DOMContentLoaded', function() {
+    // Nút lọc nhanh: Tất cả, Flagship 2026, Hàng Cũ
+    document.querySelectorAll('.btn-filter-type').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.btn-filter-type').forEach(b => {
+                b.classList.remove('active', 'btn-primary', 'text-white');
+                b.classList.add('btn-outline-secondary', 'bg-white', 'text-dark', 'border');
+            });
+            this.classList.add('active', 'btn-primary', 'text-white');
+            this.classList.remove('btn-outline-secondary', 'bg-white', 'text-dark', 'border');
+            currentFilterType = this.dataset.filterType;
+            applyProductFilters();
+        });
+    });
+
+    // Nút thương hiệu
     document.querySelectorAll('.btn-brand-pill').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();

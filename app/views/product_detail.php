@@ -41,9 +41,20 @@ require_once 'app/views/includes/navbar.php';
         <!-- Cột trái: Ảnh đổi theo màu -->
         <div class="col-lg-5">
             <div class="bg-white p-4 rounded-4 shadow-sm text-center position-relative border">
-                <?php if ($product['is_featured']): ?>
-                    <span class="badge badge-tech-new position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm">
-                        <i class="fa-solid fa-bolt me-1 text-primary"></i>2026 FLAGSHIP
+                <?php if (!empty($product['is_used'])): ?>
+                    <span class="badge badge-used-phone position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm" style="z-index: 5;" title="Hàng Cũ Like New 99%">
+                        <i class="fa-solid fa-recycle me-1"></i><?= htmlspecialchars(!empty($product['condition_desc']) && $product['condition_desc'] !== 'Mới 100%' ? $product['condition_desc'] : 'Hàng Cũ Like New 99%') ?>
+                    </span>
+                <?php elseif (!empty($product['is_featured'])): ?>
+                    <span class="badge badge-flagship position-absolute top-0 start-0 m-3 px-3 py-2 rounded-pill shadow-sm" style="z-index: 5;" title="⭐ Flagship 2026">
+                        <i class="fa-solid fa-crown text-warning me-1"></i>Flagship 2026
+                    </span>
+                <?php endif; ?>
+
+                <?php if ($product['sale_price'] > 0 && $product['sale_price'] < $product['price']): ?>
+                    <?php $percent = round((($product['price'] - $product['sale_price']) / $product['price']) * 100); ?>
+                    <span class="badge badge-sale-percent position-absolute top-0 end-0 m-3 px-3 py-2 rounded-pill shadow-sm" style="z-index: 5;">
+                        -<?= $percent ?>%
                     </span>
                 <?php endif; ?>
 
@@ -62,9 +73,19 @@ require_once 'app/views/includes/navbar.php';
         <!-- Cột phải: Thông tin -->
         <div class="col-lg-7">
             <div class="bg-white p-4 rounded-4 shadow-sm h-100 d-flex flex-column border">
-                <span class="badge badge-tech-new align-self-start px-3 py-1 mb-2 rounded-pill">
-                    <?= htmlspecialchars($product['brand_name'] ?? 'CHÍNH HÃNG') ?>
-                </span>
+                <?php if (!empty($product['is_used'])): ?>
+                    <span class="badge badge-used-phone align-self-start px-3 py-1 mb-2 rounded-pill">
+                        <i class="fa-solid fa-recycle me-1"></i><?= htmlspecialchars($product['brand_name'] ?? 'CHÍNH HÃNG') ?> CŨ 99%
+                    </span>
+                <?php elseif (!empty($product['is_featured'])): ?>
+                    <span class="badge badge-flagship align-self-start px-3 py-1 mb-2 rounded-pill">
+                        <i class="fa-solid fa-crown text-warning me-1"></i>FLAGSHIP 2026 - <?= htmlspecialchars($product['brand_name'] ?? 'CHÍNH HÃNG') ?>
+                    </span>
+                <?php else: ?>
+                    <span class="badge badge-tech-new align-self-start px-3 py-1 mb-2 rounded-pill">
+                        <?= htmlspecialchars($product['brand_name'] ?? 'CHÍNH HÃNG') ?>
+                    </span>
+                <?php endif; ?>
                 <h3 class="fw-bold text-dark mb-2"><?= htmlspecialchars($product['name']) ?></h3>
 
                 <div class="d-flex align-items-center gap-2 text-warning mb-3 small">
