@@ -49,25 +49,17 @@ function getAllProductColorMap(): array {
   "10": {
     "Bạc": "assets/images/products/iphone-17-promax-bac.png",
     "Cam": "assets/images/products/iphone-17-promax-cam.png",
-    "Xanh": "assets/images/products/iphone-17-promax-xanh.png",
-    "Titan Đen": "assets/images/products/iphone-17-promax-titan-den.png",
-    "Titan Bạc": "assets/images/products/iphone-17-promax-titan-bac.png",
-    "Titan Tự Nhiên": "assets/images/products/iphone-17-promax-titan-tu-nhien.png"
+    "Xanh": "assets/images/products/iphone-17-promax-xanh.png"
   },
   "11": {
     "Bạc": "assets/images/products/iphone-17-pro-bac.png",
     "Cam": "assets/images/products/iphone-17-pro-cam.png",
-    "Xanh": "assets/images/products/iphone-17-pro-xanh.png",
-    "Titan Đen": "assets/images/products/iphone-17-pro-titan-den.png",
-    "Titan Bạc": "assets/images/products/iphone-17-pro-titan-bac.png",
-    "Titan Tự Nhiên": "assets/images/products/iphone-17-pro-titan-tu-nhien.png"
+    "Xanh": "assets/images/products/iphone-17-pro-xanh.png"
   },
   "12": {
     "Đen": "assets/images/products/iphone-17-air-den.png",
     "Trắng": "assets/images/products/iphone-17-air-trang.png",
-    "Xanh": "assets/images/products/iphone-17-air-xanh.png",
-    "Bạc Ánh Kim": "assets/images/products/iphone-17-air-trang.png",
-    "Xanh Băng": "assets/images/products/iphone-17-air-xanh.png"
+    "Xanh": "assets/images/products/iphone-17-air-xanh.png"
   },
   "13": {
     "Đen": "assets/images/products/iphone-17-den.png",
