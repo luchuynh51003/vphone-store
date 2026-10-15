@@ -59,8 +59,13 @@ $currentUser = $_SESSION['user'] ?? null;
 
                 <?php if ($currentUser): ?>
                     <li class="nav-item dropdown ms-lg-2">
-                        <a class="nav-link dropdown-toggle bg-white bg-opacity-10 rounded-pill px-3 text-white" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="fa-solid fa-circle-user me-1 text-warning"></i><?= htmlspecialchars($currentUser['fullname']) ?>
+                        <a class="nav-link dropdown-toggle bg-white bg-opacity-10 rounded-pill px-3 text-white d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
+                            <?php if (!empty($currentUser['avatar']) && file_exists(__DIR__ . '/../../../' . $currentUser['avatar'])): ?>
+                                <img src="<?= htmlspecialchars($currentUser['avatar']) ?>" alt="Avatar" class="rounded-circle me-2 border border-white" style="width: 24px; height: 24px; object-fit: cover;">
+                            <?php else: ?>
+                                <i class="fa-solid fa-circle-user me-2 text-warning fs-5"></i>
+                            <?php endif; ?>
+                            <span><?= htmlspecialchars($currentUser['fullname']) ?></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2 p-2" style="min-width: 220px; border-radius: 16px;">
                             <li><span class="dropdown-item-text small text-muted"><?= htmlspecialchars($currentUser['email']) ?></span></li>
@@ -72,6 +77,7 @@ $currentUser = $_SESSION['user'] ?? null;
                                     </a>
                                 </li>
                             <?php endif; ?>
+                            <li><a class="dropdown-item py-2 fw-semibold <?= ($currentPage === 'profile') ? 'text-primary' : '' ?>" href="index.php?page=profile"><i class="fa-solid fa-address-card me-2 text-primary"></i>Thông tin tài khoản</a></li>
                             <li><a class="dropdown-item py-2 fw-semibold" href="index.php?page=orders"><i class="fa-solid fa-truck-ramp-box me-2 text-primary"></i>Đơn hàng của tôi</a></li>
                             <li><a class="dropdown-item py-2" href="index.php?page=cart"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Giỏ hàng của tôi</a></li>
                             <li><a class="dropdown-item py-2 text-danger" href="index.php?page=logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
@@ -165,12 +171,21 @@ $currentUser = $_SESSION['user'] ?? null;
 
     <div class="p-3 bg-light border-bottom">
         <?php if ($currentUser): ?>
-            <div class="d-flex align-items-center">
-                <i class="fa-solid fa-circle-user text-primary fs-2 me-2"></i>
-                <div class="flex-grow-1 min-w-0">
-                    <div class="fw-bold text-dark text-truncate small"><?= htmlspecialchars($currentUser['fullname']) ?></div>
-                    <small class="text-secondary"><?= htmlspecialchars($currentUser['email']) ?></small>
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center min-w-0">
+                    <?php if (!empty($currentUser['avatar']) && file_exists(__DIR__ . '/../../../' . $currentUser['avatar'])): ?>
+                        <img src="<?= htmlspecialchars($currentUser['avatar']) ?>" alt="Avatar" class="rounded-circle me-3 border border-primary flex-shrink-0" style="width: 44px; height: 44px; object-fit: cover;">
+                    <?php else: ?>
+                        <i class="fa-solid fa-circle-user text-primary fs-1 me-3 flex-shrink-0"></i>
+                    <?php endif; ?>
+                    <div class="flex-grow-1 min-w-0">
+                        <div class="fw-bold text-dark text-truncate small"><?= htmlspecialchars($currentUser['fullname']) ?></div>
+                        <small class="text-secondary"><?= htmlspecialchars($currentUser['email']) ?></small>
+                    </div>
                 </div>
+                <a href="index.php?page=profile" class="btn btn-outline-primary btn-sm rounded-pill px-2 py-1 ms-2" title="Chỉnh sửa thông tin">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                </a>
             </div>
         <?php else: ?>
             <button class="btn btn-primary btn-sm w-100 rounded-pill fw-bold" data-bs-dismiss="offcanvas" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal">
@@ -185,6 +200,11 @@ $currentUser = $_SESSION['user'] ?? null;
             <a href="index.php" class="list-group-item list-group-item-action d-flex align-items-center py-2">
                 <i class="fa-solid fa-house text-primary me-3" style="width:20px;"></i> Trang chủ V-Phone
             </a>
+            <?php if ($currentUser): ?>
+                <a href="index.php?page=profile" class="list-group-item list-group-item-action d-flex align-items-center py-2 text-primary fw-semibold">
+                    <i class="fa-solid fa-address-card text-primary me-3" style="width:20px;"></i> Thông tin tài khoản
+                </a>
+            <?php endif; ?>
             <a href="index.php?page=news" class="list-group-item list-group-item-action d-flex align-items-center py-2 text-primary fw-bold">
                 <i class="fa-solid fa-newspaper text-primary me-3" style="width:20px;"></i> Tin tức công nghệ
             </a>
@@ -194,6 +214,9 @@ $currentUser = $_SESSION['user'] ?? null;
             </a>
             <a href="index.php?page=orders" class="list-group-item list-group-item-action d-flex align-items-center py-2 text-dark fw-semibold">
                 <i class="fa-solid fa-truck-fast text-info me-3" style="width:20px;"></i> Tra cứu / Theo dõi đơn hàng
+            </a>
+            <a href="index.php?page=warranty" class="list-group-item list-group-item-action d-flex align-items-center py-2 <?= ($currentPage === 'warranty') ? 'text-primary fw-bold bg-light' : 'text-dark fw-semibold' ?>">
+                <i class="fa-solid fa-shield-halved text-primary me-3" style="width:20px;"></i> Chính sách bảo hành & đổi trả
             </a>
         </div>
 
@@ -220,7 +243,7 @@ $currentUser = $_SESSION['user'] ?? null;
 
         <div class="p-3 bg-light rounded-4 text-secondary small border">
             <div><i class="fa-solid fa-phone-volume text-primary me-2"></i>Hotline: <strong>1800 6868</strong></div>
-            <div class="mt-1"><i class="fa-solid fa-shield-halved text-primary me-2"></i>Bảo hành 1 đổi 1 trong 30 ngày</div>
+            <div class="mt-1"><a href="index.php?page=warranty" class="text-secondary text-decoration-none"><i class="fa-solid fa-shield-halved text-primary me-2"></i>Bảo hành 1 đổi 1 trong 30 ngày</a></div>
         </div>
     </div>
 </div>

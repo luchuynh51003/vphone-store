@@ -1,4 +1,8 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+/* ==========================================================================
+   V-PHONE STORE - FAST, LIGHTWEIGHT & RESPONSIVE DESIGN SYSTEM
+   ========================================================================== */
 :root {
     --v-blue-dark: #0a3d62;
     --v-blue-primary: #0066cc;
@@ -10,49 +14,197 @@
     --v-text-dark: #1e293b;
     --v-text-muted: #64748b;
 }
-html {
+
+html, body {
     margin: 0 !important;
     padding: 0 !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
+
 body {
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 0 !important; 
     background-color: var(--v-bg-light);
     color: var(--v-text-dark);
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-    -webkit-font-smoothing: antialiased;
+    line-height: 1.5;
 }
-body > * {
-    line-height: 1.5 !important;
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
 }
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--v-blue-primary);
+}
+
+/* ==========================================================================
+   NAVBAR (Fast Rendering Gradient, Zero Scroll-Jank)
+   ========================================================================== */
 .navbar-vphone {
     margin: 0 !important;
     top: 0 !important;
-    background: linear-gradient(135deg, #072a48 0%, #0056b3 100%);
+    background: linear-gradient(135deg, #072a48 0%, #0056b3 100%) !important;
     border: none !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15) !important;
 }
+
 .navbar-vphone .nav-link {
-    color: rgba(255, 255, 255, 0.85) !important;
-    transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.88) !important;
+    transition: background 0.15s ease, color 0.15s ease;
     border-radius: 20px;
     padding: 6px 16px !important;
     font-size: 0.92rem;
 }
-.navbar-vphone .nav-link:hover { color: #ffffff !important; background: rgba(255, 255, 255, 0.15); }
-.navbar-vphone .nav-link.active { color: #ffffff !important; background: rgba(255, 255, 255, 0.22) !important; font-weight: 700; }
-::-webkit-scrollbar { width: 7px; height: 7px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #0066cc; }
-.product-card {
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    border-radius: 16px;
-    background: var(--v-white);
-    border: 1px solid #e2e8f0 !important;
-    height: 100%;
+
+.navbar-vphone .nav-link:hover {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.16);
 }
-.product-card:hover { transform: translateY(-5px); box-shadow: 0 14px 30px rgba(0, 102, 204, 0.1) !important; border-color: var(--v-blue-border) !important; }
+
+.navbar-vphone .nav-link.active {
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.24) !important;
+    font-weight: 700;
+}
+
+/* Search Dropdown */
+.search-wrapper {
+    position: relative !important;
+}
+
+.search-dropdown-menu {
+    position: absolute !important;
+    top: calc(100% + 8px) !important;
+    left: 0 !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    border-radius: 16px !important;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.15) !important;
+    border: 1px solid #cce3ff !important;
+    z-index: 999999 !important;
+    max-height: 420px !important;
+    overflow-y: auto !important;
+    padding: 4px 0 !important;
+}
+
+.search-item {
+    display: flex !important;
+    align-items: center !important;
+    padding: 10px 16px !important;
+    text-decoration: none !important;
+    color: #1e293b !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    background: #ffffff !important;
+    transition: background 0.15s ease !important;
+}
+
+.search-item:hover {
+    background: #f0f7ff !important;
+}
+
+.search-item:last-child {
+    border-bottom: none !important;
+}
+
+.search-thumb {
+    width: 44px !important;
+    height: 44px !important;
+    object-fit: contain !important;
+    border-radius: 8px !important;
+    margin-right: 12px !important;
+}
+
+.search-name {
+    font-size: 13.5px !important;
+    font-weight: 600 !important;
+    color: #0f172a !important;
+    line-height: 1.3 !important;
+}
+
+.search-price {
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    color: #e74c3c !important;
+    margin-top: 2px !important;
+}
+
+/* ==========================================================================
+   BUTTONS (Snappy, Instant Response)
+   ========================================================================== */
+.btn-primary,
+.btn-vphone {
+    background: linear-gradient(135deg, #0066cc 0%, #0056b3 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2) !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-primary:hover,
+.btn-vphone:hover {
+    background: linear-gradient(135deg, #0052a3 0%, #003d7a 100%) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(0, 102, 204, 0.3) !important;
+}
+
+.btn-outline-vphone,
+.btn-outline-primary {
+    color: var(--v-blue-primary) !important;
+    border: 1.5px solid var(--v-blue-primary) !important;
+    background-color: #ffffff !important;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.btn-outline-vphone:hover,
+.btn-outline-primary:hover {
+    background-color: var(--v-blue-light) !important;
+    color: var(--v-blue-primary) !important;
+    transform: translateY(-1px);
+}
+
+.btn-card-buy {
+    background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+    color: #ffffff;
+    border: none;
+    font-weight: 700;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 3px 10px rgba(0, 102, 204, 0.2);
+}
+
+.btn-card-buy:hover {
+    background: linear-gradient(135deg, #0052a3 0%, #003d7a 100%);
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(0, 102, 204, 0.3);
+}
+
+/* ==========================================================================
+   PRODUCT CARDS (Lightweight & Smooth)
+   ========================================================================== */
+.product-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease !important;
+    border-radius: 20px !important;
+    background: var(--v-white) !important;
+    border: 1px solid rgba(226, 232, 240, 0.85) !important;
+    height: 100%;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+}
+
+.product-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 12px 28px rgba(0, 102, 204, 0.12) !important;
+    border-color: #93c5fd !important;
+}
+
 .product-img-wrapper {
     height: 200px !important;
     display: flex !important;
@@ -65,6 +217,7 @@ body > * {
     overflow: hidden !important;
     position: relative !important;
 }
+
 .product-img-wrapper img {
     width: auto !important;
     height: 100% !important;
@@ -74,8 +227,13 @@ body > * {
     object-position: center !important;
     display: block !important;
     margin: 0 auto !important;
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    transition: transform 0.3s ease !important;
 }
+
+.product-card:hover .product-img-wrapper img {
+    transform: scale(1.06) !important;
+}
+
 .card-prod-title {
     font-size: 0.92rem;
     font-weight: 700;
@@ -88,7 +246,13 @@ body > * {
     overflow: hidden;
     line-height: 1.35;
     margin-bottom: 6px;
+    transition: color 0.15s ease;
 }
+
+.product-card:hover .card-prod-title {
+    color: var(--v-blue-primary);
+}
+
 .specs-badge {
     height: 26px;
     display: flex;
@@ -96,6 +260,7 @@ body > * {
     overflow: hidden;
     white-space: nowrap;
 }
+
 .specs-badge .badge {
     font-size: 0.7rem;
     font-weight: 500;
@@ -103,12 +268,14 @@ body > * {
     color: #475569 !important;
     border: 1px solid #e2e8f0 !important;
 }
+
+/* Badges */
 .badge-tech-new,
 .badge-flagship {
     background: linear-gradient(135deg, #091e3a 0%, #1d4ed8 100%) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.45) !important;
-    box-shadow: 0 4px 14px rgba(29, 78, 216, 0.35) !important;
+    box-shadow: 0 3px 10px rgba(29, 78, 216, 0.3) !important;
     font-weight: 700 !important;
     font-size: 0.72rem !important;
     letter-spacing: 0.2px;
@@ -118,11 +285,12 @@ body > * {
     line-height: 1.2 !important;
     z-index: 5 !important;
 }
+
 .badge-used-phone {
     background: linear-gradient(135deg, #064e3b 0%, #059669 100%) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.45) !important;
-    box-shadow: 0 4px 14px rgba(5, 150, 105, 0.35) !important;
+    box-shadow: 0 3px 10px rgba(5, 150, 105, 0.3) !important;
     font-weight: 700 !important;
     font-size: 0.72rem !important;
     letter-spacing: 0.2px;
@@ -132,11 +300,12 @@ body > * {
     line-height: 1.2 !important;
     z-index: 5 !important;
 }
+
 .badge-sale-percent {
     background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3) !important;
+    box-shadow: 0 3px 10px rgba(220, 38, 38, 0.3) !important;
     font-weight: 800 !important;
     font-size: 0.72rem !important;
     letter-spacing: 0.2px;
@@ -146,239 +315,26 @@ body > * {
     line-height: 1.2 !important;
     z-index: 5 !important;
 }
-.sidebar-vphone { width: 320px !important; }
-.sidebar-header-custom {
-    background: linear-gradient(135deg, #072a48 0%, #0056b3 100%);
-    color: #ffffff;
-    padding: 16px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+
+.stock-dot-green {
+    width: 6px;
+    height: 6px;
+    background: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 6px #10b981;
 }
-.sidebar-brand-link {
-    transition: all 0.2s ease;
-    border-color: #f1f5f9 !important;
-}
-.sidebar-brand-link:hover {
-    background-color: #f8fafc !important;
-    padding-left: 1.15rem !important;
-}
-.sidebar-brand-badge {
-    width: 46px;
-    height: 32px;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    padding: 2px 4px;
-    transition: all 0.2s ease;
-}
-.sidebar-brand-link:hover .sidebar-brand-badge {
-    background: #ffffff;
-    border-color: #0066cc;
-    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.15);
-}
-.sidebar-brand-logo {
-    display: block;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-}
-.sidebar-logo-apple { max-height: 20px; max-width: 22px; }
-.sidebar-logo-samsung { max-height: 12px; max-width: 42px; }
-.sidebar-logo-xiaomi { max-height: 20px; max-width: 20px; border-radius: 4px; }
-.sidebar-logo-oppo { max-height: 12px; max-width: 44px; }
-.sidebar-logo-vivo { max-height: 13px; max-width: 38px; }
-.sidebar-logo-google { max-height: 20px; max-width: 20px; }
-.sidebar-logo-asus { max-height: 18px; max-width: 30px; }
-.sidebar-logo-sony { max-height: 11px; max-width: 42px; }
-.sidebar-logo-huawei { max-height: 20px; max-width: 22px; }
-.sidebar-brand-label {
-    font-size: 0.9rem;
-}
-#vphoneLiveToast {
-    position: fixed;
-    top: 85px;
-    right: 25px;
-    z-index: 999999;
-    display: none;
-    min-width: 340px;
-    max-width: 420px;
-    background: #ffffff;
-    color: var(--v-text-dark);
-    padding: 16px 20px;
-    border-radius: 18px;
-    border: 1.5px solid var(--v-blue-border);
-    box-shadow: 0 16px 40px rgba(0, 102, 204, 0.15);
-}
-.btn-vphone { background-color: var(--v-blue-primary); color: #ffffff; border: none; }
-.btn-vphone:hover { background-color: var(--v-blue-hover); color: #ffffff; }
-.btn-outline-vphone { color: var(--v-blue-primary); border: 1.5px solid var(--v-blue-primary); background-color: #ffffff; }
-.btn-outline-vphone:hover { background-color: var(--v-blue-light); color: var(--v-blue-primary); }
-.carousel-banner-item { min-height: 380px; border-radius: 20px; display: flex; align-items: center; }
-.banner-slide-1 { background: linear-gradient(135deg, #072a48 0%, #0066cc 60%, #38bdf8 100%); }
-.banner-slide-2 { background: linear-gradient(135deg, #0f172a 0%, #1e40af 60%, #60a5fa 100%); }
-.banner-slide-3 { background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%); }
-.policy-card { background: #ffffff; border-radius: 16px; padding: 16px; border: 1px solid #e2e8f0; }
-.footer-vphone { background-color: #072a48; color: #e2e8f0; }
-.card-color-palette { overflow: hidden; white-space: nowrap; }
-.carousel-banner-item {
-    min-height: 420px;
-    border-radius: 24px;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-    box-shadow: 0 12px 35px rgba(0, 76, 153, 0.15);
-}
-.banner-vibrant-1 { background: linear-gradient(135deg, #051626 0%, #0056b3 50%, #0ea5e9 100%); }
-.banner-vibrant-2 { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #2563eb 100%); }
-.banner-vibrant-3 { background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #0284c7 100%); }
-@keyframes floatPhoneAnim {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-12px) rotate(1.5deg); }
-}
-.floating-phone-showcase {
-    animation: floatPhoneAnim 4.5s ease-in-out infinite;
-    filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.45));
-}
-.policy-card-vibrant {
-    background: #ffffff;
-    border-radius: 18px;
-    padding: 18px 20px;
-    border: 1px solid #e2e8f0;
-    transition: all 0.25s ease;
-}
-.policy-card-vibrant:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 25px rgba(0, 102, 204, 0.12);
-    border-color: #93c5fd;
-}
-.policy-icon-wrapper {
-    width: 48px;
-    height: 48px;
-    border-radius: 14px;
-    background: #e8f3ff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 14px;
-    flex-shrink: 0;
-}
-.floating-phone-showcase {
-    mix-blend-mode: normal !important;
-    animation: floatPhoneAnim 4.5s ease-in-out infinite;
-}
-.carousel-banner-item {
-    min-height: 400px !important;
-    border-radius: 24px !important;
-    position: relative;
-    overflow: hidden;
-}
-.banner-slide-ip18 {
-    background: linear-gradient(135deg, #071e33 0%, #0056b3 55%, #0284c7 100%) !important;
-}
-.banner-slide-trifold {
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #4338ca 100%) !important;
-}
-.banner-slide-duo {
-    background: linear-gradient(135deg, #09090b 0%, #1c1917 50%, #78350f 100%) !important;
-}
-.floating-phone-showcase {
-    max-height: 310px !important;
-    width: auto !important;
-    object-fit: contain !important;
-    mix-blend-mode: normal !important;
-    filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.45)) !important;
-    animation: floatPhoneAnim 4.5s ease-in-out infinite;
-}
-.banner-glass-badge {
-    background: rgba(255, 255, 255, 0.16) !important;
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.35) !important;
-    backdrop-filter: blur(10px) !important;
-    font-size: 0.82rem !important;
-    font-weight: 600 !important;
-    padding: 7px 15px !important;
-    border-radius: 50px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-}
+
+/* ==========================================================================
+   CAROUSEL & FLOATING PHONES
+   ========================================================================== */
 #vphoneCarousel {
     position: relative !important;
-    border-radius: 24px !important;
+    border-radius: 28px !important;
     overflow: hidden !important;
-    box-shadow: 0 10px 30px rgba(0, 76, 153, 0.15) !important;
+    box-shadow: 0 12px 36px rgba(0, 76, 153, 0.15) !important;
 }
-.carousel-banner-item {
-    min-height: 410px !important;
-    border-radius: 24px !important;
-    position: relative;
-    overflow: hidden;
-}
-.banner-theme-1 { background: linear-gradient(135deg, #071e33 0%, #0056b3 55%, #0284c7 100%) !important; }
-.banner-theme-2 { background: linear-gradient(135deg, #091a2e 0%, #1e3a8a 55%, #2563eb 100%) !important; }
-.banner-theme-3 { background: linear-gradient(135deg, #081d30 0%, #004d99 50%, #0284c7 100%) !important; }
-.carousel-btn-prev { left: 16px !important; }
-.carousel-btn-next { right: 16px !important; }
-.banner-clean-phone {
-    max-height: 310px !important;
-    max-width: 100% !important;
-    object-fit: contain !important;
-    background: transparent !important;
-    border: none !important;
-    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4)) !important;
-}
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-    display: none !important;
-}
-#vphoneCarousel {
-    position: relative !important;
-    border-radius: 24px !important;
-    overflow: hidden !important;
-}
-.vphone-arrow-btn {
-    position: absolute !important;
-    top: 50% !important;
-    transform: translateY(-50%) !important;
-    width: 44px !important;
-    height: 44px !important;
-    border-radius: 50% !important;
-    background: rgba(255, 255, 255, 0.25) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border: 1.5px solid rgba(255, 255, 255, 0.45) !important;
-    color: #ffffff !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 16px !important;
-    z-index: 30 !important;
-    cursor: pointer !important;
-    transition: all 0.25s ease !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
-    border-style: solid !important;
-}
-.vphone-arrow-btn:hover {
-    background: rgba(255, 255, 255, 0.5) !important;
-    transform: translateY(-50%) scale(1.1) !important;
-    color: #ffffff !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
-}
-.vphone-arrow-prev { left: 16px !important; right: auto !important; }
-.vphone-arrow-next { right: 16px !important; left: auto !important; }
-.banner-clean-phone {
-    max-height: 310px !important;
-    max-width: 100% !important;
-    object-fit: contain !important;
-    background: transparent !important;
-    border: none !important;
-    filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4)) !important;
-}
+
 .carousel-banner-vip {
     height: 440px !important;
     min-height: 440px !important;
@@ -386,91 +342,90 @@ body > * {
     border-radius: 28px !important;
     overflow: hidden !important;
     position: relative !important;
-    box-shadow: 0 25px 60px rgba(2, 6, 23, 0.35) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
+
 .carousel-banner-vip .carousel-inner,
 .carousel-banner-vip .carousel-item {
     height: 440px !important;
     max-height: 440px !important;
     min-height: 440px !important;
 }
+
 .banner-bg-apple {
     background: radial-gradient(ellipse 70% 65% at 78% 50%, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.08) 50%, transparent 80%),
                 linear-gradient(135deg, #020617 0%, #0a1931 45%, #073b75 100%) !important;
 }
+
 .banner-bg-samsung {
     background: radial-gradient(ellipse 70% 65% at 78% 50%, rgba(139, 92, 246, 0.28) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 80%),
                 linear-gradient(135deg, #040714 0%, #0d1b3e 45%, #1d4ed8 100%) !important;
 }
+
 .banner-bg-promo {
     background: radial-gradient(ellipse 70% 65% at 78% 50%, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.08) 50%, transparent 80%),
                 linear-gradient(135deg, #120224 0%, #290a4e 45%, #0056b3 100%) !important;
 }
+
 .banner-stage-glow {
     position: absolute;
-    width: 340px;
-    height: 340px;
+    width: 320px;
+    height: 320px;
     border-radius: 50%;
-    filter: blur(65px);
+    filter: blur(60px);
     pointer-events: none;
     z-index: 0;
-    opacity: 0.7;
+    opacity: 0.65;
 }
-.banner-glow-apple {
-    background: rgba(56, 189, 248, 0.45);
-}
-.banner-glow-samsung {
-    background: rgba(139, 92, 246, 0.45);
-}
-.banner-glow-promo {
-    background: rgba(245, 158, 11, 0.45);
-}
+
+.banner-glow-apple { background: rgba(56, 189, 248, 0.45); }
+.banner-glow-samsung { background: rgba(139, 92, 246, 0.45); }
+.banner-glow-promo { background: rgba(245, 158, 11, 0.45); }
+
 .glass-spec-pill {
     background: rgba(255, 255, 255, 0.12) !important;
     border: 1px solid rgba(255, 255, 255, 0.22) !important;
-    backdrop-filter: blur(12px);
     color: #ffffff !important;
     font-size: 0.82rem;
     font-weight: 600;
     padding: 6px 14px !important;
     border-radius: 99px !important;
 }
+
 .carousel-indicators-vip {
-    margin-bottom: 22px !important;
+    margin-bottom: 20px !important;
 }
+
 .carousel-indicators-vip [data-bs-target] {
-    width: 32px !important;
+    width: 30px !important;
     height: 5px !important;
     border-radius: 10px !important;
     background-color: rgba(255, 255, 255, 0.35) !important;
     border: none !important;
-    transition: all 0.35s ease !important;
+    transition: all 0.25s ease !important;
 }
+
 .carousel-indicators-vip .active {
-    width: 65px !important;
+    width: 55px !important;
     background-color: #ffffff !important;
-    box-shadow: 0 0 12px rgba(255, 255, 255, 0.8) !important;
 }
+
 .banner-title-equal {
     font-size: 2.25rem !important;
     font-weight: 800 !important;
     line-height: 1.25 !important;
     letter-spacing: -0.5px;
     margin-bottom: 0.6rem !important;
-    height: auto !important;
-    display: block !important;
-    overflow: visible !important;
 }
+
 .banner-desc-equal {
     font-size: 0.95rem !important;
     line-height: 1.6 !important;
-    height: auto !important;
     max-width: 520px;
-    overflow: visible !important;
     opacity: 0.92;
     margin-bottom: 1.1rem !important;
 }
+
 .banner-dual-stage {
     height: 380px !important;
     width: 100% !important;
@@ -484,225 +439,229 @@ body > * {
     padding: 0 10px !important;
     z-index: 1 !important;
 }
+
 .banner-stage-apple .banner-phone-left-float {
     max-height: 330px !important;
     max-width: 250px !important;
-    width: auto !important;
-    height: auto !important;
     object-fit: contain !important;
     position: relative !important;
     z-index: 3 !important;
     margin-right: -25px !important;
-    filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.6)) !important;
+    filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55)) !important;
     animation: floatPhoneAlt 5s ease-in-out infinite !important;
-    transition: transform 0.3s ease !important;
 }
+
 .banner-stage-apple .banner-phone-right-float {
     max-height: 275px !important;
     max-width: 320px !important;
-    width: auto !important;
-    height: auto !important;
     object-fit: contain !important;
     position: relative !important;
     z-index: 2 !important;
-    filter: drop-shadow(0 22px 36px rgba(0, 0, 0, 0.65)) !important;
+    filter: drop-shadow(0 20px 32px rgba(0, 0, 0, 0.6)) !important;
     animation: floatPhoneSmooth 4s ease-in-out infinite !important;
-    transition: transform 0.3s ease !important;
 }
+
 .banner-stage-samsung {
     gap: 25px !important;
     justify-content: flex-end !important;
 }
+
 .banner-stage-samsung .banner-phone-left-float {
     max-height: 270px !important;
     max-width: 220px !important;
-    width: auto !important;
-    height: auto !important;
     object-fit: contain !important;
     position: relative !important;
     z-index: 3 !important;
-    margin-right: 0 !important;
-    filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55)) !important;
+    filter: drop-shadow(0 16px 28px rgba(0, 0, 0, 0.5)) !important;
     animation: floatPhoneAlt 5s ease-in-out infinite !important;
-    transition: transform 0.3s ease !important;
 }
+
 .banner-stage-samsung .banner-phone-right-float {
     max-height: 240px !important;
     max-width: 260px !important;
-    width: auto !important;
-    height: auto !important;
     object-fit: contain !important;
     position: relative !important;
     z-index: 2 !important;
-    margin-left: 0 !important;
-    filter: drop-shadow(0 20px 34px rgba(0, 0, 0, 0.6)) !important;
+    filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.55)) !important;
     animation: floatPhoneSmooth 4s ease-in-out infinite !important;
-    transition: transform 0.3s ease !important;
 }
+
 .banner-stage-promo .banner-phone-single-float,
 .banner-dual-stage .banner-phone-single-float {
     max-height: 300px !important;
     max-width: 240px !important;
-    width: auto !important;
-    height: auto !important;
     object-fit: contain !important;
     position: relative !important;
     z-index: 2 !important;
     margin: 0 auto !important;
     display: block !important;
-    filter: drop-shadow(0 22px 38px rgba(0, 0, 0, 0.6)) !important;
+    filter: drop-shadow(0 20px 32px rgba(0, 0, 0, 0.55)) !important;
     animation: floatPhoneSmooth 4s ease-in-out infinite !important;
-    transition: transform 0.3s ease !important;
 }
-.banner-phone-left-float:hover,
-.banner-phone-right-float:hover,
-.banner-phone-single-float:hover {
-    transform: translateY(-8px) scale(1.04) !important;
-}
-.banner-dual-stage img {
-    object-fit: contain !important;
-    display: inline-block !important;
-}
-@media (max-width: 991.98px) {
-    .carousel-banner-vip {
-        height: auto !important;
-        min-height: 480px !important;
-    }
-    .carousel-banner-vip .carousel-inner,
-    .carousel-banner-vip .carousel-item {
-        height: auto !important;
-        min-height: 480px !important;
-    }
-    .banner-title-equal {
-        font-size: 1.85rem !important;
-    }
-    .banner-desc-equal {
-        font-size: 0.9rem !important;
-    }
-    .banner-dual-stage {
-        height: 260px !important;
-        max-width: 380px !important;
-        justify-content: center !important;
-        margin: 15px auto !important;
-    }
-    .banner-stage-apple .banner-phone-left-float {
-        max-height: 220px !important;
-        max-width: 170px !important;
-    }
-    .banner-stage-apple .banner-phone-right-float {
-        max-height: 190px !important;
-        max-width: 210px !important;
-    }
-    .banner-stage-samsung {
-        gap: 15px !important;
-        justify-content: center !important;
-    }
-    .banner-stage-samsung .banner-phone-left-float {
-        max-height: 190px !important;
-        max-width: 150px !important;
-    }
-    .banner-stage-samsung .banner-phone-right-float {
-        max-height: 170px !important;
-        max-width: 180px !important;
-    }
-    .banner-dual-stage .banner-phone-single-float {
-        max-height: 220px !important;
-        max-width: 180px !important;
-    }
-}
+
 @keyframes floatPhoneSmooth {
     0% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-12px) rotate(1deg); }
+    50% { transform: translateY(-10px) rotate(0.8deg); }
     100% { transform: translateY(0px) rotate(0deg); }
 }
+
 @keyframes floatPhoneAlt {
     0% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-8px) rotate(-1deg); }
+    50% { transform: translateY(-8px) rotate(-0.8deg); }
     100% { transform: translateY(0px) rotate(0deg); }
 }
-.product-card {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    border-radius: 20px !important;
-    border: 1px solid rgba(226, 232, 240, 0.8) !important;
+
+.vphone-arrow-btn {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 44px !important;
+    height: 44px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.5) !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    z-index: 30 !important;
+    cursor: pointer !important;
+    transition: background 0.2s ease, transform 0.2s ease !important;
+}
+
+.vphone-arrow-btn:hover {
+    background: rgba(255, 255, 255, 0.55) !important;
+    transform: translateY(-50%) scale(1.08) !important;
+    color: #ffffff !important;
+}
+
+.vphone-arrow-prev { left: 16px !important; right: auto !important; }
+.vphone-arrow-next { right: 16px !important; left: auto !important; }
+
+/* ==========================================================================
+   POLICIES
+   ========================================================================== */
+.policy-card,
+.policy-card-vibrant {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 18px 20px;
+    border: 1px solid #e2e8f0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.policy-card:hover,
+.policy-card-vibrant:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 102, 204, 0.08);
+    border-color: #93c5fd;
+}
+
+/* ==========================================================================
+   SIDEBAR & OFFCANVAS CATALOG (Strict Sizing Guaranteed)
+   ========================================================================== */
+.sidebar-vphone { width: 320px !important; }
+
+.sidebar-header-custom {
+    background: linear-gradient(135deg, #072a48 0%, #0056b3 100%);
+    color: #ffffff;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-brand-link {
+    transition: background 0.15s ease, padding-left 0.15s ease;
+    border-color: #f1f5f9 !important;
+}
+
+.sidebar-brand-link:hover {
+    background-color: #f8fafc !important;
+    padding-left: 1.15rem !important;
+}
+
+.sidebar-brand-badge {
+    width: 46px !important;
+    height: 32px !important;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    padding: 2px 4px;
+    overflow: hidden !important;
+    transition: border-color 0.15s ease;
+}
+
+.sidebar-brand-link:hover .sidebar-brand-badge {
+    background: #ffffff;
+    border-color: #0066cc;
+}
+
+.sidebar-brand-badge img,
+.sidebar-brand-logo {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 38px !important;
+    max-height: 22px !important;
+    object-fit: contain !important;
+    pointer-events: none !important;
+}
+
+.sidebar-logo-apple { max-height: 20px !important; max-width: 22px !important; }
+.sidebar-logo-samsung { max-height: 12px !important; max-width: 42px !important; }
+.sidebar-logo-xiaomi { max-height: 20px !important; max-width: 20px !important; border-radius: 4px; }
+.sidebar-logo-oppo { max-height: 12px !important; max-width: 44px !important; }
+.sidebar-logo-vivo { max-height: 13px !important; max-width: 38px !important; }
+.sidebar-logo-google { max-height: 20px !important; max-width: 20px !important; }
+.sidebar-logo-asus { max-height: 18px !important; max-width: 30px !important; }
+.sidebar-logo-sony { max-height: 11px !important; max-width: 42px !important; }
+.sidebar-logo-huawei { max-height: 20px !important; max-width: 22px !important; }
+
+/* ==========================================================================
+   LIVE TOAST NOTIFICATION (Instant, Bulletproof & Smooth)
+   ========================================================================== */
+#vphoneLiveToast {
+    position: fixed !important;
+    top: 80px !important;
+    right: 25px !important;
+    z-index: 999999 !important;
+    display: none;
+    min-width: 320px !important;
+    max-width: 420px !important;
     background: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03) !important;
+    color: var(--v-text-dark) !important;
+    padding: 16px 20px !important;
+    border-radius: 18px !important;
+    border: 1.5px solid var(--v-blue-border) !important;
+    box-shadow: 0 16px 40px rgba(0, 102, 204, 0.2) !important;
+    animation: toastPopIn 0.22s ease-out forwards !important;
 }
-.product-card:hover {
-    transform: translateY(-6px) !important;
-    box-shadow: 0 20px 35px -8px rgba(0, 102, 204, 0.12), 0 0 1px 1px rgba(0, 102, 204, 0.15) !important;
-    border-color: #93c5fd !important;
+
+@keyframes toastPopIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
-.product-card:hover .product-img-wrapper img {
-    transform: scale(1.07) translateY(-2px) !important;
-}
-.badge-flagship-glow {
-    background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.3);
-    font-weight: 700;
-    letter-spacing: 0.3px;
-}
-.badge-sale-cut {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: #ffffff;
-    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
-    font-weight: 700;
-}
-.badge-stock-pill {
-    font-size: 0.72rem;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-}
-.stock-dot-green {
-    width: 6px;
-    height: 6px;
-    background: #10b981;
-    border-radius: 50%;
-    display: inline-block;
-    box-shadow: 0 0 6px #10b981;
-}
-.stock-dot-red {
-    width: 6px;
-    height: 6px;
-    background: #ef4444;
-    border-radius: 50%;
-    display: inline-block;
-}
-.btn-card-buy {
-    background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
-    color: #ffffff;
-    border: none;
-    font-weight: 700;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.2);
-}
-.btn-card-buy:hover {
-    background: linear-gradient(135deg, #0052a3 0%, #003d7a 100%);
-    color: #ffffff;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(0, 102, 204, 0.3);
-}
-.checkout-stepper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 25px;
-}
-.step-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    color: #94a3b8;
-    font-size: 0.88rem;
-}
+
+/* ==========================================================================
+   STEPPERS & FORM CONTROLS
+   ========================================================================== */
 .checkout-stepper-wrapper {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
     border-radius: 9999px;
     padding: 8px 24px;
     display: inline-flex;
@@ -710,16 +669,17 @@ body > * {
     gap: 16px;
     max-width: 100%;
 }
+
 .step-badge {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     font-size: 0.88rem;
     font-weight: 700;
-    transition: all 0.2s ease;
     user-select: none;
     white-space: nowrap;
 }
+
 .step-circle {
     width: 30px;
     height: 30px;
@@ -730,203 +690,168 @@ body > * {
     font-size: 0.82rem;
     font-weight: 800;
     flex-shrink: 0;
-    transition: all 0.2s ease;
 }
+
 .step-badge.step-completed .step-circle {
     background: #10b981;
     color: #ffffff;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
-.step-badge.step-completed .step-text {
-    color: #10b981;
-}
+
+.step-badge.step-completed .step-text { color: #10b981; }
+
 .step-badge.step-active .step-circle {
     background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%);
     color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
 }
-.step-badge.step-active .step-text {
-    color: #0066cc;
-}
+
+.step-badge.step-active .step-text { color: #0066cc; }
+
 .step-badge.step-pending .step-circle {
     background: #f1f5f9;
     color: #94a3b8;
     border: 1.5px solid #e2e8f0;
 }
-.step-badge.step-pending .step-text {
-    color: #94a3b8;
-}
+
+.step-badge.step-pending .step-text { color: #94a3b8; }
+
 .step-connector {
     width: 32px;
     height: 2px;
     background: #e2e8f0;
     border-radius: 99px;
-    transition: background 0.25s ease;
     flex-shrink: 0;
 }
+
 .step-connector.active {
-    background: linear-gradient(90deg, #10b981, #0066cc);
+    background: #10b981;
 }
-@media (max-width: 576px) {
-    .checkout-stepper-wrapper {
-        padding: 6px 14px;
-        gap: 8px;
-    }
-    .step-badge {
-        font-size: 0.78rem;
-        gap: 6px;
-    }
-    .step-circle {
-        width: 26px;
-        height: 26px;
-        font-size: 0.75rem;
-    }
-    .step-connector {
-        width: 16px;
-    }
-}
+
 .payment-card-luxury {
     border: 1.5px solid #e2e8f0;
     border-radius: 16px;
     padding: 16px 20px;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: border-color 0.15s ease, background 0.15s ease;
     background: #ffffff;
     position: relative;
     display: block;
     user-select: none;
 }
+
 .payment-card-luxury:hover {
     border-color: #93c5fd;
     background: #f8fafc;
-    transform: translateY(-1px);
 }
+
 .payment-card-luxury.active {
     border-color: #0066cc;
     background: #f0f7ff;
-    box-shadow: 0 4px 16px rgba(0, 102, 204, 0.08);
 }
-.payment-card-luxury .payment-icon-box {
-    width: 46px;
-    height: 46px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-}
-.custom-radio-circle {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #cbd5e1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.2s ease;
-    background: #ffffff;
-}
-.payment-card-luxury.active .custom-radio-circle {
-    border-color: #0066cc;
-}
-.custom-radio-circle .radio-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #0066cc;
-    display: none;
-    transition: all 0.15s ease;
-}
-.payment-card-luxury.active .custom-radio-circle .radio-dot {
-    display: block;
-}
-.checkout-input-group {
-    position: relative;
-}
-.checkout-input-group .input-icon {
-    position: absolute;
-    left: 16px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #94a3b8;
-    font-size: 0.95rem;
-    pointer-events: none;
-    z-index: 2;
-    transition: color 0.2s;
-}
-.checkout-form-control {
+
+.checkout-form-control,
+.form-control,
+.form-select {
     border: 1.5px solid #e2e8f0;
     border-radius: 14px;
-    padding: 12px 16px 12px 46px;
-    font-size: 0.92rem;
-    color: #1e293b;
-    width: 100%;
-    background: #ffffff;
-    transition: all 0.2s ease;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
-.checkout-form-control:focus {
-    border-color: #0066cc;
-    box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
-    outline: none;
-    background: #ffffff;
+
+.checkout-form-control:focus,
+.form-control:focus,
+.form-select:focus {
+    border-color: #0066cc !important;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12) !important;
+    outline: none !important;
 }
-.checkout-form-control:focus + .input-icon,
-.checkout-input-group:focus-within .input-icon {
-    color: #0066cc;
+
+/* ==========================================================================
+   BACK TO TOP BUTTON
+   ========================================================================== */
+.btn-back-to-top {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #0066cc;
+    color: #ffffff;
+    border: none;
+    box-shadow: 0 4px 16px rgba(0, 102, 204, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    z-index: 1040;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
 }
+
+.btn-back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.btn-back-to-top:hover {
+    background: #004c99;
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+/* ==========================================================================
+   ADMIN SUITE
+   ========================================================================== */
 .admin-sidebar {
     background: #0b1329 !important;
     border-right: 1px solid rgba(255, 255, 255, 0.06);
 }
+
 .admin-sidebar .admin-nav-link {
     border-radius: 12px;
     margin: 3px 8px;
     padding: 11px 16px;
-    border-left: none !important;
+    transition: background 0.15s ease, transform 0.15s ease;
 }
+
 .admin-sidebar .admin-nav-link:hover {
     background: rgba(255, 255, 255, 0.08);
     color: #ffffff;
+    transform: translateX(4px);
 }
+
 .admin-sidebar .admin-nav-link.active {
     background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%) !important;
     color: #ffffff !important;
     box-shadow: 0 4px 14px rgba(0, 102, 204, 0.35);
     font-weight: 700;
 }
+
 .admin-kpi-card {
     border-radius: 20px;
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    border: 1px solid rgba(226, 232, 240, 0.85);
     background: #ffffff;
     padding: 22px;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .admin-kpi-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
 }
-.admin-kpi-icon-box {
-    width: 52px;
-    height: 52px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.4rem;
-    flex-shrink: 0;
-}
+
 .admin-table-card {
     border-radius: 20px;
-    border: 1px solid rgba(226, 232, 240, 0.8);
+    border: 1px solid rgba(226, 232, 240, 0.85);
     background: #ffffff;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
     overflow: hidden;
 }
+
 .admin-table thead th {
     background: #f8fafc;
     color: #475569;
@@ -937,41 +862,24 @@ body > * {
     border-bottom: 2px solid #e2e8f0;
     padding: 14px 16px;
 }
+
 .admin-table tbody td {
     padding: 14px 16px;
     vertical-align: middle;
     border-bottom: 1px solid #f1f5f9;
 }
+
 .admin-table tbody tr:hover td {
-    background-color: #f8fafc;
+    background-color: #f8fafc !important;
 }
-.badge-soft-success {
-    background: #ecfdf5;
-    color: #059669;
-    border: 1px solid #a7f3d0;
-    font-weight: 600;
-}
-.badge-soft-warning {
-    background: #fffbeb;
-    color: #d97706;
-    border: 1px solid #fde68a;
-    font-weight: 600;
-}
-.badge-soft-danger {
-    background: #fef2f2;
-    color: #dc2626;
-    border: 1px solid #fecaca;
-    font-weight: 600;
-}
-.badge-soft-primary {
-    background: #eff6ff;
-    color: #2563eb;
-    border: 1px solid #bfdbfe;
-    font-weight: 600;
-}
-.badge-soft-secondary {
-    background: #f8fafc;
-    color: #64748b;
-    border: 1px solid #e2e8f0;
-    font-weight: 600;
+
+.badge-soft-success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-weight: 600; }
+.badge-soft-warning { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; font-weight: 600; }
+.badge-soft-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 600; }
+.badge-soft-primary { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 600; }
+.badge-soft-secondary { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; font-weight: 600; }
+
+.footer-vphone {
+    background: #072a48;
+    color: #e2e8f0;
 }

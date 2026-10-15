@@ -196,11 +196,11 @@ require_once 'app/views/includes/navbar.php';
 
 <style>
 @keyframes fadeInProduct {
-    from { opacity: 0; transform: translateY(6px); }
-    to { opacity: 1; transform: translateY(0); }
+    0% { opacity: 0; transform: translateY(14px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 .product-col-card {
-    transition: all 0.25s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
 }
 
 .brand-filter-wrapper {
@@ -736,7 +736,7 @@ function applyProductFilters() {
 
         if (matchBrand && matchType) {
             card.classList.remove('d-none');
-            card.style.animation = 'fadeInProduct 0.25s ease forwards';
+            card.style.animation = 'fadeInProduct 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards';
             visibleCount++;
         } else {
             card.classList.add('d-none');

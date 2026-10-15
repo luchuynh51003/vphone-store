@@ -580,9 +580,9 @@ require_once 'app/views/includes/functions.php';
                         <span>Sản Phẩm Trong Đơn Hàng</span>
                         <span class="badge bg-light border text-secondary rounded-pill small"><?= count($trackedDetails) ?> sản phẩm</span>
                     </h5>
-                    <span class="text-success small fw-semibold">
-                        <i class="fa-solid fa-shield-check me-1"></i>Bảo hành chính hãng 12 tháng
-                    </span>
+                    <a href="index.php?page=warranty" target="_blank" class="text-success small fw-semibold text-decoration-none">
+                        <i class="fa-solid fa-shield-check me-1"></i>Bảo hành chính hãng 12 tháng <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size:11px;"></i>
+                    </a>
                 </div>
 
                 <div class="order-products-list">

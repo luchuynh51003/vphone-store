@@ -1,7 +1,43 @@
 <?php
+require_once __DIR__ . '/../config/database.php';
+
+// Xử lý xuất file CSV kiểm kê kho
+if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    $filename = 'vphone_ton_kho_' . date('Ymd_His') . '.csv';
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    $output = fopen('php://output', 'w');
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    fputcsv($output, ['ID', 'Tên sản phẩm', 'Thương hiệu', 'Giá bán (VNĐ)', 'Tổng tồn kho', 'Chi tiết tồn theo màu', 'Trạng thái']);
+    $invs = $pdo->query("SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id ORDER BY p.quantity ASC, p.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($invs as $inv) {
+        $cDetails = [];
+        $cArr = json_decode($inv['color_quantities'] ?? '', true);
+        if (is_array($cArr)) {
+            foreach ($cArr as $ca) {
+                if (isset($ca['color'], $ca['quantity'])) {
+                    $cDetails[] = $ca['color'] . ': ' . $ca['quantity'];
+                }
+            }
+        }
+        $st = $inv['quantity'] == 0 ? 'Hết hàng' : ($inv['quantity'] <= 5 ? 'Sắp hết hàng' : 'Còn hàng');
+        fputcsv($output, [
+            $inv['id'],
+            $inv['name'],
+            $inv['brand_name'] ?? 'Khác',
+            $inv['sale_price'] > 0 ? $inv['sale_price'] : $inv['price'],
+            $inv['quantity'],
+            implode('; ', $cDetails),
+            $st
+        ]);
+    }
+    fclose($output);
+    exit;
+}
+
 $pageTitle = 'Quản Lý Tồn Kho - V-Phone Admin';
 require_once 'includes/header.php';
-require_once '../app/models/ProductModel.php';
+require_once __DIR__ . '/../app/models/ProductModel.php';
 (new ProductModel($pdo))->ensureColorQuantitiesColumn();
 
 $message = '';
@@ -100,6 +136,7 @@ if ($filter === 'low') {
 }
 $querySql .= " ORDER BY p.quantity ASC, p.id DESC";
 $stockList = $pdo->query($querySql)->fetchAll();
+$brands = $pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
 ?>
 
 <style>
@@ -234,12 +271,17 @@ $stockList = $pdo->query($querySql)->fetchAll();
 </style>
 
 <!-- PAGE HEADER -->
-<div class="d-flex justify-content-between align-items-start mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h3 class="fw-bold text-dark mb-1">
+        <h3 class="fw-black text-dark mb-1">
             <i class="fa-solid fa-boxes-stacked text-primary me-2"></i>Quản Lý Tồn Kho
         </h3>
-        <p class="text-secondary small mb-0">Theo dõi số lượng máy, cảnh báo hết hàng và nhập hàng nhanh</p>
+        <p class="text-secondary small mb-0">Theo dõi số lượng máy, mức cảnh báo hết hàng và nhập hàng nhanh vào hệ thống</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="inventory.php?export=csv" class="btn btn-outline-success btn-sm rounded-pill fw-bold px-3">
+            <i class="fa-solid fa-file-excel me-1.5"></i>Xuất Excel Kho (CSV)
+        </a>
     </div>
 </div>
 
@@ -310,11 +352,19 @@ $stockList = $pdo->query($querySql)->fetchAll();
 
 <!-- INVENTORY TABLE -->
 <div class="admin-table-card">
-    <!-- Table header toolbar -->
-    <div class="d-flex justify-content-between align-items-center px-4 py-3" style="border-bottom: 1px solid #f1f5f9;">
-        <div>
-            <span class="fw-bold text-dark" style="font-size:.95rem;">Kiểm Kê Tồn Kho</span>
-            <span class="text-muted ms-2" style="font-size:.82rem;"><?= count($stockList) ?> sản phẩm</span>
+    <!-- Table header toolbar with Search & Brand filter -->
+    <div class="p-3 px-4 border-bottom bg-white d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 520px;">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" id="inventorySearch" class="form-control border-start-0 bg-light" placeholder="Tìm tên máy, cấu hình..." onkeyup="filterInventoryTable()">
+            </div>
+            <select id="inventoryBrandFilter" class="form-select form-select-sm bg-light" style="max-width: 170px;" onchange="filterInventoryTable()">
+                <option value="all">Tất cả hãng</option>
+                <?php foreach ($brands as $b): ?>
+                    <option value="<?= (int)$b['id'] ?>"><?= htmlspecialchars($b['name']) ?></option>
+                <?php endforeach; ?>
+            </select>
         </div>
         <div class="d-flex gap-2">
             <a href="inventory.php?filter=all" class="inv-filter-tab tab-all <?= $filter === 'all' ? 'active' : '' ?>">
@@ -332,7 +382,7 @@ $stockList = $pdo->query($querySql)->fetchAll();
     </div>
 
     <div class="table-responsive">
-        <table class="table inv-table mb-0">
+        <table class="table inv-table mb-0" id="inventoryTable">
             <thead>
                 <tr>
                     <th style="width:56px;">Ảnh</th>
@@ -361,7 +411,7 @@ $stockList = $pdo->query($querySql)->fetchAll();
                         $unassignedColors = array_diff($productColors, array_keys($colorQuantitiesByName));
                         $qty = (int)$p['quantity'];
                     ?>
-                    <tr>
+                    <tr class="inv-row" data-name="<?= htmlspecialchars(mb_strtolower($p['name'] . ' ' . ($p['rom'] ?? ''), 'UTF-8')) ?>" data-brand="<?= (int)$p['brand_id'] ?>">
                         <!-- Ảnh -->
                         <td>
                             <div style="width:44px; height:44px; background:#f8fafc; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
@@ -388,12 +438,19 @@ $stockList = $pdo->query($querySql)->fetchAll();
                             </span>
                         </td>
 
-                        <!-- Số lượng tồn -->
+                        <!-- Số lượng tồn + Thanh đo trực quan -->
                         <td style="text-align:center;">
                             <div class="stock-num <?= $qty == 0 ? 'text-danger' : ($qty <= 5 ? 'text-warning' : 'text-success') ?>">
                                 <?= $qty ?>
                             </div>
                             <div style="font-size:.7rem; color:#94a3b8; margin-top:1px;">máy</div>
+                            <div class="progress mt-1 mx-auto" style="height: 4px; width: 50px; background: #e2e8f0; border-radius: 4px;">
+                                <?php
+                                    $barPct = min(100, max(0, ($qty / 20) * 100));
+                                    $barClass = $qty == 0 ? 'bg-danger' : ($qty <= 5 ? 'bg-warning' : ($qty <= 15 ? 'bg-primary' : 'bg-success'));
+                                ?>
+                                <div class="progress-bar <?= $barClass ?>" style="width: <?= $barPct ?>%;"></div>
+                            </div>
                         </td>
 
                         <!-- Tình trạng -->
@@ -568,6 +625,25 @@ function openColorStockModal(productId, productName, colors, currentQuantities) 
         colorStockModalInstance = new bootstrap.Modal(modalEl);
     }
     colorStockModalInstance.show();
+}
+
+function filterInventoryTable() {
+    const q = document.getElementById('inventorySearch').value.toLowerCase().trim();
+    const brand = document.getElementById('inventoryBrandFilter').value;
+
+    document.querySelectorAll('.inv-row').forEach(row => {
+        const name = row.getAttribute('data-name') || '';
+        const rBrand = row.getAttribute('data-brand') || '';
+
+        const matchQ = !q || name.includes(q);
+        const matchBrand = (brand === 'all') || (rBrand === brand);
+
+        if (matchQ && matchBrand) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
 }
 </script>
 

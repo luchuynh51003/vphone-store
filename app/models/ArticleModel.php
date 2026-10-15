@@ -7,6 +7,10 @@ class ArticleModel {
     }
 
     public function ensureTable(array $defaults = []): void {
+        if (!empty($_SESSION['articles_table_verified'])) {
+            return;
+        }
+
         $this->pdo->exec("CREATE TABLE IF NOT EXISTS articles (
             id INT AUTO_INCREMENT PRIMARY KEY,
             title VARCHAR(255) NOT NULL,
@@ -41,6 +45,8 @@ class ArticleModel {
                 ]);
             }
         }
+
+        $_SESSION['articles_table_verified'] = true;
     }
 
     public function getPublished(): array {

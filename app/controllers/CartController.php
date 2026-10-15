@@ -226,7 +226,17 @@ class CartController {
         $voucherModel = new VoucherModel($this->pdo);
         $voucherModel->ensureTable();
 
+        require_once 'app/models/AddressModel.php';
+        $addressModel = new AddressModel($this->pdo);
+
         $currentUser = $_SESSION['user'];
+        $userAddresses = $addressModel->getByUserId((int)$currentUser['id']);
+        $defaultAddress = $addressModel->getDefaultByUserId((int)$currentUser['id']);
+        if ($defaultAddress) {
+            if (empty($currentUser['phone'])) $currentUser['phone'] = $defaultAddress['phone'];
+            if (empty($currentUser['address'])) $currentUser['address'] = $defaultAddress['address'];
+        }
+
         $orderSuccess = false;
         $orderId = 0;
 

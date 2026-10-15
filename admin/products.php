@@ -1,6 +1,37 @@
 <?php
-require_once '../app/models/ProductModel.php';
-require_once '../app/views/includes/functions.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../app/models/ProductModel.php';
+require_once __DIR__ . '/../app/views/includes/functions.php';
+
+// Xử lý xuất file CSV nếu có yêu cầu
+if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    $filename = 'vphone_san_pham_' . date('Ymd_His') . '.csv';
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    $output = fopen('php://output', 'w');
+    // Ghi UTF-8 BOM để Excel đọc đúng tiếng Việt
+    fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+    fputcsv($output, ['ID', 'Tên sản phẩm', 'Hãng', 'Giá niêm yết (VNĐ)', 'Giá bán (VNĐ)', 'Tồn kho', 'Màu sắc', 'Bộ nhớ ROM', 'Phân loại', 'Ngày tạo']);
+    $prods = $pdo->query("SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id ORDER BY p.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($prods as $p) {
+        $cat = $p['is_used'] ? 'Máy cũ 99%' : ($p['is_featured'] ? 'Flagship 2026' : 'Mới 100%');
+        fputcsv($output, [
+            $p['id'],
+            $p['name'],
+            $p['brand_name'] ?? 'Khác',
+            $p['price'],
+            $p['sale_price'] > 0 ? $p['sale_price'] : $p['price'],
+            $p['quantity'],
+            $p['colors'],
+            $p['rom'],
+            $cat,
+            $p['created_at']
+        ]);
+    }
+    fclose($output);
+    exit;
+}
+
 $pageTitle = 'Quản Lý Sản Phẩm - V-Phone Admin';
 require_once 'includes/header.php';
 $productModel = new ProductModel($pdo);
@@ -11,20 +42,36 @@ $message = '';
 $editId = (int)($_GET['edit_id'] ?? 0);
 $editingProduct = null;
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['delete_product'])) {
     $delId = (int)($_POST['product_id'] ?? 0);
     $del = $pdo->prepare("DELETE FROM products WHERE id = ?");
     $del->execute([$delId]);
     $message = 'Đã xóa sản phẩm thành công!';
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
+if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['save_product'])) {
     $productId = (int)($_POST['product_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
     $brand_id = (int)$_POST['brand_id'];
     $price = (float)$_POST['price'];
     $sale_price = (float)$_POST['sale_price'];
     $image = trim($_POST['image'] ?? 'assets/images/products/iphone-16-promax.png');
+
+    // Xử lý upload ảnh trực tiếp từ máy tính
+    if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+        $file = $_FILES['image_file'];
+        $uploadDir = '../assets/images/products/';
+        if (!is_dir($uploadDir)) @mkdir($uploadDir, 0777, true);
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+        if (in_array($ext, $allowed) && $file['size'] <= 10 * 1024 * 1024) {
+            $newFileName = 'prod_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
+            if (move_uploaded_file($file['tmp_name'], $uploadDir . $newFileName)) {
+                $image = 'assets/images/products/' . $newFileName;
+            }
+        }
+    }
+
     $screen = trim($_POST['screen'] ?? '6.7 inch AMOLED');
     $cpu = trim($_POST['cpu'] ?? 'Snapdragon / Apple Bionic');
     $ram = trim($_POST['ram'] ?? '8 GB');
@@ -84,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
         if ($productId > 0) {
             $stmt = $pdo->prepare("UPDATE products SET brand_id = ?, name = ?, price = ?, sale_price = ?, image = ?, screen = ?, cpu = ?, ram = ?, rom = ?, battery = ?, colors = ?, color_quantities = ?, quantity = ?, storage_options = ?, is_featured = ?, is_used = ?, condition_desc = ? WHERE id = ?");
             $stmt->execute([$brand_id, $name, $price, $sale_price, $image, $screen, $cpu, $ram, $rom, $battery, implode(', ', $colorNames), $colorQuantitiesJson, $totalQuantity, $storageJson, $is_featured, $is_used, $condition_desc, $productId]);
-            $message = 'Đã cập nhật sản phẩm.';
+            $message = 'Đã cập nhật sản phẩm thành công!';
         } else {
             $stmt = $pdo->prepare("INSERT INTO products (brand_id, name, price, sale_price, image, screen, cpu, ram, rom, battery, colors, color_quantities, quantity, storage_options, is_featured, is_used, condition_desc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$brand_id, $name, $price, $sale_price, $image, $screen, $cpu, $ram, $rom, $battery, implode(', ', $colorNames), $colorQuantitiesJson, $totalQuantity, $storageJson, $is_featured, $is_used, $condition_desc]);
@@ -254,36 +301,65 @@ select.fm-input { appearance: auto; }
 .btn-modal-save:hover { background: linear-gradient(135deg, #0052a3, #004080); }
 </style>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h3 class="fw-bold text-dark mb-1">Quản Lý Danh Sách Điện Thoại</h3>
-        <p class="text-secondary small mb-0">Thêm mới, sửa giá bán, cập nhật cấu hình và xóa sản phẩm</p>
+        <h3 class="fw-black text-dark mb-1">Quản Lý Danh Sách Điện Thoại</h3>
+        <p class="text-secondary small mb-0">Thêm mới, sửa giá bán, tải ảnh lên từ máy tính, cập nhật cấu hình và tồn kho</p>
     </div>
-    <button class="btn btn-primary rounded-pill fw-bold shadow-sm px-4" data-bs-toggle="modal" data-bs-target="#addProductModal">
-        <i class="fa-solid fa-plus me-2"></i>Thêm Máy Mới
-    </button>
+    <div class="d-flex gap-2">
+        <a href="products.php?export=csv" class="btn btn-outline-success rounded-pill fw-bold btn-sm px-3">
+            <i class="fa-solid fa-file-excel me-1.5"></i>Xuất Excel (CSV)
+        </a>
+        <button class="btn btn-primary rounded-pill fw-bold shadow-sm px-3.5 btn-sm" data-bs-toggle="modal" data-bs-target="#addProductModal" onclick="resetProductModal()">
+            <i class="fa-solid fa-plus me-1.5"></i>Thêm Máy Mới
+        </button>
+    </div>
 </div>
 
 <?php if (!empty($message)): ?>
-    <div class="alert alert-success alert-dismissible fade show rounded-4 py-2" role="alert">
-        <i class="fa-solid fa-check me-2"></i><?= $message ?>
+    <div class="alert alert-success alert-dismissible fade show rounded-4 py-2.5 px-3 mb-4 shadow-sm" role="alert">
+        <i class="fa-solid fa-check-circle me-2 text-success"></i><?= htmlspecialchars($message) ?>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 <?php endif; ?>
 
+<!-- BỘ LỌC THÔNG MINH: TÌM KIẾM, HÃNG SẢN XUẤT, TÌNH TRẠNG KHO -->
+<div class="card border-0 rounded-4 shadow-sm p-3 mb-3 bg-white">
+    <div class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                <input type="text" id="adminProductSearch" class="form-control border-start-0 bg-light" placeholder="Tìm tên điện thoại, chip CPU, RAM, ROM..." onkeyup="filterAdminProducts()">
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <select id="adminProductBrandFilter" class="form-select form-select-sm bg-light" onchange="filterAdminProducts()">
+                <option value="all">Tất cả thương hiệu (<?= count($brands) ?>)</option>
+                <?php foreach ($brands as $b): ?>
+                    <option value="<?= (int)$b['id'] ?>"><?= htmlspecialchars($b['name']) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-4 col-6">
+            <select id="adminProductStockFilter" class="form-select form-select-sm bg-light" onchange="filterAdminProducts()">
+                <option value="all">Tất cả trạng thái kho</option>
+                <option value="in_stock">Còn hàng (> 5 máy)</option>
+                <option value="low_stock">Sắp hết hàng (1 - 5 máy)</option>
+                <option value="out_of_stock">Hết hàng (0 máy)</option>
+                <option value="featured">⭐ Flagship 2026</option>
+                <option value="used">♻️ Máy cũ 99%</option>
+            </select>
+        </div>
+    </div>
+</div>
+
 <div class="admin-table-card">
-    <div class="p-4 border-bottom bg-white d-flex flex-wrap justify-content-between align-items-center gap-3">
+    <div class="p-3.5 px-4 border-bottom bg-white d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
             <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
-                <i class="fa-solid fa-mobile-screen-button text-primary"></i> Danh Sách Điện Thoại Đang Kinh Doanh
+                <i class="fa-solid fa-mobile-screen-button text-primary"></i> Danh Sách Điện Thoại
             </h5>
-            <small class="text-secondary">Tổng cộng <?= count($products) ?> mẫu máy trong cơ sở dữ liệu</small>
-        </div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <div class="input-group input-group-sm" style="width: 240px;">
-                <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                <input type="text" id="adminProductSearch" class="form-control border-start-0 bg-light" placeholder="Tìm tên máy..." onkeyup="filterAdminProducts()">
-            </div>
+            <small class="text-secondary">Hiển thị <span id="visibleProductsCount"><?= count($products) ?></span> / <?= count($products) ?> mẫu máy</small>
         </div>
     </div>
 
@@ -296,13 +372,23 @@ select.fm-input { appearance: auto; }
                     <th>Hãng</th>
                     <th>Màu & Dung Lượng</th>
                     <th>Giá Bán</th>
-                    <th>Phân Loại</th>
+                    <th>Kho & Phân Loại</th>
                     <th class="text-end">Thao Tác</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach ($products as $p): ?>
-                    <tr class="product-row" data-name="<?= htmlspecialchars(mb_strtolower($p['name'], 'UTF-8')) ?>">
+                    <?php
+                        $stockStatus = 'in_stock';
+                        if ($p['quantity'] == 0) $stockStatus = 'out_of_stock';
+                        elseif ($p['quantity'] <= 5) $stockStatus = 'low_stock';
+                    ?>
+                    <tr class="product-row"
+                        data-name="<?= htmlspecialchars(mb_strtolower($p['name'] . ' ' . ($p['cpu'] ?? '') . ' ' . ($p['ram'] ?? '') . ' ' . ($p['rom'] ?? ''), 'UTF-8')) ?>"
+                        data-brand="<?= (int)$p['brand_id'] ?>"
+                        data-stock="<?= $stockStatus ?>"
+                        data-featured="<?= $p['is_featured'] ? '1' : '0' ?>"
+                        data-used="<?= $p['is_used'] ? '1' : '0' ?>">
                         <td>
                             <div class="p-1 rounded-3 bg-light border d-flex align-items-center justify-content-center" style="width: 52px; height: 52px;">
                                 <img src="../<?= htmlspecialchars($p['image']) ?>" alt="" style="max-width: 44px; max-height: 44px; object-fit: contain;">
@@ -349,21 +435,30 @@ select.fm-input { appearance: auto; }
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if ($p['is_used']): ?>
-                                <span class="badge badge-soft-success rounded-pill px-2 py-1"><i class="fa-solid fa-recycle me-1"></i>Máy cũ 99%</span>
-                            <?php endif; ?>
-                            <?php if ($p['is_featured']): ?>
-                                <span class="badge badge-soft-primary rounded-pill px-2 py-1"><i class="fa-solid fa-crown text-warning me-1"></i>Flagship 2026</span>
-                            <?php endif; ?>
-                            <?php if (!$p['is_used'] && !$p['is_featured']): ?>
-                                <span class="badge badge-soft-secondary rounded-pill px-2 py-1">Mới 100%</span>
-                            <?php endif; ?>
+                            <div class="mb-1">
+                                <?php if ($p['quantity'] == 0): ?>
+                                    <span class="badge bg-danger rounded-pill px-2 py-1">Hết hàng</span>
+                                <?php elseif ($p['quantity'] <= 5): ?>
+                                    <span class="badge bg-warning text-dark rounded-pill px-2 py-1">Còn <?= $p['quantity'] ?> máy</span>
+                                <?php else: ?>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-1">Kho: <?= $p['quantity'] ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div>
+                                <?php if ($p['is_used']): ?>
+                                    <span class="badge badge-soft-success rounded-pill px-2 py-0.5" style="font-size: 0.72rem;"><i class="fa-solid fa-recycle me-1"></i>Máy cũ 99%</span>
+                                <?php elseif ($p['is_featured']): ?>
+                                    <span class="badge badge-soft-primary rounded-pill px-2 py-0.5" style="font-size: 0.72rem;"><i class="fa-solid fa-crown text-warning me-1"></i>Flagship</span>
+                                <?php else: ?>
+                                    <span class="badge badge-soft-secondary rounded-pill px-2 py-0.5" style="font-size: 0.72rem;">Mới 100%</span>
+                                <?php endif; ?>
+                            </div>
                         </td>
                         <td class="text-end text-nowrap">
-                            <a href="products.php?edit_id=<?= (int)$p['id'] ?>" class="btn btn-sm btn-light border text-primary rounded-pill px-2 py-1 me-1" title="Sửa sản phẩm" aria-label="Sửa <?= htmlspecialchars($p['name']) ?>">
+                            <a href="products.php?edit_id=<?= (int)$p['id'] ?>" class="btn btn-sm btn-light border text-primary rounded-pill px-2.5 py-1 me-1" title="Sửa sản phẩm" aria-label="Sửa <?= htmlspecialchars($p['name']) ?>">
                                 <i class="fa-solid fa-pen-to-square"></i> Sửa
                             </a>
-                            <button type="button" class="btn btn-sm btn-light border text-danger rounded-pill px-2 py-1" title="Xóa sản phẩm" aria-label="Xóa <?= htmlspecialchars($p['name']) ?>" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-product-id="<?= (int)$p['id'] ?>" data-product-name="<?= htmlspecialchars($p['name']) ?>">
+                            <button type="button" class="btn btn-sm btn-light border text-danger rounded-circle" style="width: 32px; height: 32px; padding: 0;" title="Xóa sản phẩm" aria-label="Xóa <?= htmlspecialchars($p['name']) ?>" data-bs-toggle="modal" data-bs-target="#deleteProductModal" data-product-id="<?= (int)$p['id'] ?>" data-product-name="<?= htmlspecialchars($p['name']) ?>">
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </td>
@@ -377,17 +472,40 @@ select.fm-input { appearance: auto; }
 <script>
 function filterAdminProducts() {
     const q = document.getElementById('adminProductSearch').value.toLowerCase().trim();
+    const brand = document.getElementById('adminProductBrandFilter').value;
+    const stock = document.getElementById('adminProductStockFilter').value;
+
+    let count = 0;
     document.querySelectorAll('.product-row').forEach(row => {
-        const name = row.getAttribute('data-name');
-        if (!q || name.includes(q)) {
+        const name = row.getAttribute('data-name') || '';
+        const rBrand = row.getAttribute('data-brand') || '';
+        const rStock = row.getAttribute('data-stock') || '';
+        const rFeat = row.getAttribute('data-featured') || '0';
+        const rUsed = row.getAttribute('data-used') || '0';
+
+        const matchQuery = !q || name.includes(q);
+        const matchBrand = (brand === 'all') || (rBrand === brand);
+
+        let matchStock = true;
+        if (stock === 'in_stock') matchStock = (rStock === 'in_stock');
+        else if (stock === 'low_stock') matchStock = (rStock === 'low_stock');
+        else if (stock === 'out_of_stock') matchStock = (rStock === 'out_of_stock');
+        else if (stock === 'featured') matchStock = (rFeat === '1');
+        else if (stock === 'used') matchStock = (rUsed === '1');
+
+        if (matchQuery && matchBrand && matchStock) {
             row.style.display = '';
+            count++;
         } else {
             row.style.display = 'none';
         }
     });
+    const cEl = document.getElementById('visibleProductsCount');
+    if (cEl) cEl.textContent = count;
 }
 </script>
 
+<!-- MODAL THÊM / SỬA SẢN PHẨM (HỖ TRỢ FILE UPLOAD) -->
 <div class="modal fade" id="addProductModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -408,7 +526,8 @@ function filterAdminProducts() {
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <form method="POST" action="products.php">
+            <!-- FORM MULTIPART ĐỂ UPLOAD FILE ẢNH -->
+            <form method="POST" action="products.php" enctype="multipart/form-data">
                 <input type="hidden" name="product_id" value="<?= (int)($editingProduct['id'] ?? 0) ?>">
 
                 <div class="modal-body">
@@ -453,12 +572,33 @@ function filterAdminProducts() {
                         </div>
                     </div>
 
+                    <!-- KHU VỰC HÌNH ẢNH: TẢI FILE TỪ MÁY HOẶC NHẬP LINK -->
                     <div class="form-section">
-                        <div class="section-label"><i class="fa-solid fa-image" style="color:#7c3aed;font-size:.8rem;"></i> Hình ảnh</div>
-                        <div class="fm-label">Đường Dẫn Ảnh Sản Phẩm</div>
-                        <input type="text" name="image" class="fm-input form-control"
-                               placeholder="assets/images/products/ten-anh.png"
-                               value="<?= htmlspecialchars($editingProduct['image'] ?? 'assets/images/products/iphone-16-promax.png') ?>">
+                        <div class="section-label"><i class="fa-solid fa-image" style="color:#7c3aed;font-size:.8rem;"></i> Hình ảnh sản phẩm</div>
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-3 text-center">
+                                <div class="p-2 border rounded-4 bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 100px; height: 100px;">
+                                    <img id="productImagePreview" src="../<?= htmlspecialchars($editingProduct['image'] ?? 'assets/images/products/iphone-16-promax.png') ?>" alt="Preview" style="max-width: 86px; max-height: 86px; object-fit: contain;">
+                                </div>
+                                <small class="text-muted d-block mt-1" style="font-size: 0.72rem;">Ảnh đại diện</small>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="mb-2">
+                                    <label class="fm-label d-flex align-items-center justify-content-between">
+                                        <span>Tải Ảnh Từ Máy Tính <span class="badge bg-primary bg-opacity-10 text-primary small">Upload File</span></span>
+                                        <small class="text-muted">JPG, PNG, WEBP, GIF tối đa 10MB</small>
+                                    </label>
+                                    <input type="file" name="image_file" class="form-control" accept="image/*" onchange="previewUploadedImage(this)">
+                                </div>
+                                <div>
+                                    <label class="fm-label">Hoặc nhập đường dẫn ảnh nội bộ / URL:</label>
+                                    <input type="text" name="image" id="productImagePath" class="fm-input form-control"
+                                           placeholder="assets/images/products/ten-anh.png"
+                                           value="<?= htmlspecialchars($editingProduct['image'] ?? 'assets/images/products/iphone-16-promax.png') ?>"
+                                           oninput="previewPathImage(this.value)">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="form-section">
@@ -594,6 +734,32 @@ function filterAdminProducts() {
 </div>
 
 <script>
+// Xem trước ảnh khi người dùng chọn file từ máy
+function previewUploadedImage(input) {
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('productImagePreview').src = e.target.result;
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+// Xem trước ảnh khi người dùng gõ đường dẫn URL
+function previewPathImage(path) {
+    if (path.trim() !== '') {
+        const fullSrc = path.startsWith('http') ? path : '../' + path;
+        document.getElementById('productImagePreview').src = fullSrc;
+    }
+}
+
+function resetProductModal() {
+    // Nếu bấm thêm mới thì reload sạch form nếu trước đó đang sửa
+    <?php if ($editingProduct): ?>
+    window.location.href = 'products.php';
+    <?php endif; ?>
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const colorsInput = document.getElementById('productColors');
     const quantitiesContainer = document.getElementById('colorQuantities');

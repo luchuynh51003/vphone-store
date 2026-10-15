@@ -8,16 +8,19 @@ $brands = $brandStmt->fetchAll();
 $brandId = isset($_GET['brand_id']) ? (int)$_GET['brand_id'] : 0;
 $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 
-try {
-    $col1 = $pdo->query("SHOW COLUMNS FROM products LIKE 'is_used'")->fetch();
-    if (!$col1) {
-        $pdo->exec('ALTER TABLE products ADD COLUMN is_used TINYINT(1) DEFAULT 0');
-    }
-    $col2 = $pdo->query("SHOW COLUMNS FROM products LIKE 'condition_desc'")->fetch();
-    if (!$col2) {
-        $pdo->exec("ALTER TABLE products ADD COLUMN condition_desc VARCHAR(255) DEFAULT 'Đẹp 99%'");
-    }
-} catch (Exception $e) {}
+if (empty($_SESSION['col_used_phones_verified'])) {
+    try {
+        $col1 = $pdo->query("SHOW COLUMNS FROM products LIKE 'is_used'")->fetch();
+        if (!$col1) {
+            $pdo->exec('ALTER TABLE products ADD COLUMN is_used TINYINT(1) DEFAULT 0');
+        }
+        $col2 = $pdo->query("SHOW COLUMNS FROM products LIKE 'condition_desc'")->fetch();
+        if (!$col2) {
+            $pdo->exec("ALTER TABLE products ADD COLUMN condition_desc VARCHAR(255) DEFAULT 'Đẹp 99%'");
+        }
+        $_SESSION['col_used_phones_verified'] = true;
+    } catch (Exception $e) {}
+}
 
 $sql = "SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id WHERE p.is_used = 1";
 $params = [];

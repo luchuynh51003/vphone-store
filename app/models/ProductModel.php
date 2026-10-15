@@ -4,29 +4,31 @@ class ProductModel {
     public function __construct(PDO $pdo) { $this->pdo = $pdo; }
 
     public function ensureStorageOptionsColumn(): void {
-        static $checked = false;
-        if ($checked) {
+        if (!empty($_SESSION['col_storage_options_verified'])) {
             return;
         }
 
-        $column = $this->pdo->query("SHOW COLUMNS FROM products LIKE 'storage_options'")->fetch();
-        if (!$column) {
-            $this->pdo->exec('ALTER TABLE products ADD COLUMN storage_options LONGTEXT NULL');
-        }
-        $checked = true;
+        try {
+            $column = $this->pdo->query("SHOW COLUMNS FROM products LIKE 'storage_options'")->fetch();
+            if (!$column) {
+                $this->pdo->exec('ALTER TABLE products ADD COLUMN storage_options LONGTEXT NULL');
+            }
+            $_SESSION['col_storage_options_verified'] = true;
+        } catch (\Throwable $e) {}
     }
 
     public function ensureColorQuantitiesColumn(): void {
-        static $checked = false;
-        if ($checked) {
+        if (!empty($_SESSION['col_color_quantities_verified'])) {
             return;
         }
 
-        $column = $this->pdo->query("SHOW COLUMNS FROM products LIKE 'color_quantities'")->fetch();
-        if (!$column) {
-            $this->pdo->exec('ALTER TABLE products ADD COLUMN color_quantities LONGTEXT NULL');
-        }
-        $checked = true;
+        try {
+            $column = $this->pdo->query("SHOW COLUMNS FROM products LIKE 'color_quantities'")->fetch();
+            if (!$column) {
+                $this->pdo->exec('ALTER TABLE products ADD COLUMN color_quantities LONGTEXT NULL');
+            }
+            $_SESSION['col_color_quantities_verified'] = true;
+        } catch (\Throwable $e) {}
     }
 
     public function getAll(int $brandId = 0, string $keyword = ''): array {

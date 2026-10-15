@@ -152,9 +152,9 @@ function renderSidebarBrandItem(int $brandId, array $brandData): string {
     $logoFile = getBrandLogoFile($brandData['name']);
 
     $html = '<a href="index.php?brand_id=' . $brandId . '" class="list-group-item list-group-item-action sidebar-brand-link d-flex align-items-center py-2 px-3 gap-3 border-0 border-bottom" data-brand-id="' . $brandId . '">';
-    $html .= '<span class="sidebar-brand-badge">';
+    $html .= '<span class="sidebar-brand-badge" style="width:46px; height:32px; flex-shrink:0; overflow:hidden; display:inline-flex; align-items:center; justify-content:center;">';
     if (!empty($logoFile)) {
-        $html .= '<img src="' . htmlspecialchars($logoFile) . '" alt="' . htmlspecialchars($brandData['name']) . '" class="sidebar-brand-logo sidebar-logo-' . $meta['slug'] . '">';
+        $html .= '<img src="' . htmlspecialchars($logoFile) . '" alt="' . htmlspecialchars($brandData['name']) . '" class="sidebar-brand-logo sidebar-logo-' . $meta['slug'] . '" style="max-width:38px; max-height:22px; width:auto; height:auto; object-fit:contain; display:block;">';
     } else {
         $html .= '<i class="fa-solid fa-mobile text-primary"></i>';
     }

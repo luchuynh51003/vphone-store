@@ -180,6 +180,11 @@ require_once 'app/views/includes/navbar.php';
                         <li><i class="fa-solid fa-circle-check text-success me-1"></i> Miễn phí giao hàng hỏa tốc trong 2 giờ nội thành.</li>
                         <li><i class="fa-solid fa-circle-check text-success me-1"></i> Trợ giá thu cũ đổi mới lên đến <strong>2.000.000đ</strong>.</li>
                     </ul>
+                    <div class="mt-2 pt-2 border-top">
+                        <a href="index.php?page=warranty" target="_blank" class="small text-primary text-decoration-none fw-semibold d-inline-flex align-items-center">
+                            <i class="fa-solid fa-shield-halved me-1"></i> Xem chi tiết chính sách bảo hành & đổi trả <i class="fa-solid fa-arrow-right ms-1" style="font-size:10px;"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -265,8 +270,11 @@ require_once 'app/views/includes/navbar.php';
                     </div>
                 </div>
 
-                <div class="mt-4 pt-3 border-top text-center text-secondary small">
-                    Hotline tư vấn kỹ thuật miễn phí: <strong class="text-primary fs-6">1800 6868</strong>
+                <div class="mt-4 pt-3 border-top d-flex flex-wrap justify-content-between align-items-center text-secondary small gap-2">
+                    <div>Hotline hỗ trợ kỹ thuật: <strong class="text-primary fs-6">1800 6868</strong></div>
+                    <a href="index.php?page=warranty" target="_blank" class="text-primary text-decoration-none fw-semibold">
+                        <i class="fa-solid fa-shield-halved me-1"></i>Chính sách bảo hành &rarr;
+                    </a>
                 </div>
             </div>
         </div>
@@ -306,11 +314,16 @@ function selectDetailColor(btn, colorName) {
     const img = document.getElementById('detailMainImg');
     const newSrc = resolveColorImage(colorName);
 
+    img.style.transition = 'opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)';
     img.style.opacity = '0.2';
+    img.style.transform = 'scale(0.96)';
     setTimeout(() => {
         img.src = newSrc;
-        img.style.opacity = '1';
-    }, 120);
+        img.onload = () => {
+            img.style.opacity = '1';
+            img.style.transform = 'scale(1)';
+        };
+    }, 100);
 }
 
 function selectDetailRom(btn, romName, extra) {
@@ -347,18 +360,22 @@ function addToCartFromDetail(btn, productId) {
             btn.innerHTML = origHtml;
         }
         if (data.success === false) {
-            alert(data.message || 'Không thể thêm vào giỏ hàng!');
+            if (typeof window.showVPhoneToast === 'function') {
+                window.showVPhoneToast(data.message || 'Không thể thêm vào giỏ hàng!', false);
+            } else {
+                alert(data.message || 'Không thể thêm vào giỏ hàng!');
+            }
             return;
         }
         const badge = document.getElementById('cartBadge');
-        if (badge) badge.innerText = data.cart_count;
-        const toast = document.getElementById('vphoneLiveToast');
-        const toastText = document.getElementById('vphoneToastText');
-        if (toast && toastText) {
-            toastText.innerText = `Đã thêm vào giỏ: Màu ${currentSelectedColor} (${currentSelectedRom})`;
-            toast.style.display = 'block';
-            clearTimeout(window.toastTimer);
-            window.toastTimer = setTimeout(() => toast.style.display = 'none', 3500);
+        if (badge) {
+            badge.innerText = data.cart_count;
+            badge.classList.remove('badge-bounce');
+            void badge.offsetWidth;
+            badge.classList.add('badge-bounce');
+        }
+        if (typeof window.showVPhoneToast === 'function') {
+            window.showVPhoneToast(`Đã thêm vào giỏ: Màu ${currentSelectedColor} (${currentSelectedRom})`, true);
         }
     }).catch(() => {
         if (btn) {

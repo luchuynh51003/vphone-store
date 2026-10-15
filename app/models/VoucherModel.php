@@ -7,6 +7,10 @@ class VoucherModel {
     }
 
     public function ensureTable(): void {
+        if (!empty($_SESSION['voucher_table_verified'])) {
+            return;
+        }
+
         $this->pdo->exec("CREATE TABLE IF NOT EXISTS vouchers (
             id INT AUTO_INCREMENT PRIMARY KEY,
             code VARCHAR(40) NOT NULL UNIQUE,
@@ -39,6 +43,8 @@ class VoucherModel {
         foreach ($vouchers as $voucher) {
             $seed->execute($voucher);
         }
+
+        $_SESSION['voucher_table_verified'] = true;
     }
 
     public function findApplicable(string $code, int $subtotal): ?array {

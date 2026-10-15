@@ -87,16 +87,20 @@ $brands = $pdo->query('SELECT b.id, b.name, COUNT(p.id) AS product_count FROM br
     </div>
     <div class="col-lg-8">
         <div class="admin-table-card">
-            <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+            <div class="p-3.5 px-4 border-bottom bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
                 <div>
                     <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
                         <i class="fa-solid fa-layer-group text-primary"></i> Danh Sách Hãng Sản Xuất
                     </h5>
-                    <small class="text-secondary">Tổng cộng <?= count($brands) ?> thương hiệu trong hệ thống</small>
+                    <small class="text-secondary">Tổng cộng <?= count($brands) ?> thương hiệu trong hệ thống V-Phone</small>
+                </div>
+                <div class="input-group input-group-sm" style="width: 200px;">
+                    <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                    <input type="text" id="brandSearch" class="form-control border-start-0 bg-light" placeholder="Tìm tên hãng..." onkeyup="filterBrandsTable()">
                 </div>
             </div>
             <div class="table-responsive">
-                <table class="table admin-table align-middle mb-0">
+                <table class="table admin-table align-middle mb-0" id="brandsTable">
                     <thead>
                         <tr>
                             <th>Tên Thương Hiệu</th>
@@ -106,7 +110,7 @@ $brands = $pdo->query('SELECT b.id, b.name, COUNT(p.id) AS product_count FROM br
                     </thead>
                     <tbody>
                         <?php foreach ($brands as $brand): ?>
-                            <tr>
+                            <tr class="brand-row" data-search="<?= htmlspecialchars(mb_strtolower($brand['name'], 'UTF-8')) ?>">
                                 <td>
                                     <span class="badge badge-soft-primary rounded-pill px-3 py-2 fw-bold fs-6">
                                         <?= htmlspecialchars($brand['name']) ?>
@@ -137,5 +141,19 @@ $brands = $pdo->query('SELECT b.id, b.name, COUNT(p.id) AS product_count FROM br
         </div>
     </div>
 </div>
+
+<script>
+function filterBrandsTable() {
+    const q = document.getElementById('brandSearch').value.toLowerCase().trim();
+    document.querySelectorAll('.brand-row').forEach(row => {
+        const text = row.getAttribute('data-search') || '';
+        if (!q || text.includes(q)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

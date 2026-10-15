@@ -38,10 +38,13 @@ $paymentMethod = $paymentMethod ?? 'COD';
 $checkoutError = $checkoutError ?? '';
 $pageTitle = $pageTitle ?? 'Thanh toán đơn hàng - V-Phone Store';
 
+$userAddresses = $userAddresses ?? [];
+$defaultAddress = $defaultAddress ?? null;
+
 $formDraft = $_SESSION['checkout_form_draft'] ?? [];
-$deliveryName = $formDraft['fullname'] ?? ($currentUser['fullname'] ?? '');
-$deliveryPhone = $formDraft['phone'] ?? ($currentUser['phone'] ?? '');
-$deliveryAddress = $formDraft['address'] ?? ($currentUser['address'] ?? '');
+$deliveryName = $formDraft['fullname'] ?? ($defaultAddress['recipient_name'] ?? ($currentUser['fullname'] ?? ''));
+$deliveryPhone = $formDraft['phone'] ?? ($defaultAddress['phone'] ?? ($currentUser['phone'] ?? ''));
+$deliveryAddress = $formDraft['address'] ?? ($defaultAddress['address'] ?? ($currentUser['address'] ?? ''));
 $deliveryNote = $formDraft['note'] ?? '';
 
 if (!$orderSuccess && empty($itemsToCheckout)) {
@@ -151,6 +154,38 @@ require_once 'app/views/includes/navbar.php';
                             </h5>
                             <span class="badge bg-light text-secondary border rounded-pill small">Giao tận nơi</span>
                         </div>
+
+                        <?php if (!empty($userAddresses) && count($userAddresses) > 0): ?>
+                            <div class="mb-4 p-3 bg-light rounded-4 border">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <label class="form-label small fw-bold text-dark mb-0">
+                                        <i class="fa-solid fa-address-book text-primary me-1"></i> Chọn nhanh từ sổ địa chỉ đã lưu (<?= count($userAddresses) ?>)
+                                    </label>
+                                    <a href="index.php?page=profile&tab=addresses" target="_blank" class="small text-primary text-decoration-none fw-semibold">
+                                        <i class="fa-solid fa-gear me-1"></i>Quản lý sổ địa chỉ
+                                    </a>
+                                </div>
+                                <div class="d-flex flex-column gap-2" id="savedAddressSelector">
+                                    <?php foreach ($userAddresses as $addr): ?>
+                                        <?php $isSelected = ($addr['address'] === $deliveryAddress && $addr['phone'] === $deliveryPhone); ?>
+                                        <div class="p-2 px-3 bg-white rounded-3 border d-flex align-items-start gap-2 saved-addr-item <?= $isSelected ? 'border-primary bg-primary bg-opacity-10' : '' ?>" style="cursor: pointer;" onclick="selectSavedAddress(<?= htmlspecialchars(json_encode($addr), ENT_QUOTES, 'UTF-8') ?>)">
+                                            <input class="form-check-input mt-1" type="radio" name="selected_saved_address" id="addr_radio_<?= $addr['id'] ?>" <?= $isSelected ? 'checked' : '' ?>>
+                                            <label class="form-check-label w-100" for="addr_radio_<?= $addr['id'] ?>" style="cursor: pointer;">
+                                                <div class="d-flex align-items-center gap-2 mb-1">
+                                                    <span class="fw-bold text-dark small"><?= htmlspecialchars($addr['recipient_name']) ?></span>
+                                                    <span class="text-secondary small">| <?= htmlspecialchars($addr['phone']) ?></span>
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-2 py-0 small" style="font-size:0.68rem;"><?= htmlspecialchars($addr['label'] ?? 'Nhà riêng') ?></span>
+                                                    <?php if ($addr['is_default'] == 1): ?>
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0 small ms-auto" style="font-size:0.68rem;">Mặc định</span>
+                                                    <?php endif; ?>
+                                                </div>
+                                                <div class="small text-muted"><?= htmlspecialchars($addr['address']) ?></div>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
 
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-dark mb-1">Họ và tên người nhận <span class="text-danger">*</span></label>
@@ -478,6 +513,24 @@ function removeVoucherAjax() {
     .catch(() => {
         window.location.reload();
     });
+}
+
+function selectSavedAddress(addr) {
+    if (!addr) return;
+    const nameInp = document.getElementById('customerFullname');
+    const phoneInp = document.getElementById('customerPhone');
+    const addrInp = document.getElementById('customerAddress');
+    if (nameInp && addr.recipient_name) nameInp.value = addr.recipient_name;
+    if (phoneInp && addr.phone) phoneInp.value = addr.phone;
+    if (addrInp && addr.address) addrInp.value = addr.address;
+
+    document.querySelectorAll('.saved-addr-item').forEach(el => el.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10'));
+    const radio = document.getElementById('addr_radio_' + addr.id);
+    if (radio) {
+        radio.checked = true;
+        const container = radio.closest('.saved-addr-item');
+        if (container) container.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+    }
 }
 </script>
 

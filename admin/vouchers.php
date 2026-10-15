@@ -1,5 +1,5 @@
 <?php
-require_once '../app/models/VoucherModel.php';
+require_once __DIR__ . '/../app/models/VoucherModel.php';
 require_once __DIR__ . '/../config/database.php';
 
 $pageTitle = 'Quản Lý Voucher - V-Phone Admin';
@@ -141,16 +141,20 @@ $vouchers = $pdo->query('SELECT * FROM vouchers ORDER BY id DESC')->fetchAll();
 </section>
 
 <div class="admin-table-card">
-    <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+    <div class="p-3.5 px-4 border-bottom bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div>
             <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
                 <i class="fa-solid fa-ticket-simple text-primary"></i> Danh Sách Mã Khuyến Mãi
             </h5>
             <small class="text-secondary">Tổng cộng <?= count($vouchers) ?> mã trong cơ sở dữ liệu</small>
         </div>
+        <div class="input-group input-group-sm" style="width: 250px;">
+            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+            <input type="text" id="voucherSearch" class="form-control border-start-0 bg-light" placeholder="Tìm theo mã voucher..." onkeyup="filterVouchersTable()">
+        </div>
     </div>
     <div class="table-responsive">
-        <table class="table admin-table align-middle mb-0">
+        <table class="table admin-table align-middle mb-0" id="vouchersTable">
             <thead>
                 <tr>
                     <th>Mã Voucher</th>
@@ -164,11 +168,16 @@ $vouchers = $pdo->query('SELECT * FROM vouchers ORDER BY id DESC')->fetchAll();
             </thead>
             <tbody>
                 <?php foreach ($vouchers as $voucher): ?>
-                    <tr>
+                    <tr class="voucher-row" data-search="<?= htmlspecialchars(mb_strtolower($voucher['code'], 'UTF-8')) ?>">
                         <td>
-                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fw-bold font-monospace fs-6">
-                                <?= htmlspecialchars($voucher['code']) ?>
-                            </span>
+                            <div class="d-inline-flex align-items-center gap-1">
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fw-bold font-monospace fs-6">
+                                    <?= htmlspecialchars($voucher['code']) ?>
+                                </span>
+                                <button type="button" class="btn btn-sm btn-light border rounded-circle" style="width: 28px; height: 28px; padding: 0;" onclick="copyVoucherCode('<?= htmlspecialchars($voucher['code']) ?>', this)" title="Sao chép mã">
+                                    <i class="fa-regular fa-copy small text-secondary"></i>
+                                </button>
+                            </div>
                         </td>
                         <td>
                             <div class="fw-bold text-danger fs-6">
@@ -210,5 +219,31 @@ $vouchers = $pdo->query('SELECT * FROM vouchers ORDER BY id DESC')->fetchAll();
         </table>
     </div>
 </div>
+
+<script>
+function filterVouchersTable() {
+    const q = document.getElementById('voucherSearch').value.toLowerCase().trim();
+    document.querySelectorAll('.voucher-row').forEach(row => {
+        const text = row.getAttribute('data-search') || '';
+        if (!q || text.includes(q)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function copyVoucherCode(code, btn) {
+    navigator.clipboard.writeText(code).then(() => {
+        const origHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check text-success small"></i>';
+        setTimeout(() => {
+            btn.innerHTML = origHtml;
+        }, 1500);
+    }).catch(err => {
+        prompt('Mã voucher của bạn:', code);
+    });
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

@@ -15,7 +15,8 @@ if (!empty($_GET['email']) && !empty($_GET['password'])) {
         $_SESSION['user'] = [
             'id' => (int)$user['id'], 'fullname' => $user['fullname'],
             'email' => $user['email'], 'phone' => $user['phone'] ?? '',
-            'address' => $user['address'] ?? '', 'role' => (int)$user['role']
+            'address' => $user['address'] ?? '', 'avatar' => $user['avatar'] ?? '',
+            'role' => (int)$user['role']
         ];
         if ($user['role'] == 1) { header("Location: admin/index.php"); }
         else { header("Location: index.php"); }
@@ -49,6 +50,18 @@ switch ($page) {
         (new ProductController($pdo))->news();
         break;
 
+    case 'warranty':
+    case 'chinh-sach-bao-hanh':
+    case 'bao-hanh':
+        require_once 'app/controllers/HomeController.php';
+        (new HomeController($pdo))->warranty();
+        break;
+
+    case 'warranty-claim':
+        require_once 'app/controllers/HomeController.php';
+        (new HomeController($pdo))->submitClaim();
+        break;
+
     case 'cart':
         require_once 'app/controllers/CartController.php';
         (new CartController($pdo))->index();
@@ -63,6 +76,12 @@ switch ($page) {
     case 'tracking':
         require_once 'app/controllers/OrderController.php';
         (new OrderController($pdo))->index();
+        break;
+
+    case 'profile':
+    case 'account':
+        require_once 'app/controllers/ProfileController.php';
+        (new ProfileController($pdo))->index();
         break;
 
     case 'auth':

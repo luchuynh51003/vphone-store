@@ -11,13 +11,27 @@ DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS vouchers;
 DROP TABLE IF EXISTS articles;
 DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS user_addresses;
 DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS brands;
 SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE brands (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50) NOT NULL);
 
-CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, fullname VARCHAR(100) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone VARCHAR(20), address VARCHAR(255), password VARCHAR(255) NOT NULL, role TINYINT DEFAULT 0, cart_data LONGTEXT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, fullname VARCHAR(100) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, phone VARCHAR(20), address VARCHAR(255), avatar VARCHAR(255) NULL, password VARCHAR(255) NOT NULL, role TINYINT DEFAULT 0, cart_data LONGTEXT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+
+CREATE TABLE user_addresses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    recipient_name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    label VARCHAR(50) DEFAULT 'Nhà riêng',
+    is_default TINYINT(1) DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
 
 CREATE TABLE products (id INT AUTO_INCREMENT PRIMARY KEY, brand_id INT, name VARCHAR(150) NOT NULL, price DECIMAL(12,0) NOT NULL, sale_price DECIMAL(12,0) DEFAULT 0, image VARCHAR(255) NOT NULL, screen VARCHAR(60), cpu VARCHAR(100), ram VARCHAR(20), rom VARCHAR(20), battery VARCHAR(50), quantity INT DEFAULT 20, is_featured TINYINT(1) DEFAULT 0, is_used TINYINT(1) DEFAULT 0, condition_desc VARCHAR(100) DEFAULT 'Mới 100%', colors VARCHAR(255) DEFAULT 'Đen, Trắng', storage_options LONGTEXT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE SET NULL);
 
@@ -129,4 +143,27 @@ INSERT INTO products (id, brand_id, name, price, sale_price, image, screen, cpu,
 (58, 2, '[Cũ 99%] Samsung Galaxy Z Fold5 5G', 32990000, 21990000, 'assets/images/products/samsung-z-fold5.jpg', '7.6" Gập', 'Snapdragon 8 Gen 2', '12 GB', '256 GB', '4400 mAh', 3, 0, 1, 'Bản gập nguyên zin 99%', '2026-09-25 08:55:29', 'Xanh Icy Blue, Đen Phantom');
 
 INSERT INTO users (id, fullname, email, phone, address, password, role) VALUES (1, 'Võ Minh Hiếu', 'hieu@vphone.vn', '0901234567', 'Quận 1, TP.HCM', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 0), (2, 'Huỳnh Bá Lực', 'luc@vphone.vn', '0909888999', 'Quận 7, TP.HCM', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 0), (3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', '18006868', 'Trụ sở V-Phone', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 1);
+
+CREATE TABLE IF NOT EXISTS warranty_claims (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    order_id INT NOT NULL,
+    detail_id INT NULL,
+    product_id INT NULL,
+    product_name VARCHAR(255) NOT NULL,
+    imei VARCHAR(50) NOT NULL,
+    customer_name VARCHAR(150) NOT NULL,
+    customer_phone VARCHAR(20) NOT NULL,
+    issue_type VARCHAR(100) NOT NULL,
+    issue_description TEXT NULL,
+    claim_method VARCHAR(50) DEFAULT 'store',
+    status VARCHAR(50) DEFAULT 'Chờ tiếp nhận',
+    admin_note TEXT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_user_id (user_id),
+    INDEX idx_order_id (order_id),
+    INDEX idx_imei (imei),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

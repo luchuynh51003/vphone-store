@@ -1,12 +1,12 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
-require_once '../app/models/ArticleModel.php';
+require_once __DIR__ . '/../app/models/ArticleModel.php';
 
 $pageTitle = 'Quản Lý Tin Tức - V-Phone Admin';
 require_once 'includes/header.php';
 
 $articleModel = new ArticleModel($pdo);
-$defaults = require '../app/data/news_defaults.php';
+$defaults = require __DIR__ . '/../app/data/news_defaults.php';
 $articleModel->ensureTable($defaults);
 $message = '';
 $editId = (int)($_GET['edit_id'] ?? 0);
@@ -141,16 +141,20 @@ $articles = $pdo->query('SELECT * FROM articles ORDER BY id DESC')->fetchAll();
 </section>
 
 <div class="admin-table-card">
-    <div class="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+    <div class="p-3.5 px-4 border-bottom bg-white d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div>
             <h5 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
                 <i class="fa-solid fa-newspaper text-primary"></i> Danh Sách Bài Viết Đã Đăng
             </h5>
-            <small class="text-secondary">Tổng cộng <?= count($articles) ?> bài viết trong hệ thống</small>
+            <small class="text-secondary">Tổng cộng <?= count($articles) ?> bài viết trong hệ thống V-Phone</small>
+        </div>
+        <div class="input-group input-group-sm" style="width: 250px;">
+            <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+            <input type="text" id="newsSearch" class="form-control border-start-0 bg-light" placeholder="Tìm tiêu đề, nhãn tin tức..." onkeyup="filterNewsTable()">
         </div>
     </div>
     <div class="table-responsive">
-        <table class="table admin-table align-middle mb-0">
+        <table class="table admin-table align-middle mb-0" id="newsTable">
             <thead>
                 <tr>
                     <th>Bài viết</th>
@@ -162,7 +166,7 @@ $articles = $pdo->query('SELECT * FROM articles ORDER BY id DESC')->fetchAll();
             </thead>
             <tbody>
                 <?php foreach ($articles as $article): ?>
-                    <tr>
+                    <tr class="news-row" data-search="<?= htmlspecialchars(mb_strtolower($article['title'] . ' ' . $article['badge'], 'UTF-8')) ?>">
                         <td>
                             <div class="fw-semibold text-dark fs-6"><?= htmlspecialchars($article['title']) ?></div>
                             <small class="text-muted"><i class="fa-regular fa-clock me-1"></i><?= htmlspecialchars($article['read_time']) ?></small>
@@ -194,5 +198,19 @@ $articles = $pdo->query('SELECT * FROM articles ORDER BY id DESC')->fetchAll();
         </table>
     </div>
 </div>
+
+<script>
+function filterNewsTable() {
+    const q = document.getElementById('newsSearch').value.toLowerCase().trim();
+    document.querySelectorAll('.news-row').forEach(row => {
+        const text = row.getAttribute('data-search') || '';
+        if (!q || text.includes(q)) {
+            row.style.display = '';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+</script>
 
 <?php require_once 'includes/footer.php'; ?>

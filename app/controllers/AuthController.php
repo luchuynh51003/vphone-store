@@ -25,7 +25,8 @@ class AuthController {
             $_SESSION['user'] = [
                 'id' => (int)$user['id'], 'fullname' => $user['fullname'],
                 'email' => $user['email'], 'phone' => $user['phone'],
-                'address' => $user['address'], 'role' => (int)$user['role']
+                'address' => $user['address'], 'avatar' => $user['avatar'] ?? '',
+                'role' => (int)$user['role']
             ];
             if (!empty($user['cart_data'])) { $_SESSION['cart'] = json_decode($user['cart_data'], true) ?: []; }
             $redirect = $_SESSION['post_login_redirect'] ?? null;
@@ -56,7 +57,7 @@ class AuthController {
             exit;
         }
         $newId = $userModel->create($fullname, $email, $phone, $password, 0);
-        $_SESSION['user'] = ['id' => $newId, 'fullname' => $fullname, 'email' => $email, 'phone' => $phone, 'role' => 0];
+        $_SESSION['user'] = ['id' => $newId, 'fullname' => $fullname, 'email' => $email, 'phone' => $phone, 'address' => 'Chưa cập nhật', 'avatar' => '', 'role' => 0];
         $redirect = $_SESSION['post_login_redirect'] ?? null;
         unset($_SESSION['post_login_redirect']);
         echo json_encode(['success' => true, 'message' => 'Đăng ký thành công!', 'redirect' => $redirect]);

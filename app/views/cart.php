@@ -151,7 +151,7 @@ require_once 'app/views/includes/navbar.php';
                 <div class="bg-white rounded-4 p-3 border shadow-sm">
                     <div class="d-flex align-items-center gap-3 mb-2">
                         <i class="fa-solid fa-shield-halved text-primary fs-4"></i>
-                        <small class="text-secondary"><strong>Bảo hành chính hãng 12 tháng</strong> cam kết 1 đổi 1 trong 30 ngày.</small>
+                        <small class="text-secondary"><a href="index.php?page=warranty" class="text-decoration-none text-secondary"><strong>Bảo hành chính hãng 12 tháng</strong> cam kết 1 đổi 1 trong 30 ngày <i class="fa-solid fa-arrow-up-right-from-square small text-primary ms-1"></i></a></small>
                     </div>
                     <div class="d-flex align-items-center gap-3">
                         <i class="fa-solid fa-truck-fast text-success fs-4"></i>
@@ -190,7 +190,10 @@ function adjustCartQuantity(btn, delta) {
     const newVal = parseInt(input.value || 1, 10) + delta;
     if (newVal >= 1 && newVal <= 99) {
         input.value = newVal;
-        btn.form.submit();
+        if (btn.form) {
+            btn.disabled = true;
+            btn.form.submit();
+        }
     }
 }
 
