@@ -526,15 +526,15 @@ function getJsColorHex(name) {
     const c = (name || '').toLowerCase();
     if (c.includes('cam') || c.includes('orange') || c.includes('ánh dương') || c.includes('hoàng hôn')) return '#ea580c';
     if (c.includes('matcha')) return '#65a30d';
-    if (c.includes('mòng két') || c.includes('teal')) return '#0d9488';
-    if (c.includes('lục bảo') || c.includes('ngọc bích') || c.includes('sơn lâm') || c.includes('jade') || c.includes('rêu') || c.includes('botanic') || c.includes('xanh lục')) return '#059669';
+    if (c.includes('mòng két') || c.includes('teal') || c.includes('mint')) return '#0d9488';
+    if (c.includes('lục bảo') || c.includes('ngọc bích') || c.includes('sơn lâm') || c.includes('jade') || c.includes('rêu') || c.includes('botanic') || c.includes('xanh lục') || c.includes('xanh lá')) return '#059669';
     if (c.includes('lưu ly') || c.includes('navy') || c.includes('xanh đậm') || c.includes('deep blue')) return '#1e3a8a';
     if (c.includes('sa mạc') || c.includes('vàng') || c.includes('gold') || c.includes('amber') || c.includes('cá tính') || c.includes('lemon') || c.includes('biển cát') || c.includes('solar') || c.includes('hoàng kim')) return '#f59e0b';
     if (c.includes('hồng') || c.includes('pink') || c.includes('rosé') || c.includes('ngọc trai') || c.includes('rose') || c.includes('phấn')) return '#f472b6';
     if (c.includes('tím') || c.includes('purple') || c.includes('lilac') || c.includes('cobalt') || c.includes('coral') || c.includes('cực quang')) return '#8b5cf6';
     if (c.includes('kem') || c.includes('ivory') || c.includes('cotton')) return '#f5f0e1';
     if (c.includes('trời đêm') || c.includes('midnight')) return '#1e293b';
-    if (c.includes('xanh') || c.includes('blue') || c.includes('sky') || c.includes('icy') || c.includes('topaz') || c.includes('iceblue') || c.includes('lạc quan') || c.includes('đại dương') || c.includes('tinh tú') || c.includes('maya') || c.includes('mint') || c.includes('glacier')) return '#38bdf8';
+    if (c.includes('xanh') || c.includes('blue') || c.includes('sky') || c.includes('icy') || c.includes('topaz') || c.includes('iceblue') || c.includes('lạc quan') || c.includes('đại dương') || c.includes('tinh tú') || c.includes('maya') || c.includes('glacier')) return '#38bdf8';
     if (c.includes('đen') || c.includes('black') || c.includes('phantom') || c.includes('space') || c.includes('obsidian') || c.includes('graphite') || c.includes('huyền vũ') || c.includes('bóng đêm') || c.includes('đá') || c.includes('bản lĩnh') || c.includes('kính') || c.includes('da thuần') || c.includes('không gian') || c.includes('cổ điển') || c.includes('vũ trụ')) return '#1e293b';
     if (c.includes('trắng') || c.includes('white') || c.includes('bạc') || c.includes('silver') || c.includes('tự nhiên') || c.includes('porcelain') || c.includes('sứ') || c.includes('xỉu') || c.includes('ngân hà') || c.includes('ánh sao') || c.includes('starlight') || c.includes('da gốm') || c.includes('bach kim') || c.includes('bạch kim')) return '#e2e8f0';
     if (c.includes('xám') || c.includes('gray') || c.includes('grey') || c.includes('metal') || c.includes('marble') || c.includes('opal') || c.includes('hazel') || c.includes('titan')) return '#94a3b8';

@@ -28,7 +28,7 @@ function getAllProductColorMap(): array {
     "Đen": "assets/images/products/iphone-18.png"
   },
   "5": {
-    "Đen Phantom": "assets/images/products/samsung-tri-fold-den-phantom.png"
+    "Đen Phantom": "assets/images/products/samsung-tri-fold.png"
   },
   "6": {
     "Tím Cobalt": "assets/images/products/samsung-s26-ultra-tim-cobalt.png",
@@ -47,27 +47,34 @@ function getAllProductColorMap(): array {
     "Đen": "assets/images/products/oppo-find-n5.png"
   },
   "10": {
-    "Titan Tự Nhiên": "assets/images/products/iphone-17-promax-titan-tu-nhien.png",
+    "Bạc": "assets/images/products/iphone-17-promax-bac.png",
+    "Cam": "assets/images/products/iphone-17-promax-cam.png",
+    "Xanh": "assets/images/products/iphone-17-promax-xanh.png",
     "Titan Đen": "assets/images/products/iphone-17-promax-titan-den.png",
     "Titan Bạc": "assets/images/products/iphone-17-promax-titan-bac.png",
-    "Bạc": "assets/images/products/iphone-17-promax.png"
+    "Titan Tự Nhiên": "assets/images/products/iphone-17-promax-titan-tu-nhien.png"
   },
   "11": {
-    "Titan Tự Nhiên": "assets/images/products/iphone-17-pro-titan-tu-nhien.png",
+    "Bạc": "assets/images/products/iphone-17-pro-bac.png",
+    "Cam": "assets/images/products/iphone-17-pro-cam.png",
+    "Xanh": "assets/images/products/iphone-17-pro-xanh.png",
     "Titan Đen": "assets/images/products/iphone-17-pro-titan-den.png",
     "Titan Bạc": "assets/images/products/iphone-17-pro-titan-bac.png",
-    "Bạc": "assets/images/products/iphone-17-pro.png"
+    "Titan Tự Nhiên": "assets/images/products/iphone-17-pro-titan-tu-nhien.png"
   },
   "12": {
-    "Bạc Ánh Kim": "assets/images/products/iphone-17-air.png",
-    "Xanh Băng": "assets/images/products/iphone-17-air.png",
-    "Đen": "assets/images/products/iphone-17-air.png"
+    "Đen": "assets/images/products/iphone-17-air-den.png",
+    "Trắng": "assets/images/products/iphone-17-air-trang.png",
+    "Xanh": "assets/images/products/iphone-17-air-xanh.png",
+    "Bạc Ánh Kim": "assets/images/products/iphone-17-air-trang.png",
+    "Xanh Băng": "assets/images/products/iphone-17-air-xanh.png"
   },
   "13": {
-    "Xanh": "assets/images/products/iphone-17.png",
-    "Hồng": "assets/images/products/iphone-17.png",
-    "Trắng": "assets/images/products/iphone-17.png",
-    "Đen": "assets/images/products/iphone-17.png"
+    "Đen": "assets/images/products/iphone-17-den.png",
+    "Trắng": "assets/images/products/iphone-17-trang.png",
+    "Hồng": "assets/images/products/iphone-17-hong.png",
+    "Xanh": "assets/images/products/iphone-17-xanh.png",
+    "Xanh Lá": "assets/images/products/iphone-17-xanh-la.png"
   },
 
   "14": {
@@ -87,14 +94,20 @@ function getAllProductColorMap(): array {
     "Trắng": "assets/images/products/iphone-16-plus-trang.png",
     "Hồng": "assets/images/products/iphone-16-plus-hong.png",
     "Xanh Mòng Két": "assets/images/products/iphone-16-plus-xanh-mong-ket.png",
-    "Xanh Lưu Ly": "assets/images/products/iphone-16-plus-xanh-luu-ly.png"
+    "Xanh Lưu Ly": "assets/images/products/iphone-16-plus-xanh-luu-ly.png",
+    "Bạc Ánh Kim": "assets/images/products/iphone-16-bac-anh-kim.png",
+    "Xanh Băng": "assets/images/products/iphone-16-xanh-bang.png",
+    "Xanh": "assets/images/products/iphone-16-xanh.png"
   },
   "17": {
     "Đen": "assets/images/products/iphone-16-den.png",
     "Trắng": "assets/images/products/iphone-16-trang.png",
     "Hồng": "assets/images/products/iphone-16-hong.png",
     "Xanh Mòng Két": "assets/images/products/iphone-16-xanh-mong-ket.png",
-    "Xanh Lưu Ly": "assets/images/products/iphone-16-xanh-luu-ly.png"
+    "Xanh Lưu Ly": "assets/images/products/iphone-16-xanh-luu-ly.png",
+    "Bạc Ánh Kim": "assets/images/products/iphone-16-bac-anh-kim.png",
+    "Xanh Băng": "assets/images/products/iphone-16-xanh-bang.png",
+    "Xanh": "assets/images/products/iphone-16-xanh.png"
   },
   "18": {
     "Titan Tự Nhiên": "assets/images/products/iphone-15-promax-titan-tu-nhien.png",
@@ -105,6 +118,7 @@ function getAllProductColorMap(): array {
   "19": {
     "Đen": "assets/images/products/iphone-15-den.png",
     "Xanh Lam": "assets/images/products/iphone-15-xanh-lam.png",
+    "Xanh Mint": "assets/images/products/iphone-15-xanh-mint.png",
     "Xanh Lá": "assets/images/products/iphone-15-xanh-la.png",
     "Vàng": "assets/images/products/iphone-15-vang.png",
     "Hồng": "assets/images/products/iphone-15-hong.png"

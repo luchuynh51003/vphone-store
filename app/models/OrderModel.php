@@ -90,15 +90,28 @@ class OrderModel {
 
         // 2. Tìm màu sắc từ tên biến thể
         $color = '';
-        if (preg_match('/Màu:\s*([^)]+)/u', $pName, $m)) {
+        if (preg_match('/Màu:\s*([^,)\-]+)/u', $pName, $m)) {
             $color = trim($m[1]);
         }
 
         require_once __DIR__ . '/../data/product_color_map.php';
-        if ($pId > 0 && !empty($color) && function_exists('getAllProductColorMap')) {
+        if ($pId > 0 && function_exists('getAllProductColorMap')) {
             $map = getAllProductColorMap();
-            if (isset($map[$pId][$color]) && !empty($map[$pId][$color]) && file_exists($map[$pId][$color])) {
+            if (!empty($color) && isset($map[$pId][$color]) && !empty($map[$pId][$color]) && file_exists($map[$pId][$color])) {
                 return $map[$pId][$color];
+            }
+            // Nếu không có tiền tố "Màu:", đối soát trực tiếp các màu đã khai báo của sản phẩm (ưu tiên màu tên dài/chi tiết hơn)
+            if (isset($map[$pId])) {
+                $candidateColors = array_keys($map[$pId]);
+                usort($candidateColors, function($a, $b) {
+                    return mb_strlen($b, 'UTF-8') <=> mb_strlen($a, 'UTF-8');
+                });
+                foreach ($candidateColors as $colName) {
+                    $colImg = $map[$pId][$colName];
+                    if (mb_stripos($pName, $colName, 0, 'UTF-8') !== false && file_exists($colImg)) {
+                        return $colImg;
+                    }
+                }
             }
         }
 
