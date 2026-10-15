@@ -24,7 +24,6 @@ class CartController {
             $prodModel = new ProductModel($this->pdo);
             $prod = $prodModel->getById($id);
             if ($prod) {
-                // Kiểm tra tồn kho trước khi cho thêm vào giỏ
                 if ((int)$prod['quantity'] <= 0) {
                     if ($isAjax) {
                         if (ob_get_length()) ob_clean();
@@ -41,7 +40,6 @@ class CartController {
                 $cList = array_map("trim", explode(",", $prod["colors"] ?? "Đen, Trắng"));
                 $selectedColor = !empty($color) ? $color : ($cList[0] ?? 'Tiêu chuẩn');
 
-                // Kiểm tra tồn kho của màu được chọn nếu sản phẩm có phân bổ tồn theo màu
                 $cQuantities = json_decode($prod['color_quantities'] ?? '', true);
                 if (is_array($cQuantities) && !empty($cQuantities)) {
                     foreach ($cQuantities as $cq) {
@@ -66,7 +64,6 @@ class CartController {
 
                 $cartKey = $id . '_' . $finalPrice . '_' . preg_replace('/[^a-zA-Z0-9]/', '', $selectedRom . $selectedColor);
 
-                // Kiểm tra tổng số lượng trong giỏ không vượt quá tồn kho
                 $currentQtyInCart = 0;
                 foreach ($_SESSION['cart'] as $item) {
                     if ((int)$item['id'] === $id) {
@@ -163,7 +160,6 @@ class CartController {
             $prod = $prodModel->getById((int)$_GET['id']);
 
             if ($prod) {
-                // Kiểm tra tồn kho trước khi cho mua ngay
                 if ((int)$prod['quantity'] <= 0) {
                     $_SESSION['cart_error'] = 'Sản phẩm "' . $prod['name'] . '" hiện đã hết hàng, không thể đặt mua!';
                     header('Location: index.php');
@@ -174,7 +170,6 @@ class CartController {
                 $colors = array_map('trim', explode(',', $prod['colors'] ?? 'Đen, Trắng'));
                 $color = trim($_GET['color'] ?? ($colors[0] ?? 'Tiêu chuẩn'));
 
-                // Kiểm tra tồn kho của màu được chọn
                 $cQuantities = json_decode($prod['color_quantities'] ?? '', true);
                 if (is_array($cQuantities) && !empty($cQuantities)) {
                     foreach ($cQuantities as $cq) {

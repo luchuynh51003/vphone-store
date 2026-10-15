@@ -12,10 +12,8 @@ require_once 'app/views/includes/navbar.php';
 ?>
 
 <div class="container my-4">
-    <!-- TIẾN TRÌNH ĐƠN HÀNG STEPPER CHUẨN HIỆN ĐẠI (1 2 3 KHÔNG LẶP SỐ) -->
     <div class="d-flex justify-content-center mb-4">
         <div class="checkout-stepper-wrapper">
-            <!-- Bước 1: Giỏ hàng -->
             <div class="step-badge step-active">
                 <span class="step-circle"><i class="fa-solid fa-cart-shopping"></i></span>
                 <span class="step-text">Giỏ hàng</span>
@@ -23,7 +21,6 @@ require_once 'app/views/includes/navbar.php';
 
             <div class="step-connector"></div>
 
-            <!-- Bước 2: Thanh toán -->
             <div class="step-badge step-pending">
                 <span class="step-circle">2</span>
                 <span class="step-text">Thanh toán</span>
@@ -31,7 +28,6 @@ require_once 'app/views/includes/navbar.php';
 
             <div class="step-connector"></div>
 
-            <!-- Bước 3: Hoàn tất -->
             <div class="step-badge step-pending">
                 <span class="step-circle">3</span>
                 <span class="step-text">Hoàn tất</span>
@@ -93,7 +89,6 @@ require_once 'app/views/includes/navbar.php';
                                                 </div>
                                                 <div>
                                                     <a href="index.php?page=detail&id=<?= $item['id'] ?>" class="text-decoration-none text-dark fw-bold small d-block mb-1"><?= htmlspecialchars($item['name']) ?></a>
-                                                    <!-- HIỂN THỊ CẢ BỘ NHỚ LẪN MÀU SẮC RÕ RÀNG -->
                                                     <div class="d-flex gap-1 flex-wrap">
                                                         <span class="badge bg-light text-primary border" style="font-size:0.68rem;">Dung lượng: <strong><?= htmlspecialchars($item['rom'] ?? 'Tiêu chuẩn') ?></strong></span>
                                                         <span class="badge bg-light text-dark border" style="font-size:0.68rem;"><i class="fa-solid fa-palette text-primary me-1"></i>Màu: <strong><?= htmlspecialchars($item['color'] ?? 'Tiêu chuẩn') ?></strong></span>

@@ -40,7 +40,6 @@ require_once 'app/views/includes/navbar.php';
     window.PRODUCT_COLOR_MAP = <?= json_encode(getAllProductColorMap(), JSON_UNESCAPED_UNICODE) ?>;
 </script>
 
-<!-- BANNER CAROUSEL 2026 -->
 <div class="container my-3">
     <div id="vphoneCarousel" class="carousel slide carousel-fade carousel-banner-vip shadow-lg" data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="false">
         <div class="carousel-indicators carousel-indicators-vip">
@@ -154,7 +153,6 @@ require_once 'app/views/includes/navbar.php';
     </div>
 </div>
 
-<!-- KHỐI TIỆN ÍCH DỊCH VỤ -->
 <div class="container my-4">
     <div class="row g-3">
         <div class="col-md-3 col-6">
@@ -205,7 +203,6 @@ require_once 'app/views/includes/navbar.php';
     transition: all 0.25s ease;
 }
 
-/* KHUNG BỘ LỌC THƯƠNG HIỆU CHUẨN KÍCH THƯỚC ĐỒNG BỘ */
 .brand-filter-wrapper {
     background: #ffffff;
     border: 1px solid #eef2f6;
@@ -228,7 +225,6 @@ require_once 'app/views/includes/navbar.php';
     display: none;
 }
 
-/* NÚT BỘ LỌC THƯƠNG HIỆU - CHIỀU CAO CHUẨN 40PX, CÂN ĐỐI HOÀN TOÀN */
 .btn-brand-pill {
     height: 40px;
     min-width: 86px;
@@ -264,7 +260,6 @@ require_once 'app/views/includes/navbar.php';
     box-shadow: 0 4px 14px rgba(0, 102, 204, 0.35) !important;
 }
 
-/* ĐỊNH DẠNG LOGO CÂN ĐỐI TỈ LỆ THỰC TẾ */
 .brand-pill-icon {
     height: 18px;
     width: auto;
@@ -291,7 +286,6 @@ require_once 'app/views/includes/navbar.php';
 .brand-logo-sony { max-height: 14px; max-width: 80px; }
 .brand-logo-huawei { max-height: 19px; max-width: 20px; }
 
-/* KHI ACTIVE: CHUYỂN LOGO ĐƠN SẮC SANG MÀU TRẮNG TINH TẾ */
 .btn-brand-pill.active .brand-logo-invert {
     filter: brightness(0) invert(1) !important;
 }
@@ -300,9 +294,7 @@ require_once 'app/views/includes/navbar.php';
 }
 </style>
 
-<!-- BỘ LỌC THƯƠNG HIỆU & PHÂN LOẠI (FLAGSHIP / HÀNG CŨ / HÃNG) -->
 <div class="container my-4">
-    <!-- Hàng lọc nhanh: Tất cả, Flagship 2026, Hàng Cũ 99% -->
     <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
         <span class="fw-bold text-secondary small d-none d-md-inline-flex align-items-center me-1">
             <i class="fa-solid fa-filter text-primary me-1"></i>Bộ lọc nhanh:
@@ -334,7 +326,6 @@ require_once 'app/views/includes/navbar.php';
     </div>
 </div>
 
-<!-- DANH SÁCH ĐIỆN THOẠI -->
 <div class="container" id="product-list">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0 text-dark" id="productListTitle">
@@ -362,7 +353,6 @@ require_once 'app/views/includes/navbar.php';
             <div class="col product-col-card" data-brand-id="<?= (int)$p['brand_id'] ?>" data-brand-name="<?= htmlspecialchars($p['brand_name'] ?? '') ?>" data-is-featured="<?= (int)$p['is_featured'] ?>" data-is-used="<?= (int)$p['is_used'] ?>">
                 <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
                     <div class="product-img-wrapper position-relative">
-                        <!-- NHÃN FLAGSHIP 2026 HOẶC HÀNG CŨ 99% -->
                         <?php if (!empty($p['is_used'])): ?>
                             <span class="badge badge-used-phone position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;" title="Hàng Cũ Like New 99%">
                                 <i class="fa-solid fa-recycle me-1"></i><?= htmlspecialchars(!empty($p['condition_desc']) && $p['condition_desc'] !== 'Mới 100%' ? $p['condition_desc'] : 'Máy cũ 99%') ?>
@@ -373,7 +363,6 @@ require_once 'app/views/includes/navbar.php';
                             </span>
                         <?php endif; ?>
 
-                        <!-- NHÃN GIẢM GIÁ -X% -->
                         <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
                             <?php $percent = round((($p['price'] - $p['sale_price']) / $p['price']) * 100); ?>
                             <span class="badge badge-sale-percent position-absolute top-0 start-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;">-<?= $percent ?>%</span>
@@ -391,7 +380,6 @@ require_once 'app/views/includes/navbar.php';
                             <span class="badge"><?= htmlspecialchars($p['screen']) ?></span>
                         </div>
 
-                        <!-- 1. HÀNG BỘ NHỚ SẴN CÓ ĐỂ XEM -->
                         <div class="d-flex align-items-center gap-1 my-1 flex-wrap" style="min-height: 22px;">
                             <small class="text-secondary fw-semibold" style="font-size: 0.68rem;">Bộ nhớ:</small>
                             <?php foreach ($romDisplayList as $rName): ?>
@@ -401,7 +389,6 @@ require_once 'app/views/includes/navbar.php';
                             <?php endforeach; ?>
                         </div>
 
-                        <!-- 2. HÀNG MÀU SẮC SẴN CÓ ĐỂ XEM -->
                         <div class="d-flex align-items-center gap-1 my-1 flex-wrap" style="min-height: 24px;">
                             <small class="text-secondary fw-semibold" style="font-size: 0.68rem;"><i class="fa-solid fa-palette text-primary me-1"></i>Màu:</small>
                             <?php foreach (array_slice($colorDisplayList, 0, 3) as $cName): ?>
@@ -424,7 +411,6 @@ require_once 'app/views/includes/navbar.php';
                             <?php endif; ?>
                         </div>
 
-                        <!-- CỤM 3 NÚT SẠCH SẼ -->
                         <div class="d-grid gap-2 mt-3">
                             <?php if ((int)$p['quantity'] <= 0): ?>
                                 <button type="button" class="btn btn-secondary btn-sm rounded-pill fw-bold py-2 text-center" disabled>
@@ -459,7 +445,6 @@ require_once 'app/views/includes/navbar.php';
     </div>
 </div>
 
-<!-- MODAL POPUP CHỌN MÀU & BỘ NHỚ -->
 <div class="modal fade" id="productSelectModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
         <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
@@ -730,7 +715,6 @@ function openProductModal(productId, defaultAction) {
     bsModalInstance.show();
 }
 
-// BỘ LỌC KẾT HỢP: THƯƠNG HIỆU & PHÂN LOẠI (FLAGSHIP / HÀNG CŨ / TẤT CẢ)
 let currentBrandId = <?= (int)$brandId ?>;
 let currentFilterType = 'all';
 
@@ -790,7 +774,6 @@ function applyProductFilters() {
 function filterProductsByBrand(brandId, brandName, updateHistory = true) {
     currentBrandId = parseInt(brandId, 10);
 
-    // 1. Cập nhật nút active
     document.querySelectorAll('.btn-brand-pill').forEach(btn => {
         const bId = parseInt(btn.dataset.brandId, 10);
         if (bId === currentBrandId) {
@@ -804,16 +787,13 @@ function filterProductsByBrand(brandId, brandName, updateHistory = true) {
 
     applyProductFilters();
 
-    // Cập nhật URL trình duyệt (Back/Forward vẫn chuẩn, không reload trang)
     if (updateHistory) {
         const newUrl = currentBrandId === 0 ? 'index.php' : `index.php?brand_id=${currentBrandId}`;
         window.history.pushState({ brandId: currentBrandId, brandName: brandName }, '', newUrl);
     }
 }
 
-// Lắng nghe sự kiện click
 document.addEventListener('DOMContentLoaded', function() {
-    // Nút lọc nhanh: Tất cả, Flagship 2026, Hàng Cũ
     document.querySelectorAll('.btn-filter-type').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.btn-filter-type').forEach(b => {
@@ -827,7 +807,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Nút thương hiệu
     document.querySelectorAll('.btn-brand-pill').forEach(btn => {
         btn.addEventListener('click', function(e) {
             e.preventDefault();
@@ -837,7 +816,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Lắng nghe click trong sidebar trượt góc trái
     document.querySelectorAll('#sidebarMenuLeft a[href*="brand_id="]').forEach(link => {
         link.addEventListener('click', function(e) {
             const hrefUrl = this.getAttribute('href');
@@ -861,7 +839,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Lọc ngay khi mở trang nếu URL có sẵn brand_id
     const initialParams = new URLSearchParams(window.location.search);
     const initialBrandId = initialParams.get('brand_id');
     if (initialBrandId) {
@@ -871,7 +848,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Bắt nút Back / Forward trên trình duyệt
 window.addEventListener('popstate', function() {
     const urlParams = new URLSearchParams(window.location.search);
     const bId = urlParams.get('brand_id') || 0;

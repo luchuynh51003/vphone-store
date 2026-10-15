@@ -40,7 +40,6 @@
     </div>
 </footer>
 
-<!-- KHUNG TOAST TRẮNG - XANH DƯƠNG -->
 <div id="vphoneLiveToast">
     <div style="display:flex; align-items:center;">
         <div style="width:40px; height:40px; border-radius:50%; background:#e8f3ff; display:flex; align-items:center; justify-content:center; margin-right:12px; flex-shrink:0;">
@@ -165,7 +164,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// THÊM NHANH VÀO GIỎ HÀNG VỚI TOAST V-PHONE TRÊN MỌI TRANG
 window.addToCartDirect = function(btn, productId, productName) {
     const origHtml = btn ? btn.innerHTML : '';
     if (btn) {

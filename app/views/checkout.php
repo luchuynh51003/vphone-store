@@ -5,10 +5,8 @@ $orderId = $orderId ?? 0;
 $isBuyNowMode = $isBuyNowMode ?? (isset($_GET['mode']) && $_GET['mode'] === 'buy_now');
 $itemsToCheckout = $itemsToCheckout ?? [];
 
-// Lọc các item hợp lệ
 $itemsToCheckout = array_values(array_filter($itemsToCheckout, static fn($i) => !empty($i) && is_array($i)));
 
-// TỰ ĐỘNG PHỤC HỒI GIÁ NẾU SESSION BỊ THIẾU HOẶC = 0
 if (!empty($itemsToCheckout)) {
     foreach ($itemsToCheckout as &$it) {
         if (!isset($it['price']) || (float)$it['price'] <= 0) {
@@ -40,14 +38,12 @@ $paymentMethod = $paymentMethod ?? 'COD';
 $checkoutError = $checkoutError ?? '';
 $pageTitle = $pageTitle ?? 'Thanh toán đơn hàng - V-Phone Store';
 
-// Đọc thông tin đã lưu trong bản nháp (nếu có)
 $formDraft = $_SESSION['checkout_form_draft'] ?? [];
 $deliveryName = $formDraft['fullname'] ?? ($currentUser['fullname'] ?? '');
 $deliveryPhone = $formDraft['phone'] ?? ($currentUser['phone'] ?? '');
 $deliveryAddress = $formDraft['address'] ?? ($currentUser['address'] ?? '');
 $deliveryNote = $formDraft['note'] ?? '';
 
-// Nếu chưa đặt hàng thành công và danh sách thanh toán rỗng thì chuyển về giỏ hàng
 if (!$orderSuccess && empty($itemsToCheckout)) {
     header('Location: index.php?page=cart');
     exit;
@@ -58,10 +54,8 @@ require_once 'app/views/includes/navbar.php';
 ?>
 
 <div class="container my-3 my-md-4">
-    <!-- TIẾN TRÌNH ĐƠN HÀNG STEPPER CHUẨN HIỆN ĐẠI (1 2 3 KHÔNG LẶP SỐ) -->
     <div class="d-flex justify-content-center mb-4">
         <div class="checkout-stepper-wrapper">
-            <!-- Bước 1: Giỏ hàng -->
             <a href="index.php?page=cart" class="step-badge step-completed text-decoration-none" title="Xem lại giỏ hàng">
                 <span class="step-circle"><i class="fa-solid fa-check"></i></span>
                 <span class="step-text">Giỏ hàng</span>
@@ -69,7 +63,6 @@ require_once 'app/views/includes/navbar.php';
 
             <div class="step-connector active"></div>
 
-            <!-- Bước 2: Thanh toán -->
             <div class="step-badge <?= $orderSuccess ? 'step-completed' : 'step-active' ?>">
                 <span class="step-circle"><?= $orderSuccess ? '<i class="fa-solid fa-check"></i>' : '2' ?></span>
                 <span class="step-text">Thanh toán</span>
@@ -77,7 +70,6 @@ require_once 'app/views/includes/navbar.php';
 
             <div class="step-connector <?= $orderSuccess ? 'active' : '' ?>"></div>
 
-            <!-- Bước 3: Hoàn tất -->
             <div class="step-badge <?= $orderSuccess ? 'step-active' : 'step-pending' ?>">
                 <span class="step-circle"><?= $orderSuccess ? '<i class="fa-solid fa-check"></i>' : '3' ?></span>
                 <span class="step-text">Hoàn tất</span>
@@ -119,7 +111,6 @@ require_once 'app/views/includes/navbar.php';
             </div>
         </div>
     <?php else: ?>
-        <!-- HEADER TRANG THANH TOÁN -->
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom">
             <div>
                 <div class="d-flex align-items-center gap-2 mb-1">
@@ -152,9 +143,7 @@ require_once 'app/views/includes/navbar.php';
 
         <form method="POST" action="index.php?page=checkout<?= $isBuyNowMode ? '&mode=buy_now' : '' ?>" id="checkoutMainForm">
             <div class="row g-4">
-                <!-- CỘT TRÁI: THÔNG TIN GIAO HÀNG & PHƯƠNG THỨC THANH TOÁN -->
                 <div class="col-lg-7">
-                    <!-- KHỐI 1: THÔNG TIN GIAO HÀNG -->
                     <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
                         <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
                             <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
@@ -196,7 +185,6 @@ require_once 'app/views/includes/navbar.php';
                         </div>
                     </div>
 
-                    <!-- KHỐI 2: PHƯƠNG THỨC THANH TOÁN -->
                     <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
                         <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
                             <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
@@ -206,7 +194,6 @@ require_once 'app/views/includes/navbar.php';
                         </div>
 
                         <div class="d-flex flex-column gap-3" id="paymentOptionsGroup">
-                            <!-- 1. COD -->
                             <label class="payment-card-luxury <?= $paymentMethod === 'COD' ? 'active' : '' ?>" for="pay_cod">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="custom-radio-circle">
@@ -226,7 +213,6 @@ require_once 'app/views/includes/navbar.php';
                                 </div>
                             </label>
 
-                            <!-- 2. VietQR -->
                             <label class="payment-card-luxury <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'active' : '' ?>" for="pay_qr">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="custom-radio-circle">
@@ -246,7 +232,6 @@ require_once 'app/views/includes/navbar.php';
                                 </div>
                             </label>
 
-                            <!-- 3. Ví MoMo / ZaloPay -->
                             <label class="payment-card-luxury <?= $paymentMethod === 'Ví điện tử MoMo' ? 'active' : '' ?>" for="pay_momo">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="custom-radio-circle">
@@ -268,7 +253,6 @@ require_once 'app/views/includes/navbar.php';
                     </div>
                 </div>
 
-                <!-- CỘT PHẢI: TÓM TẮT ĐƠN HÀNG, VOUCHER, NÚT ĐẶT HÀNG -->
                 <div class="col-lg-5">
                     <div class="bg-white p-4 rounded-4 shadow-sm border mb-3 sticky-top" style="top: 80px; z-index: 10;">
                         <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
@@ -280,7 +264,6 @@ require_once 'app/views/includes/navbar.php';
                             </span>
                         </div>
 
-                        <!-- DANH SÁCH SẢN PHẨM THANH TOÁN -->
                         <div class="d-flex flex-column gap-2 mb-3">
                             <?php foreach ($itemsToCheckout as $item): ?>
                                 <?php
@@ -309,7 +292,6 @@ require_once 'app/views/includes/navbar.php';
                             <?php endforeach; ?>
                         </div>
 
-                        <!-- KHUNG NHẬP MÃ VOUCHER (HỖ TRỢ AJAX KHÔNG MẤT DỮ LIỆU ĐỊA CHỈ) -->
                         <div class="border rounded-4 p-3 mb-3 bg-light">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <label for="voucherInput" class="form-label fw-bold small mb-0 text-dark">
@@ -349,7 +331,6 @@ require_once 'app/views/includes/navbar.php';
                             </div>
                         </div>
 
-                        <!-- CHI TIẾT TÍNH TIỀN -->
                         <div class="d-flex flex-column gap-2 mb-3">
                             <div class="d-flex justify-content-between small text-secondary">
                                 <span>Tạm tính hàng hóa:</span>
@@ -379,14 +360,12 @@ require_once 'app/views/includes/navbar.php';
                             </div>
                         </div>
 
-                        <!-- NÚT XÁC NHẬN ĐẶT HÀNG -->
                         <button type="submit" id="btnSubmitOrder" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2">
                             <i class="fa-solid fa-lock"></i>
                             <span>XÁC NHẬN ĐẶT HÀNG</span>
                         </button>
                     </div>
 
-                    <!-- CAM KẾT V-PHONE -->
                     <div class="bg-white rounded-4 p-3 border shadow-sm">
                         <div class="d-flex align-items-center gap-3 mb-2">
                             <i class="fa-solid fa-shield-halved text-primary fs-4"></i>
@@ -405,7 +384,6 @@ require_once 'app/views/includes/navbar.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Tương tác thẻ chọn phương thức thanh toán
     const cards = document.querySelectorAll('.payment-card-luxury');
     cards.forEach(card => {
         card.addEventListener('click', function() {
@@ -416,7 +394,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Chặn double submit
     const form = document.getElementById('checkoutMainForm');
     const submitBtn = document.getElementById('btnSubmitOrder');
     if (form && submitBtn) {

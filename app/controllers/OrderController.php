@@ -21,7 +21,6 @@ class OrderController {
 
         $action = $_POST['action'] ?? ($_GET['action'] ?? '');
 
-        // 1. Xử lý HỦY ĐƠN HÀNG
         if ($action === 'cancel' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $cancelOrderId = (int)($_POST['order_id'] ?? 0);
             $cancelReason = trim($_POST['cancel_reason'] ?? '');
@@ -40,7 +39,6 @@ class OrderController {
                 exit;
             }
 
-            // Kiểm tra quyền hủy: hoặc là chủ tài khoản, hoặc nhập đúng SĐT của đơn
             $isAuthorized = false;
             if ($currentUser && (int)$order['user_id'] === (int)$currentUser['id']) {
                 $isAuthorized = true;
@@ -73,13 +71,11 @@ class OrderController {
             exit;
         }
 
-        // 2. Xử lý MUA LẠI ĐƠN HÀNG (Reorder)
         if ($action === 'reorder' && isset($_GET['order_id'])) {
             $reorderId = (int)$_GET['order_id'];
             $order = $orderModel->getById($reorderId);
 
             if ($order) {
-                // Kiểm tra bảo mật
                 if ($currentUser && (int)$order['user_id'] !== (int)$currentUser['id'] && (int)$currentUser['role'] !== 1) {
                     $_SESSION['order_error'] = 'Không thể sao chép đơn hàng không thuộc về bạn.';
                     header('Location: index.php?page=orders');
@@ -99,7 +95,6 @@ class OrderController {
                     $prod = $prodModel->getById($pId);
                     if (!$prod) continue;
 
-                    // Phân tách rom và color từ product_name
                     $rom = $prod['rom'];
                     if (preg_match('/\((\d+\s*GB|\d+\s*TB)/i', $d['product_name'], $m)) {
                         $rom = trim($m[1]);
@@ -139,18 +134,15 @@ class OrderController {
             }
         }
 
-        // 3. Xử lý TRA CỨU ĐƠN HÀNG (Lookup / Tracking)
         $trackedOrder = null;
         $trackedDetails = [];
         $lookupCode = trim($_POST['order_code'] ?? ($_GET['order_code'] ?? ($_GET['id'] ?? ($_GET['order_id'] ?? ''))));
         $lookupPhone = trim($_POST['phone'] ?? ($_GET['phone'] ?? ''));
 
-        // Nếu người dùng click "Xem chi tiết" của 1 đơn trong danh sách đơn của mình
         if (!empty($lookupCode)) {
             $cleanId = (int)preg_replace('/[^0-9]/', '', $lookupCode);
 
             if ($cleanId > 0) {
-                // Nếu đã đăng nhập và là đơn của mình -> cho xem ngay không cần gõ lại SĐT
                 if ($currentUser) {
                     $order = $orderModel->getById($cleanId);
                     if ($order && ((int)$order['user_id'] === (int)$currentUser['id'] || (int)$currentUser['role'] === 1)) {
@@ -159,7 +151,6 @@ class OrderController {
                     }
                 }
 
-                // Nếu chưa tìm được (chưa login hoặc tra cứu theo SĐT)
                 if (!$trackedOrder && !empty($lookupPhone)) {
                     $found = $orderModel->findOrderForTracking($cleanId, $lookupPhone);
                     if ($found) {
@@ -169,7 +160,6 @@ class OrderController {
                         $orderError = "Không tìm thấy đơn hàng #VP-$cleanId với số điện thoại đã nhập. Vui lòng kiểm tra lại!";
                     }
                 } elseif (!$trackedOrder && empty($lookupPhone)) {
-                    // Nếu nhập mã đơn nhưng chưa nhập SĐT mà không phải tài khoản sở hữu
                     $order = $orderModel->getById($cleanId);
                     if ($order) {
                         $orderError = "Để đảm bảo an toàn thông tin, vui lòng nhập Số điện thoại đã dùng để đặt đơn hàng này.";
@@ -180,7 +170,6 @@ class OrderController {
             }
         }
 
-        // 4. Lấy danh sách đơn hàng của khách hàng nếu đã đăng nhập
         $userOrders = [];
         $userOrderDetails = [];
         $statusCounts = ['all' => 0, 'Chờ xử lý' => 0, 'Đang giao hàng' => 0, 'Đã giao thành công' => 0, 'Đã hủy' => 0];
@@ -191,7 +180,6 @@ class OrderController {
             $userOrders = $orderModel->getByUserId((int)$currentUser['id'], $activeTab);
             $statusCounts = $orderModel->getStatusCountsByUserId((int)$currentUser['id']);
 
-            // Nếu có từ khóa tìm kiếm theo mã đơn hoặc tên người nhận / SĐT
             if (!empty($searchKeyword)) {
                 $kw = mb_strtolower($searchKeyword, 'UTF-8');
                 $userOrders = array_filter($userOrders, function($o) use ($kw) {

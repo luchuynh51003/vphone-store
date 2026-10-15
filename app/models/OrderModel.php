@@ -71,7 +71,6 @@ class OrderModel {
         $pId = (int)($detail['product_id'] ?? 0);
         $pName = (string)($detail['product_name'] ?? '');
 
-        // 1. Nếu chưa có product_id, tìm từ database
         if ($pId <= 0 && !empty($pName)) {
             $cleanName = preg_replace('/\s*\(.*$/u', '', $pName);
             $cleanName = trim($cleanName);
@@ -88,7 +87,6 @@ class OrderModel {
             }
         }
 
-        // 2. Tìm màu sắc từ tên biến thể
         $color = '';
         if (preg_match('/Màu:\s*([^,)\-]+)/u', $pName, $m)) {
             $color = trim($m[1]);
@@ -100,7 +98,6 @@ class OrderModel {
             if (!empty($color) && isset($map[$pId][$color]) && !empty($map[$pId][$color]) && file_exists($map[$pId][$color])) {
                 return $map[$pId][$color];
             }
-            // Nếu không có tiền tố "Màu:", đối soát trực tiếp các màu đã khai báo của sản phẩm (ưu tiên màu tên dài/chi tiết hơn)
             if (isset($map[$pId])) {
                 $candidateColors = array_keys($map[$pId]);
                 usort($candidateColors, function($a, $b) {
@@ -115,7 +112,6 @@ class OrderModel {
             }
         }
 
-        // 3. Ảnh mặc định của sản phẩm
         if (!empty($detail['product_image']) && file_exists($detail['product_image'])) {
             return $detail['product_image'];
         }
@@ -129,11 +125,9 @@ class OrderModel {
             }
         }
 
-        // 4. Fallback nhận diện tên
         $lower = mb_strtolower($pName, 'UTF-8');
         if (strpos($lower, 'iphone 18') !== false) {
             if (strpos($lower, 'duo') !== false) return 'assets/images/products/iphone-18-duo.png';
-            if (strpos($lower, 'standard') !== false) return 'assets/images/products/iphone-18.png';
             return 'assets/images/products/iphone-18-promax.png';
         }
         if (strpos($lower, 'iphone 17 pro max') !== false) return 'assets/images/products/iphone-17-promax.png';
@@ -204,11 +198,9 @@ class OrderModel {
 
 
     public function findOrderForTracking(string|int $orderCode, string $phone): ?array {
-        // Chuẩn hóa mã đơn hàng: chấp nhận "#VP-123", "VP-123", "123"
         $cleanId = (int)preg_replace('/[^0-9]/', '', (string)$orderCode);
         if ($cleanId <= 0) return null;
 
-        // Chuẩn hóa số điện thoại: bỏ khoảng trắng, dấu gạch ngang, dấu chấm
         $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
         if (empty($cleanPhone)) return null;
 
@@ -218,7 +210,6 @@ class OrderModel {
         if (!$order) return null;
 
         $orderPhone = preg_replace('/[^0-9]/', '', $order['phone']);
-        // So khớp SĐT (cho phép 9 số cuối hoặc so sánh trực tiếp để tránh lỗi tiền tố 84 / 0)
         if ($orderPhone === $cleanPhone || substr($orderPhone, -9) === substr($cleanPhone, -9)) {
             return $order;
         }
@@ -251,7 +242,6 @@ class OrderModel {
         $up = $this->pdo->prepare("UPDATE orders SET status = 'Đã hủy', note = ? WHERE id = ?");
         $up->execute([$note, $orderId]);
 
-        // Phục hồi lại số lượng tồn kho
         require_once __DIR__ . '/ProductModel.php';
         $prodModel = new ProductModel($this->pdo);
         $details = $this->getDetailsByOrderId($orderId);

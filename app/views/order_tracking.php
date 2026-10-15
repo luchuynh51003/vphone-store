@@ -16,15 +16,12 @@ require_once 'app/views/includes/functions.php';
 ?>
 
 <style>
-/* ==========================================================================
-   V-PHONE LUXURY ORDER TRACKING STYLES (2026 EDITION)
-   ========================================================================== */
+
 .order-tracking-page {
     padding-top: 28px;
     padding-bottom: 64px;
 }
 
-/* THẺ HERO / HEADER */
 .tracking-header-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -34,7 +31,6 @@ require_once 'app/views/includes/functions.php';
     margin-bottom: 24px;
 }
 
-/* BADGE TRẠNG THÁI CAO CẤP */
 .status-pill {
     display: inline-flex;
     align-items: center;
@@ -76,7 +72,6 @@ require_once 'app/views/includes/functions.php';
 .status-pill-delivered .pulse-dot { background: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25); }
 .status-pill-cancelled .pulse-dot { background: #dc2626; }
 
-/* TIẾN TRÌNH STEPPER HIỆN ĐẠI */
 .tracking-stepper-box {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -157,7 +152,6 @@ require_once 'app/views/includes/functions.php';
     line-height: 1.35;
 }
 
-/* THẺ THÔNG TIN GIAO NHẬN & THANH TOÁN */
 .info-card-box {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -182,7 +176,6 @@ require_once 'app/views/includes/functions.php';
     gap: 6px;
 }
 
-/* KHUNG DANH SÁCH SẢN PHẨM */
 .order-products-box {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -206,7 +199,6 @@ require_once 'app/views/includes/functions.php';
     background-color: #fbfdff;
 }
 
-/* ẢNH THIẾT BỊ ĐIỆN THOẠI CHUẨN XÁC, SẮC NÉT */
 .prod-thumb-container {
     width: 80px;
     height: 80px;
@@ -253,14 +245,12 @@ require_once 'app/views/includes/functions.php';
     flex-shrink: 0;
 }
 
-/* THẺ TỔNG KẾT CHI PHÍ */
 .order-cost-summary-box {
     background: #f8fafc;
     border-top: 1px solid #e2e8f0;
     padding: 24px 28px;
 }
 
-/* THẺ ĐƠN HÀNG TRONG DANH SÁCH "ĐƠN HÀNG CỦA TÔI" */
 .order-history-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -289,7 +279,6 @@ require_once 'app/views/includes/functions.php';
     padding: 16px 22px;
 }
 
-/* THANH TRA CỨU NHANH GỌN GÀNG */
 .compact-lookup-box {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -315,7 +304,7 @@ require_once 'app/views/includes/functions.php';
 <div class="order-tracking-page">
     <div class="container">
 
-        <!-- BREADCRUMB ĐIỀU HƯỚNG -->
+        
         <nav aria-label="breadcrumb" class="mb-3">
             <ol class="breadcrumb small">
                 <li class="breadcrumb-item"><a href="index.php" class="text-decoration-none text-muted"><i class="fa-solid fa-house me-1"></i>Trang chủ</a></li>
@@ -328,7 +317,7 @@ require_once 'app/views/includes/functions.php';
             </ol>
         </nav>
 
-        <!-- THÔNG BÁO FLASH MESSAGE -->
+        
         <?php if (!empty($orderMessage)): ?>
             <div class="alert alert-success alert-dismissible fade show rounded-4 py-3 px-4 mb-4 shadow-sm border-0 d-flex align-items-center gap-3" role="alert" style="background:#ecfdf5; border-left: 4px solid #10b981 !important;">
                 <i class="fa-solid fa-circle-check text-success fs-4"></i>
@@ -351,9 +340,9 @@ require_once 'app/views/includes/functions.php';
             </div>
         <?php endif; ?>
 
-        <!-- ===================================================================== -->
-        <!-- VIEW 1: CHI TIẾT ĐƠN HÀNG ĐANG THEO DÕI (KHI CÓ $trackedOrder) -->
-        <!-- ===================================================================== -->
+        
+        
+        
         <?php if ($trackedOrder): ?>
             <?php
             $st = $trackedOrder['status'];
@@ -362,7 +351,7 @@ require_once 'app/views/includes/functions.php';
             $isShipping = ($st === 'Đang giao hàng');
             $isDelivered = ($st === 'Đã giao thành công');
 
-            // Tính phần trăm vạch tiến trình
+            
             $progressPct = 12;
             if ($isShipping) $progressPct = 65;
             elseif ($isDelivered) $progressPct = 100;
@@ -371,7 +360,7 @@ require_once 'app/views/includes/functions.php';
             $trackingCode = 'VPX-' . date('Y', strtotime($trackedOrder['created_at'])) . '-' . str_pad((string)$trackedOrder['id'], 6, '0', STR_PAD_LEFT);
             ?>
 
-            <!-- HEADER CHI TIẾT ĐƠN HÀNG -->
+            
             <div class="tracking-header-card">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div>
@@ -425,7 +414,7 @@ require_once 'app/views/includes/functions.php';
                             </div>
                         <?php endif; ?>
 
-                        <!-- Nút in phiếu giao hàng -->
+                        
                         <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold small shadow-sm" onclick="window.print()" title="In thông tin đơn hàng">
                             <i class="fa-solid fa-print me-1"></i>In đơn
                         </button>
@@ -433,7 +422,7 @@ require_once 'app/views/includes/functions.php';
                 </div>
             </div>
 
-            <!-- TIẾN TRÌNH STEPPER VẬN CHUYỂN TRỰC QUAN -->
+            
             <div class="tracking-stepper-box">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
@@ -471,7 +460,7 @@ require_once 'app/views/includes/functions.php';
                         </div>
 
                         <div class="d-flex justify-content-between position-relative">
-                            <!-- Cột 1: Đặt đơn -->
+                            
                             <div class="timeline-step completed">
                                 <div class="step-icon-bubble">
                                     <i class="fa-solid fa-check"></i>
@@ -480,7 +469,7 @@ require_once 'app/views/includes/functions.php';
                                 <div class="step-sub-text">Hệ thống đã tiếp nhận đơn #VP-<?= $trackedOrder['id'] ?></div>
                             </div>
 
-                            <!-- Cột 2: Chuẩn bị hàng -->
+                            
                             <div class="timeline-step <?= ($isShipping || $isDelivered) ? 'completed' : ($isPending ? 'active' : '') ?>">
                                 <div class="step-icon-bubble">
                                     <?php if ($isShipping || $isDelivered): ?>
@@ -493,7 +482,7 @@ require_once 'app/views/includes/functions.php';
                                 <div class="step-sub-text">Kiểm tra tem seal, IMEI & đóng hộp</div>
                             </div>
 
-                            <!-- Cột 3: Vận chuyển -->
+                            
                             <div class="timeline-step <?= $isDelivered ? 'completed' : ($isShipping ? 'active' : '') ?>">
                                 <div class="step-icon-bubble">
                                     <?php if ($isDelivered): ?>
@@ -506,7 +495,7 @@ require_once 'app/views/includes/functions.php';
                                 <div class="step-sub-text">Shipper V-Phone Express đang phát</div>
                             </div>
 
-                            <!-- Cột 4: Hoàn tất -->
+                            
                             <div class="timeline-step <?= $isDelivered ? 'completed' : '' ?>">
                                 <div class="step-icon-bubble">
                                     <i class="fa-solid fa-house-circle-check"></i>
@@ -519,9 +508,9 @@ require_once 'app/views/includes/functions.php';
                 <?php endif; ?>
             </div>
 
-            <!-- THÔNG TIN NGƯỜI NHẬN & VẬN CHUYỂN -->
+            
             <div class="row g-4 mb-4">
-                <!-- Cột 1: Địa chỉ giao nhận -->
+                
                 <div class="col-lg-6">
                     <div class="info-card-box">
                         <div class="info-header-tag text-danger">
@@ -552,7 +541,7 @@ require_once 'app/views/includes/functions.php';
                     </div>
                 </div>
 
-                <!-- Cột 2: Thanh toán & Vận chuyển -->
+                
                 <div class="col-lg-6">
                     <div class="info-card-box">
                         <div class="info-header-tag text-success">
@@ -583,7 +572,7 @@ require_once 'app/views/includes/functions.php';
                 </div>
             </div>
 
-            <!-- DANH SÁCH SẢN PHẨM TRONG ĐƠN HÀNG (VỚI HÌNH ẢNH MÁY RÕ NÉT) -->
+            
             <div class="order-products-box">
                 <div class="p-3 px-4 bg-white border-bottom d-flex align-items-center justify-content-between">
                     <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
@@ -614,12 +603,12 @@ require_once 'app/views/includes/functions.php';
                         ?>
 
                         <div class="product-row-item">
-                            <!-- Ảnh điện thoại thực tế -->
+                            
                             <div class="prod-thumb-container">
                                 <img src="<?= htmlspecialchars($imgUrl) ?>" alt="<?= htmlspecialchars($baseName) ?>" loading="lazy">
                             </div>
 
-                            <!-- Tên máy & Chi tiết cấu hình -->
+                            
                             <div class="flex-grow-1 min-w-0">
                                 <h6 class="fw-bold text-dark mb-1 fs-6 text-truncate" title="<?= htmlspecialchars($rawName) ?>">
                                     <?= htmlspecialchars($baseName) ?>
@@ -643,7 +632,7 @@ require_once 'app/views/includes/functions.php';
                                 </small>
                             </div>
 
-                            <!-- Đơn giá & Thành tiền -->
+                            
                             <div class="text-end flex-shrink-0">
                                 <small class="text-muted d-block">Đơn giá: <?= number_format((float)$item['price'], 0, ',', '.') ?> đ</small>
                                 <div class="fs-5 fw-black text-danger">
@@ -654,17 +643,17 @@ require_once 'app/views/includes/functions.php';
                     <?php endforeach; ?>
                 </div>
 
-                <!-- TỔNG KẾT CHI PHÍ -->
+                
                 <div class="order-cost-summary-box">
                     <div class="row align-items-center">
                         <div class="col-md-6 mb-3 mb-md-0">
                             <div class="d-flex flex-wrap gap-2">
-                                <!-- Nút mua lại đơn này -->
+                                
                                 <a href="index.php?page=orders&action=reorder&order_id=<?= $trackedOrder['id'] ?>" class="btn btn-outline-primary rounded-pill px-4 fw-bold small">
                                     <i class="fa-solid fa-cart-plus me-1"></i>Mua lại đơn hàng này
                                 </a>
 
-                                <!-- Nút hủy đơn (chỉ khi Chờ xử lý) -->
+                                
                                 <?php if ($isPending): ?>
                                     <button type="button" class="btn btn-outline-danger rounded-pill px-4 fw-bold small" 
                                             data-bs-toggle="modal" data-bs-target="#cancelOrderModal" 
@@ -693,10 +682,9 @@ require_once 'app/views/includes/functions.php';
             </div>
         <?php endif; ?>
 
-
-        <!-- ===================================================================== -->
-        <!-- VIEW 2: KHUNG TRA CỨU ĐƠN HÀNG GỌN GÀNG (LOOKUP) -->
-        <!-- ===================================================================== -->
+        
+        
+        
         <div class="compact-lookup-box">
             <div class="row align-items-center">
                 <div class="col-lg-4 mb-3 mb-lg-0">
@@ -745,10 +733,9 @@ require_once 'app/views/includes/functions.php';
             </div>
         </div>
 
-
-        <!-- ===================================================================== -->
-        <!-- VIEW 3: DANH SÁCH "ĐƠN HÀNG CỦA TÔI" (CHO TÀI KHOẢN ĐÃ ĐĂNG NHẬP) -->
-        <!-- ===================================================================== -->
+        
+        
+        
         <?php if ($currentUser): ?>
             <div id="myOrdersListSection" class="mt-4">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
@@ -760,7 +747,7 @@ require_once 'app/views/includes/functions.php';
                         <p class="text-secondary small mb-0">Quản lý và kiểm tra lịch sử đặt mua smartphone của bạn tại V-Phone</p>
                     </div>
 
-                    <!-- Ô tìm kiếm đơn của tôi -->
+                    
                     <form action="index.php" method="GET" class="d-flex gap-2">
                         <input type="hidden" name="page" value="orders">
                         <?php if ($activeTab !== 'all'): ?>
@@ -775,7 +762,7 @@ require_once 'app/views/includes/functions.php';
                     </form>
                 </div>
 
-                <!-- TABS LỌC TRẠNG THÁI HIỆN ĐẠI -->
+                
                 <div class="d-flex flex-wrap gap-2 mb-4">
                     <a href="index.php?page=orders&status=all" class="btn btn-sm rounded-pill fw-bold px-3 py-2 <?= $activeTab === 'all' ? 'btn-primary shadow-sm' : 'btn-white bg-white border text-secondary' ?>">
                         Tất cả <span class="badge bg-white text-dark ms-1 rounded-pill"><?= $statusCounts['all'] ?></span>
@@ -794,7 +781,7 @@ require_once 'app/views/includes/functions.php';
                     </a>
                 </div>
 
-                <!-- DANH SÁCH THẺ ĐƠN HÀNG CỦA TÔI -->
+                
                 <?php if (empty($userOrders)): ?>
                     <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-4">
                         <div style="width: 76px; height: 76px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
@@ -818,7 +805,7 @@ require_once 'app/views/includes/functions.php';
                             $isCancelledOrd = ($ord['status'] === 'Đã hủy');
                             ?>
                             <div class="order-history-card">
-                                <!-- Header đơn hàng -->
+                                
                                 <div class="order-history-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
                                     <div class="d-flex align-items-center gap-3">
                                         <span class="fs-5 fw-black text-primary">#VP-<?= $oId ?></span>
@@ -849,7 +836,7 @@ require_once 'app/views/includes/functions.php';
                                     </div>
                                 </div>
 
-                                <!-- Body: Danh sách sản phẩm kèm ảnh máy thực tế -->
+                                
                                 <div class="order-history-card-body">
                                     <?php foreach ($details as $d): ?>
                                         <?php
@@ -897,7 +884,7 @@ require_once 'app/views/includes/functions.php';
                                     <?php endforeach; ?>
                                 </div>
 
-                                <!-- Footer: Tổng tiền & Thao tác -->
+                                
                                 <div class="order-history-card-footer d-flex flex-wrap justify-content-between align-items-center gap-3">
                                     <div>
                                         <small class="text-muted d-block" style="font-size: 0.78rem;">Tổng thanh toán:</small>
@@ -907,17 +894,17 @@ require_once 'app/views/includes/functions.php';
                                     </div>
 
                                     <div class="d-flex flex-wrap gap-2">
-                                        <!-- Theo dõi chi tiết -->
+                                        
                                         <a href="index.php?page=orders&order_code=<?= $oId ?>" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">
                                             <i class="fa-solid fa-truck-ramp-box me-1"></i>Theo dõi chi tiết
                                         </a>
 
-                                        <!-- Mua lại -->
+                                        
                                         <a href="index.php?page=orders&action=reorder&order_id=<?= $oId ?>" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">
                                             <i class="fa-solid fa-cart-plus me-1"></i>Mua lại
                                         </a>
 
-                                        <!-- Hủy đơn nếu Chờ xử lý -->
+                                        
                                         <?php if ($isPendingOrd): ?>
                                             <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" 
                                                     data-bs-toggle="modal" data-bs-target="#cancelOrderModal" 
@@ -934,7 +921,7 @@ require_once 'app/views/includes/functions.php';
                 <?php endif; ?>
             </div>
         <?php else: ?>
-            <!-- GỢI Ý ĐĂNG NHẬP CHO KHÁCH CHƯA ĐĂNG NHẬP -->
+            
             <div class="bg-white rounded-4 border p-4 p-md-5 text-center shadow-sm mb-5">
                 <div style="width: 76px; height: 76px; border-radius: 50%; background: #e8f3ff; color: #0066cc; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
                     <i class="fa-solid fa-circle-user fs-1"></i>
@@ -957,9 +944,6 @@ require_once 'app/views/includes/functions.php';
     </div>
 </div>
 
-<!-- ========================================================================= -->
-<!-- MODAL XÁC NHẬN HỦY ĐƠN HÀNG -->
-<!-- ========================================================================= -->
 <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 460px;">
         <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">

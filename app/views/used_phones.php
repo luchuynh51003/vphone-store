@@ -8,7 +8,6 @@ $brands = $brandStmt->fetchAll();
 $brandId = isset($_GET['brand_id']) ? (int)$_GET['brand_id'] : 0;
 $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 
-// Đảm bảo cột is_used và condition_desc tồn tại an toàn
 try {
     $col1 = $pdo->query("SHOW COLUMNS FROM products LIKE 'is_used'")->fetch();
     if (!$col1) {
@@ -20,7 +19,6 @@ try {
     }
 } catch (Exception $e) {}
 
-// Chỉ lấy các sản phẩm là Hàng cũ (is_used = 1)
 $sql = "SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id WHERE p.is_used = 1";
 $params = [];
 
@@ -61,7 +59,6 @@ require_once 'app/views/includes/navbar.php';
     window.STORE_PRODUCTS = <?= json_encode($searchList, JSON_UNESCAPED_UNICODE) ?>;
 </script>
 
-<!-- BANNER RIÊNG CHO MÁY CŨ -->
 <div class="container my-3">
     <div class="p-4 p-md-5 rounded-4 text-white shadow-sm" style="background: linear-gradient(135deg, #0984e3 0%, #0056b3 60%, #0a3d62 100%);">
         <div class="col-lg-8 py-2">
@@ -79,7 +76,6 @@ require_once 'app/views/includes/navbar.php';
     </div>
 </div>
 
-<!-- BỘ LỌC THƯƠNG HIỆU MÁY CŨ -->
 <div class="container my-4">
     <div class="bg-white p-3 rounded-4 shadow-sm d-flex flex-wrap gap-2 align-items-center border">
         <span class="fw-bold text-primary me-2"><i class="fa-solid fa-filter me-1"></i>Hãng máy cũ:</span>
@@ -92,7 +88,6 @@ require_once 'app/views/includes/navbar.php';
     </div>
 </div>
 
-<!-- DANH SÁCH MÁY CŨ -->
 <div class="container" id="product-list">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0 text-dark">
@@ -118,7 +113,6 @@ require_once 'app/views/includes/navbar.php';
                 <div class="col">
                     <div class="card h-100 product-card shadow-sm position-relative overflow-hidden">
                         <div class="product-img-wrapper position-relative">
-                            <!-- TAG MÁY CŨ 99% NỔI BẬT -->
                             <span class="badge badge-used-phone position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;" title="Hàng Cũ Like New 99%">
                                 <i class="fa-solid fa-recycle me-1"></i><?= htmlspecialchars(!empty($p['condition_desc']) && $p['condition_desc'] !== 'Mới 100%' ? $p['condition_desc'] : 'Máy cũ 99%') ?>
                             </span>
@@ -150,7 +144,6 @@ require_once 'app/views/includes/navbar.php';
                                 <?php endif; ?>
                             </div>
 
-                            <!-- 3 NÚT HÀNH ĐỘNG CHUẨN -->
                             <div class="d-grid gap-2 mt-3">
                                 <?php if ((int)$p['quantity'] <= 0): ?>
                                     <button type="button" class="btn btn-secondary btn-sm rounded-pill fw-bold py-2 text-center" disabled>

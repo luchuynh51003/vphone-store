@@ -1,5 +1,4 @@
 <?php
-// BẢN ĐỒ ÁNH XẠ MÀU SẮC SANG ĐÚNG ẢNH THỰC TẾ TRONG ASSETS CHO TẤT CẢ 58 SẢN PHẨM
 function getAllProductColorMap(): array {
     static $map = null;
     if ($map === null) {
@@ -20,12 +19,6 @@ function getAllProductColorMap(): array {
   "3": {
     "Trắng Ánh Sao": "assets/images/products/iphone-18-duo-trang-anh-sao.png",
     "Trời Đêm": "assets/images/products/iphone-18-duo-troi-dem.png"
-  },
-  "4": {
-    "Xanh Băng": "assets/images/products/iphone-18.png",
-    "Hồng": "assets/images/products/iphone-18.png",
-    "Bạc Ánh Kim": "assets/images/products/iphone-18.png",
-    "Đen": "assets/images/products/iphone-18.png"
   },
   "5": {
     "Đen Phantom": "assets/images/products/samsung-tri-fold.png"

@@ -1,10 +1,8 @@
 <?php
-// ĐỊNH DẠNG TIỀN TỆ VNĐ
 function formatPrice($amount) {
     return number_format((float)$amount, 0, ',', '.') . ' đ';
 }
 
-// LẤY DẢI DUNG LƯỢNG BỘ NHỚ THEO PHÂN KHÚC MÁY
 function getStorageTiers($prodName, $defaultRom) {
     $name = mb_strtolower($prodName, 'UTF-8');
     $rom = mb_strtolower($defaultRom, 'UTF-8');
@@ -33,7 +31,6 @@ function getStorageTiers($prodName, $defaultRom) {
     }
 }
 
-// LẤY MÃ MÀU HEX CHUẨN XÁC THEO MÀU SẮC CHÍNH HÃNG
 function getColorHexValue($name) {
     $c = mb_strtolower(trim((string)$name), 'UTF-8');
     if (strpos($c, 'cam') !== false || strpos($c, 'orange') !== false || strpos($c, 'ánh dương') !== false || strpos($c, 'hoàng hôn') !== false) return '#ea580c';
@@ -54,7 +51,6 @@ function getColorHexValue($name) {
     return '#64748b';
 }
 
-// LẤY ĐƯỜNG DẪN LOGO THƯƠNG HIỆU DO NGƯỜI DÙNG TẢI LÊN
 function getBrandLogoFile(string $brandName): string {
     $b = mb_strtolower(trim($brandName), 'UTF-8');
     $slug = 'other';
@@ -78,7 +74,6 @@ function getBrandLogoFile(string $brandName): string {
     return '';
 }
 
-// LẤY THÔNG TIN ĐẶC TRƯNG LOGO ĐỂ HIỂN THỊ CÂN ĐỐI, CHUYÊN NGHIỆP
 function getBrandMeta(string $brandName): array {
     $b = mb_strtolower(trim($brandName), 'UTF-8');
     if (strpos($b, 'apple') !== false || strpos($b, 'iphone') !== false) {
@@ -111,7 +106,6 @@ function getBrandMeta(string $brandName): array {
     return ['slug' => 'other', 'type' => 'generic', 'displayName' => $brandName, 'shortName' => $brandName, 'invertOnActive' => false];
 }
 
-// RENDER LOGO ĐƠN LẺ VỚI KHUNG CỐ ĐỊNH CHUẨN
 function renderBrandLogo(string $brandName, int $boxW = 32, int $boxH = 22, int $imgMaxH = 18): string {
     $file = getBrandLogoFile($brandName);
     if (!empty($file)) {
@@ -124,7 +118,6 @@ function renderBrandLogo(string $brandName, int $boxW = 32, int $boxH = 22, int 
     return '';
 }
 
-// RENDER NÚT LỌC THƯƠNG HIỆU Ở TRANG CHỦ (ĐỒNG NHẤT CHIỀU CAO 40PX, CÂN ĐỐI 100%)
 function renderBrandFilterPill(array $brand, int $activeBrandId): string {
     $bId = (int)$brand['id'];
     $bName = $brand['name'];
@@ -141,10 +134,8 @@ function renderBrandFilterPill(array $brand, int $activeBrandId): string {
 
     if (!empty($logoFile)) {
         if ($meta['type'] === 'wordmark') {
-            // Thương hiệu logo chữ (Samsung, OPPO, Vivo, Sony): hiển thị logo sắc nét, cân bằng hoàn hảo
             $html .= '<img src="' . htmlspecialchars($logoFile) . '" alt="' . htmlspecialchars($bName) . '" class="brand-pill-wordmark ' . $invertClass . ' brand-logo-' . $meta['slug'] . '">';
         } else {
-            // Thương hiệu logo biểu tượng (Apple, Xiaomi, Google, ROG, Huawei): biểu tượng + tên gọn gàng
             $html .= '<img src="' . htmlspecialchars($logoFile) . '" alt="' . htmlspecialchars($bName) . '" class="brand-pill-icon ' . $invertClass . ' brand-logo-' . $meta['slug'] . '">';
             $html .= '<span>' . htmlspecialchars($meta['shortName']) . '</span>';
         }
@@ -156,7 +147,6 @@ function renderBrandFilterPill(array $brand, int $activeBrandId): string {
     return $html;
 }
 
-// RENDER MỤC THƯƠNG HIỆU TRONG SIDEBAR TRƯỢT GÓC TRÁI (BADGE CỐ ĐỊNH 46x32PX, THẲNG HÀNG 100%)
 function renderSidebarBrandItem(int $brandId, array $brandData): string {
     $meta = getBrandMeta($brandData['name']);
     $logoFile = getBrandLogoFile($brandData['name']);
@@ -175,7 +165,6 @@ function renderSidebarBrandItem(int $brandId, array $brandData): string {
     return $html;
 }
 
-// BẢN ĐỒ ÁNH XẠ MÀU SẮC SANG ĐÚNG ẢNH THỰC TẾ
 require_once __DIR__ . '/../../data/product_color_map.php';
 
 function getProductColorImage(int $productId, string $colorName, string $fallback = ''): string {
@@ -185,4 +174,3 @@ function getProductColorImage(int $productId, string $colorName, string $fallbac
     }
     return $fallback;
 }
-

@@ -38,7 +38,6 @@ require_once 'app/views/includes/navbar.php';
 
 <div class="container my-4">
     <div class="row g-4">
-        <!-- Cột trái: Ảnh đổi theo màu -->
         <div class="col-lg-5">
             <div class="bg-white p-4 rounded-4 shadow-sm text-center position-relative border">
                 <?php if (!empty($product['is_used'])): ?>
@@ -70,7 +69,6 @@ require_once 'app/views/includes/navbar.php';
             </div>
         </div>
 
-        <!-- Cột phải: Thông tin -->
         <div class="col-lg-7">
             <div class="bg-white p-4 rounded-4 shadow-sm h-100 d-flex flex-column border">
                 <?php if (!empty($product['is_used'])): ?>
@@ -110,7 +108,6 @@ require_once 'app/views/includes/navbar.php';
                     <?php endif; ?>
                 </div>
 
-                <!-- 1. CHỌN MÀU SẮC -->
                 <div class="my-2">
                     <label class="fw-bold mb-2 small text-uppercase text-secondary">
                         <i class="fa-solid fa-palette me-1 text-primary"></i>Chọn màu sắc: <span class="text-primary" id="chosenColorText"><?= htmlspecialchars($firstAvailableColor ?? ($colorList[0] ?? 'Tiêu chuẩn')) ?></span>
@@ -139,7 +136,6 @@ require_once 'app/views/includes/navbar.php';
                     </div>
                 </div>
 
-                <!-- 2. CHỌN BỘ NHỚ -->
                 <div class="my-2">
                     <label class="fw-bold mb-2 small text-uppercase text-secondary">
                         <i class="fa-solid fa-hard-drive me-1 text-primary"></i>Chọn dung lượng bộ nhớ:
@@ -153,7 +149,6 @@ require_once 'app/views/includes/navbar.php';
                     </div>
                 </div>
 
-                <!-- 2 NÚT HÀNH ĐỘNG -->
                 <div class="row g-2 mt-auto pt-3">
                     <?php if ((int)$product['quantity'] > 0): ?>
                     <div class="col-md-7 col-12">
@@ -175,7 +170,6 @@ require_once 'app/views/includes/navbar.php';
                     <?php endif; ?>
                 </div>
 
-                <!-- KHUNG ƯU ĐÃI ĐẶC QUYỀN V-PHONE -->
                 <div class="mt-3 p-3 rounded-4 bg-light border">
                     <div class="fw-bold text-dark small mb-2 d-flex align-items-center gap-1">
                         <i class="fa-solid fa-gift text-danger"></i> Ưu đãi đặc quyền khi mua tại V-Phone:
@@ -191,7 +185,6 @@ require_once 'app/views/includes/navbar.php';
         </div>
     </div>
 
-    <!-- KHU VỰC THÔNG SỐ KỸ THUẬT & CHÍNH SÁCH BẢO HÀNH -->
     <div class="row g-4 mt-2">
         <div class="col-lg-7">
             <div class="bg-white p-4 rounded-4 shadow-sm border h-100">
@@ -290,7 +283,6 @@ let currentExtraMoney = <?= (int)($storageOptions[0]['extra'] ?? 0) ?>;
 let currentSelectedColor = "<?= htmlspecialchars($firstAvailableColor ?? ($colorList[0] ?? 'Tiêu chuẩn')) ?>";
 const originalImgPath = "<?= htmlspecialchars($product['image']) ?>";
 
-// BẢN ĐỒ KHỚP ĐÚNG CÁC FILE ẢNH MÀU THỰC TẾ
 function resolveColorImage(colorName) {
     const color = (colorName || '').trim();
     if (window.PRODUCT_COLOR_MAP && window.CURRENT_PRODUCT_ID) {
@@ -302,7 +294,6 @@ function resolveColorImage(colorName) {
     return originalImgPath;
 }
 
-// BẤM NÚT ĐỔI MÀU LÀ ĐỔI ĐÚNG ẢNH TRÊN MÀN HÌNH
 function selectDetailColor(btn, colorName) {
     document.querySelectorAll('.color-pill-btn').forEach(b => {
         b.className = "btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2 color-pill-btn";
@@ -322,7 +313,6 @@ function selectDetailColor(btn, colorName) {
     }, 120);
 }
 
-// ĐỔI BỘ NHỚ NHẢY TIỀN
 function selectDetailRom(btn, romName, extra) {
     document.querySelectorAll('.storage-btn').forEach(b => {
         b.className = "btn btn-sm btn-outline-secondary rounded-pill fw-bold px-3 py-2 storage-btn";

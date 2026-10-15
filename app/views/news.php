@@ -11,7 +11,6 @@ require_once 'app/views/includes/header.php';
 require_once 'app/views/includes/navbar.php';
 ?>
 
-<!-- BANNER TRANG TIN TỨC CÔNG NGHỆ -->
 <div class="container my-4">
     <div class="p-4 p-md-5 rounded-4 text-white shadow-sm" style="background: linear-gradient(135deg, #072a48 0%, #0066cc 60%, #38bdf8 100%);">
         <div class="col-lg-8 py-2">
@@ -26,7 +25,7 @@ require_once 'app/views/includes/navbar.php';
 
 <div class="container my-5">
     <?php if (!empty($articles)): ?>
-    <!-- BÀI VIẾT TIÊU ĐIỂM (HERO ARTICLE) -->
+    
     <div class="card border-0 rounded-4 shadow-sm overflow-hidden mb-5 bg-white p-3 p-md-4">
         <div class="row g-4 align-items-center">
             <div class="col-lg-5 text-center">
@@ -50,7 +49,7 @@ require_once 'app/views/includes/navbar.php';
         </div>
     </div>
 
-    <!-- DANH SÁCH BÀI VIẾT DẠNG LƯỚI (GRID) -->
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold mb-0 text-dark">
             <i class="fa-solid fa-newspaper text-primary me-2"></i>Bài Viết Mới Nhất
@@ -60,7 +59,7 @@ require_once 'app/views/includes/navbar.php';
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
         <?php foreach ($articles as $index => $item): ?>
-            <?php if ($index == 0) continue; // Bỏ qua bài tiêu điểm vì đã hiển thị ở trên ?>
+            <?php if ($index == 0) continue; ?>
             <div class="col">
                 <div class="card h-100 border-0 rounded-4 shadow-sm bg-white overflow-hidden d-flex flex-column product-card">
                     <div class="p-4 bg-light text-center" style="height: 200px; display:flex; align-items:center; justify-content:center;">
@@ -88,9 +87,6 @@ require_once 'app/views/includes/navbar.php';
     <?php endif; ?>
 </div>
 
-<!-- ========================================================================= -->
-<!-- MODAL ĐỌC BÀI VIẾT CHI TIẾT (READER MODAL CHUẨN TẠP CHÍ) -->
-<!-- ========================================================================= -->
 <div class="modal fade" id="articleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">

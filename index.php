@@ -1,12 +1,10 @@
 <?php
-// BẬT BÁO CÁO LỖI CHÍNH XÁC ĐỂ KHÔNG BAO GIỜ BỊ HTTP 500 VÔ CỚ
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 require_once 'config/database.php';
 
-// TỰ ĐỘNG BẮT ĐĂNG NHẬP NẾU BỊ GỬI QUA URL
 if (!empty($_GET['email']) && !empty($_GET['password'])) {
     $email = strtolower(trim($_GET['email']));
     $password = trim($_GET['password']);
@@ -25,7 +23,6 @@ if (!empty($_GET['email']) && !empty($_GET['password'])) {
     }
 }
 
-// BỘ ĐIỀU HƯỚNG TRUNG TÂM MVC (FRONT CONTROLLER)
 $page = $_GET['page'] ?? ($_GET['controller'] ?? 'home');
 $action = $_GET['action'] ?? 'index';
 

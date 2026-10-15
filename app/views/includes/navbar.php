@@ -8,7 +8,6 @@ if (!empty($_SESSION['cart'])) {
 $currentUser = $_SESSION['user'] ?? null;
 ?>
 <nav class="navbar navbar-expand-lg navbar-dark navbar-vphone sticky-top shadow-sm py-2">
-    <!-- Nút 3 gạch mở danh mục -->
     <button class="btn btn-light rounded-circle shadow-sm ms-3 me-2 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenuLeft" style="width: 42px; height: 42px; flex-shrink: 0;" title="Mở danh mục">
         <i class="fa-solid fa-bars fs-5 text-primary"></i>
     </button>
@@ -91,7 +90,6 @@ $currentUser = $_SESSION['user'] ?? null;
     </div>
 </nav>
 
-<!-- MODAL ĐĂNG NHẬP / ĐĂNG KÝ -->
 <div class="modal fade" id="unifiedAuthModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
         <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
@@ -156,7 +154,6 @@ $currentUser = $_SESSION['user'] ?? null;
     </div>
 </div>
 
-<!-- MENU TRƯỢT GÓC TRÁI -->
 <div class="offcanvas offcanvas-start sidebar-vphone shadow-lg" tabindex="-1" id="sidebarMenuLeft">
     <div class="sidebar-header-custom">
         <div class="d-flex align-items-center">

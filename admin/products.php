@@ -11,7 +11,6 @@ $message = '';
 $editId = (int)($_GET['edit_id'] ?? 0);
 $editingProduct = null;
 
-// 1. XỬ LÝ XÓA SẢN PHẨM
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
     $delId = (int)($_POST['product_id'] ?? 0);
     $del = $pdo->prepare("DELETE FROM products WHERE id = ?");
@@ -19,7 +18,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_product'])) {
     $message = 'Đã xóa sản phẩm thành công!';
 }
 
-// Thêm hoặc cập nhật thông tin sản phẩm
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
     $productId = (int)($_POST['product_id'] ?? 0);
     $name = trim($_POST['name'] ?? '');
@@ -96,7 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_product'])) {
     }
 }
 
-// Lấy danh sách sản phẩm và thương hiệu
 $brands = $pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
 $products = $pdo->query("SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id ORDER BY p.id DESC")->fetchAll();
 if ($editId > 0) {
@@ -133,7 +130,6 @@ foreach ($formColors as $index => $color) {
 }
 ?>
 <style>
-/* ===== PRODUCT MODAL STYLES ===== */
 #addProductModal .modal-body {
     overflow-y: auto;
     max-height: calc(90vh - 130px);
@@ -275,7 +271,6 @@ select.fm-input { appearance: auto; }
     </div>
 <?php endif; ?>
 
-<!-- BẢNG DANH SÁCH ĐIỆN THOẠI -->
 <div class="admin-table-card">
     <div class="p-4 border-bottom bg-white d-flex flex-wrap justify-content-between align-items-center gap-3">
         <div>
@@ -393,11 +388,9 @@ function filterAdminProducts() {
 }
 </script>
 
-<!-- MODAL THÊM / SỬA SẢN PHẨM -->
 <div class="modal fade" id="addProductModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
-            <!-- Header tối -->
             <div class="modal-header">
                 <div class="d-flex align-items-center gap-3">
                     <div style="width:40px;height:40px;background:rgba(255,255,255,.12);border-radius:12px;display:flex;align-items:center;justify-content:center;">
@@ -420,7 +413,6 @@ function filterAdminProducts() {
 
                 <div class="modal-body">
 
-                    <!-- SECTION 1: Thông tin cơ bản -->
                     <div class="form-section">
                         <div class="section-label"><i class="fa-solid fa-tag" style="color:#0066cc;font-size:.8rem;"></i> Thông tin cơ bản</div>
                         <div class="row g-3">
@@ -443,7 +435,6 @@ function filterAdminProducts() {
                         </div>
                     </div>
 
-                    <!-- SECTION 2: Giá -->
                     <div class="form-section">
                         <div class="section-label"><i class="fa-solid fa-circle-dollar-to-slot" style="color:#16a34a;font-size:.8rem;"></i> Giá bán</div>
                         <div class="row g-3">
@@ -462,7 +453,6 @@ function filterAdminProducts() {
                         </div>
                     </div>
 
-                    <!-- SECTION 3: Ảnh -->
                     <div class="form-section">
                         <div class="section-label"><i class="fa-solid fa-image" style="color:#7c3aed;font-size:.8rem;"></i> Hình ảnh</div>
                         <div class="fm-label">Đường Dẫn Ảnh Sản Phẩm</div>
@@ -471,7 +461,6 @@ function filterAdminProducts() {
                                value="<?= htmlspecialchars($editingProduct['image'] ?? 'assets/images/products/iphone-16-promax.png') ?>">
                     </div>
 
-                    <!-- SECTION 4: Thông số kỹ thuật -->
                     <div class="form-section">
                         <div class="section-label"><i class="fa-solid fa-microchip" style="color:#0891b2;font-size:.8rem;"></i> Thông số kỹ thuật</div>
                         <div class="row g-3">
@@ -503,7 +492,6 @@ function filterAdminProducts() {
                         </div>
                     </div>
 
-                    <!-- SECTION 5: Màu sắc & tồn kho -->
                     <div class="form-section">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div class="section-label mb-0" style="flex:1;">
@@ -535,7 +523,6 @@ function filterAdminProducts() {
                         </button>
                     </div>
 
-                    <!-- SECTION 6: Dung lượng -->
                     <div class="form-section">
                         <div class="section-label"><i class="fa-solid fa-hdd" style="color:#64748b;font-size:.8rem;"></i> Các mức dung lượng &amp; phụ thu</div>
                         <textarea name="storage_options" class="fm-input form-control font-monospace" rows="4" required
@@ -545,7 +532,6 @@ function filterAdminProducts() {
                         </div>
                     </div>
 
-                    <!-- SECTION 7: Nhãn sản phẩm -->
                     <div class="form-section">
                         <div class="section-label"><i class="fa-solid fa-certificate" style="color:#f59e0b;font-size:.8rem;"></i> Nhãn sản phẩm</div>
                         <div class="row g-3">
@@ -572,7 +558,7 @@ function filterAdminProducts() {
                         </div>
                     </div>
 
-                </div><!-- end modal-body -->
+                </div>
 
                 <div class="modal-footer">
                     <button type="button" class="btn-modal-cancel" data-bs-dismiss="modal">Đóng</button>
@@ -585,7 +571,6 @@ function filterAdminProducts() {
     </div>
 </div>
 
-<!-- MODAL XÁC NHẬN XÓA -->
 <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="max-width:420px;">
         <div class="modal-content border-0 rounded-4 shadow-lg overflow-hidden">

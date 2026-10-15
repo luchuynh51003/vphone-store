@@ -1,5 +1,4 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
-
 :root {
     --v-blue-dark: #0a3d62;
     --v-blue-primary: #0066cc;
@@ -11,36 +10,28 @@
     --v-text-dark: #1e293b;
     --v-text-muted: #64748b;
 }
-
-/* TRIỆT TIÊU 100% KHOẢNG TRẮNG ĐẦU TRANG */
 html {
     margin: 0 !important;
     padding: 0 !important;
 }
-
 body {
     margin: 0 !important;
     padding: 0 !important;
-    line-height: 0 !important; /* ÉP MỌI KÝ TỰ ẨN TRÊN ĐẦU BODY VỀ CHIỀU CAO 0 PIXEL */
+    line-height: 0 !important; 
     background-color: var(--v-bg-light);
     color: var(--v-text-dark);
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
     -webkit-font-smoothing: antialiased;
 }
-
-/* KHÔI PHỤC CHIỀU CAO CHỮ BÌNH THƯỜNG CHO TẤT CẢ NỘI DUNG BÊN TRONG */
 body > * {
     line-height: 1.5 !important;
 }
-
-/* THANH MENU DÍNH SÁT RẠT LÊN ĐỈNH */
 .navbar-vphone {
     margin: 0 !important;
     top: 0 !important;
     background: linear-gradient(135deg, #072a48 0%, #0056b3 100%);
     border: none !important;
 }
-
 .navbar-vphone .nav-link {
     color: rgba(255, 255, 255, 0.85) !important;
     transition: all 0.2s ease;
@@ -50,14 +41,10 @@ body > * {
 }
 .navbar-vphone .nav-link:hover { color: #ffffff !important; background: rgba(255, 255, 255, 0.15); }
 .navbar-vphone .nav-link.active { color: #ffffff !important; background: rgba(255, 255, 255, 0.22) !important; font-weight: 700; }
-
-/* THANH CUỘN MỎNG 7PX */
 ::-webkit-scrollbar { width: 7px; height: 7px; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #0066cc; }
-
-/* THẺ SẢN PHẨM */
 .product-card {
     transition: transform 0.25s ease, box-shadow 0.25s ease;
     border-radius: 16px;
@@ -66,7 +53,6 @@ body > * {
     height: 100%;
 }
 .product-card:hover { transform: translateY(-5px); box-shadow: 0 14px 30px rgba(0, 102, 204, 0.1) !important; border-color: var(--v-blue-border) !important; }
-
 .product-img-wrapper {
     height: 200px !important;
     display: flex !important;
@@ -90,7 +76,6 @@ body > * {
     margin: 0 auto !important;
     transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
 }
-
 .card-prod-title {
     font-size: 0.92rem;
     font-weight: 700;
@@ -104,7 +89,6 @@ body > * {
     line-height: 1.35;
     margin-bottom: 6px;
 }
-
 .specs-badge {
     height: 26px;
     display: flex;
@@ -119,7 +103,6 @@ body > * {
     color: #475569 !important;
     border: 1px solid #e2e8f0 !important;
 }
-
 .badge-tech-new,
 .badge-flagship {
     background: linear-gradient(135deg, #091e3a 0%, #1d4ed8 100%) !important;
@@ -135,7 +118,6 @@ body > * {
     line-height: 1.2 !important;
     z-index: 5 !important;
 }
-
 .badge-used-phone {
     background: linear-gradient(135deg, #064e3b 0%, #059669 100%) !important;
     color: #ffffff !important;
@@ -150,7 +132,6 @@ body > * {
     line-height: 1.2 !important;
     z-index: 5 !important;
 }
-
 .badge-sale-percent {
     background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%) !important;
     color: #ffffff !important;
@@ -165,7 +146,6 @@ body > * {
     line-height: 1.2 !important;
     z-index: 5 !important;
 }
-
 .sidebar-vphone { width: 320px !important; }
 .sidebar-header-custom {
     background: linear-gradient(135deg, #072a48 0%, #0056b3 100%);
@@ -175,8 +155,6 @@ body > * {
     align-items: center;
     justify-content: space-between;
 }
-
-/* DANH MỤC THƯƠNG HIỆU SIDEBAR ĐỒNG BỘ 100% CĂN CHỈNH */
 .sidebar-brand-link {
     transition: all 0.2s ease;
     border-color: #f1f5f9 !important;
@@ -221,7 +199,6 @@ body > * {
 .sidebar-brand-label {
     font-size: 0.9rem;
 }
-
 #vphoneLiveToast {
     position: fixed;
     top: 85px;
@@ -237,23 +214,17 @@ body > * {
     border: 1.5px solid var(--v-blue-border);
     box-shadow: 0 16px 40px rgba(0, 102, 204, 0.15);
 }
-
 .btn-vphone { background-color: var(--v-blue-primary); color: #ffffff; border: none; }
 .btn-vphone:hover { background-color: var(--v-blue-hover); color: #ffffff; }
 .btn-outline-vphone { color: var(--v-blue-primary); border: 1.5px solid var(--v-blue-primary); background-color: #ffffff; }
 .btn-outline-vphone:hover { background-color: var(--v-blue-light); color: var(--v-blue-primary); }
-
 .carousel-banner-item { min-height: 380px; border-radius: 20px; display: flex; align-items: center; }
 .banner-slide-1 { background: linear-gradient(135deg, #072a48 0%, #0066cc 60%, #38bdf8 100%); }
 .banner-slide-2 { background: linear-gradient(135deg, #0f172a 0%, #1e40af 60%, #60a5fa 100%); }
 .banner-slide-3 { background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%); }
 .policy-card { background: #ffffff; border-radius: 16px; padding: 16px; border: 1px solid #e2e8f0; }
 .footer-vphone { background-color: #072a48; color: #e2e8f0; }
-
 .card-color-palette { overflow: hidden; white-space: nowrap; }
-
-
-/* BANNER 2 CỘT SỐNG ĐỘNG */
 .carousel-banner-item {
     min-height: 420px;
     border-radius: 24px;
@@ -266,8 +237,6 @@ body > * {
 .banner-vibrant-1 { background: linear-gradient(135deg, #051626 0%, #0056b3 50%, #0ea5e9 100%); }
 .banner-vibrant-2 { background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #2563eb 100%); }
 .banner-vibrant-3 { background: linear-gradient(135deg, #064e3b 0%, #047857 50%, #0284c7 100%); }
-
-/* HIỆU ỨNG ĐIỆN THOẠI BAY BỒNG BỀNH 3D */
 @keyframes floatPhoneAnim {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-12px) rotate(1.5deg); }
@@ -276,8 +245,6 @@ body > * {
     animation: floatPhoneAnim 4.5s ease-in-out infinite;
     filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.45));
 }
-
-/* KHỐI TIỆN ÍCH CÓ VÒNG TRÒN PHÁT SÁNG */
 .policy-card-vibrant {
     background: #ffffff;
     border-radius: 18px;
@@ -301,17 +268,10 @@ body > * {
     margin-right: 14px;
     flex-shrink: 0;
 }
-
-
-/* TÁCH NỀN TRẮNG CHO ẢNH TRONG BANNER */
 .floating-phone-showcase {
     mix-blend-mode: normal !important;
     animation: floatPhoneAnim 4.5s ease-in-out infinite;
-    
 }
-
-
-/* BANNER ĐỒNG BỘ HIỆN ĐẠI */
 .carousel-banner-item {
     min-height: 400px !important;
     border-radius: 24px !important;
@@ -327,7 +287,6 @@ body > * {
 .banner-slide-duo {
     background: linear-gradient(135deg, #09090b 0%, #1c1917 50%, #78350f 100%) !important;
 }
-
 .floating-phone-showcase {
     max-height: 310px !important;
     width: auto !important;
@@ -336,7 +295,6 @@ body > * {
     filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.45)) !important;
     animation: floatPhoneAnim 4.5s ease-in-out infinite;
 }
-
 .banner-glass-badge {
     background: rgba(255, 255, 255, 0.16) !important;
     color: #ffffff !important;
@@ -349,43 +307,23 @@ body > * {
     display: inline-flex !important;
     align-items: center !important;
 }
-
-
-/* NÚT ĐIỀU HƯỚNG CAROUSEL TRÒN KÍNH MỜ SANG TRỌNG */
-
-
-
-
-
-/* KHUNG BANNER CHUẨN SHOWROOM */
 #vphoneCarousel {
     position: relative !important;
     border-radius: 24px !important;
     overflow: hidden !important;
     box-shadow: 0 10px 30px rgba(0, 76, 153, 0.15) !important;
 }
-
 .carousel-banner-item {
     min-height: 410px !important;
     border-radius: 24px !important;
     position: relative;
     overflow: hidden;
 }
-
 .banner-theme-1 { background: linear-gradient(135deg, #071e33 0%, #0056b3 55%, #0284c7 100%) !important; }
 .banner-theme-2 { background: linear-gradient(135deg, #091a2e 0%, #1e3a8a 55%, #2563eb 100%) !important; }
 .banner-theme-3 { background: linear-gradient(135deg, #081d30 0%, #004d99 50%, #0284c7 100%) !important; }
-
-/* BỆ TRƯNG BÀY SHOWROOM BO TRÒN SANG TRỌNG CHO ĐIỆN THOẠI */
-
-
-/* DUY NHẤT 1 CẶP NÚT ĐIỀU HƯỚNG TRÒN NẰM GỌN TRONG MÉP BANNER */
-
 .carousel-btn-prev { left: 16px !important; }
 .carousel-btn-next { right: 16px !important; }
-
-
-/* ẢNH ĐIỆN THOẠI TRẦN TRÊN BANNER (KHÔNG KHUNG, TỰ NHIÊN) */
 .banner-clean-phone {
     max-height: 310px !important;
     max-width: 100% !important;
@@ -394,25 +332,15 @@ body > * {
     border: none !important;
     filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4)) !important;
 }
-
-/* ĐÚNG 1 CẶP NÚT CHUYỂN SLIDE GỌN GÀNG */
-
-
-
-/* ẨN TOÀN BỘ ICON MẶC ĐỊNH GÂY LỖI CỦA BOOTSTRAP */
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
     display: none !important;
 }
-
-/* KHUNG BANNER CHÍNH XÁC */
 #vphoneCarousel {
     position: relative !important;
     border-radius: 24px !important;
     overflow: hidden !important;
 }
-
-/* ĐÚNG 1 CẶP NÚT TRÒN DUY NHẤT CĂN CHÍNH GIỮA CHIỀU CAO BANNER */
 .vphone-arrow-btn {
     position: absolute !important;
     top: 50% !important;
@@ -435,18 +363,14 @@ body > * {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     border-style: solid !important;
 }
-
 .vphone-arrow-btn:hover {
     background: rgba(255, 255, 255, 0.5) !important;
     transform: translateY(-50%) scale(1.1) !important;
     color: #ffffff !important;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3) !important;
 }
-
 .vphone-arrow-prev { left: 16px !important; right: auto !important; }
 .vphone-arrow-next { right: 16px !important; left: auto !important; }
-
-/* ẢNH ĐIỆN THOẠI TRẦN KHÔNG KHUNG */
 .banner-clean-phone {
     max-height: 310px !important;
     max-width: 100% !important;
@@ -455,10 +379,6 @@ body > * {
     border: none !important;
     filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.4)) !important;
 }
-
-/* ========================================================================= */
-/* BANNER CAROUSEL VIP 3D HIỆU ỨNG APPLE & SAMSUNG UNPACKED                  */
-/* ========================================================================= */
 .carousel-banner-vip {
     height: 440px !important;
     min-height: 440px !important;
@@ -469,30 +389,24 @@ body > * {
     box-shadow: 0 25px 60px rgba(2, 6, 23, 0.35) !important;
     border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
-
 .carousel-banner-vip .carousel-inner,
 .carousel-banner-vip .carousel-item {
     height: 440px !important;
     max-height: 440px !important;
     min-height: 440px !important;
 }
-
 .banner-bg-apple {
     background: radial-gradient(ellipse 70% 65% at 78% 50%, rgba(56, 189, 248, 0.25) 0%, rgba(14, 165, 233, 0.08) 50%, transparent 80%),
                 linear-gradient(135deg, #020617 0%, #0a1931 45%, #073b75 100%) !important;
 }
-
 .banner-bg-samsung {
     background: radial-gradient(ellipse 70% 65% at 78% 50%, rgba(139, 92, 246, 0.28) 0%, rgba(59, 130, 246, 0.15) 50%, transparent 80%),
                 linear-gradient(135deg, #040714 0%, #0d1b3e 45%, #1d4ed8 100%) !important;
 }
-
 .banner-bg-promo {
     background: radial-gradient(ellipse 70% 65% at 78% 50%, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.08) 50%, transparent 80%),
                 linear-gradient(135deg, #120224 0%, #290a4e 45%, #0056b3 100%) !important;
 }
-
-/* ÁNH SÁNG HÀO QUANG KEYNOTE CHIẾU SÁNG PHÍA SAU ĐIỆN THOẠI */
 .banner-stage-glow {
     position: absolute;
     width: 340px;
@@ -512,8 +426,6 @@ body > * {
 .banner-glow-promo {
     background: rgba(245, 158, 11, 0.45);
 }
-
-/* KÍNH MỜ GLASSMORPHISM CHO CÁC TAG THÔNG SỐ */
 .glass-spec-pill {
     background: rgba(255, 255, 255, 0.12) !important;
     border: 1px solid rgba(255, 255, 255, 0.22) !important;
@@ -524,8 +436,6 @@ body > * {
     padding: 6px 14px !important;
     border-radius: 99px !important;
 }
-
-/* THANH CHỈ SỐ SLIDE PHẲNG CHUẨN APPLE */
 .carousel-indicators-vip {
     margin-bottom: 22px !important;
 }
@@ -542,7 +452,6 @@ body > * {
     background-color: #ffffff !important;
     box-shadow: 0 0 12px rgba(255, 255, 255, 0.8) !important;
 }
-
 .banner-title-equal {
     font-size: 2.25rem !important;
     font-weight: 800 !important;
@@ -553,7 +462,6 @@ body > * {
     display: block !important;
     overflow: visible !important;
 }
-
 .banner-desc-equal {
     font-size: 0.95rem !important;
     line-height: 1.6 !important;
@@ -563,8 +471,6 @@ body > * {
     opacity: 0.92;
     margin-bottom: 1.1rem !important;
 }
-
-/* SÂN KHẤU TRÌNH DIỄN ĐIỆN THOẠI CHUẨN ĐỒ HOẠ KEYNOTE */
 .banner-dual-stage {
     height: 380px !important;
     width: 100% !important;
@@ -578,8 +484,6 @@ body > * {
     padding: 0 10px !important;
     z-index: 1 !important;
 }
-
-/* BANNER 1: APPLE KEYNOTE DUO (ĐIỆN THOẠI TO RÕ NÉT, CÂN XỨNG VỚI BANNER) */
 .banner-stage-apple .banner-phone-left-float {
     max-height: 330px !important;
     max-width: 250px !important;
@@ -593,7 +497,6 @@ body > * {
     animation: floatPhoneAlt 5s ease-in-out infinite !important;
     transition: transform 0.3s ease !important;
 }
-
 .banner-stage-apple .banner-phone-right-float {
     max-height: 275px !important;
     max-width: 320px !important;
@@ -606,13 +509,10 @@ body > * {
     animation: floatPhoneSmooth 4s ease-in-out infinite !important;
     transition: transform 0.3s ease !important;
 }
-
-/* BANNER 2: SAMSUNG GALAXY S26 & TRI-FOLD (CÓ KHOẢNG CÁCH TÁCH RỜI RÕ RÀNG, KHÔNG DÍNH NHAU) */
 .banner-stage-samsung {
     gap: 25px !important;
     justify-content: flex-end !important;
 }
-
 .banner-stage-samsung .banner-phone-left-float {
     max-height: 270px !important;
     max-width: 220px !important;
@@ -626,7 +526,6 @@ body > * {
     animation: floatPhoneAlt 5s ease-in-out infinite !important;
     transition: transform 0.3s ease !important;
 }
-
 .banner-stage-samsung .banner-phone-right-float {
     max-height: 240px !important;
     max-width: 260px !important;
@@ -640,8 +539,6 @@ body > * {
     animation: floatPhoneSmooth 4s ease-in-out infinite !important;
     transition: transform 0.3s ease !important;
 }
-
-/* BANNER 3: PROMO SINGLE FLAGSHIP */
 .banner-stage-promo .banner-phone-single-float,
 .banner-dual-stage .banner-phone-single-float {
     max-height: 300px !important;
@@ -657,19 +554,15 @@ body > * {
     animation: floatPhoneSmooth 4s ease-in-out infinite !important;
     transition: transform 0.3s ease !important;
 }
-
 .banner-phone-left-float:hover,
 .banner-phone-right-float:hover,
 .banner-phone-single-float:hover {
     transform: translateY(-8px) scale(1.04) !important;
 }
-
 .banner-dual-stage img {
     object-fit: contain !important;
     display: inline-block !important;
 }
-
-/* RESPONSIVE BANNER CHO ĐIỆN THOẠI & TABLET */
 @media (max-width: 991.98px) {
     .carousel-banner-vip {
         height: auto !important;
@@ -717,26 +610,16 @@ body > * {
         max-width: 180px !important;
     }
 }
-
-/* HIỆU ỨNG LƠ LỬNG 3D BỒNG BỀNH TỰ ĐỘNG CHUẨN KEYNOTE */
 @keyframes floatPhoneSmooth {
     0% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-12px) rotate(1deg); }
     100% { transform: translateY(0px) rotate(0deg); }
 }
-
 @keyframes floatPhoneAlt {
     0% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-8px) rotate(-1deg); }
     100% { transform: translateY(0px) rotate(0deg); }
 }
-
-
-/* ==========================================================================
-   V-PHONE 2026 DESIGN SYSTEM 2.0 (CLIENT & ADMIN UNIFIED SUITE)
-   ========================================================================== */
-
-/* 1. HIỆU ỨNG VÀ CARD NÂNG CẤP CHO CLIENT */
 .product-card {
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     border-radius: 20px !important;
@@ -752,10 +635,6 @@ body > * {
 .product-card:hover .product-img-wrapper img {
     transform: scale(1.07) translateY(-2px) !important;
 }
-
-/* Đã đồng bộ cấu hình khung ảnh chuẩn phía trên */
-
-/* THẺ THÔNG SỐ VÀ HUY HIỆU CÔNG NGHỆ */
 .badge-flagship-glow {
     background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%);
     color: #ffffff;
@@ -791,8 +670,6 @@ body > * {
     border-radius: 50%;
     display: inline-block;
 }
-
-/* NÚT TÁC VỤ THẺ SẢN PHẨM */
 .btn-card-buy {
     background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
     color: #ffffff;
@@ -807,8 +684,6 @@ body > * {
     transform: translateY(-1px);
     box-shadow: 0 6px 16px rgba(0, 102, 204, 0.3);
 }
-
-/* BƯỚC TIẾN TRÌNH GIỎ HÀNG & THANH TOÁN (STEPPER) */
 .checkout-stepper {
     display: flex;
     justify-content: center;
@@ -824,9 +699,6 @@ body > * {
     color: #94a3b8;
     font-size: 0.88rem;
 }
-/* ==========================================================================
-   CHECKOUT STEPPER 2026 (LUXURY PROGRESS BAR)
-   ========================================================================== */
 .checkout-stepper-wrapper {
     background: #ffffff;
     border: 1px solid #e2e8f0;
@@ -838,7 +710,6 @@ body > * {
     gap: 16px;
     max-width: 100%;
 }
-
 .step-badge {
     display: inline-flex;
     align-items: center;
@@ -849,7 +720,6 @@ body > * {
     user-select: none;
     white-space: nowrap;
 }
-
 .step-circle {
     width: 30px;
     height: 30px;
@@ -862,37 +732,30 @@ body > * {
     flex-shrink: 0;
     transition: all 0.2s ease;
 }
-
 .step-badge.step-completed .step-circle {
     background: #10b981;
     color: #ffffff;
     box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
 }
-
 .step-badge.step-completed .step-text {
     color: #10b981;
 }
-
 .step-badge.step-active .step-circle {
     background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%);
     color: #ffffff;
     box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
 }
-
 .step-badge.step-active .step-text {
     color: #0066cc;
 }
-
 .step-badge.step-pending .step-circle {
     background: #f1f5f9;
     color: #94a3b8;
     border: 1.5px solid #e2e8f0;
 }
-
 .step-badge.step-pending .step-text {
     color: #94a3b8;
 }
-
 .step-connector {
     width: 32px;
     height: 2px;
@@ -901,11 +764,9 @@ body > * {
     transition: background 0.25s ease;
     flex-shrink: 0;
 }
-
 .step-connector.active {
     background: linear-gradient(90deg, #10b981, #0066cc);
 }
-
 @media (max-width: 576px) {
     .checkout-stepper-wrapper {
         padding: 6px 14px;
@@ -924,8 +785,6 @@ body > * {
         width: 16px;
     }
 }
-
-/* THẺ PHƯƠNG THỨC THANH TOÁN CAO CẤP */
 .payment-card-luxury {
     border: 1.5px solid #e2e8f0;
     border-radius: 16px;
@@ -937,19 +796,16 @@ body > * {
     display: block;
     user-select: none;
 }
-
 .payment-card-luxury:hover {
     border-color: #93c5fd;
     background: #f8fafc;
     transform: translateY(-1px);
 }
-
 .payment-card-luxury.active {
     border-color: #0066cc;
     background: #f0f7ff;
     box-shadow: 0 4px 16px rgba(0, 102, 204, 0.08);
 }
-
 .payment-card-luxury .payment-icon-box {
     width: 46px;
     height: 46px;
@@ -960,7 +816,6 @@ body > * {
     flex-shrink: 0;
     transition: all 0.2s ease;
 }
-
 .custom-radio-circle {
     width: 20px;
     height: 20px;
@@ -973,11 +828,9 @@ body > * {
     transition: all 0.2s ease;
     background: #ffffff;
 }
-
 .payment-card-luxury.active .custom-radio-circle {
     border-color: #0066cc;
 }
-
 .custom-radio-circle .radio-dot {
     width: 10px;
     height: 10px;
@@ -986,16 +839,12 @@ body > * {
     display: none;
     transition: all 0.15s ease;
 }
-
 .payment-card-luxury.active .custom-radio-circle .radio-dot {
     display: block;
 }
-
-/* Ô NHẬP LIỆU GIAO HÀNG CHUẨN 2026 */
 .checkout-input-group {
     position: relative;
 }
-
 .checkout-input-group .input-icon {
     position: absolute;
     left: 16px;
@@ -1007,7 +856,6 @@ body > * {
     z-index: 2;
     transition: color 0.2s;
 }
-
 .checkout-form-control {
     border: 1.5px solid #e2e8f0;
     border-radius: 14px;
@@ -1018,22 +866,16 @@ body > * {
     background: #ffffff;
     transition: all 0.2s ease;
 }
-
 .checkout-form-control:focus {
     border-color: #0066cc;
     box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
     outline: none;
     background: #ffffff;
 }
-
 .checkout-form-control:focus + .input-icon,
 .checkout-input-group:focus-within .input-icon {
     color: #0066cc;
 }
-
-/* ==========================================================================
-   2. ADMIN THEME 2.0 (SANG TRỌNG - THỐNG KÊ RỰC RỠ)
-   ========================================================================== */
 .admin-sidebar {
     background: #0b1329 !important;
     border-right: 1px solid rgba(255, 255, 255, 0.06);
@@ -1054,8 +896,6 @@ body > * {
     box-shadow: 0 4px 14px rgba(0, 102, 204, 0.35);
     font-weight: 700;
 }
-
-/* THẺ THỐNG KÊ KPI HIỆN ĐẠI */
 .admin-kpi-card {
     border-radius: 20px;
     border: 1px solid rgba(226, 232, 240, 0.8);
@@ -1080,8 +920,6 @@ body > * {
     font-size: 1.4rem;
     flex-shrink: 0;
 }
-
-/* BẢNG DỮ LIỆU ADMIN NÂNG CẤP */
 .admin-table-card {
     border-radius: 20px;
     border: 1px solid rgba(226, 232, 240, 0.8);
@@ -1107,8 +945,6 @@ body > * {
 .admin-table tbody tr:hover td {
     background-color: #f8fafc;
 }
-
-/* SOFT BADGES CHO TRẠNG THÁI */
 .badge-soft-success {
     background: #ecfdf5;
     color: #059669;
