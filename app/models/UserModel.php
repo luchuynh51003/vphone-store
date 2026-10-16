@@ -34,7 +34,50 @@ class UserModel {
             if (empty($cols)) {
                 $this->pdo->exec("ALTER TABLE users ADD COLUMN avatar VARCHAR(255) NULL AFTER address");
             }
+            $this->ensureGoogleColumns();
         } catch (Throwable $e) {}
+    }
+
+    public function ensureGoogleColumns(): void {
+        try {
+            $userCols = $this->pdo->query("SHOW COLUMNS FROM users")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('google_id', $userCols)) {
+                $this->pdo->exec("ALTER TABLE users ADD COLUMN google_id VARCHAR(100) NULL AFTER email");
+            }
+            if (!in_array('auth_provider', $userCols)) {
+                $this->pdo->exec("ALTER TABLE users ADD COLUMN auth_provider VARCHAR(30) NOT NULL DEFAULT 'local' AFTER google_id");
+            }
+            $this->pdo->exec("ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NULL");
+        } catch (Throwable $e) {}
+    }
+
+    public function findByGoogleId(string $googleId) {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE google_id = ? LIMIT 1");
+        $stmt->execute([$googleId]);
+        return $stmt->fetch();
+    }
+
+    public function createFromGoogle(string $fullname, string $email, string $googleId, ?string $avatar = null, string $phone = ''): int {
+        $this->ensureGoogleColumns();
+        $stmt = $this->pdo->prepare("INSERT INTO users (fullname, email, phone, address, avatar, password, role, google_id, auth_provider) VALUES (?, ?, ?, 'Chưa cập nhật', ?, NULL, 0, ?, 'google')");
+        $stmt->execute([
+            $fullname,
+            strtolower(trim($email)),
+            $phone,
+            $avatar,
+            $googleId
+        ]);
+        return (int)$this->pdo->lastInsertId();
+    }
+
+    public function linkGoogleAccount(int $userId, string $googleId, ?string $avatar = null): bool {
+        $this->ensureGoogleColumns();
+        $user = $this->findById($userId);
+        if (!$user) return false;
+
+        $newAvatar = !empty($user['avatar']) ? $user['avatar'] : $avatar;
+        $stmt = $this->pdo->prepare("UPDATE users SET google_id = ?, auth_provider = CASE WHEN auth_provider IS NULL OR auth_provider = 'local' THEN 'google' ELSE auth_provider END, avatar = ? WHERE id = ?");
+        return $stmt->execute([$googleId, $newAvatar, $userId]);
     }
 
     public function updateAvatar(int $userId, ?string $avatarPath): bool {

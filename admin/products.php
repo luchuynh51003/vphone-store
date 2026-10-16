@@ -346,8 +346,8 @@ select.fm-input { appearance: auto; }
                 <option value="in_stock">Còn hàng (> 5 máy)</option>
                 <option value="low_stock">Sắp hết hàng (1 - 5 máy)</option>
                 <option value="out_of_stock">Hết hàng (0 máy)</option>
-                <option value="featured">⭐ Flagship 2026</option>
-                <option value="used">♻️ Máy cũ 99%</option>
+                <option value="featured">Flagship 2026 (Cao cấp)</option>
+                <option value="used">Máy cũ Like New 99%</option>
             </select>
         </div>
     </div>
@@ -680,7 +680,7 @@ function filterAdminProducts() {
                                     <input class="form-check-input" type="checkbox" name="is_featured" value="1" id="isFeat"
                                            <?= !empty($editingProduct['is_featured']) ? 'checked' : '' ?>>
                                     <div>
-                                        <div style="font-size:.85rem;font-weight:700;color:#1e293b;">⭐ Flagship 2026</div>
+                                        <div style="font-size:.85rem;font-weight:700;color:#1e293b;"><i class="fa-solid fa-crown text-warning me-1"></i> Flagship 2026</div>
                                         <div style="font-size:.73rem;color:#64748b;">Hiển thị badge nổi bật trên website</div>
                                     </div>
                                 </label>
@@ -690,7 +690,7 @@ function filterAdminProducts() {
                                     <input class="form-check-input" type="checkbox" name="is_used" value="1" id="isUsed"
                                            <?= !empty($editingProduct['is_used']) ? 'checked' : '' ?>>
                                     <div>
-                                        <div style="font-size:.85rem;font-weight:700;color:#1e293b;">♻️ Hàng cũ Like New 99%</div>
+                                        <div style="font-size:.85rem;font-weight:700;color:#1e293b;"><i class="fa-solid fa-recycle text-success me-1"></i> Hàng cũ Like New 99%</div>
                                         <div style="font-size:.73rem;color:#64748b;">Đánh dấu là hàng đã qua sử dụng</div>
                                     </div>
                                 </label>

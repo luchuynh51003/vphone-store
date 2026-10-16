@@ -21,7 +21,7 @@ $totalUsers = (int)$stats['total_users'];
 $statusStatsRaw = $pdo->query("SELECT status, COUNT(*) as cnt FROM orders GROUP BY status")->fetchAll(PDO::FETCH_KEY_PAIR);
 $orderStatusData = [
     'Đã giao thành công' => (int)($statusStatsRaw['Đã giao thành công'] ?? 0),
-    'Chờ xử lý' => (int)($statusStatsRaw['Chờ xử lý'] ?? 0),
+    'Chờ xử lý' => (int)(($statusStatsRaw['Chờ xử lý'] ?? 0) + ($statusStatsRaw['Đang xử lý'] ?? 0) + ($statusStatsRaw['Chờ thanh toán'] ?? 0)),
     'Đang giao hàng' => (int)($statusStatsRaw['Đang giao hàng'] ?? 0),
     'Đã hủy' => (int)($statusStatsRaw['Đã hủy'] ?? 0),
 ];
@@ -524,15 +524,7 @@ $recentOrders = $pdo->query("SELECT * FROM orders ORDER BY id DESC LIMIT 5")->fe
                                 </span>
                             </td>
                             <td>
-                                <?php if ($ord['status'] === 'Chờ xử lý'): ?>
-                                    <span class="badge badge-soft-warning rounded-pill px-3 py-1"><i class="fa-solid fa-clock me-1"></i>Chờ xử lý</span>
-                                <?php elseif ($ord['status'] === 'Đang giao hàng'): ?>
-                                    <span class="badge badge-soft-primary rounded-pill px-3 py-1"><i class="fa-solid fa-truck-fast me-1"></i>Đang giao</span>
-                                <?php elseif ($ord['status'] === 'Đã giao thành công'): ?>
-                                    <span class="badge badge-soft-success rounded-pill px-3 py-1"><i class="fa-solid fa-check me-1"></i>Đã giao</span>
-                                <?php else: ?>
-                                    <span class="badge badge-soft-danger rounded-pill px-3 py-1"><i class="fa-solid fa-xmark me-1"></i>Đã hủy</span>
-                                <?php endif; ?>
+                                <?= renderOrderStatusBadge($ord['status'], 'px-3 py-1') ?>
                             </td>
                             <td class="text-end">
                                 <a href="orders.php?status=<?= urlencode($ord['status']) ?>" class="btn btn-primary btn-sm rounded-pill px-3 fw-bold">

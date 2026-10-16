@@ -1,9 +1,9 @@
 <?php
-function formatPrice($amount) {
+function formatPrice(float|int|string $amount): string {
     return number_format((float)$amount, 0, ',', '.') . ' đ';
 }
 
-function getStorageTiers($prodName, $defaultRom) {
+function getStorageTiers(string $prodName, string $defaultRom): array {
     $name = mb_strtolower($prodName, 'UTF-8');
     $rom = mb_strtolower($defaultRom, 'UTF-8');
 
@@ -31,8 +31,8 @@ function getStorageTiers($prodName, $defaultRom) {
     }
 }
 
-function getColorHexValue($name) {
-    $c = mb_strtolower(trim((string)$name), 'UTF-8');
+function getColorHexValue(string $name): string {
+    $c = mb_strtolower(trim($name), 'UTF-8');
     if (strpos($c, 'cam') !== false || strpos($c, 'orange') !== false || strpos($c, 'ánh dương') !== false || strpos($c, 'hoàng hôn') !== false) return '#ea580c';
     if (strpos($c, 'matcha') !== false) return '#65a30d';
     if (strpos($c, 'mòng két') !== false || strpos($c, 'teal') !== false || strpos($c, 'mint') !== false) return '#0d9488';
@@ -174,3 +174,164 @@ function getProductColorImage(int $productId, string $colorName, string $fallbac
     }
     return $fallback;
 }
+
+function renderStarRating(float $rating, string $sizeClass = 'small', bool $showNumber = false): string {
+    $rating = max(0, min(5, $rating));
+    $fullStars = (int)floor($rating);
+    $fraction = $rating - $fullStars;
+    $hasHalf = ($fraction >= 0.25 && $fraction < 0.75);
+    if ($fraction >= 0.75) {
+        $fullStars++;
+    }
+    $emptyStars = 5 - $fullStars - ($hasHalf ? 1 : 0);
+
+    $html = '<span class="star-rating text-warning ' . $sizeClass . '" title="' . number_format($rating, 1) . ' / 5 sao">';
+    for ($i = 0; $i < $fullStars; $i++) {
+        $html .= '<i class="fa-solid fa-star"></i>';
+    }
+    if ($hasHalf) {
+        $html .= '<i class="fa-solid fa-star-half-stroke"></i>';
+    }
+    for ($i = 0; $i < $emptyStars; $i++) {
+        $html .= '<i class="fa-regular fa-star text-muted opacity-50"></i>';
+    }
+    if ($showNumber) {
+        $html .= ' <strong class="ms-1 text-dark">' . number_format($rating, 1) . '</strong>';
+    }
+    $html .= '</span>';
+    return $html;
+}
+
+function formatTimeAgo(string $datetime): string {
+    $time = strtotime($datetime);
+    if (!$time) return $datetime;
+
+    $diff = time() - $time;
+    if ($diff < 60) {
+        return 'Vừa xong';
+    } elseif ($diff < 3600) {
+        return floor($diff / 60) . ' phút trước';
+    } elseif ($diff < 86400) {
+        return floor($diff / 3600) . ' giờ trước';
+    } elseif ($diff < 2592000) {
+        return floor($diff / 86400) . ' ngày trước';
+    } else {
+        return date('d/m/Y', $time);
+    }
+}
+
+/**
+ * Lấy cấu hình biểu tượng và phong cách hiện đại cho trạng thái đơn hàng
+ */
+function getOrderStatusMeta(string $status): array {
+    $st = trim($status);
+    switch ($st) {
+        case 'Chờ xử lý':
+            return [
+                'status' => 'Chờ xử lý',
+                'label' => 'Chờ xử lý',
+                'shortLabel' => 'Chờ xử lý',
+                'icon' => 'fa-solid fa-clock-rotate-left',
+                'pillClass' => 'status-pill-pending',
+                'badgeClass' => 'badge-soft-warning',
+                'color' => '#d97706',
+                'textClass' => 'text-warning'
+            ];
+        case 'Đang xử lý':
+            return [
+                'status' => 'Đang xử lý',
+                'label' => 'Đang chuẩn bị máy',
+                'shortLabel' => 'Đang chuẩn bị',
+                'icon' => 'fa-solid fa-boxes-packing',
+                'pillClass' => 'status-pill-processing',
+                'badgeClass' => 'badge-soft-primary',
+                'color' => '#2563eb',
+                'textClass' => 'text-primary'
+            ];
+        case 'Chờ thanh toán':
+            return [
+                'status' => 'Chờ thanh toán',
+                'label' => 'Chờ thanh toán VietQR',
+                'shortLabel' => 'Chờ thanh toán',
+                'icon' => 'fa-solid fa-qrcode',
+                'pillClass' => 'status-pill-payment',
+                'badgeClass' => 'badge-soft-purple',
+                'color' => '#9333ea',
+                'textClass' => 'text-purple'
+            ];
+        case 'Đang giao hàng':
+        case 'Đang giao':
+            return [
+                'status' => 'Đang giao hàng',
+                'label' => 'Đang giao hỏa tốc',
+                'shortLabel' => 'Đang giao',
+                'icon' => 'fa-solid fa-truck-fast',
+                'pillClass' => 'status-pill-shipping',
+                'badgeClass' => 'badge-soft-info',
+                'color' => '#0284c7',
+                'textClass' => 'text-info'
+            ];
+        case 'Đã giao thành công':
+        case 'Đã giao':
+            return [
+                'status' => 'Đã giao thành công',
+                'label' => 'Đã giao thành công',
+                'shortLabel' => 'Đã giao',
+                'icon' => 'fa-solid fa-circle-check',
+                'pillClass' => 'status-pill-delivered',
+                'badgeClass' => 'badge-soft-success',
+                'color' => '#16a34a',
+                'textClass' => 'text-success'
+            ];
+        case 'Đã hủy':
+        case 'Đã hủy đơn hàng':
+            return [
+                'status' => 'Đã hủy',
+                'label' => 'Đã hủy đơn hàng',
+                'shortLabel' => 'Đã hủy',
+                'icon' => 'fa-solid fa-circle-xmark',
+                'pillClass' => 'status-pill-cancelled',
+                'badgeClass' => 'badge-soft-danger',
+                'color' => '#dc2626',
+                'textClass' => 'text-danger'
+            ];
+        default:
+            return [
+                'status' => $st,
+                'label' => $st,
+                'shortLabel' => $st,
+                'icon' => 'fa-solid fa-tag',
+                'pillClass' => 'status-pill-pending',
+                'badgeClass' => 'badge-soft-secondary',
+                'color' => '#64748b',
+                'textClass' => 'text-secondary'
+            ];
+    }
+}
+
+/**
+ * Hiển thị thẻ trạng thái hiện đại với hiệu ứng pulse và biểu tượng FontAwesome
+ */
+function renderOrderStatusPill(string $status, bool $pulse = true, string $customClass = '', ?string $customLabel = null): string {
+    $meta = getOrderStatusMeta($status);
+    $label = $customLabel ?? $meta['label'];
+    $dotHtml = $pulse ? '<span class="pulse-dot"></span>' : '';
+    return '<span class="status-pill ' . $meta['pillClass'] . ' ' . $customClass . '">' .
+           $dotHtml .
+           '<i class="' . $meta['icon'] . '"></i>' .
+           '<span>' . htmlspecialchars($label) . '</span>' .
+           '</span>';
+}
+
+/**
+ * Hiển thị huy hiệu trạng thái nhỏ gọn cho danh sách bảng hoặc admin
+ */
+function renderOrderStatusBadge(string $status, string $customClass = '', ?string $customLabel = null): string {
+    $meta = getOrderStatusMeta($status);
+    $label = $customLabel ?? $meta['shortLabel'];
+    return '<span class="badge rounded-pill ' . $meta['badgeClass'] . ' ' . $customClass . '">' .
+           '<i class="' . $meta['icon'] . ' me-1"></i>' .
+           htmlspecialchars($label) .
+           '</span>';
+}
+

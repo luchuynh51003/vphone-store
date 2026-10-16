@@ -86,53 +86,117 @@
         if (!searchInput || !searchDropdown || !searchResultsList) return;
 
         let searchDebounceTimer = null;
+        let searchAbortCtrl = null;
+
+        // Background preload if not already available
+        if (!window.GLOBAL_SEARCH_PRODUCTS || window.GLOBAL_SEARCH_PRODUCTS.length === 0) {
+            fetch('api/search.php?all=1')
+                .then(r => r.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        window.GLOBAL_SEARCH_PRODUCTS = data;
+                        if (!window.STORE_PRODUCTS || window.STORE_PRODUCTS.length === 0) {
+                            window.STORE_PRODUCTS = data;
+                        }
+                    }
+                })
+                .catch(() => {});
+        }
+
+        function renderSearchResults(matched, rawVal) {
+            if (!matched || matched.length === 0) {
+                searchResultsList.innerHTML = `<div class="p-3 text-center text-muted small"><i class="fa-solid fa-circle-question me-1 text-primary"></i> Không tìm thấy máy phù hợp.</div>`;
+                return;
+            }
+
+            let html = "";
+            matched.slice(0, 6).forEach(item => {
+                const formattedPrice = item.price_formatted || (new Intl.NumberFormat('vi-VN').format(item.price) + ' đ');
+                html += `
+                    <a href="index.php?page=detail&id=${item.id}" class="search-item">
+                        <img src="${item.image}" alt="${escapeHtml(item.name)}" class="search-thumb" onerror="this.src='assets/images/products/iphone-16.png'">
+                        <div style="flex-grow:1; min-width:0;">
+                            <div class="search-name">${escapeHtml(item.name)}</div>
+                            <div class="search-price">${formattedPrice}</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-muted small ms-2"></i>
+                    </a>`;
+            });
+
+            html += `<a href="index.php?keyword=${encodeURIComponent(rawVal.trim())}" style="display:block; padding:10px; text-align:center; background:#f8fafc; color:#0066cc; font-size:12.5px; font-weight:700; text-decoration:none; border-top:1px solid #f1f5f9;">Xem tất cả kết quả &rarr;</a>`;
+            searchResultsList.innerHTML = html;
+        }
+
+        function filterLocalProducts(query) {
+            const allProducts = window.GLOBAL_SEARCH_PRODUCTS || window.STORE_PRODUCTS || [];
+            if (!Array.isArray(allProducts) || allProducts.length === 0) return null;
+
+            const isSS = (query === 'ss' || query === 'sam');
+            const isIP = (query === 'ip');
+
+            return allProducts.filter(p => {
+                const name = (p.name || '').toLowerCase();
+                const brand = (p.brand_name || '').toLowerCase();
+                if (isSS && (name.includes('samsung') || brand.includes('samsung'))) return true;
+                if (isIP && (name.includes('iphone') || brand.includes('apple'))) return true;
+                return name.includes(query) || brand.includes(query);
+            });
+        }
+
+        function triggerSearch(rawVal) {
+            const query = rawVal.trim().toLowerCase();
+            if (query.length === 0) {
+                if (searchAbortCtrl) {
+                    searchAbortCtrl.abort();
+                    searchAbortCtrl = null;
+                }
+                searchDropdown.classList.add("d-none");
+                searchResultsList.innerHTML = "";
+                return;
+            }
+
+            searchDropdown.classList.remove("d-none");
+
+            // 1. Try local filtering first (instant 0ms response)
+            const localMatched = filterLocalProducts(query);
+            if (localMatched && localMatched.length > 0) {
+                renderSearchResults(localMatched, rawVal);
+                return;
+            }
+
+            // 2. Query live API fallback
+            if (searchAbortCtrl) {
+                searchAbortCtrl.abort();
+            }
+            searchAbortCtrl = new AbortController();
+
+            fetch(`api/search.php?keyword=${encodeURIComponent(rawVal.trim())}`, { signal: searchAbortCtrl.signal })
+                .then(res => res.json())
+                .then(data => {
+                    renderSearchResults(data, rawVal);
+                })
+                .catch(err => {
+                    if (err.name === 'AbortError') return;
+                    if (localMatched !== null) {
+                        renderSearchResults(localMatched, rawVal);
+                    } else {
+                        searchResultsList.innerHTML = `<div class="p-3 text-center text-muted small"><i class="fa-solid fa-circle-question me-1 text-primary"></i> Không tìm thấy máy phù hợp.</div>`;
+                    }
+                });
+        }
 
         searchInput.addEventListener("input", function () {
             clearTimeout(searchDebounceTimer);
-            const rawVal = this.value;
-
+            const val = this.value;
             searchDebounceTimer = setTimeout(() => {
-                const query = rawVal.trim().toLowerCase();
-                if (query.length === 0) {
-                    searchDropdown.classList.add("d-none");
-                    searchResultsList.innerHTML = "";
-                    return;
-                }
+                triggerSearch(val);
+            }, 120);
+        });
 
-                searchDropdown.classList.remove("d-none");
-                const allProducts = window.STORE_PRODUCTS || [];
-                const isSS = (query === 'ss' || query === 'sam');
-                const isIP = (query === 'ip');
-
-                const matched = allProducts.filter(p => {
-                    const name = (p.name || '').toLowerCase();
-                    if (isSS && name.includes('samsung')) return true;
-                    if (isIP && name.includes('iphone')) return true;
-                    return name.includes(query);
-                }).slice(0, 6);
-
-                if (matched.length === 0) {
-                    searchResultsList.innerHTML = `<div class="p-3 text-center text-muted small"><i class="fa-solid fa-circle-question me-1 text-primary"></i> Không tìm thấy máy phù hợp.</div>`;
-                    return;
-                }
-
-                let html = "";
-                matched.forEach(item => {
-                    const formattedPrice = item.price_formatted || (new Intl.NumberFormat('vi-VN').format(item.price) + ' đ');
-                    html += `
-                        <a href="index.php?page=detail&id=${item.id}" class="search-item">
-                            <img src="${item.image}" alt="${escapeHtml(item.name)}" class="search-thumb" onerror="this.src='assets/images/products/iphone-16.png'">
-                            <div style="flex-grow:1; min-width:0;">
-                                <div class="search-name">${escapeHtml(item.name)}</div>
-                                <div class="search-price">${formattedPrice}</div>
-                            </div>
-                            <i class="fa-solid fa-chevron-right text-muted small ms-2"></i>
-                        </a>`;
-                });
-
-                html += `<a href="index.php?keyword=${encodeURIComponent(rawVal.trim())}" style="display:block; padding:10px; text-align:center; background:#f8fafc; color:#0066cc; font-size:12.5px; font-weight:700; text-decoration:none; border-top:1px solid #f1f5f9;">Xem tất cả kết quả &rarr;</a>`;
-                searchResultsList.innerHTML = html;
-            }, 160);
+        searchInput.addEventListener("focus", function () {
+            if (this.value.trim().length > 0) {
+                triggerSearch(this.value);
+            }
         });
 
         document.addEventListener("click", function (e) {
@@ -253,10 +317,185 @@
         });
     }
 
+    // --- 6. GOOGLE AUTHENTICATION ---
+    function initGoogleAuth() {
+        const authModalElement = document.getElementById('unifiedAuthModal');
+        const googleModalElement = document.getElementById('googleChooserModal');
+        const googleAuthAlert = document.getElementById('googleAuthAlert');
+        const googleButtons = document.querySelectorAll('.btn-google-auth-trigger');
+        const demoButtons = document.querySelectorAll('.btn-select-demo-google');
+        const btnToggleCustom = document.getElementById('btnToggleCustomGoogle');
+        const boxCustomForm = document.getElementById('boxCustomGoogleForm');
+        const formCustomGoogle = document.getElementById('formCustomGoogle');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const authError = urlParams.get('auth_error');
+        if (authError) {
+            const authAlert = document.getElementById('authAlert');
+            if (authAlert) {
+                authAlert.textContent = decodeURIComponent(authError);
+                authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+            }
+            if (authModalElement && window.bootstrap) {
+                bootstrap.Modal.getOrCreateInstance(authModalElement).show();
+            }
+        }
+
+        if (urlParams.get('google_mode') === 'demo' && googleModalElement && window.bootstrap) {
+            bootstrap.Modal.getOrCreateInstance(googleModalElement).show();
+        }
+
+        // Bật / tắt form nhập Gmail tùy ý
+        if (btnToggleCustom && boxCustomForm) {
+            btnToggleCustom.addEventListener('click', function () {
+                boxCustomForm.classList.toggle('d-none');
+                if (!boxCustomForm.classList.contains('d-none')) {
+                    const nameInput = document.getElementById('customGoogleName');
+                    if (nameInput) nameInput.focus();
+                }
+            });
+        }
+
+        // Xử lý khi nhấn nút Đăng nhập / Đăng ký Google
+        googleButtons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const config = window.vphoneGoogleConfig || {};
+                
+                // Nếu đã cấu hình Client ID và không bật demo_mode: chuyển thẳng đến Google OAuth thật
+                if (config.is_configured && !config.is_demo) {
+                    window.location.href = 'index.php?page=google-login';
+                    return;
+                }
+
+                // Chế độ mô phỏng / dùng thử nhanh: Mở bảng chọn tài khoản Google
+                if (authModalElement && window.bootstrap) {
+                    const authModalInstance = bootstrap.Modal.getInstance(authModalElement);
+                    if (authModalInstance) {
+                        authModalInstance.hide();
+                    }
+                }
+
+                if (googleModalElement && window.bootstrap) {
+                    const googleModalInstance = bootstrap.Modal.getOrCreateInstance(googleModalElement);
+                    googleModalInstance.show();
+                }
+            });
+        });
+
+        // Hàm gửi dữ liệu xác thực Google lên máy chủ
+        async function sendGoogleAuthRequest(formData, triggerBtn) {
+            const origHtml = triggerBtn ? triggerBtn.innerHTML : '';
+            if (triggerBtn) {
+                triggerBtn.disabled = true;
+                triggerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+            }
+
+            if (googleAuthAlert) {
+                googleAuthAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
+                googleAuthAlert.textContent = '';
+            }
+
+            try {
+                const response = await fetch('index.php?page=auth&action=google', {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const result = await response.json();
+
+                if (!result.success) {
+                    if (triggerBtn) {
+                        triggerBtn.disabled = false;
+                        triggerBtn.innerHTML = origHtml;
+                    }
+                    if (googleAuthAlert) {
+                        googleAuthAlert.textContent = result.message || 'Xác thực Google không thành công.';
+                        googleAuthAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    }
+                    return;
+                }
+
+                if (googleAuthAlert) {
+                    googleAuthAlert.textContent = result.message || 'Thành công!';
+                    googleAuthAlert.className = 'alert alert-success small py-2 rounded-3 mb-3';
+                }
+
+                setTimeout(() => {
+                    if (result.is_admin) {
+                        window.location.href = 'admin/index.php';
+                    } else if (result.redirect) {
+                        window.location.href = result.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                }, 400);
+
+            } catch (err) {
+                if (triggerBtn) {
+                    triggerBtn.disabled = false;
+                    triggerBtn.innerHTML = origHtml;
+                }
+                if (googleAuthAlert) {
+                    googleAuthAlert.textContent = 'Lỗi kết nối máy chủ khi xử lý tài khoản Google!';
+                    googleAuthAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                }
+            }
+        }
+
+        // Chọn tài khoản demo có sẵn
+        demoButtons.forEach(dBtn => {
+            dBtn.addEventListener('click', function () {
+                const demoId = this.getAttribute('data-demo-id');
+                const fd = new FormData();
+                fd.append('demo_user', demoId);
+                sendGoogleAuthRequest(fd, this);
+            });
+        });
+
+        // Submit form Google tùy ý
+        if (formCustomGoogle) {
+            formCustomGoogle.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const name = document.getElementById('customGoogleName')?.value.trim() || '';
+                const email = document.getElementById('customGoogleEmail')?.value.trim() || '';
+                const phone = document.getElementById('customGooglePhone')?.value.trim() || '';
+
+                if (!email) return;
+
+                const fd = new FormData();
+                fd.append('demo_user', 'custom');
+                fd.append('custom_name', name);
+                fd.append('custom_email', email);
+                fd.append('custom_phone', phone);
+
+                const submitBtn = formCustomGoogle.querySelector('button[type="submit"]');
+                sendGoogleAuthRequest(fd, submitBtn);
+            });
+        }
+
+        // Khởi tạo Google Identity Services (GIS) nếu Client ID thực tế được cung cấp
+        const config = window.vphoneGoogleConfig || {};
+        if (window.google && window.google.accounts && window.google.accounts.id && config.is_configured && config.client_id) {
+            try {
+                window.google.accounts.id.initialize({
+                    client_id: config.client_id,
+                    callback: function (response) {
+                        if (response && response.credential) {
+                            const fd = new FormData();
+                            fd.append('credential', response.credential);
+                            sendGoogleAuthRequest(fd, null);
+                        }
+                    }
+                });
+            } catch (e) {}
+        }
+    }
+
     // --- DOM READY ---
     document.addEventListener("DOMContentLoaded", function () {
         initSearch();
         initBackToTop();
         initAuthModal();
+        initGoogleAuth();
     });
 })();

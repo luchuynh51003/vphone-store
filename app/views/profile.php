@@ -8,7 +8,11 @@ $statusCounts = $statusCounts ?? [];
 $userAddresses = $userAddresses ?? [];
 $activeTab = $_GET['tab'] ?? 'addresses';
 $userAvatar = $user['avatar'] ?? '';
-$hasCustomAvatar = !empty($userAvatar) && file_exists(__DIR__ . '/../../' . $userAvatar);
+$hasCustomAvatar = !empty($userAvatar) && (
+    str_starts_with($userAvatar, 'http://') || 
+    str_starts_with($userAvatar, 'https://') || 
+    file_exists(__DIR__ . '/../../' . $userAvatar)
+);
 
 require_once 'app/views/includes/header.php';
 require_once 'app/views/includes/navbar.php';
@@ -257,7 +261,7 @@ require_once 'app/views/includes/functions.php';
                     <h5 class="fw-bold text-dark mb-1" id="profileDisplayFullname"><?= htmlspecialchars($user['fullname'] ?? '') ?></h5>
                     <p class="text-secondary small mb-2" id="profileDisplayEmail"><?= htmlspecialchars($user['email'] ?? '') ?></p>
 
-                    <div class="d-flex justify-content-center gap-2 mb-3">
+                    <div class="d-flex justify-content-center flex-wrap gap-2 mb-3">
                         <?php if (($user['role'] ?? 0) == 1): ?>
                             <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-2 fw-bold">
                                 <i class="fa-solid fa-shield-halved me-1"></i>Quản Trị Viên
@@ -265,6 +269,12 @@ require_once 'app/views/includes/functions.php';
                         <?php else: ?>
                             <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fw-bold">
                                 <i class="fa-solid fa-gem me-1 text-warning"></i>Khách Hàng Thân Thiết
+                            </span>
+                        <?php endif; ?>
+
+                        <?php if (($user['auth_provider'] ?? '') === 'google' || !empty($user['google_id'])): ?>
+                            <span class="badge bg-white text-danger border rounded-pill px-3 py-2 fw-semibold shadow-xs">
+                                <i class="fa-brands fa-google text-danger me-1"></i>Tài khoản Google
                             </span>
                         <?php endif; ?>
                     </div>
@@ -290,8 +300,8 @@ require_once 'app/views/includes/functions.php';
                         </div>
                         <div class="col-4">
                             <div class="stat-box">
-                                <div class="stat-val text-warning"><?= $statusCounts['Chờ xử lý'] ?? 0 ?></div>
-                                <div class="stat-lbl">Đang chờ</div>
+                                <div class="stat-val text-warning"><?= ($statusCounts['Chờ xử lý'] ?? 0) + ($statusCounts['Đang xử lý'] ?? 0) ?></div>
+                                <div class="stat-lbl">Đang chờ & chuẩn bị</div>
                             </div>
                         </div>
                     </div>

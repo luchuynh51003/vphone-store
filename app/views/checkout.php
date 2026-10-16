@@ -249,8 +249,8 @@ require_once 'app/views/includes/navbar.php';
                             </label>
 
                             <label class="payment-card-luxury <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'active' : '' ?>" for="pay_qr">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="custom-radio-circle">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="custom-radio-circle mt-1">
                                         <input type="radio" name="payment_method" value="Chuyển khoản QR VietQR" id="pay_qr" <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'checked' : '' ?> class="d-none">
                                         <span class="radio-dot"></span>
                                     </div>
@@ -258,29 +258,42 @@ require_once 'app/views/includes/navbar.php';
                                         <i class="fa-solid fa-qrcode fs-5"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                                             <span class="fw-bold text-dark">Chuyển khoản ngân hàng qua mã VietQR 24/7</span>
-                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-0" style="font-size:0.7rem;">Miễn phí giao dịch</span>
+                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Tự động nhận diện 24/7</span>
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.68rem;">Khuyên dùng</span>
                                         </div>
-                                        <small class="text-secondary d-block">Tự động điền số tiền và mã đơn hàng qua mọi ứng dụng ngân hàng.</small>
+                                        <small class="text-secondary d-block mb-2">Tự động sinh mã VietQR Napas 24/7 chính xác số tiền & nội dung đơn hàng. Tự động kích hoạt ngay sau khi chuyển mà không cần chụp bill.</small>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap pt-1 border-top" style="font-size:0.75rem; color:#64748b;">
+                                            <span><i class="fa-solid fa-bolt text-warning me-1"></i>Hỗ trợ:</span>
+                                            <span class="badge bg-light text-dark border">MBBank</span>
+                                            <span class="badge bg-light text-dark border">Vietcombank</span>
+                                            <span class="badge bg-light text-dark border">Techcombank</span>
+                                            <span class="badge bg-light text-dark border">ACB</span>
+                                            <span class="badge bg-light text-dark border">VPBank</span>
+                                            <span class="badge bg-light text-dark border">BIDV</span>
+                                            <span class="badge bg-light text-secondary border">+50 ngân hàng khác</span>
+                                        </div>
                                     </div>
                                 </div>
                             </label>
 
                             <label class="payment-card-luxury <?= $paymentMethod === 'Ví điện tử MoMo' ? 'active' : '' ?>" for="pay_momo">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="custom-radio-circle">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="custom-radio-circle mt-1">
                                         <input type="radio" name="payment_method" value="Ví điện tử MoMo" id="pay_momo" <?= $paymentMethod === 'Ví điện tử MoMo' ? 'checked' : '' ?> class="d-none">
                                         <span class="radio-dot"></span>
                                     </div>
-                                    <div class="payment-icon-box bg-danger bg-opacity-10 text-danger">
+                                    <div class="payment-icon-box text-white" style="background: #a50064; border-radius: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
                                         <i class="fa-solid fa-wallet fs-5"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center gap-2">
-                                            <span class="fw-bold text-dark">Ví điện tử MoMo / ZaloPay</span>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                            <span class="fw-bold text-dark">Ví điện tử MoMo (Sandbox Developer)</span>
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Cổng MoMo Test v2</span>
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.68rem;">Tự động duyệt</span>
                                         </div>
-                                        <small class="text-secondary d-block">Xác nhận thanh toán tiện lợi và nhanh chóng bằng ví điện tử.</small>
+                                        <small class="text-secondary d-block">Kết nối trực tiếp Cổng MoMo Sandbox API. Hỗ trợ quét mã QR MoMo và có sẵn nút giả lập "Thanh toán thành công" chính thức của MoMo.</small>
                                     </div>
                                 </div>
                             </label>
@@ -419,15 +432,44 @@ require_once 'app/views/includes/navbar.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    function updateSubmitBtn(method) {
+        const submitBtn = document.getElementById('btnSubmitOrder');
+        if (!submitBtn) return;
+        if (method === 'Chuyển khoản QR VietQR') {
+            submitBtn.innerHTML = '<i class="fa-solid fa-qrcode me-2"></i><span>TIẾP TỤC QUÉT MÃ VIETQR</span><i class="fa-solid fa-arrow-right ms-2 small"></i>';
+            submitBtn.className = 'btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2';
+            submitBtn.style.background = '';
+            submitBtn.style.border = '';
+        } else if (method === 'Ví điện tử MoMo') {
+            submitBtn.innerHTML = '<i class="fa-solid fa-wallet me-2"></i><span>THANH TOÁN QUA MOMO SANDBOX</span><i class="fa-solid fa-arrow-right ms-2 small"></i>';
+            submitBtn.className = 'btn btn-danger btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2';
+            submitBtn.style.background = 'linear-gradient(135deg, #d82d8b 0%, #a50064 100%)';
+            submitBtn.style.border = 'none';
+        } else {
+            submitBtn.innerHTML = '<i class="fa-solid fa-lock me-2"></i><span>XÁC NHẬN ĐẶT HÀNG (COD)</span>';
+            submitBtn.className = 'btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2';
+            submitBtn.style.background = '';
+            submitBtn.style.border = '';
+        }
+    }
+
     const cards = document.querySelectorAll('.payment-card-luxury');
     cards.forEach(card => {
         card.addEventListener('click', function() {
             cards.forEach(c => c.classList.remove('active'));
             this.classList.add('active');
             const radio = this.querySelector('input[type="radio"]');
-            if (radio) radio.checked = true;
+            if (radio) {
+                radio.checked = true;
+                updateSubmitBtn(radio.value);
+            }
         });
     });
+
+    const checkedRadio = document.querySelector('input[name="payment_method"]:checked');
+    if (checkedRadio) {
+        updateSubmitBtn(checkedRadio.value);
+    }
 
     const form = document.getElementById('checkoutMainForm');
     const submitBtn = document.getElementById('btnSubmitOrder');

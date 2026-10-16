@@ -7,6 +7,7 @@ $brands = $brandStmt->fetchAll();
 
 $brandId = isset($_GET['brand_id']) ? (int)$_GET['brand_id'] : 0;
 $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
+$ratingMap = $ratingMap ?? [];
 
 if (empty($_SESSION['col_used_phones_verified'])) {
     try {
@@ -59,7 +60,10 @@ require_once 'app/views/includes/navbar.php';
 ?>
 
 <script>
-    window.STORE_PRODUCTS = <?= json_encode($searchList, JSON_UNESCAPED_UNICODE) ?>;
+    window.USED_STORE_PRODUCTS = <?= json_encode($searchList, JSON_UNESCAPED_UNICODE) ?>;
+    if (!window.STORE_PRODUCTS || window.STORE_PRODUCTS.length === 0) {
+        window.STORE_PRODUCTS = window.GLOBAL_SEARCH_PRODUCTS || window.USED_STORE_PRODUCTS;
+    }
 </script>
 
 <div class="container my-3">
@@ -131,6 +135,17 @@ require_once 'app/views/includes/navbar.php';
                         <div class="card-body d-flex flex-column pt-2">
                             <small class="text-primary fw-bold text-uppercase"><?= htmlspecialchars($p['brand_name'] ?? 'Khác') ?> CŨ</small>
                             <h6 class="card-title fw-bold my-1 text-truncate-2 text-dark"><?= htmlspecialchars($p['name']) ?></h6>
+
+                            <?php
+                                $rInfo = $ratingMap[$p['id']] ?? null;
+                                $pRatingVal = $rInfo ? (float)$rInfo['avg_rating'] : 5.0;
+                                $pRevCount = $rInfo ? (int)$rInfo['review_count'] : 0;
+                            ?>
+                            <div class="d-flex align-items-center gap-1 my-1" style="font-size: 0.72rem;">
+                                <span class="text-warning"><i class="fa-solid fa-star"></i></span>
+                                <span class="fw-bold text-dark"><?= number_format($pRatingVal, 1) ?></span>
+                                <span class="text-secondary">(<?= $pRevCount ?> đánh giá)</span>
+                            </div>
 
                             <div class="specs-badge my-2 d-flex flex-wrap gap-1">
                                 <span class="badge"><?= htmlspecialchars($p['ram']) ?></span>

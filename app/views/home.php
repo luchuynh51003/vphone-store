@@ -4,6 +4,7 @@ $products = $products ?? [];
 $brands = $brands ?? [];
 $brandId = $brandId ?? 0;
 $keyword = $keyword ?? '';
+$ratingMap = $ratingMap ?? [];
 
 $searchList = [];
 foreach ($products as $p) {
@@ -36,7 +37,10 @@ require_once 'app/views/includes/navbar.php';
 ?>
 
 <script>
-    window.STORE_PRODUCTS = <?= json_encode($searchList, JSON_UNESCAPED_UNICODE) ?>;
+    window.PAGE_PRODUCTS = <?= json_encode($searchList, JSON_UNESCAPED_UNICODE) ?>;
+    if (!window.STORE_PRODUCTS || window.STORE_PRODUCTS.length === 0) {
+        window.STORE_PRODUCTS = window.GLOBAL_SEARCH_PRODUCTS || window.PAGE_PRODUCTS;
+    }
     window.PRODUCT_COLOR_MAP = <?= json_encode(getAllProductColorMap(), JSON_UNESCAPED_UNICODE) ?>;
 </script>
 
@@ -303,10 +307,10 @@ require_once 'app/views/includes/navbar.php';
             <i class="fa-solid fa-border-all me-1"></i>Tất cả điện thoại
         </button>
         <button type="button" class="btn btn-sm btn-filter-type rounded-pill px-3 py-1 fw-bold btn-outline-secondary bg-white text-dark border" data-filter-type="flagship">
-            <i class="fa-solid fa-crown text-warning me-1"></i>⭐ Flagship 2026
+            <i class="fa-solid fa-crown text-warning me-1.5"></i>Flagship 2026
         </button>
         <button type="button" class="btn btn-sm btn-filter-type rounded-pill px-3 py-1 fw-bold btn-outline-secondary bg-white text-dark border" data-filter-type="used">
-            <i class="fa-solid fa-recycle text-success me-1"></i>♻️ Hàng Cũ Like New
+            <i class="fa-solid fa-recycle text-success me-1.5"></i>Hàng Cũ Like New
         </button>
     </div>
 
@@ -358,7 +362,7 @@ require_once 'app/views/includes/navbar.php';
                                 <i class="fa-solid fa-recycle me-1"></i><?= htmlspecialchars(!empty($p['condition_desc']) && $p['condition_desc'] !== 'Mới 100%' ? $p['condition_desc'] : 'Máy cũ 99%') ?>
                             </span>
                         <?php elseif (!empty($p['is_featured'])): ?>
-                            <span class="badge badge-flagship position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;" title="⭐ Flagship 2026">
+                            <span class="badge badge-flagship position-absolute top-0 end-0 m-2 px-2 py-1 rounded-pill shadow-sm" style="z-index: 5;" title="Flagship 2026">
                                 <i class="fa-solid fa-crown text-warning me-1"></i>Flagship 2026
                             </span>
                         <?php endif; ?>
@@ -374,6 +378,17 @@ require_once 'app/views/includes/navbar.php';
                     <div class="card-body d-flex flex-column pt-2">
                         <small class="text-primary fw-bold text-uppercase"><?= htmlspecialchars($p['brand_name'] ?? 'Khác') ?></small>
                         <div class="card-prod-title"><?= htmlspecialchars($p['name']) ?></div>
+
+                        <?php
+                            $rInfo = $ratingMap[$p['id']] ?? null;
+                            $pRatingVal = $rInfo ? (float)$rInfo['avg_rating'] : 5.0;
+                            $pRevCount = $rInfo ? (int)$rInfo['review_count'] : 0;
+                        ?>
+                        <div class="d-flex align-items-center gap-1 my-1" style="font-size: 0.72rem;">
+                            <span class="text-warning"><i class="fa-solid fa-star"></i></span>
+                            <span class="fw-bold text-dark"><?= number_format($pRatingVal, 1) ?></span>
+                            <span class="text-secondary">(<?= $pRevCount ?> đánh giá)</span>
+                        </div>
 
                         <div class="specs-badge my-1">
                             <span class="badge"><?= htmlspecialchars($p['ram']) ?></span>
@@ -563,7 +578,7 @@ function getModalColorImage(product, colorName) {
 
 
 function openProductModal(productId, defaultAction) {
-    const all = window.STORE_PRODUCTS || [];
+    const all = window.PAGE_PRODUCTS || window.STORE_PRODUCTS || [];
     currentProduct = all.find(p => p.id === productId);
     if (!currentProduct) return;
 
@@ -758,8 +773,8 @@ function applyProductFilters() {
     const titleEl = document.getElementById('productListTitle');
     if (titleEl) {
         let typeText = '';
-        if (currentFilterType === 'flagship') typeText = '⭐ Flagship 2026';
-        else if (currentFilterType === 'used') typeText = '♻️ Hàng Cũ Like New 99%';
+        if (currentFilterType === 'flagship') typeText = 'Flagship 2026';
+        else if (currentFilterType === 'used') typeText = 'Hàng Cũ Like New 99%';
 
         if (currentBrandId === 0) {
             titleEl.innerHTML = `<i class="fa-solid fa-mobile-screen-button text-primary me-2"></i>${typeText ? typeText + ' - Toàn Bộ Thương Hiệu' : 'Flagship 2026 & Điện Thoại Mới Nhất'}`;

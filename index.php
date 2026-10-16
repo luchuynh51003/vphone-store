@@ -62,6 +62,12 @@ switch ($page) {
         (new HomeController($pdo))->submitClaim();
         break;
 
+    case 'review':
+    case 'reviews':
+        require_once 'app/controllers/ReviewController.php';
+        (new ReviewController($pdo))->handle();
+        break;
+
     case 'cart':
         require_once 'app/controllers/CartController.php';
         (new CartController($pdo))->index();
@@ -71,6 +77,15 @@ switch ($page) {
         require_once 'app/controllers/CartController.php';
         (new CartController($pdo))->checkout();
         break;
+
+    case 'vietqr-webhook':
+    case 'payment-webhook':
+        require_once 'api/vietqr-webhook.php';
+        exit;
+
+    case 'momo-ipn':
+        require_once 'api/momo-ipn.php';
+        exit;
 
     case 'orders':
     case 'tracking':
@@ -85,16 +100,40 @@ switch ($page) {
         break;
 
     case 'auth':
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        require_once 'app/controllers/AuthController.php';
+        $auth = new AuthController($pdo);
+        if ($action === 'google_redirect') {
+            $auth->googleRedirect();
+        } elseif ($action === 'google_callback') {
+            $auth->googleCallback();
+        } elseif ($action === 'google') {
+            $auth->googleAuth();
+        } elseif ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $authRedirect = ($_GET['redirect'] ?? '') === 'checkout' ? '&redirect=checkout' : '';
             header('Location: index.php?show_login=1' . $authRedirect);
             exit;
+        } elseif ($action === 'register') {
+            $auth->register();
+        } elseif ($action === 'logout') {
+            $auth->logout();
+        } else {
+            $auth->login();
         }
+        break;
+
+    case 'google-login':
         require_once 'app/controllers/AuthController.php';
-        $auth = new AuthController($pdo);
-        if ($action === 'register') $auth->register();
-        elseif ($action === 'logout') $auth->logout();
-        else $auth->login();
+        (new AuthController($pdo))->googleRedirect();
+        break;
+
+    case 'google-callback':
+        require_once 'app/controllers/AuthController.php';
+        (new AuthController($pdo))->googleCallback();
+        break;
+
+    case 'google-auth':
+        require_once 'app/controllers/AuthController.php';
+        (new AuthController($pdo))->googleAuth();
         break;
 
     case 'logout':

@@ -36,6 +36,39 @@ try {
             $pdo->exec("UPDATE products SET image = 'assets/images/products/samsung-tri-fold.png' WHERE id = 5;");
         }
 
+        $checkPriceSync = $pdo->query("SELECT sale_price FROM products WHERE id = 2 LIMIT 1")->fetchColumn();
+        if ($checkPriceSync == 33990000) {
+            $pdo->exec("UPDATE products SET price = 37990000, sale_price = 34990000 WHERE id = 1;");
+            $pdo->exec("UPDATE products SET price = 33990000, sale_price = 30990000 WHERE id = 2;");
+            $pdo->exec("UPDATE products SET price = 25990000, sale_price = 24490000 WHERE id = 15;");
+        }
+
+        // Đảm bảo các cột thanh toán VietQR luôn tồn tại trong orders
+        try {
+            $cols = $pdo->query("SHOW COLUMNS FROM orders")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('payment_status', $cols)) {
+                $pdo->exec("ALTER TABLE orders ADD COLUMN payment_status VARCHAR(50) NOT NULL DEFAULT 'Chưa thanh toán' AFTER payment_method");
+            }
+            if (!in_array('transaction_code', $cols)) {
+                $pdo->exec("ALTER TABLE orders ADD COLUMN transaction_code VARCHAR(100) NULL AFTER payment_status");
+            }
+            if (!in_array('paid_at', $cols)) {
+                $pdo->exec("ALTER TABLE orders ADD COLUMN paid_at DATETIME NULL AFTER transaction_code");
+            }
+        } catch (Throwable $ignore) {}
+
+        // Đảm bảo các cột Google OAuth luôn tồn tại trong users
+        try {
+            $userCols = $pdo->query("SHOW COLUMNS FROM users")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('google_id', $userCols)) {
+                $pdo->exec("ALTER TABLE users ADD COLUMN google_id VARCHAR(100) NULL AFTER email");
+            }
+            if (!in_array('auth_provider', $userCols)) {
+                $pdo->exec("ALTER TABLE users ADD COLUMN auth_provider VARCHAR(30) NOT NULL DEFAULT 'local' AFTER google_id");
+            }
+            $pdo->exec("ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NULL");
+        } catch (Throwable $ignore) {}
+
         $_SESSION['db_data_synced'] = true;
     }
 } catch (PDOException $e) {

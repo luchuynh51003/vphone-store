@@ -13,6 +13,9 @@ class HomeController {
         $brands = $this->pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
         $products = $prodModel->getAll(0, $keyword);
 
+        require_once 'app/models/ReviewModel.php';
+        $ratingMap = (new ReviewModel($this->pdo))->getSummaryMapForAllProducts();
+
         $pageTitle = 'V-Phone - Siêu Thị Flagship 2026 & Smartphone Chính Hãng';
         require_once 'app/views/home.php';
     }

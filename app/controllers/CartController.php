@@ -153,6 +153,133 @@ class CartController {
     }
 
     public function checkout() {
+        $action = $_GET['action'] ?? ($_POST['action'] ?? '');
+
+        // API kiểm tra trạng thái thanh toán tự động (Auto-polling)
+        if ($action === 'check_payment') {
+            require_once 'app/services/VietQRService.php';
+            $vietqr = new VietQRService($this->pdo);
+            $checkId = (int)($_GET['order_id'] ?? ($_POST['order_id'] ?? 0));
+            $res = $vietqr->checkPaymentStatus($checkId);
+            if (ob_get_length()) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        // API giả lập khách chuyển khoản thành công (Demo Simulator)
+        if ($action === 'simulate_payment') {
+            require_once 'app/services/VietQRService.php';
+            $vietqr = new VietQRService($this->pdo);
+            $checkId = (int)($_GET['order_id'] ?? ($_POST['order_id'] ?? 0));
+            $res = $vietqr->simulatePayment($checkId);
+            if (ob_get_length()) ob_clean();
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode($res, JSON_UNESCAPED_UNICODE);
+            exit;
+        }
+
+        // Action kích hoạt thanh toán MoMo Sandbox (từ trang tracking hoặc checkout)
+        if ($action === 'pay_momo') {
+            $orderId = (int)($_GET['order_id'] ?? ($_POST['order_id'] ?? 0));
+            header('Location: index.php?page=checkout&step=momo_sandbox&order_id=' . $orderId);
+            exit;
+        }
+
+        // Action xác nhận giả lập thanh toán MoMo thành công 1-click
+        if ($action === 'momo_confirm' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+            $orderId = (int)($_POST['order_id'] ?? 0);
+            require_once 'app/models/OrderModel.php';
+            require_once 'app/services/MoMoService.php';
+            $momoService = new MoMoService($this->pdo);
+            $simTransId = 'MOMO_' . date('His') . rand(1000, 9999);
+            $momoService->markAsPaid($orderId, $simTransId);
+            header('Location: index.php?page=checkout&step=momo_return&orderId=VP_' . $orderId . '&resultCode=0&transId=' . $simTransId);
+            exit;
+        }
+
+        // Trang Cổng MoMo Sandbox Developer (kèm nút giả lập xác nhận 1-click)
+        if (isset($_GET['step']) && $_GET['step'] === 'momo_sandbox') {
+            $orderId = (int)($_GET['order_id'] ?? 0);
+            require_once 'app/models/OrderModel.php';
+            require_once 'app/services/MoMoService.php';
+            $orderModel = new OrderModel($this->pdo);
+            $momoService = new MoMoService($this->pdo);
+            $order = $orderModel->getById($orderId);
+            if (!$order) {
+                header('Location: index.php?page=cart');
+                exit;
+            }
+            $momoRes = $momoService->createPayment($orderId, $order['total_money']);
+            $momoPayUrl = $momoRes['payUrl'] ?? '';
+            $momoQrCode = $momoRes['qrCodeUrl'] ?? '';
+            $pageTitle = 'Cổng thanh toán MoMo Sandbox - Đơn hàng #VP-' . $orderId;
+            require_once 'app/views/momo_payment.php';
+            exit;
+        }
+
+        // Trang quét mã VietQR tự động
+        if (isset($_GET['step']) && $_GET['step'] === 'vietqr') {
+            $orderId = (int)($_GET['order_id'] ?? 0);
+            require_once 'app/models/OrderModel.php';
+            require_once 'app/services/VietQRService.php';
+            $orderModel = new OrderModel($this->pdo);
+            $vietqrService = new VietQRService($this->pdo);
+            $order = $orderModel->getById($orderId);
+            if (!$order) {
+                header('Location: index.php?page=cart');
+                exit;
+            }
+            $currentUser = $_SESSION['user'] ?? null;
+            if ($currentUser && (int)$order['user_id'] !== (int)$currentUser['id'] && (int)$currentUser['role'] !== 1) {
+                header('Location: index.php?page=orders');
+                exit;
+            }
+            $qrUrl = $vietqrService->generateQrUrl($orderId, $order['total_money']);
+            $transferContent = $vietqrService->getTransferContent($orderId);
+            $bankConfig = $vietqrService->getConfig();
+            $orderDetails = $orderModel->getDetailsByOrderId($orderId);
+            $pageTitle = 'Cổng thanh toán VietQR tự động - Đơn hàng #VP-' . $orderId;
+            require_once 'app/views/vietqr_payment.php';
+            exit;
+        }
+
+        // Xử lý khi khách quay lại từ Cổng MoMo Sandbox
+        if (isset($_GET['step']) && $_GET['step'] === 'momo_return') {
+            require_once 'app/models/OrderModel.php';
+            require_once 'app/services/MoMoService.php';
+            $momoService = new MoMoService($this->pdo);
+            $orderModel = new OrderModel($this->pdo);
+
+            $rawOrderId = $_GET['orderId'] ?? '';
+            $orderId = $momoService->extractOrderId($rawOrderId);
+            $resultCode = (int)($_GET['resultCode'] ?? -1);
+            $transId = (string)($_GET['transId'] ?? ($_GET['requestId'] ?? time()));
+            $momoMessage = $_GET['message'] ?? '';
+
+            $order = $orderModel->getById($orderId);
+            $orderSuccess = false;
+            $checkoutError = '';
+            $paymentMethod = 'Ví điện tử MoMo';
+
+            if ($order) {
+                if ($resultCode === 0) {
+                    $momoService->markAsPaid($orderId, $transId, (float)($order['total_money'] ?? 0));
+                    $orderSuccess = true;
+                } else {
+                    $checkoutError = 'Giao dịch MoMo không thành công: ' . htmlspecialchars($momoMessage ?: 'Bạn đã hủy thanh toán trên MoMo.');
+                }
+            } else {
+                $checkoutError = 'Không tìm thấy thông tin đơn hàng từ phản hồi MoMo.';
+            }
+
+            $currentUser = $_SESSION['user'] ?? null;
+            $deliveryPhone = $order['phone'] ?? '';
+            $pageTitle = $orderSuccess ? 'Thanh toán MoMo thành công - V-Phone' : 'Kết quả thanh toán MoMo - V-Phone';
+            require_once 'app/views/checkout.php';
+            exit;
+        }
+
         $isBuyNowMode = (isset($_GET['mode']) && $_GET['mode'] === 'buy_now') || (!empty($_GET['action']) && $_GET['action'] === 'buy_now');
 
         if (!empty($_GET['action']) && $_GET['action'] === 'buy_now' && isset($_GET['id'])) {
@@ -388,6 +515,19 @@ class CartController {
                 if ($isBuyNowMode) { unset($_SESSION['buy_now_item']); }
                 else { $_SESSION['cart'] = []; $userModel->updateCart($currentUser['id'], null); }
                 unset($_SESSION['checkout_form_draft']);
+
+                // Nếu chọn phương thức VietQR, chuyển ngay sang Cổng thanh toán VietQR tự động
+                if ($method === 'Chuyển khoản QR VietQR') {
+                    header('Location: index.php?page=checkout&step=vietqr&order_id=' . $orderId);
+                    exit;
+                }
+
+                // Nếu chọn phương thức MoMo Sandbox, chuyển sang Cổng MoMo Sandbox (có mã QR & nút xác nhận 1-click)
+                if ($method === 'Ví điện tử MoMo') {
+                    header('Location: index.php?page=checkout&step=momo_sandbox&order_id=' . $orderId);
+                    exit;
+                }
+
                 $orderSuccess = true;
             }
         }

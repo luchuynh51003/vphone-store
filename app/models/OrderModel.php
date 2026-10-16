@@ -3,10 +3,21 @@ class OrderModel {
     private PDO $pdo;
     public function __construct(PDO $pdo) { $this->pdo = $pdo; }
 
-    public function create(?int $userId, string $fullname, string $phone, string $address, ?string $note, int|float $totalMoney, string $method) {
-        $stmt = $this->pdo->prepare("INSERT INTO orders (user_id, fullname, phone, address, note, total_money, payment_method, status) VALUES (?, ?, ?, ?, ?, ?, ?, 'Chờ xử lý')");
-        $stmt->execute([$userId, $fullname, $phone, $address, $note, $totalMoney, $method]);
+    public function create(?int $userId, string $fullname, string $phone, string $address, ?string $note, int|float $totalMoney, string $method, string $paymentStatus = 'Chưa thanh toán', ?string $status = null) {
+        if ($status === null) {
+            $status = ($method === 'Chuyển khoản QR VietQR') ? 'Chờ thanh toán' : 'Chờ xử lý';
+        }
+        $stmt = $this->pdo->prepare("INSERT INTO orders (user_id, fullname, phone, address, note, total_money, payment_method, payment_status, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$userId, $fullname, $phone, $address, $note, $totalMoney, $method, $paymentStatus, $status]);
         return $this->pdo->lastInsertId();
+    }
+
+    public function updatePaymentStatus(int $orderId, string $paymentStatus, ?string $transCode = null, ?string $paidAt = null): bool {
+        if ($paidAt === null && $paymentStatus === 'Đã thanh toán') {
+            $paidAt = date('Y-m-d H:i:s');
+        }
+        $stmt = $this->pdo->prepare("UPDATE orders SET payment_status = ?, transaction_code = COALESCE(?, transaction_code), paid_at = COALESCE(?, paid_at) WHERE id = ?");
+        return $stmt->execute([$paymentStatus, $transCode, $paidAt, $orderId]);
     }
 
     public function addDetail(int $orderId, ?int $productId, string $productName, int|float $price, int $quantity, int|float $totalPrice) {
@@ -37,8 +48,13 @@ class OrderModel {
 
     public function getByUserId(int $userId, string $status = 'all'): array {
         if ($status !== 'all') {
-            $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = ? AND status = ? ORDER BY id DESC");
-            $stmt->execute([$userId, $status]);
+            if ($status === 'Chờ xử lý') {
+                $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = ? AND (status = 'Chờ xử lý' OR status = 'Chờ thanh toán') ORDER BY id DESC");
+                $stmt->execute([$userId]);
+            } else {
+                $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = ? AND status = ? ORDER BY id DESC");
+                $stmt->execute([$userId, $status]);
+            }
         } else {
             $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE user_id = ? ORDER BY id DESC");
             $stmt->execute([$userId]);
@@ -54,14 +70,23 @@ class OrderModel {
         $counts = [
             'all' => 0,
             'Chờ xử lý' => 0,
+            'Đang xử lý' => 0,
             'Đang giao hàng' => 0,
             'Đã giao thành công' => 0,
             'Đã hủy' => 0
         ];
 
         foreach ($rows as $r) {
-            $counts[$r['status']] = (int)$r['cnt'];
-            $counts['all'] += (int)$r['cnt'];
+            $st = $r['status'];
+            $cnt = (int)$r['cnt'];
+            if ($st === 'Chờ thanh toán') {
+                $counts['Chờ xử lý'] += $cnt;
+            } elseif (isset($counts[$st])) {
+                $counts[$st] += $cnt;
+            } else {
+                $counts[$st] = $cnt;
+            }
+            $counts['all'] += $cnt;
         }
 
         return $counts;

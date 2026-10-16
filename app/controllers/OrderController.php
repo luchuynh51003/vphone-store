@@ -2,6 +2,7 @@
 require_once 'app/models/OrderModel.php';
 require_once 'app/models/ProductModel.php';
 require_once 'app/models/UserModel.php';
+require_once 'app/models/NotificationModel.php';
 
 class OrderController {
     private PDO $pdo;
@@ -136,6 +137,7 @@ class OrderController {
 
         $trackedOrder = null;
         $trackedDetails = [];
+        $trackedNotification = null;
         $lookupCode = trim($_POST['order_code'] ?? ($_GET['order_code'] ?? ($_GET['id'] ?? ($_GET['order_id'] ?? ''))));
         $lookupPhone = trim($_POST['phone'] ?? ($_GET['phone'] ?? ''));
 
@@ -167,24 +169,65 @@ class OrderController {
                         $orderError = "Không tìm thấy đơn hàng #VP-$cleanId trong hệ thống.";
                     }
                 }
+
+                // Nếu đơn hàng đã bị Admin xóa/hủy, kiểm tra trong bảng thông báo
+                if (!$trackedOrder) {
+                    $notifModel = new NotificationModel($this->pdo);
+                    $notif = $notifModel->getByOrderId($cleanId);
+                    if ($notif) {
+                        $canViewNotif = false;
+                        if ($currentUser && ((int)$notif['user_id'] === (int)$currentUser['id'] || (int)$currentUser['role'] === 1)) {
+                            $canViewNotif = true;
+                        } elseif (!empty($lookupPhone)) {
+                            $cleanInputPhone = preg_replace('/[^0-9]/', '', $lookupPhone);
+                            $cleanNotifPhone = preg_replace('/[^0-9]/', '', $notif['phone'] ?? '');
+                            if ($cleanInputPhone && $cleanNotifPhone && (substr($cleanNotifPhone, -9) === substr($cleanInputPhone, -9))) {
+                                $canViewNotif = true;
+                            }
+                        }
+
+                        if ($canViewNotif) {
+                            $trackedNotification = $notif;
+                            $orderError = ''; // Đã tìm thấy thông báo lý do hủy từ cửa hàng
+                            if ($currentUser) {
+                                $notifModel->markAsRead((int)$notif['id'], (int)$currentUser['id']);
+                            }
+                        } elseif (empty($lookupPhone) && !$currentUser) {
+                            $orderError = "Đơn hàng #VP-$cleanId đã được xử lý hủy. Để xem chi tiết lý do từ cửa hàng, vui lòng nhập Số điện thoại đã đặt mua.";
+                        }
+                    }
+                }
             }
         }
 
         $userOrders = [];
         $userOrderDetails = [];
-        $statusCounts = ['all' => 0, 'Chờ xử lý' => 0, 'Đang giao hàng' => 0, 'Đã giao thành công' => 0, 'Đã hủy' => 0];
+        $userCancelledNotifs = [];
+        $statusCounts = ['all' => 0, 'Chờ xử lý' => 0, 'Đang xử lý' => 0, 'Đang giao hàng' => 0, 'Đã giao thành công' => 0, 'Đã hủy' => 0];
         $activeTab = $_GET['status'] ?? 'all';
         $searchKeyword = trim($_GET['q'] ?? '');
 
         if ($currentUser) {
+            $notifModel = new NotificationModel($this->pdo);
             $userOrders = $orderModel->getByUserId((int)$currentUser['id'], $activeTab);
             $statusCounts = $orderModel->getStatusCountsByUserId((int)$currentUser['id']);
+
+            // Lấy danh sách các đơn đã bị Admin hủy / xóa có thông báo
+            $userCancelledNotifs = $notifModel->getCancelledOrdersByUserId((int)$currentUser['id'], 30);
+            if (!empty($userCancelledNotifs)) {
+                $statusCounts['Đã hủy'] += count($userCancelledNotifs);
+                $statusCounts['all'] += count($userCancelledNotifs);
+            }
 
             if (!empty($searchKeyword)) {
                 $kw = mb_strtolower($searchKeyword, 'UTF-8');
                 $userOrders = array_filter($userOrders, function($o) use ($kw) {
                     $orderText = mb_strtolower('#vp-' . $o['id'] . ' ' . $o['id'] . ' ' . $o['fullname'] . ' ' . $o['phone'] . ' ' . $o['address'], 'UTF-8');
                     return strpos($orderText, $kw) !== false;
+                });
+                $userCancelledNotifs = array_filter($userCancelledNotifs, function($n) use ($kw) {
+                    $notifText = mb_strtolower('#vp-' . $n['order_id'] . ' ' . $n['order_id'] . ' ' . $n['title'] . ' ' . $n['message'] . ' ' . ($n['cancel_reason'] ?? ''), 'UTF-8');
+                    return strpos($notifText, $kw) !== false;
                 });
             }
 

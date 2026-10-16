@@ -37,7 +37,27 @@ class ProductModel {
         $sql = "SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id WHERE 1=1";
         $params = [];
         if ($brandId > 0) { $sql .= " AND p.brand_id = :bid"; $params[':bid'] = $brandId; }
-        if (!empty($keyword)) { $sql .= " AND p.name LIKE :kw"; $params[':kw'] = '%' . $keyword . '%'; }
+        if (!empty($keyword)) {
+            $kw = mb_strtolower(trim($keyword), 'UTF-8');
+            $searchTerms = [$kw];
+            if ($kw === 'ss' || $kw === 'sam') {
+                $searchTerms[] = 'samsung';
+            } elseif ($kw === 'ip') {
+                $searchTerms[] = 'iphone';
+            } elseif (preg_match('/^ip\s*(.*)$/i', $kw, $m)) {
+                $searchTerms[] = 'iphone ' . trim($m[1]);
+            } elseif (preg_match('/^ss\s*(.*)$/i', $kw, $m)) {
+                $searchTerms[] = 'samsung ' . trim($m[1]);
+            }
+
+            $orParts = [];
+            foreach ($searchTerms as $idx => $term) {
+                $orParts[] = "(p.name LIKE :kw{$idx} OR b.name LIKE :kwb{$idx})";
+                $params[":kw{$idx}"] = '%' . $term . '%';
+                $params[":kwb{$idx}"] = '%' . $term . '%';
+            }
+            $sql .= " AND (" . implode(" OR ", $orParts) . ")";
+        }
         $sql .= " ORDER BY p.is_featured DESC, p.id ASC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);
@@ -50,7 +70,27 @@ class ProductModel {
         $sql = "SELECT p.*, b.name as brand_name FROM products p LEFT JOIN brands b ON p.brand_id = b.id WHERE p.is_used = 1";
         $params = [];
         if ($brandId > 0) { $sql .= " AND p.brand_id = :bid"; $params[':bid'] = $brandId; }
-        if (!empty($keyword)) { $sql .= " AND p.name LIKE :kw"; $params[':kw'] = '%' . $keyword . '%'; }
+        if (!empty($keyword)) {
+            $kw = mb_strtolower(trim($keyword), 'UTF-8');
+            $searchTerms = [$kw];
+            if ($kw === 'ss' || $kw === 'sam') {
+                $searchTerms[] = 'samsung';
+            } elseif ($kw === 'ip') {
+                $searchTerms[] = 'iphone';
+            } elseif (preg_match('/^ip\s*(.*)$/i', $kw, $m)) {
+                $searchTerms[] = 'iphone ' . trim($m[1]);
+            } elseif (preg_match('/^ss\s*(.*)$/i', $kw, $m)) {
+                $searchTerms[] = 'samsung ' . trim($m[1]);
+            }
+
+            $orParts = [];
+            foreach ($searchTerms as $idx => $term) {
+                $orParts[] = "(p.name LIKE :kw{$idx} OR b.name LIKE :kwb{$idx})";
+                $params[":kw{$idx}"] = '%' . $term . '%';
+                $params[":kwb{$idx}"] = '%' . $term . '%';
+            }
+            $sql .= " AND (" . implode(" OR ", $orParts) . ")";
+        }
         $sql .= " ORDER BY p.id DESC";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute($params);

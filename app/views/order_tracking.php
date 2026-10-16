@@ -2,13 +2,15 @@
 $currentUser = $currentUser ?? ($_SESSION['user'] ?? null);
 $trackedOrder = $trackedOrder ?? null;
 $trackedDetails = $trackedDetails ?? [];
+$trackedNotification = $trackedNotification ?? null;
 $userOrders = $userOrders ?? [];
 $userOrderDetails = $userOrderDetails ?? [];
-$statusCounts = $statusCounts ?? ['all' => 0, 'Chờ xử lý' => 0, 'Đang giao hàng' => 0, 'Đã giao thành công' => 0, 'Đã hủy' => 0];
+$userCancelledNotifs = $userCancelledNotifs ?? [];
+$statusCounts = $statusCounts ?? ['all' => 0, 'Chờ xử lý' => 0, 'Đang xử lý' => 0, 'Đang giao hàng' => 0, 'Đã giao thành công' => 0, 'Đã hủy' => 0];
 $activeTab = $activeTab ?? 'all';
 $orderMessage = $orderMessage ?? '';
 $orderError = $orderError ?? '';
-$pageTitle = $trackedOrder ? 'Theo Dõi Đơn Hàng #VP-' . $trackedOrder['id'] . ' - V-Phone' : 'Theo Dõi & Lịch Sử Đơn Hàng - V-Phone';
+$pageTitle = $trackedOrder ? 'Theo Dõi Đơn Hàng #VP-' . $trackedOrder['id'] . ' - V-Phone' : ($trackedNotification ? 'Thông Báo Hủy Đơn #VP-' . $trackedNotification['order_id'] . ' - V-Phone' : 'Theo Dõi & Lịch Sử Đơn Hàng - V-Phone');
 
 require_once 'app/views/includes/header.php';
 require_once 'app/views/includes/navbar.php';
@@ -16,78 +18,42 @@ require_once 'app/views/includes/functions.php';
 ?>
 
 <style>
-
+/* ==========================================================================
+   ORDER TRACKING & HISTORY - MODERN SPACIOUS FLAGSHIP STYLING
+   ========================================================================== */
 .order-tracking-page {
-    padding-top: 28px;
-    padding-bottom: 64px;
+    padding-top: 24px;
+    padding-bottom: 80px;
+    min-height: 85vh;
 }
 
+/* Header Tracking Card */
 .tracking-header-card {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1.5px solid #e2e8f0;
     border-radius: 24px;
-    padding: 24px 28px;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
-    margin-bottom: 24px;
+    padding: 26px 32px;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
+    margin-bottom: 28px;
 }
 
-.status-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 18px;
-    border-radius: 9999px;
-    font-weight: 700;
-    font-size: 0.88rem;
-    letter-spacing: 0.2px;
-}
-.status-pill-pending {
-    background: #fef3c7;
-    color: #b45309;
-    border: 1px solid #fde68a;
-}
-.status-pill-shipping {
-    background: #e0f2fe;
-    color: #0369a1;
-    border: 1px solid #bae6fd;
-}
-.status-pill-delivered {
-    background: #dcfce7;
-    color: #15803d;
-    border: 1px solid #bbf7d0;
-}
-.status-pill-cancelled {
-    background: #fee2e2;
-    color: #b91c1c;
-    border: 1px solid #fecaca;
-}
-.status-pill .pulse-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    display: inline-block;
-}
-.status-pill-pending .pulse-dot { background: #d97706; }
-.status-pill-shipping .pulse-dot { background: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
-.status-pill-delivered .pulse-dot { background: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25); }
-.status-pill-cancelled .pulse-dot { background: #dc2626; }
-
+/* Stepper Box */
 .tracking-stepper-box {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1.5px solid #e2e8f0;
     border-radius: 24px;
-    padding: 32px 28px 24px;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
-    margin-bottom: 24px;
+    padding: 32px 32px 26px;
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
+    margin-bottom: 28px;
 }
 
 .timeline-track-wrap {
     position: relative;
-    padding: 20px 0 10px;
+    padding: 24px 0 12px;
 }
 .timeline-track-line {
     position: absolute;
-    top: 45px;
+    top: 50px;
     left: 8%;
     right: 8%;
     height: 4px;
@@ -114,81 +80,83 @@ require_once 'app/views/includes/functions.php';
     background: #f8fafc;
     color: #94a3b8;
     border: 3px solid #ffffff;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     transition: all 0.3s ease;
 }
 .timeline-step.completed .step-icon-bubble {
     background: #10b981;
     color: #ffffff;
-    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
 }
 .timeline-step.active .step-icon-bubble {
     background: #0066cc;
     color: #ffffff;
-    box-shadow: 0 0 0 6px rgba(0, 102, 204, 0.18), 0 8px 20px rgba(0, 102, 204, 0.3);
+    box-shadow: 0 0 0 6px rgba(0, 102, 204, 0.18), 0 8px 22px rgba(0, 102, 204, 0.35);
     transform: scale(1.08);
 }
 .timeline-step.cancelled .step-icon-bubble {
     background: #ef4444;
     color: #ffffff;
-    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+    box-shadow: 0 6px 18px rgba(239, 68, 68, 0.35);
 }
 .step-title-text {
     font-weight: 700;
-    font-size: 0.92rem;
+    font-size: 0.95rem;
     margin-top: 14px;
     color: #1e293b;
 }
 .timeline-step.completed .step-title-text { color: #059669; }
 .timeline-step.active .step-title-text { color: #0066cc; font-weight: 800; }
 .step-sub-text {
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     color: #64748b;
     margin-top: 3px;
-    line-height: 1.35;
+    line-height: 1.4;
 }
 
+/* Info Cards (Address & Payment) */
 .info-card-box {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 22px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 24px 28px;
     height: 100%;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 .info-card-box:hover {
-    border-color: #cce3ff;
-    box-shadow: 0 6px 18px rgba(0, 102, 204, 0.06);
+    border-color: #bfdbfe;
+    box-shadow: 0 8px 24px rgba(0, 102, 204, 0.07);
 }
 .info-header-tag {
-    font-size: 0.78rem;
-    font-weight: 700;
+    font-size: 0.8rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #0066cc;
-    margin-bottom: 12px;
+    letter-spacing: 0.6px;
+    margin-bottom: 16px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
 }
 
+/* Tracked Products Box */
 .order-products-box {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1.5px solid #e2e8f0;
     border-radius: 24px;
-    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    box-shadow: 0 4px 24px rgba(15, 23, 42, 0.04);
     overflow: hidden;
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 .product-row-item {
     display: flex;
     align-items: center;
-    gap: 18px;
-    padding: 18px 24px;
+    gap: 20px;
+    padding: 20px 28px;
     border-bottom: 1px solid #f1f5f9;
     transition: background-color 0.2s ease;
 }
@@ -204,7 +172,7 @@ require_once 'app/views/includes/functions.php';
     height: 80px;
     border-radius: 16px;
     background: #ffffff;
-    border: 1px solid #e2e8f0;
+    border: 1.5px solid #e2e8f0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -220,19 +188,20 @@ require_once 'app/views/includes/functions.php';
     object-fit: contain;
     transition: transform 0.3s ease;
 }
-.product-row-item:hover .prod-thumb-container img {
+.product-row-item:hover .prod-thumb-container img,
+.order-product-item:hover .prod-thumb-container img {
     transform: scale(1.08);
 }
 
-.variant-tag {
+.variant-tag, .variant-chip {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    gap: 6px;
     background: #f1f5f9;
     color: #334155;
-    font-size: 0.76rem;
+    font-size: 0.78rem;
     font-weight: 600;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 9999px;
     border: 1px solid #e2e8f0;
 }
@@ -240,64 +209,211 @@ require_once 'app/views/includes/functions.php';
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    border: 1px solid rgba(0,0,0,0.15);
+    border: 1px solid rgba(0,0,0,0.18);
     display: inline-block;
     flex-shrink: 0;
 }
 
 .order-cost-summary-box {
     background: #f8fafc;
-    border-top: 1px solid #e2e8f0;
-    padding: 24px 28px;
+    border-top: 1.5px solid #e2e8f0;
+    padding: 24px 32px;
 }
 
+/* Compact Lookup Box */
+.compact-lookup-box {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 26px 32px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    margin-bottom: 36px;
+    transition: border-color 0.2s ease;
+}
+.compact-lookup-box:hover {
+    border-color: #cbd5e1;
+}
+.lookup-icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #0066cc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* Segmented Filter Navigation Bar */
+.order-filter-nav-wrap {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 8px;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+    margin-bottom: 32px;
+}
+.order-filter-nav-wrap::-webkit-scrollbar {
+    display: none;
+}
+.order-tab-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    color: #64748b;
+    background: transparent;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
+}
+.order-tab-item:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+    transform: translateY(-1px);
+}
+.order-tab-item.active-all {
+    background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 102, 204, 0.28);
+}
+.order-tab-item.active-pending {
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.28);
+}
+.order-tab-item.active-processing {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+}
+.order-tab-item.active-shipping {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+}
+.order-tab-item.active-delivered {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.28);
+}
+.order-tab-item.active-cancelled {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.28);
+}
+.order-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 22px;
+    padding: 0 7px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+.order-tab-item[class*="active-"] .order-tab-count {
+    background: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+}
+.order-tab-item:not([class*="active-"]) .order-tab-count {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+/* Order History Cards */
 .order-history-card {
     background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    box-shadow: 0 3px 14px rgba(15, 23, 42, 0.03);
-    margin-bottom: 18px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 24px;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    margin-bottom: 28px;
     overflow: hidden;
-    transition: all 0.25s ease;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .order-history-card:hover {
     border-color: #93c5fd;
-    box-shadow: 0 8px 24px rgba(0, 102, 204, 0.08);
-    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 102, 204, 0.09);
+    transform: translateY(-3px);
 }
 .order-history-card-header {
-    background: #ffffff;
-    border-bottom: 1px solid #f1f5f9;
-    padding: 16px 22px;
+    background: #fcfdfe;
+    border-bottom: 1.5px solid #f1f5f9;
+    padding: 20px 28px;
+}
+.order-code-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eff6ff;
+    color: #0066cc;
+    font-weight: 800;
+    font-size: 1.05rem;
+    padding: 6px 14px;
+    border-radius: 12px;
+    border: 1.5px solid #bfdbfe;
+    letter-spacing: 0.3px;
 }
 .order-history-card-body {
-    padding: 16px 22px;
+    padding: 24px 28px;
+}
+.order-product-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 16px 0;
+    border-bottom: 1px dashed #e2e8f0;
+    transition: background-color 0.15s ease;
+}
+.order-product-item:first-child {
+    padding-top: 0;
+}
+.order-product-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
 }
 .order-history-card-footer {
     background: #fcfdfe;
-    border-top: 1px solid #f1f5f9;
-    padding: 16px 22px;
+    border-top: 1.5px solid #f1f5f9;
+    padding: 20px 28px;
 }
 
-.compact-lookup-box {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 20px 24px;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.03);
-    margin-bottom: 28px;
+.order-history-list-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
 }
 
 @media (max-width: 768px) {
-    .order-tracking-page { padding-top: 16px; }
-    .tracking-header-card { padding: 18px; border-radius: 18px; }
-    .tracking-stepper-box { padding: 22px 14px; border-radius: 18px; }
-    .timeline-track-line { top: 38px; left: 10%; right: 10%; }
-    .step-icon-bubble { width: 42px; height: 42px; font-size: 0.95rem; }
-    .step-title-text { font-size: 0.78rem; margin-top: 10px; }
+    .order-tracking-page { padding-top: 16px; padding-bottom: 48px; }
+    .tracking-header-card { padding: 20px; border-radius: 18px; margin-bottom: 20px; }
+    .tracking-stepper-box { padding: 22px 16px; border-radius: 18px; margin-bottom: 20px; }
+    .timeline-track-line { top: 40px; left: 10%; right: 10%; }
+    .step-icon-bubble { width: 44px; height: 44px; font-size: 1rem; }
+    .step-title-text { font-size: 0.8rem; margin-top: 10px; }
     .step-sub-text { display: none; }
-    .prod-thumb-container { width: 64px; height: 64px; }
-    .product-row-item { padding: 14px; gap: 12px; }
+    .prod-thumb-container { width: 68px; height: 68px; }
+    .compact-lookup-box { padding: 20px; border-radius: 18px; margin-bottom: 24px; }
+    .order-filter-nav-wrap { border-radius: 16px; padding: 6px; margin-bottom: 24px; }
+    .order-tab-item { padding: 8px 14px; font-size: 0.82rem; }
+    .order-history-card { border-radius: 18px; margin-bottom: 20px; }
+    .order-history-card-header { padding: 16px 18px; }
+    .order-history-card-body { padding: 18px; }
+    .order-history-card-footer { padding: 16px 18px; }
+    .order-product-item { gap: 14px; }
 }
 </style>
 
@@ -311,6 +427,8 @@ require_once 'app/views/includes/functions.php';
                 <li class="breadcrumb-item"><a href="index.php?page=orders" class="text-decoration-none text-muted">Theo dõi đơn hàng</a></li>
                 <?php if ($trackedOrder): ?>
                     <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Đơn hàng #VP-<?= $trackedOrder['id'] ?></li>
+                <?php elseif ($trackedNotification): ?>
+                    <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Đơn hàng #VP-<?= (int)$trackedNotification['order_id'] ?> (Đã hủy)</li>
                 <?php else: ?>
                     <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Lịch sử đặt hàng</li>
                 <?php endif; ?>
@@ -340,20 +458,88 @@ require_once 'app/views/includes/functions.php';
             </div>
         <?php endif; ?>
 
-        
-        
-        
+        <?php if ($trackedNotification): ?>
+            <!-- THÔNG BÁO ĐƠN HÀNG ĐÃ BỊ HỦY / XÓA BỞI CỬA HÀNG -->
+            <div class="tracking-header-card border-danger border-opacity-25 mb-4 shadow-sm" style="background: linear-gradient(180deg, #fff5f5 0%, #ffffff 100%);">
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3 pb-3 border-bottom border-danger-subtle">
+                    <div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <a href="index.php?page=orders" class="btn btn-sm btn-light border rounded-pill px-3 py-1 text-secondary fw-semibold">
+                                <i class="fa-solid fa-arrow-left me-1"></i>Danh sách đơn hàng
+                            </a>
+                            <span class="badge bg-danger rounded-pill px-3 py-1 fw-bold">
+                                <i class="fa-solid fa-ban me-1"></i>Đơn hàng đã hủy bởi cửa hàng
+                            </span>
+                        </div>
+                        <h3 class="fw-black text-danger mb-1 d-flex align-items-center gap-2">
+                            <span>Thông Báo Hủy Đơn Hàng</span>
+                            <span class="text-dark" style="letter-spacing: 0.5px;">#VP-<?= (int)$trackedNotification['order_id'] ?></span>
+                        </h3>
+                        <div class="text-muted small">
+                            <i class="fa-regular fa-clock me-1 text-danger"></i>Thời gian xử lý: <strong><?= date('d/m/Y - H:i', strtotime($trackedNotification['created_at'])) ?></strong>
+                            <?php if (!empty($trackedNotification['phone'])): ?>
+                                <span class="mx-2">•</span>
+                                <i class="fa-solid fa-phone me-1 text-muted"></i>SĐT nhận tin: <span class="fw-bold text-dark"><?= htmlspecialchars($trackedNotification['phone']) ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3.5 py-2 fs-6 shadow-sm fw-bold">
+                            <i class="fa-solid fa-circle-xmark me-1"></i>Đã hủy & thu hồi đơn
+                        </span>
+                    </div>
+                </div>
+
+                <div class="alert alert-danger rounded-4 p-4 border-0 d-flex align-items-start gap-3 mb-3" style="background: #fef2f2;">
+                    <div style="width:48px; height:48px; border-radius:50%; background:#fee2e2; color:#ef4444; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <i class="fa-solid fa-circle-exclamation fs-4"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="fw-bold text-danger mb-2 fs-6">Lý do hủy đơn từ Ban Quản Trị V-Phone:</h6>
+                        <?php if (!empty($trackedNotification['cancel_reason'])): ?>
+                            <div class="mb-2">
+                                <span class="badge bg-danger bg-opacity-15 text-danger border border-danger border-opacity-25 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.88rem;">
+                                    <?= htmlspecialchars($trackedNotification['cancel_reason']) ?>
+                                </span>
+                            </div>
+                        <?php endif; ?>
+                        <div class="p-3 bg-white rounded-3 border text-secondary small" style="white-space: pre-line; line-height: 1.6;">
+                            <?= htmlspecialchars($trackedNotification['message']) ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 p-3 bg-light rounded-4">
+                    <div class="small text-muted d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-headset text-primary fs-5"></i>
+                        <span>Cần trợ giúp hoặc tư vấn sản phẩm tương đương? Gọi tổng đài miễn phí: <strong class="text-danger">1800 6868</strong></span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <a href="index.php" class="btn btn-primary rounded-pill px-4 fw-bold">
+                            <i class="fa-solid fa-cart-shopping me-1"></i>Xem sản phẩm khác
+                        </a>
+                        <a href="index.php?page=orders" class="btn btn-outline-secondary rounded-pill px-3 fw-semibold">
+                            <i class="fa-solid fa-boxes-packing me-1"></i>Đơn hàng của tôi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <?php if ($trackedOrder): ?>
             <?php
             $st = $trackedOrder['status'];
             $isCancelled = ($st === 'Đã hủy');
             $isPending = ($st === 'Chờ xử lý');
+            $isProcessing = ($st === 'Đang xử lý');
+            $isWaitingPayment = ($st === 'Chờ thanh toán');
             $isShipping = ($st === 'Đang giao hàng');
             $isDelivered = ($st === 'Đã giao thành công');
 
-            
-            $progressPct = 12;
-            if ($isShipping) $progressPct = 65;
+            $progressPct = 15;
+            if ($isProcessing) $progressPct = 42;
+            elseif ($isShipping) $progressPct = 72;
             elseif ($isDelivered) $progressPct = 100;
             elseif ($isCancelled) $progressPct = 100;
 
@@ -384,37 +570,8 @@ require_once 'app/views/includes/functions.php';
                     </div>
 
                     <div class="d-flex align-items-center gap-2">
-                        <?php if ($isPending): ?>
-                            <div class="status-pill status-pill-pending">
-                                <span class="pulse-dot"></span>
-                                <i class="fa-solid fa-hourglass-half"></i>
-                                <span>Chờ xử lý</span>
-                            </div>
-                        <?php elseif ($isShipping): ?>
-                            <div class="status-pill status-pill-shipping">
-                                <span class="pulse-dot"></span>
-                                <i class="fa-solid fa-truck-fast"></i>
-                                <span>Đang giao hàng</span>
-                            </div>
-                        <?php elseif ($isDelivered): ?>
-                            <div class="status-pill status-pill-delivered">
-                                <span class="pulse-dot"></span>
-                                <i class="fa-solid fa-circle-check"></i>
-                                <span>Đã giao thành công</span>
-                            </div>
-                        <?php elseif ($isCancelled): ?>
-                            <div class="status-pill status-pill-cancelled">
-                                <span class="pulse-dot"></span>
-                                <i class="fa-solid fa-circle-xmark"></i>
-                                <span>Đã hủy đơn hàng</span>
-                            </div>
-                        <?php else: ?>
-                            <div class="status-pill status-pill-pending">
-                                <span><?= htmlspecialchars($st) ?></span>
-                            </div>
-                        <?php endif; ?>
+                        <?= renderOrderStatusPill($st, true, 'px-3.5 py-2 fs-6 shadow-sm') ?>
 
-                        
                         <button type="button" class="btn btn-outline-secondary rounded-pill px-3 py-2 fw-semibold small shadow-sm" onclick="window.print()" title="In thông tin đơn hàng">
                             <i class="fa-solid fa-print me-1"></i>In đơn
                         </button>
@@ -470,15 +627,19 @@ require_once 'app/views/includes/functions.php';
                             </div>
 
                             
-                            <div class="timeline-step <?= ($isShipping || $isDelivered) ? 'completed' : ($isPending ? 'active' : '') ?>">
+                            <div class="timeline-step <?= ($isShipping || $isDelivered) ? 'completed' : (($isPending || $isProcessing || $isWaitingPayment) ? 'active' : '') ?>">
                                 <div class="step-icon-bubble">
                                     <?php if ($isShipping || $isDelivered): ?>
                                         <i class="fa-solid fa-check"></i>
+                                    <?php elseif ($isProcessing): ?>
+                                        <i class="fa-solid fa-boxes-packing"></i>
+                                    <?php elseif ($isWaitingPayment): ?>
+                                        <i class="fa-solid fa-qrcode"></i>
                                     <?php else: ?>
-                                        <i class="fa-solid fa-box-open"></i>
+                                        <i class="fa-solid fa-clock-rotate-left"></i>
                                     <?php endif; ?>
                                 </div>
-                                <div class="step-title-text">Kho Chuẩn Bị Máy</div>
+                                <div class="step-title-text"><?= $isProcessing ? 'Đang Đóng Gói Máy' : 'Kho Chuẩn Bị Máy' ?></div>
                                 <div class="step-sub-text">Kiểm tra tem seal, IMEI & đóng hộp</div>
                             </div>
 
@@ -498,7 +659,7 @@ require_once 'app/views/includes/functions.php';
                             
                             <div class="timeline-step <?= $isDelivered ? 'completed' : '' ?>">
                                 <div class="step-icon-bubble">
-                                    <i class="fa-solid fa-house-circle-check"></i>
+                                    <i class="fa-solid fa-circle-check"></i>
                                 </div>
                                 <div class="step-title-text">Giao Hàng Thành Công</div>
                                 <div class="step-sub-text">Đã giao tận tay & kích hoạt bảo hành</div>
@@ -548,12 +709,46 @@ require_once 'app/views/includes/functions.php';
                             <i class="fa-solid fa-credit-card"></i>
                             <span>Thanh Toán & Vận Chuyển</span>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom flex-wrap gap-2">
                             <span class="small text-muted">Phương thức thanh toán:</span>
-                            <span class="badge bg-light text-dark border rounded-pill px-3 py-1 fw-bold">
-                                <i class="fa-solid fa-wallet me-1 text-primary"></i><?= htmlspecialchars($trackedOrder['payment_method']) ?>
-                            </span>
+                            <div class="d-flex align-items-center gap-1.5 flex-wrap justify-content-end">
+                                <span class="badge bg-light text-dark border rounded-pill px-3 py-1 fw-bold">
+                                    <i class="fa-solid fa-wallet me-1 text-primary"></i><?= htmlspecialchars($trackedOrder['payment_method']) ?>
+                                </span>
+                                <?php 
+                                    $pStatus = $trackedOrder['payment_status'] ?? 'Chưa thanh toán';
+                                    $isPaid = ($pStatus === 'Đã thanh toán');
+                                    $isVietQR = ($trackedOrder['payment_method'] === 'Chuyển khoản QR VietQR');
+                                    $isMoMo = ($trackedOrder['payment_method'] === 'Ví điện tử MoMo');
+                                ?>
+                                <?php if ($isPaid): ?>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 small fw-bold">
+                                        <i class="fa-solid fa-circle-check me-1"></i>Đã thanh toán
+                                    </span>
+                                <?php elseif ($isVietQR && $trackedOrder['status'] !== 'Đã hủy'): ?>
+                                    <a href="index.php?page=checkout&step=vietqr&order_id=<?= (int)$trackedOrder['id'] ?>" class="btn btn-sm btn-danger rounded-pill px-2.5 py-0.5 fw-bold shadow-sm" style="font-size:0.75rem;">
+                                        <i class="fa-solid fa-qrcode me-1"></i>Quét mã thanh toán ngay
+                                    </a>
+                                <?php elseif ($isMoMo && $trackedOrder['status'] !== 'Đã hủy'): ?>
+                                    <a href="index.php?page=checkout&action=pay_momo&order_id=<?= (int)$trackedOrder['id'] ?>" class="btn btn-sm text-white rounded-pill px-2.5 py-1 fw-bold shadow-sm" style="font-size:0.75rem; background: linear-gradient(135deg, #d82d8b 0%, #a50064 100%);">
+                                        <i class="fa-solid fa-wallet me-1"></i>Thanh toán MoMo ngay
+                                    </a>
+                                    <a href="index.php?page=checkout&step=vietqr&order_id=<?= (int)$trackedOrder['id'] ?>" class="btn btn-sm btn-outline-primary rounded-pill px-2 py-0.5 fw-bold" style="font-size:0.72rem;" title="Chuyển sang quét VietQR">
+                                        <i class="fa-solid fa-qrcode me-1"></i>VietQR
+                                    </a>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-2.5 py-1 small">
+                                        <?= htmlspecialchars($pStatus) ?>
+                                    </span>
+                                <?php endif; ?>
+                            </div>
                         </div>
+                        <?php if (!empty($trackedOrder['transaction_code'])): ?>
+                            <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                                <span class="small text-muted">Mã giao dịch VietQR:</span>
+                                <span class="small fw-mono text-success fw-bold"><?= htmlspecialchars($trackedOrder['transaction_code']) ?></span>
+                            </div>
+                        <?php endif; ?>
                         <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
                             <span class="small text-muted">Đơn vị vận chuyển:</span>
                             <span class="small fw-bold text-primary">
@@ -682,17 +877,30 @@ require_once 'app/views/includes/functions.php';
             </div>
         <?php endif; ?>
 
-        
-        
-        
+        <?php if ($trackedOrder): ?>
+            <div class="text-center my-5 position-relative">
+                <hr class="border-secondary opacity-25">
+                <span class="position-absolute top-50 start-50 translate-middle bg-white px-4 py-1.5 rounded-pill border text-muted small fw-bold text-uppercase shadow-sm" style="letter-spacing: 0.5px;">
+                    <i class="fa-solid fa-magnifying-glass me-1.5 text-primary"></i>Tra Cứu Hoặc Xem Danh Sách Đơn Hàng Khác
+                </span>
+            </div>
+        <?php endif; ?>
+
+        <!-- ================================================================
+             HỘP TRA CỨU ĐƠN HÀNG BẰNG MÃ VẬN ĐƠN
+             ================================================================ -->
         <div class="compact-lookup-box">
-            <div class="row align-items-center">
-                <div class="col-lg-4 mb-3 mb-lg-0">
-                    <h5 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
-                        <i class="fa-solid fa-truck-fast text-primary"></i>
-                        <span>Tra Cứu Bằng Mã Vận Đơn</span>
-                    </h5>
-                    <p class="text-muted small mb-0">Nhập mã đơn #VP-xx và số điện thoại để kiểm tra tiến trình giao hàng</p>
+            <div class="row align-items-center gy-3">
+                <div class="col-lg-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="lookup-icon-circle">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark mb-1">Tra Cứu Vận Đơn</h5>
+                            <p class="text-secondary small mb-0">Nhập mã đơn #VP-xx & SĐT để theo dõi</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="col-lg-8">
@@ -701,10 +909,10 @@ require_once 'app/views/includes/functions.php';
 
                         <div class="col-12 col-sm-5">
                             <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-muted rounded-start-pill ps-3">
-                                    <i class="fa-solid fa-receipt"></i>
+                                <span class="input-group-text bg-light border-end-0 text-muted rounded-start-pill ps-3 pe-2">
+                                    <i class="fa-solid fa-receipt text-primary"></i>
                                 </span>
-                                <input type="text" name="order_code" class="form-control bg-light border-start-0 rounded-end-pill py-2 small" 
+                                <input type="text" name="order_code" class="form-control bg-light border-start-0 rounded-end-pill py-2.5 small" 
                                        placeholder="Mã đơn (VD: #VP-1)" 
                                        value="<?= isset($_GET['order_code']) ? htmlspecialchars($_GET['order_code']) : '' ?>" required>
                             </div>
@@ -712,10 +920,10 @@ require_once 'app/views/includes/functions.php';
 
                         <div class="col-12 col-sm-4">
                             <div class="input-group">
-                                <span class="input-group-text bg-light border-end-0 text-muted rounded-start-pill ps-3">
-                                    <i class="fa-solid fa-mobile-screen-button"></i>
+                                <span class="input-group-text bg-light border-end-0 text-muted rounded-start-pill ps-3 pe-2">
+                                    <i class="fa-solid fa-mobile-screen-button text-primary"></i>
                                 </span>
-                                <input type="tel" name="phone" class="form-control bg-light border-start-0 rounded-end-pill py-2 small" 
+                                <input type="tel" name="phone" class="form-control bg-light border-start-0 rounded-end-pill py-2.5 small" 
                                        placeholder="<?= $currentUser ? 'Số điện thoại' : 'SĐT nhận hàng *' ?>" 
                                        value="<?= isset($_GET['phone']) ? htmlspecialchars($_GET['phone']) : ($currentUser['phone'] ?? '') ?>" 
                                        <?= $currentUser ? '' : 'required' ?>>
@@ -723,7 +931,7 @@ require_once 'app/views/includes/functions.php';
                         </div>
 
                         <div class="col-12 col-sm-3">
-                            <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill py-2.5 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                                 <span>Tra Cứu</span>
                             </button>
@@ -733,110 +941,177 @@ require_once 'app/views/includes/functions.php';
             </div>
         </div>
 
-        
-        
-        
+        <!-- ================================================================
+             DANH SÁCH ĐƠN HÀNG CỦA TÔI (CHO THÀNH VIÊN ĐÃ ĐĂNG NHẬP)
+             ================================================================ -->
         <?php if ($currentUser): ?>
             <div id="myOrdersListSection" class="mt-4">
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
-                    <div>
-                        <h4 class="fw-black text-dark mb-1 d-flex align-items-center gap-2">
-                            <i class="fa-solid fa-boxes-packing text-primary"></i>
-                            <span>Đơn Hàng Của Tôi</span>
-                        </h4>
-                        <p class="text-secondary small mb-0">Quản lý và kiểm tra lịch sử đặt mua smartphone của bạn tại V-Phone</p>
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #0066cc; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                            <i class="fa-solid fa-boxes-packing"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-black text-dark mb-1">Đơn Hàng Của Tôi</h4>
+                            <p class="text-secondary small mb-0">Quản lý và kiểm tra lịch sử đặt mua smartphone chính hãng tại V-Phone</p>
+                        </div>
                     </div>
 
-                    
+                    <!-- Ô tìm kiếm đơn hàng nhanh -->
                     <form action="index.php" method="GET" class="d-flex gap-2">
                         <input type="hidden" name="page" value="orders">
                         <?php if ($activeTab !== 'all'): ?>
                             <input type="hidden" name="status" value="<?= htmlspecialchars($activeTab) ?>">
                         <?php endif; ?>
-                        <div class="input-group input-group-sm" style="width: 260px;">
-                            <input type="text" name="q" class="form-control rounded-start-pill ps-3 bg-white" placeholder="Tìm tên máy, mã #VP-..." value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
-                            <button class="btn btn-primary rounded-end-pill px-3" type="submit">
+                        <div class="input-group" style="width: 290px;">
+                            <input type="text" name="q" class="form-control rounded-start-pill ps-3.5 bg-white py-2 small" placeholder="Tìm tên máy, mã #VP-..." value="<?= htmlspecialchars($_GET['q'] ?? '') ?>">
+                            <button class="btn btn-primary rounded-end-pill px-3.5" type="submit">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </button>
                         </div>
                     </form>
                 </div>
 
-                
-                <div class="d-flex flex-wrap gap-2 mb-4">
-                    <a href="index.php?page=orders&status=all" class="btn btn-sm rounded-pill fw-bold px-3 py-2 <?= $activeTab === 'all' ? 'btn-primary shadow-sm' : 'btn-white bg-white border text-secondary' ?>">
-                        Tất cả <span class="badge bg-white text-dark ms-1 rounded-pill"><?= $statusCounts['all'] ?></span>
+                <!-- THANH ĐIỀU HƯỚNG BỘ LỌC TRẠNG THÁI (SEGMENTED FILTER BAR) -->
+                <div class="order-filter-nav-wrap">
+                    <a href="index.php?page=orders&status=all" class="order-tab-item <?= $activeTab === 'all' ? 'active-all' : '' ?>">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>Tất cả</span>
+                        <span class="order-tab-count"><?= $statusCounts['all'] ?></span>
                     </a>
-                    <a href="index.php?page=orders&status=Chờ xử lý" class="btn btn-sm rounded-pill fw-bold px-3 py-2 <?= $activeTab === 'Chờ xử lý' ? 'btn-warning text-dark shadow-sm' : 'btn-white bg-white border text-secondary' ?>">
-                        ⏳ Chờ xử lý <span class="badge bg-dark text-white ms-1 rounded-pill"><?= $statusCounts['Chờ xử lý'] ?></span>
+                    <a href="index.php?page=orders&status=Chờ xử lý" class="order-tab-item <?= $activeTab === 'Chờ xử lý' ? 'active-pending' : '' ?>">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Chờ xử lý</span>
+                        <span class="order-tab-count"><?= $statusCounts['Chờ xử lý'] ?></span>
                     </a>
-                    <a href="index.php?page=orders&status=Đang giao hàng" class="btn btn-sm rounded-pill fw-bold px-3 py-2 <?= $activeTab === 'Đang giao hàng' ? 'btn-info text-white shadow-sm' : 'btn-white bg-white border text-secondary' ?>">
-                        🚚 Đang giao <span class="badge bg-white text-dark ms-1 rounded-pill"><?= $statusCounts['Đang giao hàng'] ?></span>
+                    <a href="index.php?page=orders&status=Đang xử lý" class="order-tab-item <?= $activeTab === 'Đang xử lý' ? 'active-processing' : '' ?>">
+                        <i class="fa-solid fa-boxes-packing"></i>
+                        <span>Đang chuẩn bị</span>
+                        <span class="order-tab-count"><?= $statusCounts['Đang xử lý'] ?></span>
                     </a>
-                    <a href="index.php?page=orders&status=Đã giao thành công" class="btn btn-sm rounded-pill fw-bold px-3 py-2 <?= $activeTab === 'Đã giao thành công' ? 'btn-success shadow-sm' : 'btn-white bg-white border text-secondary' ?>">
-                        ✅ Đã giao <span class="badge bg-white text-dark ms-1 rounded-pill"><?= $statusCounts['Đã giao thành công'] ?></span>
+                    <a href="index.php?page=orders&status=Đang giao hàng" class="order-tab-item <?= $activeTab === 'Đang giao hàng' ? 'active-shipping' : '' ?>">
+                        <i class="fa-solid fa-truck-fast"></i>
+                        <span>Đang giao</span>
+                        <span class="order-tab-count"><?= $statusCounts['Đang giao hàng'] ?></span>
                     </a>
-                    <a href="index.php?page=orders&status=Đã hủy" class="btn btn-sm rounded-pill fw-bold px-3 py-2 <?= $activeTab === 'Đã hủy' ? 'btn-danger shadow-sm' : 'btn-white bg-white border text-secondary' ?>">
-                        ❌ Đã hủy <span class="badge bg-white text-dark ms-1 rounded-pill"><?= $statusCounts['Đã hủy'] ?></span>
+                    <a href="index.php?page=orders&status=Đã giao thành công" class="order-tab-item <?= $activeTab === 'Đã giao thành công' ? 'active-delivered' : '' ?>">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>Đã giao</span>
+                        <span class="order-tab-count"><?= $statusCounts['Đã giao thành công'] ?></span>
+                    </a>
+                    <a href="index.php?page=orders&status=Đã hủy" class="order-tab-item <?= $activeTab === 'Đã hủy' ? 'active-cancelled' : '' ?>">
+                        <i class="fa-solid fa-circle-xmark"></i>
+                        <span>Đã hủy</span>
+                        <span class="order-tab-count"><?= $statusCounts['Đã hủy'] ?></span>
                     </a>
                 </div>
 
-                
-                <?php if (empty($userOrders)): ?>
+                <!-- DANH SÁCH THẺ ĐƠN HÀNG -->
+                <?php 
+                    $showCancelledSection = ($activeTab === 'all' || $activeTab === 'Đã hủy') && !empty($userCancelledNotifs);
+                    $hasAnyOrdersToShow = !empty($userOrders) || $showCancelledSection;
+                ?>
+                <?php if (!$hasAnyOrdersToShow): ?>
                     <div class="text-center py-5 bg-white rounded-4 border shadow-sm p-4">
-                        <div style="width: 76px; height: 76px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
                             <i class="fa-solid fa-inbox text-secondary fs-2 opacity-50"></i>
                         </div>
                         <h5 class="fw-bold text-dark mb-1">Chưa Có Đơn Hàng Nào</h5>
                         <p class="text-muted small mb-3">Bạn chưa có đơn hàng nào trong mục này.</p>
-                        <a href="index.php" class="btn btn-primary rounded-pill px-4 fw-bold py-2 shadow-sm">
+                        <a href="index.php" class="btn btn-primary rounded-pill px-4 fw-bold py-2.5 shadow-sm">
                             <i class="fa-solid fa-store me-2"></i>Khám phá điện thoại ngay
                         </a>
                     </div>
                 <?php else: ?>
-                    <div class="d-flex flex-column gap-3">
+                    <div class="order-history-list-wrap">
+                        <?php if ($showCancelledSection): ?>
+                            <!-- DANH SÁCH CÁC ĐƠN HÀNG ĐÃ BỊ HỦY / XÓA BỞI CỬA HÀNG -->
+                            <div class="p-3 bg-danger bg-opacity-10 rounded-4 border border-danger border-opacity-25 d-flex align-items-center justify-content-between mb-1">
+                                <div class="d-flex align-items-center gap-2 text-danger fw-bold">
+                                    <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                                    <span>Đơn hàng đã được cửa hàng xử lý hủy & thu hồi (<?= count($userCancelledNotifs) ?>)</span>
+                                </div>
+                                <span class="badge bg-danger rounded-pill px-3 py-1 small">Có thông báo lý do</span>
+                            </div>
+                            <?php foreach ($userCancelledNotifs as $cNotif): ?>
+                                <div class="order-history-card border-danger border-opacity-25 shadow-sm" style="background: linear-gradient(180deg, #fffafa 0%, #ffffff 100%);">
+                                    <div class="order-history-card-header d-flex flex-wrap justify-content-between align-items-center gap-3" style="background: #fef2f2;">
+                                        <div class="d-flex align-items-center gap-3 flex-wrap">
+                                            <span class="order-code-badge border-danger border-opacity-50 text-danger bg-white">
+                                                <i class="fa-solid fa-receipt opacity-75"></i>
+                                                <span>#VP-<?= (int)$cNotif['order_id'] ?></span>
+                                            </span>
+                                            <div class="vr opacity-25 d-none d-sm-block" style="height: 20px;"></div>
+                                            <span class="text-secondary small fw-medium">
+                                                <i class="fa-regular fa-clock me-1 text-danger"></i>Ngày hủy: <?= date('d/m/Y - H:i', strtotime($cNotif['created_at'])) ?>
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span class="badge bg-danger rounded-pill px-3 py-1.5 fw-bold shadow-sm">
+                                                <i class="fa-solid fa-ban me-1"></i>Đã hủy bởi Store
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="order-history-card-body p-3.5">
+                                        <div class="d-flex align-items-start gap-3">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 44px; height: 44px; background: #fee2e2; color: #ef4444;">
+                                                <i class="fa-solid fa-circle-exclamation fs-5"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="fw-bold text-dark mb-1"><?= htmlspecialchars($cNotif['title']) ?></h6>
+                                                <?php if (!empty($cNotif['cancel_reason'])): ?>
+                                                    <div class="mb-2">
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-1 small fw-bold">
+                                                            Lý do: <?= htmlspecialchars($cNotif['cancel_reason']) ?>
+                                                        </span>
+                                                    </div>
+                                                <?php endif; ?>
+                                                <p class="text-secondary small mb-0" style="white-space: pre-line;"><?= htmlspecialchars($cNotif['message']) ?></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="order-history-card-footer d-flex flex-wrap justify-content-between align-items-center gap-3 bg-light">
+                                        <span class="small text-muted">
+                                            <i class="fa-solid fa-headset me-1 text-primary"></i>Hỗ trợ: 1800 6868
+                                        </span>
+                                        <div class="d-flex gap-2">
+                                            <a href="index.php?page=orders&order_code=<?= (int)$cNotif['order_id'] ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">
+                                                <i class="fa-solid fa-circle-info me-1"></i>Xem chi tiết hủy
+                                            </a>
+                                            <a href="index.php" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">
+                                                <i class="fa-solid fa-cart-shopping me-1"></i>Đặt hàng khác
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+
                         <?php foreach ($userOrders as $ord): ?>
                             <?php 
                             $oId = (int)$ord['id'];
                             $details = $userOrderDetails[$oId] ?? [];
                             $isPendingOrd = ($ord['status'] === 'Chờ xử lý');
-                            $isShippingOrd = ($ord['status'] === 'Đang giao hàng');
-                            $isDeliveredOrd = ($ord['status'] === 'Đã giao thành công');
-                            $isCancelledOrd = ($ord['status'] === 'Đã hủy');
                             ?>
                             <div class="order-history-card">
-                                
-                                <div class="order-history-card-header d-flex flex-wrap justify-content-between align-items-center gap-2">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <span class="fs-5 fw-black text-primary">#VP-<?= $oId ?></span>
-                                        <span class="text-muted small">
-                                            <i class="fa-regular fa-calendar me-1"></i><?= date('d/m/Y - H:i', strtotime($ord['created_at'])) ?>
+                                <!-- HEADER THẺ ĐƠN HÀNG -->
+                                <div class="order-history-card-header d-flex flex-wrap justify-content-between align-items-center gap-3">
+                                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                                        <span class="order-code-badge">
+                                            <i class="fa-solid fa-receipt opacity-75"></i>
+                                            <span>#VP-<?= $oId ?></span>
+                                        </span>
+                                        <div class="vr opacity-25 d-none d-sm-block" style="height: 20px;"></div>
+                                        <span class="text-secondary small fw-medium">
+                                            <i class="fa-regular fa-clock me-1 text-primary"></i><?= date('d/m/Y - H:i', strtotime($ord['created_at'])) ?>
                                         </span>
                                     </div>
                                     <div>
-                                        <?php if ($isPendingOrd): ?>
-                                            <span class="status-pill status-pill-pending py-1 px-3 small">
-                                                <span class="pulse-dot"></span>Chờ xử lý
-                                            </span>
-                                        <?php elseif ($isShippingOrd): ?>
-                                            <span class="status-pill status-pill-shipping py-1 px-3 small">
-                                                <span class="pulse-dot"></span>Đang giao
-                                            </span>
-                                        <?php elseif ($isDeliveredOrd): ?>
-                                            <span class="status-pill status-pill-delivered py-1 px-3 small">
-                                                <span class="pulse-dot"></span>Đã giao
-                                            </span>
-                                        <?php elseif ($isCancelledOrd): ?>
-                                            <span class="status-pill status-pill-cancelled py-1 px-3 small">
-                                                <span class="pulse-dot"></span>Đã hủy
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="badge bg-secondary rounded-pill px-3 py-1"><?= htmlspecialchars($ord['status']) ?></span>
-                                        <?php endif; ?>
+                                        <?= renderOrderStatusPill($ord['status'], true, 'py-1.5 px-3.5') ?>
                                     </div>
                                 </div>
 
-                                
+                                <!-- BODY THẺ ĐƠN HÀNG: SẢN PHẨM -->
                                 <div class="order-history-card-body">
                                     <?php foreach ($details as $d): ?>
                                         <?php
@@ -854,63 +1129,83 @@ require_once 'app/views/includes/functions.php';
                                         $imgUrl = !empty($d['product_image']) ? $d['product_image'] : ((isset($orderModel)) ? $orderModel->resolveDetailImage($d) : 'assets/images/products/iphone-17-pro.png');
                                         ?>
 
-                                        <div class="d-flex align-items-center justify-content-between py-2 border-bottom-dashed">
-                                            <div class="d-flex align-items-center gap-3">
-                                                <div class="prod-thumb-container" style="width: 64px; height: 64px;">
+                                        <div class="order-product-item">
+                                            <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+                                                <div class="prod-thumb-container">
                                                     <img src="<?= htmlspecialchars($imgUrl) ?>" alt="<?= htmlspecialchars($baseName) ?>" loading="lazy">
                                                 </div>
-                                                <div>
-                                                    <div class="fw-bold text-dark small mb-1"><?= htmlspecialchars($baseName) ?></div>
-                                                    <div class="d-flex flex-wrap gap-1 align-items-center">
+                                                <div class="flex-grow-1 min-w-0">
+                                                    <h6 class="fw-bold text-dark mb-1.5 fs-6 text-truncate" title="<?= htmlspecialchars($rawName) ?>">
+                                                        <?= htmlspecialchars($baseName) ?>
+                                                    </h6>
+                                                    <div class="d-flex flex-wrap gap-1.5 align-items-center mb-1">
                                                         <?php if (!empty($variantRom)): ?>
-                                                            <span class="variant-tag" style="font-size:0.72rem; padding: 2px 8px;">
-                                                                <?= htmlspecialchars($variantRom) ?>
+                                                            <span class="variant-chip">
+                                                                <i class="fa-solid fa-microchip text-primary"></i><?= htmlspecialchars($variantRom) ?>
                                                             </span>
                                                         <?php endif; ?>
                                                         <?php if (!empty($variantColor)): ?>
-                                                            <span class="variant-tag" style="font-size:0.72rem; padding: 2px 8px;">
-                                                                <span class="color-dot-swatch" style="background-color: <?= $colorHex ?>; width:8px; height:8px;"></span>
+                                                            <span class="variant-chip">
+                                                                <span class="color-dot-swatch" style="background-color: <?= $colorHex ?>;"></span>
                                                                 <?= htmlspecialchars($variantColor) ?>
                                                             </span>
                                                         <?php endif; ?>
-                                                        <span class="badge bg-light text-muted border rounded-pill" style="font-size: 0.72rem;">x<?= (int)$d['quantity'] ?></span>
+                                                        <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 small">x<?= (int)$d['quantity'] ?> máy</span>
                                                     </div>
+                                                    <small class="text-muted d-block" style="font-size: 0.78rem;">
+                                                        <i class="fa-solid fa-shield-halved text-success me-1"></i>Hàng chính hãng New Seal 100% • Bảo hành 12 tháng
+                                                    </small>
                                                 </div>
                                             </div>
-                                            <div class="text-end">
-                                                <div class="fw-bold text-dark small"><?= number_format((float)$d['total_price'], 0, ',', '.') ?> đ</div>
+                                            <div class="text-end flex-shrink-0 ps-3">
+                                                <small class="text-muted d-block" style="font-size: 0.78rem;">Đơn giá: <?= number_format((float)$d['price'], 0, ',', '.') ?> đ</small>
+                                                <div class="fs-5 fw-black text-danger mt-0.5">
+                                                    <?= number_format((float)$d['total_price'], 0, ',', '.') ?> đ
+                                                </div>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
 
-                                
+                                <!-- FOOTER THẺ ĐƠN HÀNG: TỔNG TIỀN VÀ THAO TÁC -->
                                 <div class="order-history-card-footer d-flex flex-wrap justify-content-between align-items-center gap-3">
-                                    <div>
-                                        <small class="text-muted d-block" style="font-size: 0.78rem;">Tổng thanh toán:</small>
-                                        <div class="fs-5 fw-black text-danger">
+                                    <div class="d-flex align-items-center flex-wrap gap-2.5">
+                                        <span class="text-secondary small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Tổng thanh toán:</span>
+                                        <span class="fs-4 fw-black text-danger" style="letter-spacing: -0.5px;">
                                             <?= number_format((float)$ord['total_money'], 0, ',', '.') ?> đ
-                                        </div>
+                                        </span>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 small fw-bold">
+                                            <i class="fa-solid fa-truck-fast me-1"></i>Miễn phí vận chuyển
+                                        </span>
                                     </div>
 
-                                    <div class="d-flex flex-wrap gap-2">
-                                        
-                                        <a href="index.php?page=orders&order_code=<?= $oId ?>" class="btn btn-sm btn-primary rounded-pill px-3 fw-bold">
-                                            <i class="fa-solid fa-truck-ramp-box me-1"></i>Theo dõi chi tiết
+                                    <div class="d-flex flex-wrap gap-2 align-items-center">
+                                        <?php if ($ord['payment_method'] === 'Chuyển khoản QR VietQR' && ($ord['payment_status'] ?? '') !== 'Đã thanh toán' && $ord['status'] !== 'Đã hủy'): ?>
+                                            <a href="index.php?page=checkout&step=vietqr&order_id=<?= $oId ?>" class="btn btn-sm btn-danger rounded-pill px-3.5 py-2 fw-bold shadow-sm">
+                                                <i class="fa-solid fa-qrcode me-1.5"></i>Thanh toán VietQR
+                                            </a>
+                                        <?php endif; ?>
+                                        <?php if ($ord['payment_method'] === 'Ví điện tử MoMo' && ($ord['payment_status'] ?? '') !== 'Đã thanh toán' && $ord['status'] !== 'Đã hủy'): ?>
+                                            <a href="index.php?page=checkout&action=pay_momo&order_id=<?= $oId ?>" class="btn btn-sm text-white rounded-pill px-3.5 py-2 fw-bold shadow-sm" style="background: linear-gradient(135deg, #d82d8b 0%, #a50064 100%);">
+                                                <i class="fa-solid fa-wallet me-1.5"></i>Thanh toán MoMo
+                                            </a>
+                                        <?php endif; ?>
+                                        <a href="index.php?page=orders&order_code=<?= $oId ?>" class="btn btn-sm btn-primary rounded-pill px-3.5 py-2 fw-bold shadow-sm">
+                                            <i class="fa-solid fa-route me-1.5"></i>Theo dõi chi tiết
                                         </a>
 
-                                        
-                                        <a href="index.php?page=orders&action=reorder&order_id=<?= $oId ?>" class="btn btn-sm btn-outline-secondary rounded-pill px-3 fw-semibold">
-                                            <i class="fa-solid fa-cart-plus me-1"></i>Mua lại
+                                        <!-- Nút Mua Lại -->
+                                        <a href="index.php?page=orders&action=reorder&order_id=<?= $oId ?>" class="btn btn-sm btn-outline-secondary rounded-pill px-3.5 py-2 fw-semibold">
+                                            <i class="fa-solid fa-cart-plus me-1.5"></i>Mua lại
                                         </a>
 
-                                        
+                                        <!-- Nút Hủy Đơn nếu còn Chờ Xử Lý -->
                                         <?php if ($isPendingOrd): ?>
-                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" 
+                                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3.5 py-2 fw-bold" 
                                                     data-bs-toggle="modal" data-bs-target="#cancelOrderModal" 
                                                     data-order-id="<?= $oId ?>" 
                                                     data-order-phone="<?= htmlspecialchars($ord['phone']) ?>">
-                                                <i class="fa-solid fa-ban me-1"></i>Hủy đơn
+                                                <i class="fa-solid fa-ban me-1.5"></i>Hủy đơn
                                             </button>
                                         <?php endif; ?>
                                     </div>

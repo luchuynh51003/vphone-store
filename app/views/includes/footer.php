@@ -3,7 +3,7 @@
         <div class="row g-4">
             <div class="col-lg-4 col-md-6">
                 <h4 class="fw-bold text-white d-flex align-items-center mb-3">
-                    <img src="assets/images/vphone-logo.svg" alt="V-Phone" style="width: 32px; height: 32px; margin-right: 8px;">
+                    <img src="assets/images/vphone-icon.png" alt="V-Phone" style="width: 34px; height: 34px; margin-right: 10px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));">
                     V-Phone Store
                 </h4>
                 <p class="small text-light opacity-75">Hệ thống phân phối điện thoại thông minh chính hãng hàng đầu. Cam kết chất lượng, bảo hành 1 đổi 1 nhanh chóng.</p>
@@ -54,6 +54,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/main.js?v=20261015_v3"></script>
+<script src="assets/js/main.js?v=20261015_v4"></script>
 </body>
 </html>

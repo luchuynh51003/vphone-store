@@ -203,13 +203,21 @@ foreach ($userStatsRaw as $usrStat) {
                         $ordCount = (int)$st['order_count'];
                         $spent = (float)$st['total_spent'];
                         $roleVal = $u['role'] == 1 ? 'admin' : 'customer';
+                        $uAvatar = null;
+                        if (!empty($u['avatar'])) {
+                            if (str_starts_with($u['avatar'], 'http://') || str_starts_with($u['avatar'], 'https://')) {
+                                $uAvatar = $u['avatar'];
+                            } elseif (file_exists(__DIR__ . '/../' . $u['avatar'])) {
+                                $uAvatar = '../' . $u['avatar'];
+                            }
+                        }
                     ?>
                     <tr class="user-row" data-search="<?= htmlspecialchars(mb_strtolower($u['fullname'] . ' ' . $u['email'] . ' ' . ($u['phone'] ?? ''), 'UTF-8')) ?>" data-role="<?= $roleVal ?>">
                         <td class="fw-bold text-muted">#<?= $u['id'] ?></td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <?php if (!empty($u['avatar']) && file_exists(__DIR__ . '/../' . $u['avatar'])): ?>
-                                    <img src="../<?= htmlspecialchars($u['avatar']) ?>" alt="Avatar" class="rounded-circle border flex-shrink-0" style="width: 38px; height: 38px; object-fit: cover;">
+                                <?php if ($uAvatar): ?>
+                                    <img src="<?= htmlspecialchars($uAvatar) ?>" alt="Avatar" class="rounded-circle border flex-shrink-0" style="width: 38px; height: 38px; object-fit: cover;">
                                 <?php else: ?>
                                     <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px; background: <?= $u['role'] == 1 ? 'linear-gradient(135deg, #ef4444, #dc2626)' : 'linear-gradient(135deg, #0066cc, #0284c7)' ?>; font-weight: 700; font-size: 0.85rem;">
                                         <?= mb_substr(htmlspecialchars($u['fullname']), 0, 1, 'UTF-8') ?>
@@ -221,7 +229,20 @@ foreach ($userStatsRaw as $usrStat) {
                                 </div>
                             </div>
                         </td>
-                        <td><span class="text-secondary small"><?= htmlspecialchars($u['email']) ?></span></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-1 mb-1">
+                                <?php if (($u['auth_provider'] ?? '') === 'google' || !empty($u['google_id'])): ?>
+                                    <span class="badge bg-white text-danger border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;" title="Đăng nhập bằng Google">
+                                        <i class="fa-brands fa-google text-danger me-1"></i>Google
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge bg-light text-muted border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;" title="Tài khoản email & mật khẩu">
+                                        <i class="fa-solid fa-envelope me-1"></i>Email
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                            <span class="text-secondary small"><?= htmlspecialchars($u['email']) ?></span>
+                        </td>
                         <td><span class="fw-medium text-dark small"><?= htmlspecialchars($u['phone'] ?: 'Chưa có') ?></span></td>
                         <td>
                             <div class="small">

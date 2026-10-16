@@ -38,11 +38,25 @@ class ProductController {
         $relStmt->execute([$product['brand_id'], $id]);
         $relatedProducts = $relStmt->fetchAll();
 
+        require_once 'app/models/ReviewModel.php';
+        $reviewModel = new ReviewModel($pdo);
+        $ratingSummary = $reviewModel->getRatingSummary($id);
+        $reviews = $reviewModel->getReviewsByProduct($id);
+
+        $currentUser = $_SESSION['user'] ?? null;
+        $userHasPurchased = $reviewModel->hasUserPurchased(
+            $id,
+            $currentUser ? (int)$currentUser['id'] : null,
+            $currentUser ? ($currentUser['phone'] ?? null) : null
+        );
+
         require_once 'app/views/product_detail.php';
     }
 
     public function used() {
         $pdo = $this->pdo;
+        require_once 'app/models/ReviewModel.php';
+        $ratingMap = (new ReviewModel($pdo))->getSummaryMapForAllProducts();
         require_once 'app/views/used_phones.php';
     }
 

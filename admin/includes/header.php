@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../../config/database.php';
+require_once __DIR__ . '/../../app/views/includes/functions.php';
 
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] != 1) {
     header('Location: ../index.php?show_login=1');
@@ -10,15 +11,19 @@ $adminPage = basename($_SERVER['PHP_SELF']);
 
 // Đếm số máy sắp hết hàng, số đơn hàng chờ xử lý và yêu cầu bảo hành chờ tiếp nhận
 $alertStock = (int)($pdo->query("SELECT COUNT(*) FROM products WHERE quantity <= 5")->fetchColumn() ?: 0);
-$pendingOrdersCount = (int)($pdo->query("SELECT COUNT(*) FROM orders WHERE status = 'Chờ xử lý'")->fetchColumn() ?: 0);
+$pendingOrdersCount = (int)($pdo->query("SELECT COUNT(*) FROM orders WHERE status IN ('Chờ xử lý', 'Đang xử lý')")->fetchColumn() ?: 0);
 $pendingWarrantiesCount = 0;
 try {
     $pendingWarrantiesCount = (int)($pdo->query("SELECT COUNT(*) FROM warranty_claims WHERE status = 'Chờ tiếp nhận'")->fetchColumn() ?: 0);
 } catch (Exception $e) {}
-$totalAlerts = $alertStock + $pendingOrdersCount + $pendingWarrantiesCount;
+$pendingReviewsCount = 0;
+try {
+    $pendingReviewsCount = (int)($pdo->query("SELECT COUNT(*) FROM product_reviews WHERE status = 0")->fetchColumn() ?: 0);
+} catch (Exception $e) {}
+$totalAlerts = $alertStock + $pendingOrdersCount + $pendingWarrantiesCount + $pendingReviewsCount;
 
 // Lấy thông báo mới nhất cho dropdown thông báo
-$topPendingOrders = $pdo->query("SELECT id, fullname, total_money, created_at FROM orders WHERE status = 'Chờ xử lý' ORDER BY id DESC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
+$topPendingOrders = $pdo->query("SELECT id, fullname, total_money, created_at, status FROM orders WHERE status IN ('Chờ xử lý', 'Đang xử lý') ORDER BY id DESC LIMIT 4")->fetchAll(PDO::FETCH_ASSOC);
 $topLowStockProds = $pdo->query("SELECT id, name, quantity, image FROM products WHERE quantity <= 5 ORDER BY quantity ASC LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
 $topPendingWarranties = [];
 try {
@@ -30,7 +35,10 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $pageTitle ?? "V-Phone Admin" ?></title><link rel="icon" type="image/svg+xml" href="../assets/images/favicon.svg?v=1">
+    <title><?= $pageTitle ?? "V-Phone Admin" ?></title>
+    <link rel="icon" type="image/png" href="../assets/images/favicon.png?v=2026">
+    <link rel="shortcut icon" href="../assets/images/favicon.png?v=2026">
+    <link rel="apple-touch-icon" href="../assets/images/vphone-icon.png?v=2026">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/style.css?v=20261015_v3">
@@ -213,9 +221,7 @@ try {
         <!-- BRAND LOGO -->
         <div class="d-flex align-items-center justify-content-between mb-4 px-2 pt-2">
             <a href="index.php" class="d-flex align-items-center text-decoration-none">
-                <span class="rounded-3 px-2 py-1 me-2 fw-black text-white" style="background: linear-gradient(135deg, #0066cc, #38bdf8); box-shadow: 0 4px 12px rgba(0,102,204,0.4);">
-                    <i class="fa-solid fa-bolt"></i> V
-                </span>
+                <img src="../assets/images/vphone-icon.png" alt="V-Phone" style="width: 38px; height: 38px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,102,204,0.5));" class="me-2 flex-shrink-0">
                 <div>
                     <div class="fs-5 fw-bold text-white lh-1">V-Phone</div>
                     <small style="font-size: 0.68rem; color: #38bdf8; letter-spacing: 1px; font-weight: 700; text-transform: uppercase;">ADMIN SUITE 2026</small>
@@ -233,8 +239,19 @@ try {
 
         <!-- THÔNG TIN QUẢN TRỊ VIÊN -->
         <div class="p-3 mb-3 rounded-4 d-flex align-items-center" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);">
-            <?php if (!empty($_SESSION['user']['avatar']) && file_exists(__DIR__ . '/../../' . $_SESSION['user']['avatar'])): ?>
-                <img src="../<?= htmlspecialchars($_SESSION['user']['avatar']) ?>" alt="Avatar" class="rounded-circle me-3 flex-shrink-0 border" style="width: 42px; height: 42px; object-fit: cover;">
+            <?php 
+                $adminAv = $_SESSION['user']['avatar'] ?? '';
+                $adminAvSrc = null;
+                if (!empty($adminAv)) {
+                    if (str_starts_with($adminAv, 'http://') || str_starts_with($adminAv, 'https://')) {
+                        $adminAvSrc = $adminAv;
+                    } elseif (file_exists(__DIR__ . '/../../' . $adminAv)) {
+                        $adminAvSrc = '../' . $adminAv;
+                    }
+                }
+            ?>
+            <?php if ($adminAvSrc): ?>
+                <img src="<?= htmlspecialchars($adminAvSrc) ?>" alt="Avatar" class="rounded-circle me-3 flex-shrink-0 border" style="width: 42px; height: 42px; object-fit: cover;">
             <?php else: ?>
                 <div class="rounded-circle text-white d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width: 42px; height: 42px; background: linear-gradient(135deg, #0284c7, #0066cc); font-weight: 700;">
                     <?= mb_substr(htmlspecialchars($_SESSION['user']['fullname']), 0, 1, 'UTF-8') ?>
@@ -285,6 +302,12 @@ try {
             </a>
             <a href="users.php" class="admin-nav-link <?= ($adminPage === 'users.php') ? 'active' : '' ?>">
                 <i class="fa-solid fa-users"></i> Khách hàng
+            </a>
+            <a href="reviews.php" class="admin-nav-link <?= ($adminPage === 'reviews.php') ? 'active' : '' ?>">
+                <i class="fa-solid fa-star-half-stroke"></i> Đánh giá & Sao
+                <?php if ($pendingReviewsCount > 0): ?>
+                    <span class="badge bg-danger rounded-pill ms-auto fw-bold" style="font-size: 0.7rem;"><?= $pendingReviewsCount ?></span>
+                <?php endif; ?>
             </a>
             <a href="vouchers.php" class="admin-nav-link <?= ($adminPage === 'vouchers.php') ? 'active' : '' ?>">
                 <i class="fa-solid fa-ticket"></i> Mã giảm giá
@@ -349,9 +372,9 @@ try {
                                 </div>
                             <?php else: ?>
                                 <?php foreach ($topPendingOrders as $pOrd): ?>
-                                    <a href="orders.php?status=Chờ xử lý" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2 text-wrap">
+                                    <a href="orders.php?status=<?= urlencode($pOrd['status'] ?? 'Chờ xử lý') ?>" class="dropdown-item p-3 border-bottom d-flex align-items-start gap-2 text-wrap">
                                         <div class="rounded-circle bg-warning bg-opacity-25 text-warning p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">
-                                            <i class="fa-solid fa-clock small"></i>
+                                            <i class="fa-solid fa-clock-rotate-left small"></i>
                                         </div>
                                         <div class="min-w-0">
                                             <div class="fw-bold text-dark small">Đơn mới #VP-<?= $pOrd['id'] ?> (<?= htmlspecialchars($pOrd['fullname']) ?>)</div>
@@ -395,8 +418,8 @@ try {
 
                 <div class="dropdown">
                     <button class="btn btn-light btn-sm rounded-pill px-3 py-1 d-flex align-items-center gap-2 border" data-bs-toggle="dropdown">
-                        <?php if (!empty($_SESSION['user']['avatar']) && file_exists(__DIR__ . '/../../' . $_SESSION['user']['avatar'])): ?>
-                            <img src="../<?= htmlspecialchars($_SESSION['user']['avatar']) ?>" alt="Avatar" class="rounded-circle border" style="width: 26px; height: 26px; object-fit: cover;">
+                        <?php if (!empty($adminAvSrc)): ?>
+                            <img src="<?= htmlspecialchars($adminAvSrc) ?>" alt="Avatar" class="rounded-circle border" style="width: 26px; height: 26px; object-fit: cover;">
                         <?php else: ?>
                             <span class="rounded-circle text-white d-inline-flex align-items-center justify-content-center" style="width: 26px; height: 26px; background: #0066cc; font-size: 0.75rem; font-weight: 700;">
                                 <?= mb_substr(htmlspecialchars($_SESSION['user']['fullname']), 0, 1, 'UTF-8') ?>

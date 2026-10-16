@@ -883,3 +883,418 @@ body {
     background: #072a48;
     color: #e2e8f0;
 }
+
+/* ========================================================
+   HỆ THỐNG ĐÁNH GIÁ & SỐ SAO (REVIEWS & RATING)
+   ======================================================== */
+.star-rating {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    color: #f59e0b;
+}
+.star-rating i {
+    font-size: 0.95em;
+}
+.star-rating.lg {
+    font-size: 1.45rem;
+    gap: 4px;
+}
+.star-rating.sm {
+    font-size: 0.8rem;
+    gap: 1px;
+}
+
+/* Star picker tương tác khi đánh giá */
+.star-picker {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    gap: 6px;
+    font-size: 2rem;
+    color: #cbd5e1;
+    cursor: pointer;
+    user-select: none;
+}
+.star-picker input {
+    display: none;
+}
+.star-picker label {
+    cursor: pointer;
+    transition: color 0.15s ease, transform 0.15s ease;
+}
+.star-picker label:hover,
+.star-picker label:hover ~ label,
+.star-picker input:checked ~ label {
+    color: #f59e0b;
+    transform: scale(1.12);
+}
+.star-picker label:active {
+    transform: scale(0.95);
+}
+
+/* Huy hiệu khách hàng đã mua hàng */
+.badge-verified-buyer {
+    background: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Thẻ đánh giá của khách */
+.review-card-item {
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.review-card-item:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+/* Avatar khách */
+.review-avatar-circle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #ffffff;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #0066cc, #38bdf8);
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+}
+
+/* Hộp phản hồi từ CSKH V-Phone */
+.review-admin-reply-box {
+    background: #f8fafc;
+    border-left: 3.5px solid #0066cc;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 14px;
+    border-top: 1px solid #f1f5f9;
+    border-right: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* Chip gợi ý nhanh nội dung đánh giá */
+.tag-suggestion-chip {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+}
+.tag-suggestion-chip:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    color: #0f172a;
+    transform: translateY(-1px);
+}
+.tag-suggestion-chip:active {
+    background: #0066cc;
+    color: #ffffff;
+    border-color: #0066cc;
+}
+
+/* Thanh tiến trình phân bố số sao */
+.review-bar-container {
+    height: 8px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+    flex-grow: 1;
+}
+.review-bar-fill {
+    height: 100%;
+    background: #f59e0b;
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Nút lọc đánh giá */
+.btn-filter-review {
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 6px 14px;
+    transition: all 0.2s ease;
+}
+
+/* ==========================================================================
+   MODERN ORDER STATUS BADGES & PILLS SYSTEM
+   ========================================================================== */
+.status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    line-height: 1.25;
+    letter-spacing: 0.2px;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    white-space: nowrap;
+}
+.status-pill.small, .status-pill.pill-sm {
+    padding: 3.5px 11px;
+    font-size: 0.78rem;
+    gap: 5.5px;
+}
+.status-pill.large, .status-pill.pill-lg {
+    padding: 8px 18px;
+    font-size: 0.95rem;
+    gap: 8px;
+}
+
+.status-pill-pending {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+.status-pill-processing {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+.status-pill-payment {
+    background: #faf5ff;
+    color: #7e22ce;
+    border: 1px solid #e9d5ff;
+}
+.status-pill-shipping {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+.status-pill-delivered {
+    background: #ecfdf5;
+    color: #15803d;
+    border: 1px solid #a7f3d0;
+}
+.status-pill-cancelled {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(0.92); opacity: 0.75; }
+    50% { transform: scale(1.18); opacity: 1; }
+    100% { transform: scale(0.92); opacity: 0.75; }
+}
+.pulse-dot {
+    width: 7.5px;
+    height: 7.5px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    animation: pulseGlow 1.8s infinite ease-in-out;
+}
+.status-pill-pending .pulse-dot { background: #d97706; box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.22); }
+.status-pill-processing .pulse-dot { background: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25); }
+.status-pill-payment .pulse-dot { background: #9333ea; box-shadow: 0 0 0 3px rgba(147, 51, 234, 0.22); }
+.status-pill-shipping .pulse-dot { background: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.25); }
+.status-pill-delivered .pulse-dot { background: #16a34a; box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.25); }
+.status-pill-cancelled .pulse-dot { background: #dc2626; box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.22); }
+
+.badge-soft-info { background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-weight: 600; }
+.badge-soft-purple { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; font-weight: 600; }
+
+.status-tab-btn {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.status-tab-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+/* ==========================================================================
+   ADMIN FLAGSHIP SYSTEM COMPONENTS
+   ========================================================================== */
+.admin-prod-thumb {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    flex-shrink: 0;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+    overflow: hidden;
+}
+.admin-prod-thumb img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+.admin-prod-thumb:hover img {
+    transform: scale(1.12);
+}
+
+.customer-avatar-badge {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #ffffff;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+}
+
+.order-id-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: inherit;
+    font-weight: 800;
+    font-size: 0.92rem;
+    color: #0066cc;
+    background: #eff6ff;
+    padding: 3px 10px;
+    border-radius: 8px;
+    border: 1px solid #bfdbfe;
+    letter-spacing: 0.2px;
+}
+
+.status-pill-btn {
+    border-radius: 9999px !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    padding: 5px 12px !important;
+    border: 1px solid transparent !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer !important;
+}
+.status-pill-btn:hover, .status-pill-btn:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
+}
+.status-pill-btn::after {
+    display: none !important;
+}
+
+.admin-kpi-icon-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.order-filter-nav-wrap {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 6px 8px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+}
+.order-filter-nav-wrap::-webkit-scrollbar {
+    display: none;
+}
+.order-tab-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    text-decoration: none;
+    color: #64748b;
+    background: transparent;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    flex-shrink: 0;
+}
+.order-tab-item:hover {
+    color: #0f172a;
+    background: #f1f5f9;
+    transform: translateY(-1px);
+}
+.order-tab-item.active-all {
+    background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 102, 204, 0.28);
+}
+.order-tab-item.active-pending {
+    background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(217, 119, 6, 0.28);
+}
+.order-tab-item.active-processing {
+    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+}
+.order-tab-item.active-shipping {
+    background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+}
+.order-tab-item.active-delivered {
+    background: linear-gradient(135deg, #16a34a 0%, #22c55e 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.28);
+}
+.order-tab-item.active-cancelled {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.28);
+}
+.order-tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 800;
+}
+.order-tab-item[class*="active-"] .order-tab-count {
+    background: rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+}
+.order-tab-item:not([class*="active-"]) .order-tab-count {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+

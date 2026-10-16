@@ -346,7 +346,7 @@ html {
 
             <div class="col-lg-5 text-center d-none d-lg-block">
                 <div class="warranty-hero-phone-wrap">
-                    <img src="assets/images/products/iphone-16-promax.png" alt="V-Phone Warranty" class="warranty-hero-phone-img img-fluid" onerror="this.src='assets/images/vphone-logo.svg';">
+                    <img src="assets/images/products/iphone-16-promax.png" alt="V-Phone Warranty" class="warranty-hero-phone-img img-fluid" onerror="this.src='assets/images/vphone-logo.png';">
                     <div class="warranty-glass-badge">
                         <div class="d-flex align-items-center gap-2 text-start">
                             <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;">

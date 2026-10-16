@@ -170,50 +170,59 @@ $claims = $warrantyModel->getAllClaims($filterStatus, $searchKeyword);
         </div>
     </div>
 
-    <!-- Thanh Lọc Trạng Thái & Tìm Kiếm -->
-    <div class="card border-0 rounded-4 shadow-sm bg-white mb-4 p-3">
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <!-- Filter Pills -->
-            <div class="d-flex flex-wrap gap-2">
-                <a href="warranties.php?status=all<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
-                   class="btn btn-sm rounded-pill px-3 fw-bold <?= ($filterStatus === 'all') ? 'btn-dark' : 'btn-light' ?>">
-                    Tất cả (<?= $statusCounts['all'] ?>)
-                </a>
-                <a href="warranties.php?status=Chờ tiếp nhận<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
-                   class="btn btn-sm rounded-pill px-3 fw-bold <?= ($filterStatus === 'Chờ tiếp nhận') ? 'btn-warning text-dark' : 'btn-light' ?>">
-                    <i class="fa-solid fa-clock me-1"></i>Chờ tiếp nhận (<?= $statusCounts['Chờ tiếp nhận'] ?>)
-                </a>
-                <a href="warranties.php?status=Đang kiểm tra<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
-                   class="btn btn-sm rounded-pill px-3 fw-bold <?= ($filterStatus === 'Đang kiểm tra') ? 'btn-info text-white' : 'btn-light' ?>">
-                    <i class="fa-solid fa-screwdriver-wrench me-1"></i>Đang kiểm tra (<?= $statusCounts['Đang kiểm tra'] ?>)
-                </a>
-                <a href="warranties.php?status=Đã đổi mới<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
-                   class="btn btn-sm rounded-pill px-3 fw-bold <?= ($filterStatus === 'Đã đổi mới') ? 'btn-success' : 'btn-light' ?>">
-                    <i class="fa-solid fa-arrows-rotate me-1"></i>Đã đổi mới (<?= $statusCounts['Đã đổi mới'] ?>)
-                </a>
-                <a href="warranties.php?status=Đã sửa chữa<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
-                   class="btn btn-sm rounded-pill px-3 fw-bold <?= ($filterStatus === 'Đã sửa chữa') ? 'btn-primary' : 'btn-light' ?>">
-                    <i class="fa-solid fa-wrench me-1"></i>Đã sửa chữa (<?= $statusCounts['Đã sửa chữa'] ?>)
-                </a>
-                <a href="warranties.php?status=Từ chối<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
-                   class="btn btn-sm rounded-pill px-3 fw-bold <?= ($filterStatus === 'Từ chối') ? 'btn-danger' : 'btn-light' ?>">
-                    <i class="fa-solid fa-ban me-1"></i>Từ chối (<?= $statusCounts['Từ chối'] ?>)
-                </a>
-            </div>
-
-            <!-- Ô tìm kiếm -->
-            <form action="warranties.php" method="GET" class="d-flex align-items-center gap-2" style="min-width: 280px;">
-                <input type="hidden" name="status" value="<?= htmlspecialchars($filterStatus) ?>">
-                <div class="input-group input-group-sm">
-                    <span class="input-group-text bg-light border-end-0 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" name="search" class="form-control border-start-0" placeholder="IMEI, Tên máy, SĐT, Khách..." value="<?= htmlspecialchars($searchKeyword) ?>">
-                    <?php if (!empty($searchKeyword)): ?>
-                        <a href="warranties.php?status=<?= urlencode($filterStatus) ?>" class="btn btn-light border" title="Xóa tìm kiếm"><i class="fa-solid fa-xmark"></i></a>
-                    <?php endif; ?>
-                    <button class="btn btn-primary fw-bold" type="submit">Tìm</button>
-                </div>
-            </form>
+    <!-- Thanh Lọc Trạng Thái (Segmented Bar) & Tìm Kiếm -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <!-- Filter Tabs -->
+        <div class="order-filter-nav-wrap flex-grow-1" style="max-width: 840px;">
+            <a href="warranties.php?status=all<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
+               class="order-tab-item <?= ($filterStatus === 'all') ? 'active-all' : '' ?>">
+                <i class="fa-solid fa-layer-group"></i>
+                <span>Tất cả</span>
+                <span class="order-tab-count"><?= $statusCounts['all'] ?></span>
+            </a>
+            <a href="warranties.php?status=Chờ tiếp nhận<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
+               class="order-tab-item <?= ($filterStatus === 'Chờ tiếp nhận') ? 'active-pending' : '' ?>">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                <span>Chờ tiếp nhận</span>
+                <span class="order-tab-count"><?= $statusCounts['Chờ tiếp nhận'] ?></span>
+            </a>
+            <a href="warranties.php?status=Đang kiểm tra<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
+               class="order-tab-item <?= ($filterStatus === 'Đang kiểm tra') ? 'active-shipping' : '' ?>">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <span>Đang kiểm tra</span>
+                <span class="order-tab-count"><?= $statusCounts['Đang kiểm tra'] ?></span>
+            </a>
+            <a href="warranties.php?status=Đã đổi mới<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
+               class="order-tab-item <?= ($filterStatus === 'Đã đổi mới') ? 'active-delivered' : '' ?>">
+                <i class="fa-solid fa-arrows-rotate"></i>
+                <span>Đã đổi mới</span>
+                <span class="order-tab-count"><?= $statusCounts['Đã đổi mới'] ?></span>
+            </a>
+            <a href="warranties.php?status=Đã sửa chữa<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
+               class="order-tab-item <?= ($filterStatus === 'Đã sửa chữa') ? 'active-processing' : '' ?>">
+                <i class="fa-solid fa-wrench"></i>
+                <span>Đã sửa chữa</span>
+                <span class="order-tab-count"><?= $statusCounts['Đã sửa chữa'] ?></span>
+            </a>
+            <a href="warranties.php?status=Từ chối<?= !empty($searchKeyword) ? '&search=' . urlencode($searchKeyword) : '' ?>" 
+               class="order-tab-item <?= ($filterStatus === 'Từ chối') ? 'active-cancelled' : '' ?>">
+                <i class="fa-solid fa-circle-xmark"></i>
+                <span>Từ chối</span>
+                <span class="order-tab-count"><?= $statusCounts['Từ chối'] ?></span>
+            </a>
         </div>
+
+        <!-- Ô tìm kiếm -->
+        <form action="warranties.php" method="GET" class="d-flex align-items-center gap-2" style="width: 270px;">
+            <input type="hidden" name="status" value="<?= htmlspecialchars($filterStatus) ?>">
+            <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3 text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" name="search" class="form-control border-start-0 rounded-end-pill py-2 small bg-white" placeholder="IMEI, Tên máy, SĐT..." value="<?= htmlspecialchars($searchKeyword) ?>">
+                <?php if (!empty($searchKeyword)): ?>
+                    <a href="warranties.php?status=<?= urlencode($filterStatus) ?>" class="btn btn-light border rounded-pill ms-1" title="Xóa tìm kiếm"><i class="fa-solid fa-xmark"></i></a>
+                <?php endif; ?>
+            </div>
+        </form>
     </div>
 
     <!-- Bảng Danh Sách Yêu Cầu Bảo Hành -->
@@ -404,11 +413,11 @@ $claims = $warrantyModel->getAllClaims($filterStatus, $searchKeyword);
                     <div class="mb-3">
                         <label class="form-label small fw-bold">Trạng Thái Xử Lý Tiếp Theo *</label>
                         <select class="form-select rounded-3" name="status" id="modalStatusSelect" required>
-                            <option value="Chờ tiếp nhận">⏳ Chờ tiếp nhận (Đang xếp hàng kỹ thuật)</option>
-                            <option value="Đang kiểm tra">🔍 Đang kiểm tra (Kỹ thuật viên giám định 32 bước)</option>
-                            <option value="Đã đổi mới">🔄 Đã đổi mới (Lỗi NSX trong 30 ngày - Đổi máy mới 100%)</option>
-                            <option value="Đã sửa chữa">🛠️ Đã sửa chữa (Thay thế linh kiện chính hãng xong)</option>
-                            <option value="Từ chối">❌ Từ chối bảo hành (Rơi vỡ, vô nước, can thiệp ngoài)</option>
+                            <option value="Chờ tiếp nhận">Chờ tiếp nhận (Đang xếp hàng kỹ thuật)</option>
+                            <option value="Đang kiểm tra">Đang kiểm tra (Kỹ thuật viên giám định 32 bước)</option>
+                            <option value="Đã đổi mới">Đã đổi mới (Lỗi NSX trong 30 ngày - Đổi máy mới 100%)</option>
+                            <option value="Đã sửa chữa">Đã sửa chữa (Thay thế linh kiện chính hãng xong)</option>
+                            <option value="Từ chối">Từ chối bảo hành (Rơi vỡ, vô nước, can thiệp ngoài)</option>
                         </select>
                     </div>
 
