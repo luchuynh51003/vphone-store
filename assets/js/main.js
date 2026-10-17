@@ -320,18 +320,11 @@
     // --- 6. GOOGLE AUTHENTICATION ---
     function initGoogleAuth() {
         const authModalElement = document.getElementById('unifiedAuthModal');
-        const googleModalElement = document.getElementById('googleChooserModal');
-        const googleAuthAlert = document.getElementById('googleAuthAlert');
-        const googleButtons = document.querySelectorAll('.btn-google-auth-trigger');
-        const demoButtons = document.querySelectorAll('.btn-select-demo-google');
-        const btnToggleCustom = document.getElementById('btnToggleCustomGoogle');
-        const boxCustomForm = document.getElementById('boxCustomGoogleForm');
-        const formCustomGoogle = document.getElementById('formCustomGoogle');
+        const authAlert = document.getElementById('authAlert');
 
         const urlParams = new URLSearchParams(window.location.search);
         const authError = urlParams.get('auth_error');
         if (authError) {
-            const authAlert = document.getElementById('authAlert');
             if (authAlert) {
                 authAlert.textContent = decodeURIComponent(authError);
                 authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
@@ -341,48 +334,7 @@
             }
         }
 
-        if (urlParams.get('google_mode') === 'demo' && googleModalElement && window.bootstrap) {
-            bootstrap.Modal.getOrCreateInstance(googleModalElement).show();
-        }
-
-        // Bật / tắt form nhập Gmail tùy ý
-        if (btnToggleCustom && boxCustomForm) {
-            btnToggleCustom.addEventListener('click', function () {
-                boxCustomForm.classList.toggle('d-none');
-                if (!boxCustomForm.classList.contains('d-none')) {
-                    const nameInput = document.getElementById('customGoogleName');
-                    if (nameInput) nameInput.focus();
-                }
-            });
-        }
-
-        // Xử lý khi nhấn nút Đăng nhập / Đăng ký Google
-        googleButtons.forEach(btn => {
-            btn.addEventListener('click', function () {
-                const config = window.vphoneGoogleConfig || {};
-                
-                // Nếu đã cấu hình Client ID và không bật demo_mode: chuyển thẳng đến Google OAuth thật
-                if (config.is_configured && !config.is_demo) {
-                    window.location.href = 'index.php?page=google-login';
-                    return;
-                }
-
-                // Chế độ mô phỏng / dùng thử nhanh: Mở bảng chọn tài khoản Google
-                if (authModalElement && window.bootstrap) {
-                    const authModalInstance = bootstrap.Modal.getInstance(authModalElement);
-                    if (authModalInstance) {
-                        authModalInstance.hide();
-                    }
-                }
-
-                if (googleModalElement && window.bootstrap) {
-                    const googleModalInstance = bootstrap.Modal.getOrCreateInstance(googleModalElement);
-                    googleModalInstance.show();
-                }
-            });
-        });
-
-        // Hàm gửi dữ liệu xác thực Google lên máy chủ
+        // Hàm gửi dữ liệu xác thực Google lên máy chủ (dành cho Google Identity Services / One Tap nếu có)
         async function sendGoogleAuthRequest(formData, triggerBtn) {
             const origHtml = triggerBtn ? triggerBtn.innerHTML : '';
             if (triggerBtn) {
@@ -390,9 +342,9 @@
                 triggerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
             }
 
-            if (googleAuthAlert) {
-                googleAuthAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
-                googleAuthAlert.textContent = '';
+            if (authAlert) {
+                authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
+                authAlert.textContent = '';
             }
 
             try {
@@ -408,16 +360,16 @@
                         triggerBtn.disabled = false;
                         triggerBtn.innerHTML = origHtml;
                     }
-                    if (googleAuthAlert) {
-                        googleAuthAlert.textContent = result.message || 'Xác thực Google không thành công.';
-                        googleAuthAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    if (authAlert) {
+                        authAlert.textContent = result.message || 'Xác thực Google không thành công.';
+                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
                     }
                     return;
                 }
 
-                if (googleAuthAlert) {
-                    googleAuthAlert.textContent = result.message || 'Thành công!';
-                    googleAuthAlert.className = 'alert alert-success small py-2 rounded-3 mb-3';
+                if (authAlert) {
+                    authAlert.textContent = result.message || 'Thành công!';
+                    authAlert.className = 'alert alert-success small py-2 rounded-3 mb-3';
                 }
 
                 setTimeout(() => {
@@ -435,42 +387,11 @@
                     triggerBtn.disabled = false;
                     triggerBtn.innerHTML = origHtml;
                 }
-                if (googleAuthAlert) {
-                    googleAuthAlert.textContent = 'Lỗi kết nối máy chủ khi xử lý tài khoản Google!';
-                    googleAuthAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                if (authAlert) {
+                    authAlert.textContent = 'Lỗi kết nối máy chủ khi xử lý tài khoản Google!';
+                    authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
                 }
             }
-        }
-
-        // Chọn tài khoản demo có sẵn
-        demoButtons.forEach(dBtn => {
-            dBtn.addEventListener('click', function () {
-                const demoId = this.getAttribute('data-demo-id');
-                const fd = new FormData();
-                fd.append('demo_user', demoId);
-                sendGoogleAuthRequest(fd, this);
-            });
-        });
-
-        // Submit form Google tùy ý
-        if (formCustomGoogle) {
-            formCustomGoogle.addEventListener('submit', function (e) {
-                e.preventDefault();
-                const name = document.getElementById('customGoogleName')?.value.trim() || '';
-                const email = document.getElementById('customGoogleEmail')?.value.trim() || '';
-                const phone = document.getElementById('customGooglePhone')?.value.trim() || '';
-
-                if (!email) return;
-
-                const fd = new FormData();
-                fd.append('demo_user', 'custom');
-                fd.append('custom_name', name);
-                fd.append('custom_email', email);
-                fd.append('custom_phone', phone);
-
-                const submitBtn = formCustomGoogle.querySelector('button[type="submit"]');
-                sendGoogleAuthRequest(fd, submitBtn);
-            });
         }
 
         // Khởi tạo Google Identity Services (GIS) nếu Client ID thực tế được cung cấp
@@ -491,11 +412,677 @@
         }
     }
 
+    // --- 7. FLOATING CONTACT WIDGET (Cụm Nút Liên Hệ Nhanh Đa Kênh) ---
+    function initFloatingContactWidget() {
+        const widget = document.getElementById('vphoneContactWidget');
+        const toggleBtn = document.getElementById('btnToggleContactWidget');
+        const closeBtn = document.getElementById('btnCloseContactMenu');
+        const backdrop = document.getElementById('vphoneContactBackdrop');
+        const promptBubble = document.getElementById('vphoneWidgetPrompt');
+        const dismissPromptBtn = document.getElementById('btnDismissPrompt');
+        const btnOpenCallback = document.getElementById('btnOpenCallbackModal');
+        const btnOpenInquiries = document.getElementById('btnOpenInquiriesModal');
+        const btnOpenShowroom = document.getElementById('btnOpenShowroomModal');
+        const formCallback = document.getElementById('formCallbackRequest');
+        const callbackAlert = document.getElementById('callbackAlert');
+        const callbackSuccessView = document.getElementById('callbackSuccessView');
+        const callbackSuccessMsg = document.getElementById('callbackSuccessMsg');
+        const btnSubmitCallback = document.getElementById('btnSubmitCallback');
+
+        if (!widget || !toggleBtn) return;
+
+        function openWidget() {
+            widget.classList.add('is-open');
+            toggleBtn.setAttribute('aria-expanded', 'true');
+            if (backdrop) backdrop.classList.add('is-active');
+            if (promptBubble) promptBubble.classList.add('d-none');
+        }
+
+        function closeWidget() {
+            widget.classList.remove('is-open');
+            toggleBtn.setAttribute('aria-expanded', 'false');
+            if (backdrop) backdrop.classList.remove('is-active');
+        }
+
+        // Toggle Widget
+        toggleBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            if (widget.classList.contains('is-open')) {
+                closeWidget();
+            } else {
+                openWidget();
+            }
+        });
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                closeWidget();
+            });
+        }
+
+        if (backdrop) {
+            backdrop.addEventListener('click', function () {
+                closeWidget();
+            });
+        }
+
+        // Keyboard escape to close
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && widget.classList.contains('is-open')) {
+                closeWidget();
+            }
+        });
+
+        // Prompt Bubble Handling
+        if (promptBubble) {
+            if (sessionStorage.getItem('vphone_contact_prompt_dismissed') === '1') {
+                promptBubble.classList.add('d-none');
+            } else {
+                // Auto hide prompt after 12 seconds or on interaction
+                setTimeout(() => {
+                    if (promptBubble && !promptBubble.classList.contains('d-none')) {
+                        promptBubble.style.opacity = '0';
+                        setTimeout(() => promptBubble.classList.add('d-none'), 300);
+                    }
+                }, 12000);
+            }
+
+            promptBubble.addEventListener('click', function (e) {
+                if (e.target.closest('#btnDismissPrompt')) return;
+                openChatbot();
+            });
+
+            if (dismissPromptBtn) {
+                dismissPromptBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    promptBubble.classList.add('d-none');
+                    sessionStorage.setItem('vphone_contact_prompt_dismissed', '1');
+                });
+            }
+        }
+
+        // --- AUTOMATED CHATBOT CONTROLLER ---
+        const chatbotWindow = document.getElementById('vphoneChatbotWindow');
+        const btnOpenChatbot = document.getElementById('btnOpenChatbot');
+        const btnCloseChatbot = document.getElementById('btnCloseChatbot');
+        const btnResetChatbot = document.getElementById('btnResetChatbot');
+        const formChatbot = document.getElementById('formChatbot');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        const chatbotTyping = document.getElementById('chatbotTyping');
+
+        function openChatbot() {
+            closeWidget();
+            if (chatbotWindow) {
+                chatbotWindow.classList.add('is-open');
+                chatbotWindow.setAttribute('aria-hidden', 'false');
+                scrollChatToBottom();
+                if (chatbotInput) setTimeout(() => chatbotInput.focus(), 200);
+                sessionStorage.setItem('vphone_chatbot_open', '1');
+            }
+        }
+
+        function closeChatbot() {
+            if (chatbotWindow) {
+                chatbotWindow.classList.remove('is-open');
+                chatbotWindow.setAttribute('aria-hidden', 'true');
+                sessionStorage.setItem('vphone_chatbot_open', '0');
+            }
+        }
+
+        function scrollChatToBottom() {
+            if (chatbotMessages) {
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            }
+        }
+
+        function getCurrentTime() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            return `${h}:${m}`;
+        }
+
+        const botAvatarSvg = `
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="24" height="24" rx="7" fill="#0066CC"/>
+                <circle cx="8" cy="11" r="1.5" fill="#00FFC2"/>
+                <circle cx="16" cy="11" r="1.5" fill="#00FFC2"/>
+                <path d="M9 15c1.5 1 4.5 1 6 0" stroke="#00FFC2" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+        `;
+
+        function appendChatMessage(sender, htmlContent, suggestions = [], onStreamDone = null) {
+            if (!chatbotMessages) return null;
+
+            const msgDiv = document.createElement('div');
+            msgDiv.className = sender === 'user' ? 'chat-msg chat-msg-user' : 'chat-msg chat-msg-bot';
+
+            const timeStr = getCurrentTime();
+
+            if (sender === 'user') {
+                msgDiv.innerHTML = `
+                    <div class="chat-msg-content">
+                        <div class="chat-bubble">${escapeHtml(htmlContent)}</div>
+                        <div class="chat-time">${timeStr}</div>
+                    </div>
+                `;
+                insertMessageToDom(msgDiv);
+                scrollChatToBottom();
+                return msgDiv;
+            } else {
+                msgDiv.innerHTML = `
+                    <div class="chat-msg-avatar">
+                        ${botAvatarSvg}
+                    </div>
+                    <div class="chat-msg-content">
+                        <div class="chat-bubble"></div>
+                        <div class="chat-time">${timeStr}</div>
+                    </div>
+                `;
+                insertMessageToDom(msgDiv);
+                scrollChatToBottom();
+
+                // Stream typewriter reveal effect
+                const bubbleEl = msgDiv.querySelector('.chat-bubble');
+                streamHtml(bubbleEl, htmlContent, () => {
+                    // Append suggestion chips after typing finished
+                    if (Array.isArray(suggestions) && suggestions.length > 0) {
+                        const chipsDiv = document.createElement('div');
+                        chipsDiv.className = 'chatbot-quick-chips';
+                        suggestions.forEach((s, idx) => {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.className = 'chip-item';
+                            btn.setAttribute('data-query', s);
+                            btn.textContent = s;
+                            btn.style.animationDelay = (idx * 0.06) + 's';
+                            chipsDiv.appendChild(btn);
+                        });
+                        insertMessageToDom(chipsDiv);
+                    }
+                    scrollChatToBottom();
+                    if (typeof onStreamDone === 'function') onStreamDone();
+                });
+
+                return msgDiv;
+            }
+        }
+
+        function insertMessageToDom(element) {
+            if (chatbotTyping && chatbotMessages.contains(chatbotTyping)) {
+                chatbotMessages.insertBefore(element, chatbotTyping);
+            } else {
+                chatbotMessages.appendChild(element);
+            }
+        }
+
+        function streamHtml(targetElement, fullHtml, onComplete) {
+            if (!targetElement) return;
+
+            // Tokenize HTML so tags aren't broken while typing
+            const tokens = fullHtml.match(/<[^>]+>|[^<>\s]+|\s+/g) || [fullHtml];
+            let index = 0;
+            targetElement.innerHTML = '';
+
+            const interval = setInterval(() => {
+                if (index < tokens.length) {
+                    // Fast responsive step
+                    const step = (tokens.length > 80) ? 3 : 2;
+                    for (let i = 0; i < step && index < tokens.length; i++) {
+                        targetElement.innerHTML += tokens[index];
+                        index++;
+                    }
+                    scrollChatToBottom();
+                } else {
+                    clearInterval(interval);
+                    targetElement.innerHTML = fullHtml; // Final exact markup
+                    scrollChatToBottom();
+                    if (typeof onComplete === 'function') onComplete();
+                }
+            }, 25);
+        }
+
+        let isBotBusy = false;
+
+        async function handleSendToChatbot(userText) {
+            const text = (userText || '').trim();
+            if (!text || isBotBusy) return;
+
+            isBotBusy = true;
+            appendChatMessage('user', text);
+
+            if (chatbotInput) chatbotInput.disabled = true;
+
+            // Show typing indicator
+            if (chatbotTyping) {
+                chatbotTyping.classList.remove('d-none');
+                scrollChatToBottom();
+            }
+
+            try {
+                const res = await fetch('api/chatbot.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: text })
+                });
+                const data = await res.json();
+
+                // Natural, realistic thinking delay (1.2s - 1.6s) so it feels authentic & thoughtful
+                const naturalThinkingDelay = 1200 + Math.floor(Math.random() * 400);
+
+                setTimeout(() => {
+                    if (chatbotTyping) chatbotTyping.classList.add('d-none');
+
+                    const replyContent = (data && data.success && data.reply) 
+                        ? data.reply 
+                        : 'Dạ, hiện em chưa thể xử lý yêu cầu này lúc này. Anh/chị có thể liên hệ tổng đài miễn phí <strong>1800 6868</strong> để được hỗ trợ tức thì ạ!';
+                    
+                    const suggestions = (data && data.suggestions) ? data.suggestions : [];
+
+                    appendChatMessage('bot', replyContent, suggestions, () => {
+                        isBotBusy = false;
+                        if (chatbotInput) {
+                            chatbotInput.disabled = false;
+                            chatbotInput.focus();
+                        }
+                    });
+
+                }, naturalThinkingDelay);
+
+            } catch (e) {
+                setTimeout(() => {
+                    if (chatbotTyping) chatbotTyping.classList.add('d-none');
+                    appendChatMessage('bot', 'Có lỗi kết nối máy chủ. Anh/chị vui lòng thử lại hoặc gọi hotline <strong>1800 6868</strong> nhé!', [], () => {
+                        isBotBusy = false;
+                        if (chatbotInput) {
+                            chatbotInput.disabled = false;
+                            chatbotInput.focus();
+                        }
+                    });
+                }, 1000);
+            }
+        }
+
+        if (btnOpenChatbot) {
+            btnOpenChatbot.addEventListener('click', function () {
+                openChatbot();
+            });
+        }
+
+        if (btnCloseChatbot) {
+            btnCloseChatbot.addEventListener('click', function () {
+                closeChatbot();
+            });
+        }
+
+        if (btnResetChatbot) {
+            btnResetChatbot.addEventListener('click', function () {
+                if (!chatbotMessages || isBotBusy) return;
+                chatbotMessages.innerHTML = `
+                    <div class="chat-msg chat-msg-bot">
+                        <div class="chat-msg-avatar">
+                            ${botAvatarSvg}
+                        </div>
+                        <div class="chat-msg-content">
+                            <div class="chat-bubble">
+                                Cuộc trò chuyện đã được làm mới! Em là <strong>Trợ lý ảo AI của V-Phone Store</strong>. ✨<br><br>
+                                Em có thể tư vấn các dòng Flagship 2026, so sánh giá bán, hỗ trợ trả góp 0%, đồng kiểm và bảo hành 1 đổi 1. Anh/chị cần hỗ trợ gì ạ?
+                            </div>
+                            <div class="chat-time">${getCurrentTime()}</div>
+                        </div>
+                    </div>
+                    <div class="chatbot-quick-chips">
+                        <button type="button" class="chip-item" data-query="Tư vấn các dòng iPhone mới nhất">📱 iPhone mới nhất</button>
+                        <button type="button" class="chip-item" data-query="Tư vấn điện thoại Samsung Galaxy">⚡ Samsung Galaxy</button>
+                        <button type="button" class="chip-item" data-query="Điện thoại dưới 10 triệu đáng mua nhất">💰 Máy dưới 10 triệu</button>
+                        <button type="button" class="chip-item" data-query="Chính sách mua trả góp 0%">💳 Trả góp 0%</button>
+                        <button type="button" class="chip-item" data-query="Chính sách đồng kiểm mở hộp trước khi trả tiền">📦 Kiểm tra hàng trước</button>
+                        <button type="button" class="chip-item" data-query="Chính sách bảo hành 1 đổi 1">🛡️ Bảo hành 1-1</button>
+                        <button type="button" class="chip-item" data-query="Hotline hỗ trợ và gặp tư vấn viên">📞 Hotline CSKH</button>
+                    </div>
+                    <div id="chatbotTyping" class="chat-msg chat-msg-bot d-none">
+                        <div class="chat-msg-avatar">
+                            ${botAvatarSvg}
+                        </div>
+                        <div class="chat-msg-content">
+                            <div class="chat-bubble typing-bubble">
+                                <span class="typing-status-text">V-Phone AI đang phân tích & soạn câu trả lời</span>
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                                <span class="typing-dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        if (formChatbot) {
+            formChatbot.addEventListener('submit', function (e) {
+                e.preventDefault();
+                if (!chatbotInput || isBotBusy) return;
+                const txt = chatbotInput.value.trim();
+                if (!txt) return;
+                chatbotInput.value = '';
+                handleSendToChatbot(txt);
+            });
+        }
+
+        // Delegate click for suggestion chips
+        if (chatbotMessages) {
+            chatbotMessages.addEventListener('click', function (e) {
+                if (isBotBusy) return;
+                const chip = e.target.closest('.chip-item');
+                if (chip) {
+                    const query = chip.getAttribute('data-query') || chip.textContent.trim();
+                    if (query) {
+                        handleSendToChatbot(query);
+                    }
+                }
+            });
+        }
+
+        // Open Support / Callback Modal from Widget Menu (Default Tab: Gửi Yêu Cầu)
+        if (btnOpenCallback) {
+            btnOpenCallback.addEventListener('click', function () {
+                closeWidget();
+                closeChatbot();
+                const modalEl = document.getElementById('modalCallbackRequest');
+                if (modalEl && window.bootstrap && window.bootstrap.Modal) {
+                    const bsModal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+                    bsModal.show();
+                    const sendTab = document.getElementById('tab-send-inquiry-btn');
+                    if (sendTab && window.bootstrap && window.bootstrap.Tab) {
+                        window.bootstrap.Tab.getOrCreateInstance(sendTab).show();
+                    }
+                }
+            });
+        }
+
+        // Open Support Modal directly on Tab 2: Hộp Thư Phản Hồi CSKH
+        if (btnOpenInquiries) {
+            btnOpenInquiries.addEventListener('click', function () {
+                closeWidget();
+                closeChatbot();
+                const modalEl = document.getElementById('modalCallbackRequest');
+                if (modalEl && window.bootstrap && window.bootstrap.Modal) {
+                    const bsModal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+                    bsModal.show();
+                    if (window.switchToInquiriesTab) {
+                        window.switchToInquiriesTab();
+                    }
+                }
+            });
+        }
+
+        // Open Showroom Modal from Widget Menu
+        if (btnOpenShowroom) {
+            btnOpenShowroom.addEventListener('click', function () {
+                closeWidget();
+                closeChatbot();
+                const modalEl = document.getElementById('modalShowrooms');
+                if (modalEl && window.bootstrap && window.bootstrap.Modal) {
+                    const bsModal = window.bootstrap.Modal.getOrCreateInstance(modalEl);
+                    bsModal.show();
+                }
+            });
+        }
+
+        // --- GLOBAL HELPER: Chuyển sang Tab Hộp Thư Phản Hồi ---
+        window.switchToInquiriesTab = function () {
+            const repliesTabBtn = document.getElementById('tab-view-replies-btn');
+            if (repliesTabBtn && window.bootstrap && window.bootstrap.Tab) {
+                const bsTab = window.bootstrap.Tab.getOrCreateInstance(repliesTabBtn);
+                bsTab.show();
+            }
+            if (window.fetchCustomerInquiries) {
+                window.fetchCustomerInquiries();
+            }
+        };
+
+        // --- GLOBAL HELPER: Tra cứu lịch sử & câu trả lời từ CSKH ---
+        window.fetchCustomerInquiries = async function (explicitPhone) {
+            const feed = document.getElementById('customerInquiriesFeed');
+            const phoneInput = document.getElementById('inquirySearchPhone');
+            const phone = explicitPhone || (phoneInput ? phoneInput.value.trim() : '');
+            const badge = document.getElementById('customerInquiriesBadge');
+
+            if (feed) {
+                feed.innerHTML = `
+                    <div class="text-center py-4 text-muted small">
+                        <span class="spinner-border spinner-border-sm text-primary mb-2 d-inline-block" role="status"></span>
+                        <div>Đang tải câu trả lời từ đội ngũ CSKH V-Phone...</div>
+                    </div>
+                `;
+            }
+
+            try {
+                const res = await fetch(`api/callback-request.php?action=my_inquiries&phone=${encodeURIComponent(phone)}`);
+                const data = await res.json();
+
+                if (!feed) return;
+
+                if (!data || !data.success || !Array.isArray(data.inquiries) || data.inquiries.length === 0) {
+                    feed.innerHTML = `
+                        <div class="text-center py-4 text-muted small">
+                            <i class="fa-regular fa-comment-dots fs-3 text-secondary mb-2 d-block opacity-50"></i>
+                            <div class="fw-semibold text-dark mb-1">Chưa có yêu cầu nào cho số điện thoại này</div>
+                            <p class="text-muted small mb-3">Bạn hãy gửi yêu cầu ở Tab <strong>"Gửi Yêu Cầu Hỗ Trợ"</strong>, chuyên viên CSKH sẽ tiếp nhận và gửi câu trả lời ngay tại đây!</p>
+                            <button type="button" class="btn btn-outline-primary btn-sm rounded-pill px-3" onclick="document.getElementById('tab-send-inquiry-btn').click()">
+                                <i class="fa-solid fa-paper-plane me-1"></i>Gửi Yêu Cầu Mới
+                            </button>
+                        </div>
+                    `;
+                    if (badge) badge.classList.add('d-none');
+                    return;
+                }
+
+                const inquiries = data.inquiries;
+                if (badge) {
+                    badge.textContent = inquiries.length;
+                    badge.classList.remove('d-none');
+                }
+
+                let html = '';
+                inquiries.forEach(item => {
+                    const isReplied = (item.status === 'replied' && item.reply_message);
+                    const isProcessing = (item.status === 'processing');
+
+                    let statusBadge = '';
+                    if (isReplied) {
+                        statusBadge = '<span class="badge bg-success bg-opacity-10 text-success rounded-pill fw-bold" style="font-size: 0.7rem;"><i class="fa-solid fa-check-double me-1"></i>Đã phản hồi</span>';
+                    } else if (isProcessing) {
+                        statusBadge = '<span class="badge bg-warning bg-opacity-15 text-warning rounded-pill fw-bold text-dark" style="font-size: 0.7rem;"><i class="fa-solid fa-spinner fa-spin me-1"></i>Đang xử lý</span>';
+                    } else {
+                        statusBadge = '<span class="badge bg-info bg-opacity-10 text-info rounded-pill fw-bold" style="font-size: 0.7rem;"><i class="fa-solid fa-clock-rotate-left me-1"></i>Chờ tiếp nhận</span>';
+                    }
+
+                    let deptColor = 'text-primary';
+                    if (item.department === 'warranty') deptColor = 'text-success';
+                    if (item.department === 'installment') deptColor = 'text-warning';
+                    if (item.department === 'cskh') deptColor = 'text-info';
+
+                    html += `
+                        <div class="card border rounded-3 mb-3 shadow-xs overflow-hidden" style="transition: border-color 0.2s;">
+                            <div class="card-header bg-light border-bottom p-2.5 px-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-dark rounded-pill fw-bold" style="font-size: 0.68rem;">#YC-${item.id}</span>
+                                    <span class="small fw-bold ${deptColor}"><i class="fa-solid fa-sitemap me-1"></i>${escapeHtml(item.dept_title || 'CSKH')}</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${statusBadge}
+                                    <small class="text-muted" style="font-size: 0.7rem;"><i class="fa-regular fa-clock me-1"></i>${escapeHtml(item.created_at_formatted || '')}</small>
+                                </div>
+                            </div>
+                            <div class="card-body p-3">
+                                <div class="fw-bold text-dark small mb-1"><i class="fa-solid fa-circle-question text-primary me-1.5"></i>${escapeHtml(item.topic || 'Yêu cầu tư vấn')}</div>
+                                ${item.note ? `<div class="p-2.5 rounded-3 bg-light border text-secondary small mb-2" style="font-size: 0.8rem; line-height: 1.45;">${escapeHtml(item.note)}</div>` : ''}
+
+                                ${isReplied ? `
+                                    <div class="mt-2.5 p-3 rounded-3" style="background: #f0fdf4; border: 1px solid #bbf7d0;">
+                                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2 pb-1 border-bottom" style="border-color: #dcfce7 !important;">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 26px; height: 26px; font-size: 11px;">
+                                                    <i class="fa-solid fa-headset"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold text-success small lh-1">${escapeHtml(item.replied_by_name || 'Bộ phận CSKH V-Phone')}</div>
+                                                    <small class="text-muted" style="font-size: 0.68rem;">${escapeHtml(item.replied_by_title || 'Chuyên viên Tư vấn & CSKH')}</small>
+                                                </div>
+                                            </div>
+                                            <small class="text-muted" style="font-size: 0.7rem;"><i class="fa-solid fa-check text-success me-1"></i>${escapeHtml(item.replied_at_formatted || '')}</small>
+                                        </div>
+                                        <div class="text-dark small lh-base" style="white-space: pre-line; font-size: 0.85rem;">${escapeHtml(item.reply_message)}</div>
+                                    </div>
+                                ` : `
+                                    <div class="mt-2 p-2.5 rounded-3 bg-light border text-muted small d-flex align-items-center gap-2" style="font-size: 0.78rem;">
+                                        <i class="fa-solid fa-hourglass-half text-warning flex-shrink-0"></i>
+                                        <span>Chuyên viên thuộc <strong>${escapeHtml(item.dept_title || 'Bộ phận CSKH')}</strong> đã tiếp nhận và đang soạn phản hồi cho bạn...</span>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    `;
+                });
+
+                feed.innerHTML = html;
+
+            } catch (err) {
+                if (feed) {
+                    feed.innerHTML = `
+                        <div class="text-center py-4 text-danger small">
+                            <i class="fa-solid fa-circle-exclamation fs-3 mb-2 d-block"></i>
+                            Không thể tải câu trả lời lúc này. Vui lòng kiểm tra lại kết nối và thử lại!
+                        </div>
+                    `;
+                }
+            }
+        };
+
+        // Handle Quick Callback & CSKH AJAX Form Submission
+        if (formCallback) {
+            formCallback.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const nameInput = document.getElementById('cbFullName');
+                const phoneInput = document.getElementById('cbPhone');
+                const fullname = nameInput ? nameInput.value.trim() : '';
+                const phone = phoneInput ? phoneInput.value.trim() : '';
+
+                if (callbackAlert) {
+                    callbackAlert.className = 'alert d-none';
+                    callbackAlert.textContent = '';
+                }
+
+                if (!fullname) {
+                    if (callbackAlert) {
+                        callbackAlert.className = 'alert alert-danger small py-2 px-3 rounded-3 mb-3';
+                        callbackAlert.textContent = 'Vui lòng nhập họ và tên của bạn.';
+                    }
+                    if (nameInput) nameInput.focus();
+                    return;
+                }
+
+                const cleanPhone = phone.replace(/[^0-9+]/g, '');
+                // Chấp nhận số điện thoại từ 8 đến 11 chữ số
+                if (cleanPhone.length < 8 || cleanPhone.length > 12) {
+                    if (callbackAlert) {
+                        callbackAlert.className = 'alert alert-danger small py-2 px-3 rounded-3 mb-3';
+                        callbackAlert.textContent = 'Vui lòng nhập số điện thoại hợp lệ (8 - 11 chữ số).';
+                    }
+                    if (phoneInput) phoneInput.focus();
+                    return;
+                }
+
+                const origBtnHtml = btnSubmitCallback ? btnSubmitCallback.innerHTML : '';
+                if (btnSubmitCallback) {
+                    btnSubmitCallback.disabled = true;
+                    btnSubmitCallback.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span>Đang chuyển yêu cầu đến CSKH...';
+                }
+
+                try {
+                    const formData = new FormData(formCallback);
+                    const res = await fetch('api/callback-request.php', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const data = await res.json();
+
+                    if (btnSubmitCallback) {
+                        btnSubmitCallback.disabled = false;
+                        btnSubmitCallback.innerHTML = origBtnHtml;
+                    }
+
+                    if (data.success) {
+                        formCallback.classList.add('d-none');
+                        if (callbackSuccessView) {
+                            callbackSuccessView.classList.remove('d-none');
+                        }
+                        if (callbackSuccessMsg && data.message) {
+                            callbackSuccessMsg.textContent = data.message;
+                        }
+                        if (window.showVPhoneToast) {
+                            window.showVPhoneToast('Đã gửi yêu cầu đến CSKH! Chuyên viên sẽ phản hồi trong 5 phút.', true);
+                        }
+
+                        // Đồng bộ số điện thoại tra cứu & nạp trước danh sách phản hồi
+                        const inquiryPhoneInput = document.getElementById('inquirySearchPhone');
+                        if (inquiryPhoneInput) inquiryPhoneInput.value = cleanPhone;
+                        if (window.fetchCustomerInquiries) {
+                            window.fetchCustomerInquiries(cleanPhone);
+                        }
+                    } else {
+                        if (callbackAlert) {
+                            callbackAlert.className = 'alert alert-danger small py-2 px-3 rounded-3 mb-3';
+                            callbackAlert.textContent = data.message || 'Có lỗi xảy ra, vui lòng thử lại!';
+                        }
+                    }
+                } catch (err) {
+                    if (btnSubmitCallback) {
+                        btnSubmitCallback.disabled = false;
+                        btnSubmitCallback.innerHTML = origBtnHtml;
+                    }
+                    if (callbackAlert) {
+                        callbackAlert.className = 'alert alert-danger small py-2 px-3 rounded-3 mb-3';
+                        callbackAlert.textContent = 'Lỗi kết nối máy chủ khi gửi yêu cầu. Vui lòng thử lại sau.';
+                    }
+                }
+            });
+
+            // Modal Lifecycle Event Handlers
+            const callbackModalEl = document.getElementById('modalCallbackRequest');
+            if (callbackModalEl) {
+                // Khi mở modal, nếu đã có SĐT thì nạp trước danh sách phản hồi ngầm
+                callbackModalEl.addEventListener('shown.bs.modal', function () {
+                    const inquiryPhoneInput = document.getElementById('inquirySearchPhone');
+                    if (inquiryPhoneInput && inquiryPhoneInput.value.trim().length >= 8) {
+                        if (window.fetchCustomerInquiries) {
+                            window.fetchCustomerInquiries(inquiryPhoneInput.value.trim());
+                        }
+                    }
+                });
+
+                // Reset modal state when closed
+                callbackModalEl.addEventListener('hidden.bs.modal', function () {
+                    formCallback.classList.remove('d-none');
+                    if (callbackSuccessView) callbackSuccessView.classList.add('d-none');
+                    if (callbackAlert) {
+                        callbackAlert.className = 'alert d-none';
+                        callbackAlert.textContent = '';
+                    }
+                });
+            }
+        }
+    }
+
     // --- DOM READY ---
     document.addEventListener("DOMContentLoaded", function () {
         initSearch();
         initBackToTop();
         initAuthModal();
         initGoogleAuth();
+        initFloatingContactWidget();
     });
 })();

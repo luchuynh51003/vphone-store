@@ -23,6 +23,15 @@ class AuthController {
         }
 
         if ($user) {
+            // Kiểm tra trạng thái hoạt động của tài khoản
+            if (isset($user['status']) && (int)$user['status'] === 0) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Tài khoản của bạn hiện đang bị tạm khóa hoặc ngưng hoạt động! Vui lòng liên hệ Quản trị tối cao (admin@vphone.vn).'
+                ]);
+                exit;
+            }
+
             // Nếu tài khoản chỉ đăng ký qua Google và chưa đặt mật khẩu
             if (empty($user['password']) && !empty($user['google_id'])) {
                 echo json_encode([
@@ -33,19 +42,47 @@ class AuthController {
             }
 
             if ($password === '123456' || password_verify($password, $user['password'])) {
+                $userRole = (int)$user['role'];
+                $perms = [];
+                if (!empty($user['permissions'])) {
+                    $decoded = json_decode($user['permissions'], true);
+                    $perms = is_array($decoded) ? $decoded : [];
+                }
+                if ($userRole === 1) {
+                    require_once __DIR__ . '/../../admin/includes/permissions.php';
+                    $perms = array_keys(VPHONE_PERMISSIONS);
+                }
+
                 $_SESSION['user'] = [
-                    'id' => (int)$user['id'], 'fullname' => $user['fullname'],
-                    'email' => $user['email'], 'phone' => $user['phone'],
-                    'address' => $user['address'], 'avatar' => $user['avatar'] ?? '',
-                    'role' => (int)$user['role'],
+                    'id' => (int)$user['id'],
+                    'fullname' => $user['fullname'],
+                    'email' => $user['email'],
+                    'phone' => $user['phone'],
+                    'address' => $user['address'],
+                    'avatar' => $user['avatar'] ?? '',
+                    'role' => $userRole,
+                    'staff_role' => $user['staff_role'] ?? ($userRole === 1 ? 'admin' : ($userRole === 2 ? 'staff' : '')),
+                    'staff_title' => $user['staff_title'] ?? ($userRole === 1 ? 'Quản trị viên' : ($userRole === 2 ? 'Nhân viên cửa hàng' : 'Khách hàng')),
+                    'permissions' => $perms,
                     'auth_provider' => $user['auth_provider'] ?? 'local'
                 ];
                 if (!empty($user['cart_data'])) { $_SESSION['cart'] = json_decode($user['cart_data'], true) ?: []; }
                 $redirect = $_SESSION['post_login_redirect'] ?? null;
                 unset($_SESSION['post_login_redirect']);
+
+                if (!$redirect) {
+                    if ($userRole === 1) {
+                        $redirect = 'admin/index.php';
+                    } elseif ($userRole === 2) {
+                        $redirect = 'admin/staff_dashboard.php';
+                    }
+                }
+
                 echo json_encode([
                     'success' => true,
-                    'is_admin' => ($user['role'] == 1),
+                    'is_admin' => ($userRole === 1),
+                    'is_staff' => ($userRole === 2),
+                    'role' => $userRole,
                     'message' => 'Đăng nhập thành công!',
                     'redirect' => $redirect
                 ]);
@@ -109,30 +146,6 @@ class AuthController {
                 exit;
             }
         }
-        // Nhận thông tin từ Demo Simulator
-        elseif (!empty($_POST['demo_user'])) {
-            $demoId = trim($_POST['demo_user']);
-            $customEmail = strtolower(trim($_POST['custom_email'] ?? ''));
-            $customName = trim($_POST['custom_name'] ?? '');
-
-            if ($demoId === 'custom' && !empty($customEmail)) {
-                $googleUser = [
-                    'google_id' => 'google_sim_' . substr(md5($customEmail), 0, 16),
-                    'email' => $customEmail,
-                    'fullname' => $customName ?: 'Google User',
-                    'avatar' => 'https://api.dicebear.com/7.x/initials/svg?seed=' . urlencode($customName ?: $customEmail),
-                    'phone' => trim($_POST['custom_phone'] ?? '0912345678'),
-                ];
-            } else {
-                $demos = $googleService->getDemoUsers();
-                foreach ($demos as $d) {
-                    if ($d['google_id'] === $demoId || $d['email'] === $demoId) {
-                        $googleUser = $d;
-                        break;
-                    }
-                }
-            }
-        }
 
         if (!$googleUser || empty($googleUser['email'])) {
             echo json_encode(['success' => false, 'message' => 'Không tìm thấy thông tin xác thực Google hợp lệ!']);
@@ -147,15 +160,16 @@ class AuthController {
 
         if ($existingByGoogle) {
             $user = $existingByGoogle;
-            if (empty($user['avatar']) && !empty($googleUser['avatar'])) {
-                $userModel->updateAvatar($user['id'], $googleUser['avatar']);
-                $user['avatar'] = $googleUser['avatar'];
+            if (!empty($googleUser['avatar'])) {
+                $savedAvatar = $userModel->saveRemoteAvatar($user['id'], $googleUser['avatar']);
+                $user['avatar'] = $savedAvatar;
             }
         } elseif ($existingByEmail) {
             $user = $existingByEmail;
             $userModel->linkGoogleAccount($user['id'], $googleUser['google_id'] ?? '', $googleUser['avatar'] ?? null);
-            if (empty($user['avatar']) && !empty($googleUser['avatar'])) {
-                $user['avatar'] = $googleUser['avatar'];
+            if (!empty($googleUser['avatar'])) {
+                $savedAvatar = $userModel->saveRemoteAvatar($user['id'], $googleUser['avatar']);
+                $user['avatar'] = $savedAvatar;
             }
         } else {
             // Đăng ký tài khoản mới bằng Google
@@ -166,6 +180,9 @@ class AuthController {
                 $googleUser['avatar'] ?? null,
                 $googleUser['phone'] ?? ''
             );
+            if (!empty($googleUser['avatar'])) {
+                $userModel->saveRemoteAvatar($newId, $googleUser['avatar']);
+            }
             $user = $userModel->findById($newId);
             $isNewUser = true;
         }
@@ -218,7 +235,7 @@ class AuthController {
     public function googleRedirect() {
         $googleService = new GoogleAuthService();
         if (!$googleService->isConfigured()) {
-            header('Location: index.php?show_login=1&google_mode=demo');
+            header('Location: index.php?show_login=1&auth_error=' . urlencode('Chức năng Google OAuth chưa được cấu hình.'));
             exit;
         }
 
@@ -280,15 +297,16 @@ class AuthController {
         $user = null;
         if ($existingByGoogle) {
             $user = $existingByGoogle;
-            if (empty($user['avatar']) && !empty($googleUser['avatar'])) {
-                $userModel->updateAvatar($user['id'], $googleUser['avatar']);
-                $user['avatar'] = $googleUser['avatar'];
+            if (!empty($googleUser['avatar'])) {
+                $savedAvatar = $userModel->saveRemoteAvatar($user['id'], $googleUser['avatar']);
+                $user['avatar'] = $savedAvatar;
             }
         } elseif ($existingByEmail) {
             $user = $existingByEmail;
             $userModel->linkGoogleAccount($user['id'], $googleUser['google_id'] ?? '', $googleUser['avatar'] ?? null);
-            if (empty($user['avatar']) && !empty($googleUser['avatar'])) {
-                $user['avatar'] = $googleUser['avatar'];
+            if (!empty($googleUser['avatar'])) {
+                $savedAvatar = $userModel->saveRemoteAvatar($user['id'], $googleUser['avatar']);
+                $user['avatar'] = $savedAvatar;
             }
         } else {
             $newId = $userModel->createFromGoogle(
@@ -297,6 +315,9 @@ class AuthController {
                 $googleUser['google_id'] ?? ('google_' . time()),
                 $googleUser['avatar'] ?? null
             );
+            if (!empty($googleUser['avatar'])) {
+                $userModel->saveRemoteAvatar($newId, $googleUser['avatar']);
+            }
             $user = $userModel->findById($newId);
         }
 
@@ -320,6 +341,8 @@ class AuthController {
 
         if ($user['role'] == 1) {
             header('Location: admin/index.php');
+        } elseif ($user['role'] == 2) {
+            header('Location: admin/staff_dashboard.php');
         } else {
             header('Location: ' . $redirect);
         }

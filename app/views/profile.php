@@ -224,7 +224,7 @@ require_once 'app/views/includes/functions.php';
             </div>
         <?php endif; ?>
 
-        <div id="profileLiveAlert" class="alert d-none rounded-4 py-3 px-4 shadow-sm mb-4 border-0 align-items-center"></div>
+        <div id="profileLiveAlert" class="alert d-none rounded-4 py-3 px-4 shadow-sm mb-4 border-0 align-items-center" style="display: none !important;"></div>
 
         <div class="row g-4">
             <!-- CỘT BÊN TRÁI: THẺ TỔNG QUAN TÀI KHOẢN & HÌNH ẢNH ĐẠI DIỆN -->
@@ -233,7 +233,7 @@ require_once 'app/views/includes/functions.php';
                     <!-- KHU VỰC HÌNH ẢNH ĐẠI DIỆN VÀ NÚT TẢI ẢNH -->
                     <div class="avatar-wrapper">
                         <?php if ($hasCustomAvatar): ?>
-                            <img src="<?= htmlspecialchars($userAvatar) ?>?v=<?= time() ?>" alt="Avatar" id="profileAvatarDisplay" class="profile-avatar-large">
+                            <img src="<?= htmlspecialchars($userAvatar) ?>?v=<?= time() ?>" alt="Avatar" id="profileAvatarDisplay" referrerpolicy="no-referrer" class="profile-avatar-large">
                         <?php else: ?>
                             <div id="profileAvatarDisplay" class="profile-avatar-large">
                                 <?= mb_substr(htmlspecialchars($user['fullname'] ?? 'V'), 0, 1, 'UTF-8') ?>
@@ -265,6 +265,10 @@ require_once 'app/views/includes/functions.php';
                         <?php if (($user['role'] ?? 0) == 1): ?>
                             <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-2 fw-bold">
                                 <i class="fa-solid fa-shield-halved me-1"></i>Quản Trị Viên
+                            </span>
+                        <?php elseif (($user['role'] ?? 0) == 2): ?>
+                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-bold">
+                                <i class="fa-solid fa-id-badge me-1"></i>Nhân Viên (<?= htmlspecialchars($user['staff_title'] ?? 'Nhân viên') ?>)
                             </span>
                         <?php else: ?>
                             <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fw-bold">
@@ -334,6 +338,11 @@ require_once 'app/views/includes/functions.php';
                             <a href="admin/index.php" class="nav-link text-danger fw-bold">
                                 <i class="fa-solid fa-gear text-danger"></i>
                                 <span>Trang Quản Trị Admin</span>
+                            </a>
+                        <?php elseif (($user['role'] ?? 0) == 2): ?>
+                            <a href="admin/staff_dashboard.php" class="nav-link text-success fw-bold">
+                                <i class="fa-solid fa-laptop-file text-success"></i>
+                                <span>Bàn Làm Việc Nhân Viên</span>
                             </a>
                         <?php endif; ?>
                         <hr class="my-2 border-secondary border-opacity-10">
@@ -799,11 +808,12 @@ document.addEventListener("DOMContentLoaded", function () {
     function showLiveAlert(type, message) {
         if (!liveAlert) return;
         liveAlert.className = `alert alert-${type} rounded-4 py-3 px-4 shadow-sm mb-4 border-0 d-flex align-items-center`;
+        liveAlert.style.display = 'flex';
         const icon = type === 'success' ? 'fa-circle-check text-success' : 'fa-triangle-exclamation text-danger';
         liveAlert.innerHTML = `
             <i class="fa-solid ${icon} fs-4 me-3"></i>
             <div class="fw-semibold">${message}</div>
-            <button type="button" class="btn-close ms-auto" onclick="this.parentElement.classList.add('d-none')"></button>
+            <button type="button" class="btn-close ms-auto" onclick="this.parentElement.style.display='none'; this.parentElement.classList.add('d-none')"></button>
         `;
         liveAlert.classList.remove('d-none');
         liveAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });

@@ -56,8 +56,8 @@ html {
     bottom: 8px;
     right: 14px;
     background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 16px;
     padding: 10px 16px;

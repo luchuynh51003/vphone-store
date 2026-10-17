@@ -12,14 +12,35 @@ if (!empty($_GET['email']) && !empty($_GET['password'])) {
     $stmt->execute([':email' => $email]);
     $user = $stmt->fetch();
     if ($user && ($password === '123456' || password_verify($password, $user['password']))) {
+        $userRole = (int)$user['role'];
+        $perms = [];
+        if (!empty($user['permissions'])) {
+            $decoded = json_decode($user['permissions'], true);
+            $perms = is_array($decoded) ? $decoded : [];
+        }
+        if ($userRole === 1) {
+            require_once __DIR__ . '/admin/includes/permissions.php';
+            $perms = array_keys(VPHONE_PERMISSIONS);
+        }
         $_SESSION['user'] = [
-            'id' => (int)$user['id'], 'fullname' => $user['fullname'],
-            'email' => $user['email'], 'phone' => $user['phone'] ?? '',
-            'address' => $user['address'] ?? '', 'avatar' => $user['avatar'] ?? '',
-            'role' => (int)$user['role']
+            'id' => (int)$user['id'],
+            'fullname' => $user['fullname'],
+            'email' => $user['email'],
+            'phone' => $user['phone'] ?? '',
+            'address' => $user['address'] ?? '',
+            'avatar' => $user['avatar'] ?? '',
+            'role' => $userRole,
+            'staff_role' => $user['staff_role'] ?? ($userRole === 1 ? 'admin' : ($userRole === 2 ? 'staff' : '')),
+            'staff_title' => $user['staff_title'] ?? ($userRole === 1 ? 'Quản trị viên' : ($userRole === 2 ? 'Nhân viên cửa hàng' : 'Khách hàng')),
+            'permissions' => $perms
         ];
-        if ($user['role'] == 1) { header("Location: admin/index.php"); }
-        else { header("Location: index.php"); }
+        if ($userRole === 1) {
+            header("Location: admin/index.php");
+        } elseif ($userRole === 2) {
+            header("Location: admin/staff_dashboard.php");
+        } else {
+            header("Location: index.php");
+        }
         exit;
     }
 }
@@ -37,6 +58,12 @@ switch ($page) {
     case 'product':
         require_once 'app/controllers/ProductController.php';
         (new ProductController($pdo))->detail();
+        break;
+
+    case 'compare':
+    case 'so-sanh':
+        require_once 'app/controllers/ProductController.php';
+        (new ProductController($pdo))->compare();
         break;
 
     case 'used-phones':

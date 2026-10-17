@@ -48,9 +48,75 @@ if (isset($_POST['confirm_payment'])) {
 if (isset($_POST['update_status'])) {
     $orderId = (int)$_POST['order_id'];
     $newStatus = trim($_POST['status']);
-    $up = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
-    $up->execute([$newStatus, $orderId]);
-    $message = "Đã cập nhật trạng thái đơn hàng #VP-$orderId thành '$newStatus'!";
+
+    $stStmt = $pdo->prepare("SELECT * FROM orders WHERE id = ?");
+    $stStmt->execute([$orderId]);
+    $currentOrder = $stStmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($currentOrder) {
+        $oldStatus = $currentOrder['status'];
+        $up = $pdo->prepare("UPDATE orders SET status = ? WHERE id = ?");
+        $up->execute([$newStatus, $orderId]);
+
+        // Tạo thông báo cho khách hàng khi thay đổi trạng thái
+        if ($oldStatus !== $newStatus) {
+            require_once __DIR__ . '/../app/models/NotificationModel.php';
+            $notifModel = new NotificationModel($pdo);
+            $totalFmt = number_format($currentOrder['total_money'], 0, ',', '.') . ' đ';
+
+            if ($newStatus === 'Đang giao hàng') {
+                $notifTitle = "Đơn hàng #VP-{$orderId} đang được giao đến bạn!";
+                $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được đóng gói và bàn giao cho đơn vị vận chuyển. Shipper sẽ sớm liên hệ giao hàng đến bạn!";
+                $notifModel->create(
+                    $currentOrder['user_id'] ? (int)$currentOrder['user_id'] : null,
+                    $currentOrder['phone'],
+                    $orderId,
+                    $notifTitle,
+                    $notifMsg,
+                    null,
+                    'order_shipping'
+                );
+            } elseif ($newStatus === 'Đã giao thành công') {
+                $notifTitle = "Đơn hàng #VP-{$orderId} đã giao thành công!";
+                $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được giao thành công. Cảm ơn quý khách đã tin tưởng và ủng hộ V-Phone Store!";
+                $notifModel->create(
+                    $currentOrder['user_id'] ? (int)$currentOrder['user_id'] : null,
+                    $currentOrder['phone'],
+                    $orderId,
+                    $notifTitle,
+                    $notifMsg,
+                    null,
+                    'order_delivered'
+                );
+            } elseif ($newStatus === 'Đang xử lý') {
+                $notifTitle = "Đơn hàng #VP-{$orderId} đã được xác nhận!";
+                $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được tiếp nhận. Cửa hàng đang tiến hành kiểm tra và chuẩn bị sản phẩm.";
+                $notifModel->create(
+                    $currentOrder['user_id'] ? (int)$currentOrder['user_id'] : null,
+                    $currentOrder['phone'],
+                    $orderId,
+                    $notifTitle,
+                    $notifMsg,
+                    null,
+                    'order_processing'
+                );
+            } elseif ($newStatus === 'Đã hủy') {
+                $notifTitle = "Đơn hàng #VP-{$orderId} đã chuyển sang trạng thái Đã hủy";
+                $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được chuyển sang trạng thái Đã hủy.";
+                $notifModel->create(
+                    $currentOrder['user_id'] ? (int)$currentOrder['user_id'] : null,
+                    $currentOrder['phone'],
+                    $orderId,
+                    $notifTitle,
+                    $notifMsg,
+                    'Hủy đơn trong danh sách quản trị',
+                    'order_cancelled'
+                );
+            }
+        }
+
+        $message = "Đã cập nhật trạng thái đơn hàng #VP-$orderId thành '$newStatus' và gửi thông báo cho khách hàng!";
+    }
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['delete_order'])) {
@@ -176,6 +242,24 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '<?= addslashes($message) ?>',
+                    showConfirmButton: false,
+                    timer: 3500,
+                    timerProgressBar: true,
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg border-0 py-2.5 px-3'
+                    }
+                });
+            }
+        });
+    </script>
 <?php endif; ?>
 
 <!-- 4 THẺ THỐNG KÊ NHANH (KPI QUICK GLANCE) -->
@@ -186,7 +270,9 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                 <div>
                     <span class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Tổng đơn</span>
                     <h4 class="fw-black text-dark my-1"><?= $statusCounts['all'] ?> <span class="fs-6 fw-normal text-muted">đơn</span></h4>
-                    <span class="badge bg-light text-primary border rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Toàn hệ thống</span>
+                    <span class="badge kpi-badge-blue rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                        <i class="fa-solid fa-layer-group me-1"></i>Toàn hệ thống
+                    </span>
                 </div>
                 <div class="admin-kpi-icon-box" style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #0066cc;">
                     <i class="fa-solid fa-boxes-stacked"></i>
@@ -201,7 +287,9 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                 <div>
                     <span class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Cần chuẩn bị</span>
                     <h4 class="fw-black text-warning my-1"><?= ($statusCounts['Chờ xử lý'] + $statusCounts['Đang xử lý']) ?> <span class="fs-6 fw-normal text-muted">đơn</span></h4>
-                    <span class="badge bg-warning bg-opacity-15 text-dark rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Cần đóng gói & giao</span>
+                    <span class="badge kpi-badge-amber rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                        <i class="fa-solid fa-box-open me-1"></i>Cần đóng gói & giao
+                    </span>
                 </div>
                 <div class="admin-kpi-icon-box" style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); color: #d97706;">
                     <i class="fa-solid fa-clock-rotate-left"></i>
@@ -216,7 +304,9 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                 <div>
                     <span class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Đang giao hàng</span>
                     <h4 class="fw-black text-info my-1"><?= $statusCounts['Đang giao hàng'] ?> <span class="fs-6 fw-normal text-muted">đơn</span></h4>
-                    <span class="badge bg-info bg-opacity-15 text-dark rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">V-Phone Express</span>
+                    <span class="badge kpi-badge-sky rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                        <i class="fa-solid fa-truck-fast me-1"></i>V-Phone Express
+                    </span>
                 </div>
                 <div class="admin-kpi-icon-box" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); color: #0284c7;">
                     <i class="fa-solid fa-truck-fast"></i>
@@ -231,7 +321,9 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                 <div>
                     <span class="text-secondary small fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Đã hoàn thành</span>
                     <h4 class="fw-black text-success my-1"><?= $statusCounts['Đã giao thành công'] ?> <span class="fs-6 fw-normal text-muted">đơn</span></h4>
-                    <span class="badge bg-success bg-opacity-15 text-success rounded-pill px-2 py-0.5" style="font-size: 0.7rem;">Giao thành công</span>
+                    <span class="badge kpi-badge-emerald rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
+                        <i class="fa-solid fa-circle-check me-1"></i>Giao thành công
+                    </span>
                 </div>
                 <div class="admin-kpi-icon-box" style="background: linear-gradient(135deg, #ecfdf5 0%, #a7f3d0 100%); color: #16a34a;">
                     <i class="fa-solid fa-circle-check"></i>
@@ -308,6 +400,16 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
 .dropdown-menu-status .dropdown-item:hover {
     background-color: #f1f5f9;
 }
+.hover-primary:hover {
+    background-color: #eff6ff !important;
+    color: #0066cc !important;
+    border-color: #bfdbfe !important;
+}
+.hover-danger:hover {
+    background-color: #fef2f2 !important;
+    color: #dc2626 !important;
+    border-color: #fecaca !important;
+}
 </style>
 
 <!-- BẢNG DANH SÁCH ĐƠN HÀNG FLAGSHIP -->
@@ -359,9 +461,9 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                             <!-- MÃ ĐƠN & NGÀY ĐẶT -->
                             <td class="ps-4 text-nowrap">
                                 <div class="order-id-chip">
-                                    <i class="fa-solid fa-receipt me-1 opacity-75"></i>#VP-<?= $o['id'] ?>
+                                    <i class="fa-solid fa-receipt me-1.5 opacity-75"></i>#VP-<?= $o['id'] ?>
                                 </div>
-                                <div class="text-muted small mt-1 d-flex align-items-center gap-1" style="font-size: 0.74rem;">
+                                <div class="text-muted small mt-1.5 d-flex align-items-center gap-1.5" style="font-size: 0.74rem;">
                                     <i class="fa-regular fa-clock text-primary"></i>
                                     <span><?= date('H:i • d/m', strtotime($o['created_at'])) ?></span>
                                 </div>
@@ -369,7 +471,7 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
 
                             <!-- THÔNG TIN KHÁCH HÀNG -->
                             <td style="min-width: 200px;">
-                                <div class="d-flex align-items-center gap-2.5">
+                                <div class="d-flex align-items-center gap-3">
                                     <div class="customer-avatar-badge" style="background: linear-gradient(135deg, #0066cc 0%, #38bdf8 100%);">
                                         <?= mb_substr(htmlspecialchars($o['fullname']), 0, 1, 'UTF-8') ?>
                                     </div>
@@ -377,12 +479,12 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                         <div class="fw-bold text-dark text-truncate" style="max-width: 170px;" title="<?= htmlspecialchars($o['fullname']) ?>">
                                             <?= htmlspecialchars($o['fullname']) ?>
                                         </div>
-                                        <a href="tel:<?= htmlspecialchars($o['phone']) ?>" class="text-secondary text-decoration-none small d-block">
-                                            <i class="fa-solid fa-phone me-1 text-primary small"></i><span class="fw-semibold"><?= htmlspecialchars($o['phone']) ?></span>
+                                        <a href="tel:<?= htmlspecialchars($o['phone']) ?>" class="text-secondary text-decoration-none small d-flex align-items-center gap-1.5 my-0.5">
+                                            <i class="fa-solid fa-phone text-primary small"></i><span class="fw-semibold"><?= htmlspecialchars($o['phone']) ?></span>
                                         </a>
-                                        <small class="text-muted d-block text-truncate" style="max-width: 180px; font-size: 0.74rem;" title="<?= htmlspecialchars($o['address']) ?>">
-                                            <i class="fa-solid fa-location-dot me-1 text-danger opacity-75"></i><?= htmlspecialchars($o['address']) ?>
-                                        </small>
+                                        <div class="text-muted text-truncate d-flex align-items-center gap-1.5" style="max-width: 180px; font-size: 0.74rem;" title="<?= htmlspecialchars($o['address']) ?>">
+                                            <i class="fa-solid fa-location-dot text-danger opacity-75 flex-shrink-0"></i><span class="text-truncate"><?= htmlspecialchars($o['address']) ?></span>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -404,7 +506,7 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                     $colorHex = !empty($variantColor) ? getColorHexValue($variantColor) : '#64748b';
                                     $imgUrl = !empty($d['image']) ? '../' . $d['image'] : '../assets/images/products/iphone-17-pro.png';
                                     ?>
-                                    <div class="d-flex align-items-center gap-2.5 py-1">
+                                    <div class="d-flex align-items-center gap-3 py-1">
                                         <div class="admin-prod-thumb">
                                             <img src="<?= htmlspecialchars($imgUrl) ?>" alt="<?= htmlspecialchars($baseName) ?>" loading="lazy" onerror="this.src='../assets/images/products/iphone-17-pro.png'">
                                         </div>
@@ -412,19 +514,19 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                             <div class="fw-bold text-dark small text-truncate" style="max-width: 220px;" title="<?= htmlspecialchars($rawName) ?>">
                                                 <?= htmlspecialchars($baseName) ?>
                                             </div>
-                                            <div class="d-flex align-items-center gap-1.5 flex-wrap mt-0.5">
+                                            <div class="d-flex align-items-center gap-1.5 flex-wrap mt-1">
                                                 <?php if (!empty($variantRom)): ?>
-                                                    <span class="badge bg-light text-primary border rounded-pill" style="font-size: 0.68rem; padding: 2px 7px;">
-                                                        <i class="fa-solid fa-microchip me-0.5"></i><?= htmlspecialchars($variantRom) ?>
+                                                    <span class="badge bg-light text-primary border rounded-pill" style="font-size: 0.68rem; padding: 2.5px 8px;">
+                                                        <i class="fa-solid fa-microchip me-1"></i><?= htmlspecialchars($variantRom) ?>
                                                     </span>
                                                 <?php endif; ?>
                                                 <?php if (!empty($variantColor)): ?>
-                                                    <span class="badge bg-light text-dark border rounded-pill" style="font-size: 0.68rem; padding: 2px 7px;">
-                                                        <span class="color-dot-swatch" style="background-color: <?= $colorHex ?>; width: 7px; height: 7px;"></span>
+                                                    <span class="badge bg-light text-dark border rounded-pill" style="font-size: 0.68rem; padding: 2.5px 8px;">
+                                                        <span class="color-dot-swatch me-1" style="background-color: <?= $colorHex ?>; width: 7px; height: 7px; display: inline-block; border-radius: 50%;"></span>
                                                         <?= htmlspecialchars($variantColor) ?>
                                                     </span>
                                                 <?php endif; ?>
-                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill" style="font-size: 0.68rem; padding: 2px 7px;">
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill" style="font-size: 0.68rem; padding: 2.5px 8px;">
                                                     x<?= (int)$d['quantity'] ?>
                                                 </span>
                                             </div>
@@ -438,8 +540,8 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                 <div class="text-danger fw-black fs-6" style="letter-spacing: -0.3px;">
                                     <?= number_format($o['total_money'], 0, ',', '.') ?> đ
                                 </div>
-                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-2 py-0.5 small" style="font-size: 0.68rem;">
-                                    <i class="fa-solid fa-truck-fast me-0.5"></i>Freeship
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 small mt-1 d-inline-flex align-items-center" style="font-size: 0.68rem;">
+                                    <i class="fa-solid fa-truck-fast me-1.5"></i>Freeship
                                 </span>
                             </td>
 
@@ -451,59 +553,54 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                     $isVietQR = ($pMethod === 'Chuyển khoản QR VietQR');
                                     $isMoMo = ($pMethod === 'Ví điện tử MoMo');
                                 ?>
-                                <div class="mb-1">
+                                <div class="mb-1.5">
                                     <?php if ($isVietQR): ?>
-                                        <span class="badge bg-light text-primary border rounded-pill px-2.5 py-1 small fw-bold">
-                                            <i class="fa-solid fa-qrcode text-danger me-1"></i>VietQR
+                                        <span class="badge rounded-pill px-2.5 py-1 small fw-bold d-inline-flex align-items-center" style="background: #eff6ff; color: #0066cc; border: 1px solid #bfdbfe;">
+                                            <i class="fa-solid fa-qrcode text-danger me-1.5"></i>VietQR
                                         </span>
                                     <?php elseif ($isMoMo): ?>
-                                        <span class="badge bg-light rounded-pill px-2.5 py-1 small fw-bold" style="color: #d82d8b; border: 1px solid #fbcfe8;">
-                                            <i class="fa-solid fa-wallet me-1"></i>MoMo
+                                        <span class="badge rounded-pill px-2.5 py-1 small fw-bold d-inline-flex align-items-center" style="background: #fdf2f8; color: #d82d8b; border: 1px solid #fbcfe8;">
+                                            <i class="fa-solid fa-wallet me-1.5"></i>MoMo
                                         </span>
                                     <?php else: ?>
-                                        <span class="badge bg-light text-dark border rounded-pill px-2.5 py-1 small fw-bold">
-                                            <i class="fa-solid fa-money-bill-wave text-success me-1"></i>COD
+                                        <span class="badge rounded-pill px-2.5 py-1 small fw-bold d-inline-flex align-items-center" style="background: #f8fafc; color: #334155; border: 1px solid #e2e8f0;">
+                                            <i class="fa-solid fa-money-bill-wave text-success me-1.5"></i>COD
                                         </span>
                                     <?php endif; ?>
                                 </div>
 
                                 <div>
                                     <?php if ($isPaid): ?>
-                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-0.5 small fw-bold">
-                                            <i class="fa-solid fa-circle-check me-1"></i>Đã TT
+                                        <span class="badge rounded-pill px-2.5 py-1 small fw-bold d-inline-flex align-items-center" style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;">
+                                            <i class="fa-solid fa-circle-check me-1.5"></i>Đã TT
                                         </span>
                                         <?php if (!empty($o['transaction_code'])): ?>
-                                            <small class="text-muted d-block font-monospace mt-0.5" style="font-size: 0.68rem;" title="Mã GD: <?= htmlspecialchars($o['transaction_code']) ?>">
+                                            <small class="text-muted d-block font-monospace mt-1" style="font-size: 0.68rem;" title="Mã GD: <?= htmlspecialchars($o['transaction_code']) ?>">
                                                 <?= htmlspecialchars($o['transaction_code']) ?>
                                             </small>
                                         <?php endif; ?>
                                     <?php else: ?>
-                                        <span class="badge bg-warning bg-opacity-15 text-dark border border-warning border-opacity-25 rounded-pill px-2.5 py-0.5 small fw-bold">
-                                            <i class="fa-solid fa-clock me-1 text-warning"></i>Chưa TT
+                                        <span class="badge rounded-pill px-2.5 py-1 small fw-bold d-inline-flex align-items-center" style="background: #fffbeb; color: #b45309; border: 1px solid #fde68a;">
+                                            <i class="fa-solid fa-clock me-1.5 text-warning"></i>Chưa TT
                                         </span>
                                         <?php if ($isVietQR && $o['status'] !== 'Đã hủy'): ?>
                                             <div class="mt-1">
-                                                <form method="POST" action="orders.php" class="d-inline" onsubmit="return confirm('Xác nhận đã nhận đủ tiền chuyển khoản cho đơn #VP-<?= $o['id'] ?>?');">
-                                                    <input type="hidden" name="order_id" value="<?= (int)$o['id'] ?>">
-                                                    <input type="hidden" name="confirm_payment" value="1">
-                                                    <button type="submit" class="btn btn-sm btn-outline-success rounded-pill py-0.5 px-2 fw-bold" style="font-size: 0.72rem;" title="Xác nhận đã nhận tiền">
-                                                        <i class="fa-solid fa-check me-0.5"></i>Duyệt TT
-                                                    </button>
-                                                </form>
+                                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill py-0.5 px-2.5 fw-bold d-inline-flex align-items-center" style="font-size: 0.72rem;" onclick="confirmVietQRPayment(<?= (int)$o['id'] ?>, '<?= htmlspecialchars(addslashes($o['fullname'])) ?>', '<?= number_format($o['total_money'], 0, ',', '.') ?> đ', '<?= htmlspecialchars($o['transaction_code'] ?? '') ?>')" title="Xác nhận đã nhận tiền">
+                                                    <i class="fa-solid fa-check me-1"></i>Duyệt TT
+                                                </button>
                                             </div>
                                         <?php endif; ?>
                                     <?php endif; ?>
                                 </div>
                             </td>
 
-                            <!-- TRẠNG THÁI ĐƠN HÀNG (INTERACTIVE DROPDOWN - HOÀN TOÀN MỚI) -->
+                            <!-- TRẠNG THÁI ĐƠN HÀNG (INTERACTIVE DROPDOWN) -->
                             <td class="text-center text-nowrap">
                                 <div class="dropdown d-inline-block">
-                                    <button class="btn btn-sm <?= $stMeta['pillClass'] ?> status-pill-btn d-inline-flex align-items-center gap-1.5 shadow-none" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="Bấm để đổi trạng thái">
-                                        <span class="pulse-dot"></span>
-                                        <i class="<?= $stMeta['icon'] ?>"></i>
-                                        <span><?= htmlspecialchars($stMeta['shortLabel']) ?></span>
-                                        <i class="fa-solid fa-chevron-down ms-1 opacity-50" style="font-size: 0.65rem;"></i>
+                                    <button class="btn btn-sm admin-status-btn admin-status-<?= $stMeta['key'] ?? 'pending' ?> shadow-none" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-popper-config='{"strategy":"fixed"}' aria-expanded="false" title="Bấm để đổi trạng thái">
+                                        <i class="<?= $stMeta['icon'] ?> status-btn-icon"></i>
+                                        <span class="status-btn-text"><?= htmlspecialchars($stMeta['shortLabel']) ?></span>
+                                        <i class="fa-solid fa-chevron-down status-btn-chevron"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-status shadow-lg border-0 rounded-4 p-2 mt-1" style="min-width: 230px;">
                                         <li class="dropdown-header text-uppercase small fw-bold px-2 py-1 text-muted" style="font-size: 0.7rem; letter-spacing: 0.5px;">
@@ -543,19 +640,19 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
 
                             <!-- THAO TÁC -->
                             <td class="text-end text-nowrap pe-4">
-                                <div class="d-inline-flex align-items-center gap-1.5">
+                                <div class="d-inline-flex align-items-center gap-2">
                                     <!-- Nút xem chi tiết đơn hàng dạng Popup -->
-                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="viewOrderDetail(<?= $orderDataJson ?>)" title="Xem chi tiết đơn hàng">
-                                        <i class="fa-solid fa-eye me-1"></i>Chi tiết
+                                    <button type="button" class="btn btn-sm btn-primary rounded-pill px-3 py-1.5 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5" onclick="viewOrderDetail(<?= $orderDataJson ?>)" title="Xem chi tiết đơn hàng">
+                                        <i class="fa-solid fa-eye"></i><span>Chi tiết</span>
                                     </button>
 
                                     <!-- Nút in nhanh hóa đơn -->
-                                    <button type="button" class="btn btn-sm btn-light border rounded-circle text-secondary" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" onclick="printOrderInvoice(<?= $orderDataJson ?>)" title="In phiếu xuất kho">
+                                    <button type="button" class="btn btn-sm btn-light border rounded-circle text-secondary hover-primary" style="width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" onclick="printOrderInvoice(<?= $orderDataJson ?>)" title="In phiếu xuất kho">
                                         <i class="fa-solid fa-print"></i>
                                     </button>
 
                                     <!-- Nút xóa đơn hàng có thông báo cho khách -->
-                                    <button type="button" class="btn btn-sm btn-light border text-danger rounded-circle" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="Hủy & Xóa đơn (có thông báo)" aria-label="Xóa đơn VP-<?= (int)$o['id'] ?>" onclick="openOrderDeleteModal(<?= (int)$o['id'] ?>, '<?= htmlspecialchars(addslashes($o['fullname'])) ?>', '<?= htmlspecialchars($o['phone']) ?>', '<?= number_format($o['total_money'], 0, ',', '.') ?> đ')">
+                                    <button type="button" class="btn btn-sm btn-light border text-danger rounded-circle hover-danger" style="width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="Hủy & Xóa đơn (có thông báo)" aria-label="Xóa đơn VP-<?= (int)$o['id'] ?>" onclick="openOrderDeleteModal(<?= (int)$o['id'] ?>, '<?= htmlspecialchars(addslashes($o['fullname'])) ?>', '<?= htmlspecialchars($o['phone']) ?>', '<?= number_format($o['total_money'], 0, ',', '.') ?> đ')">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
@@ -739,16 +836,16 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                         
                         <div class="d-flex flex-wrap gap-1.5 mb-2">
                             <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-2.5 small" onclick="setCancelReason('Sản phẩm tạm thời hết hàng trong kho. V-Phone xin lỗi quý khách vì sự bất tiện này.')">
-                                📦 Hết hàng trong kho
+                                <i class="fa-solid fa-box-open me-1 text-danger"></i>Hết hàng trong kho
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-2.5 small" onclick="setCancelReason('Khách hàng đã liên hệ yêu cầu hủy đơn hàng này.')">
-                                👤 Khách yêu cầu hủy
+                                <i class="fa-solid fa-user me-1 text-primary"></i>Khách yêu cầu hủy
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-2.5 small" onclick="setCancelReason('Không thể liên lạc được qua số điện thoại để xác nhận giao hàng.')">
-                                📵 Không liên lạc được
+                                <i class="fa-solid fa-phone-slash me-1 text-warning"></i>Không liên lạc được
                             </button>
                             <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill py-1 px-2.5 small" onclick="setCancelReason('Đơn hàng bị trùng lặp trên hệ thống.')">
-                                📑 Trùng lặp đơn
+                                <i class="fa-solid fa-clone me-1 text-secondary"></i>Trùng lặp đơn
                             </button>
                         </div>
 
@@ -883,6 +980,82 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
 </style>
 
 <script>
+// Xác nhận duyệt thanh toán VietQR bằng SweetAlert2 hiện đại (thay thế confirm mặc định)
+function confirmVietQRPayment(orderId, customerName, totalMoney, transCode) {
+    if (typeof Swal === 'undefined') {
+        if (confirm('Xác nhận đã nhận đủ tiền chuyển khoản cho đơn #VP-' + orderId + '?')) {
+            submitPaymentConfirmation(orderId);
+        }
+        return;
+    }
+
+    Swal.fire({
+        title: 'Xác Nhận Đã Nhận Tiền?',
+        html: `
+            <div class="text-start p-3 rounded-4 mb-3" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 0.88rem;">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Mã đơn hàng:</span>
+                    <strong class="text-primary font-monospace">#VP-${orderId}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Khách hàng:</span>
+                    <strong class="text-dark">${customerName}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Tổng thanh toán:</span>
+                    <strong class="text-danger fw-black">${totalMoney}</strong>
+                </div>
+                ${transCode ? `
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted">Mã GD VietQR:</span>
+                    <span class="font-monospace text-success fw-bold">${transCode}</span>
+                </div>` : ''}
+            </div>
+            <p class="text-secondary small mb-0">Sau khi xác nhận, đơn hàng sẽ chuyển sang trạng thái <strong>Đã thanh toán</strong> và lưu lịch sử giao dịch.</p>
+        `,
+        icon: 'question',
+        iconColor: '#10b981',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-circle-check me-1.5"></i>Xác Nhận Đã Nhận Đủ Tiền',
+        cancelButtonText: 'Hủy Bỏ',
+        confirmButtonColor: '#10b981',
+        cancelButtonColor: '#94a3b8',
+        reverseButtons: true,
+        customClass: {
+            popup: 'rounded-4 shadow-lg border-0 p-4',
+            title: 'fw-bold fs-5 text-dark mb-3',
+            confirmButton: 'btn btn-success rounded-pill px-4 py-2 fw-bold shadow-sm',
+            cancelButton: 'btn btn-light rounded-pill px-4 py-2 fw-bold text-secondary me-2'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            submitPaymentConfirmation(orderId);
+        }
+    });
+}
+
+function submitPaymentConfirmation(orderId) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = 'orders.php' + window.location.search;
+    
+    const inputId = document.createElement('input');
+    inputId.type = 'hidden';
+    inputId.name = 'order_id';
+    inputId.value = orderId;
+    form.appendChild(inputId);
+
+    const inputConfirm = document.createElement('input');
+    inputConfirm.type = 'hidden';
+    inputConfirm.name = 'confirm_payment';
+    inputConfirm.value = '1';
+    form.appendChild(inputConfirm);
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
 // Tìm kiếm lọc đơn hàng theo từ khóa
 function filterAdminOrders() {
     const q = document.getElementById('adminOrderSearch').value.toLowerCase().trim();

@@ -395,7 +395,7 @@ class ReviewModel {
         return (int)$this->pdo->lastInsertId();
     }
 
-    public function getAllReviews(string $keyword = '', ?int $rating = null, ?int $status = null, ?int $productId = null): array {
+    public function getAllReviews(string $keyword = '', ?int $rating = null, $status = null, ?int $productId = null, ?bool $isBuyer = null): array {
         $sql = "
             SELECT r.*, p.name as product_name, p.image as product_image, p.price as product_price
             FROM product_reviews r
@@ -419,14 +419,25 @@ class ReviewModel {
             $params[] = $rating;
         }
 
-        if ($status !== null) {
-            $sql .= " AND r.status = ?";
-            $params[] = $status;
+        if ($status !== null && $status !== '' && $status !== 'all') {
+            if ($status === 'unreplied' || $status === 'pending') {
+                $sql .= " AND (r.admin_reply IS NULL OR r.admin_reply = '') AND r.status = 1";
+            } elseif ($status === 'replied') {
+                $sql .= " AND (r.admin_reply IS NOT NULL AND r.admin_reply != '')";
+            } elseif (is_numeric($status)) {
+                $sql .= " AND r.status = ?";
+                $params[] = (int)$status;
+            }
         }
 
         if ($productId !== null && $productId > 0) {
             $sql .= " AND r.product_id = ?";
             $params[] = $productId;
+        }
+
+        if ($isBuyer !== null) {
+            $sql .= " AND r.is_buyer = ?";
+            $params[] = $isBuyer ? 1 : 0;
         }
 
         $sql .= " ORDER BY r.id DESC";
@@ -473,6 +484,7 @@ class ReviewModel {
         $hiddenCount = (int)$this->pdo->query("SELECT COUNT(*) FROM product_reviews WHERE status = 0")->fetchColumn();
         $repliedCount = (int)$this->pdo->query("SELECT COUNT(*) FROM product_reviews WHERE admin_reply IS NOT NULL AND admin_reply != ''")->fetchColumn();
         $buyerReviewsCount = (int)$this->pdo->query("SELECT COUNT(*) FROM product_reviews WHERE is_buyer = 1")->fetchColumn();
+        $unrepliedCount = (int)$this->pdo->query("SELECT COUNT(*) FROM product_reviews WHERE (admin_reply IS NULL OR admin_reply = '') AND status = 1")->fetchColumn();
 
         return [
             'total_reviews' => $totalReviews,
@@ -480,7 +492,8 @@ class ReviewModel {
             'five_star_count' => $fiveStarCount,
             'hidden_count' => $hiddenCount,
             'replied_count' => $repliedCount,
-            'buyer_reviews_count' => $buyerReviewsCount
+            'buyer_reviews_count' => $buyerReviewsCount,
+            'unreplied_count' => $unrepliedCount
         ];
     }
 }

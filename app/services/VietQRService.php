@@ -113,6 +113,23 @@ class VietQRService {
         
         $update->execute([$newStatus, $transactionCode, $paidAt, $newNote, $orderId]);
 
+        try {
+            require_once __DIR__ . '/../models/NotificationModel.php';
+            $notifModel = new NotificationModel($this->pdo);
+            $totalFmt = number_format($order['total_money'], 0, ',', '.') . ' đ';
+            $notifTitle = "Thanh toán thành công đơn hàng #VP-{$orderId}!";
+            $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được xác nhận thanh toán thành công qua VietQR. Cửa hàng đang chuẩn bị sản phẩm.";
+            $notifModel->create(
+                $order['user_id'] ? (int)$order['user_id'] : null,
+                $order['phone'],
+                $orderId,
+                $notifTitle,
+                $notifMsg,
+                null,
+                'order_processing'
+            );
+        } catch (\Throwable $e) {}
+
         return [
             'success' => true,
             'message' => 'Xác nhận thanh toán đơn hàng #VP-' . $orderId . ' thành công!',

@@ -53,12 +53,7 @@ class GoogleAuthService {
     }
 
     public function isDemoMode(): bool {
-        // Nếu chưa điền Client ID và Secret: tự động dùng chế độ Demo
-        if (!$this->isConfigured()) {
-            return true;
-        }
-        // Nếu đã điền Client ID: chỉ dùng demo nếu người dùng chủ động ép demo_mode = true
-        return isset($this->config['demo_mode']) && $this->config['demo_mode'] === true;
+        return false;
     }
 
     /**
@@ -201,33 +196,8 @@ class GoogleAuthService {
         return null;
     }
 
-    /**
-     * Danh sách tài khoản Google mô phỏng (Demo Users)
-     */
     public function getDemoUsers(): array {
-        return [
-            [
-                'google_id' => 'google_demo_1082918231',
-                'fullname' => 'Nguyễn Hải Nam',
-                'email' => 'nam.nguyen@gmail.com',
-                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=NamNguyen',
-                'phone' => '0912345678',
-            ],
-            [
-                'google_id' => 'google_demo_2048591822',
-                'fullname' => 'Trần Thị Thu Thảo',
-                'email' => 'thuthao.tran@gmail.com',
-                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=ThuThao',
-                'phone' => '0987654321',
-            ],
-            [
-                'google_id' => 'google_demo_3091827463',
-                'fullname' => 'Lê Minh Khang',
-                'email' => 'khang.le@gmail.com',
-                'avatar' => 'https://api.dicebear.com/7.x/avataaars/svg?seed=MinhKhang',
-                'phone' => '0933221100',
-            ],
-        ];
+        return [];
     }
 }
 

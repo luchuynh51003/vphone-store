@@ -22,6 +22,20 @@ html, body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+    scrollbar-gutter: stable;
+}
+
+body.modal-open,
+body.offcanvas-open,
+body[data-bs-overflow="hidden"] {
+    padding-right: 0 !important;
+}
+
+.navbar-vphone {
+    padding-right: 0 !important;
+}
+
 body {
     background-color: var(--v-bg-light);
     color: var(--v-text-dark);
@@ -60,8 +74,11 @@ body {
     color: rgba(255, 255, 255, 0.88) !important;
     transition: background 0.15s ease, color 0.15s ease;
     border-radius: 20px;
-    padding: 6px 16px !important;
-    font-size: 0.92rem;
+    padding: 5px 11px !important;
+    font-size: 0.88rem !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
 }
 
 .navbar-vphone .nav-link:hover {
@@ -73,6 +90,60 @@ body {
     color: #ffffff !important;
     background: rgba(255, 255, 255, 0.24) !important;
     font-weight: 700;
+}
+
+.user-nav-pill {
+    padding: 4px 14px 4px 8px !important;
+    gap: 0.6rem !important;
+    border-radius: 999px !important;
+    background: rgba(255, 255, 255, 0.12) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    transition: all 0.2s ease !important;
+}
+
+.user-nav-pill:hover {
+    background: rgba(255, 255, 255, 0.22) !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.user-nav-pill img,
+.user-nav-pill .user-nav-avatar {
+    width: 28px !important;
+    height: 28px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    flex-shrink: 0 !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15) !important;
+}
+
+.user-nav-name {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    font-weight: 600;
+    font-size: 0.88rem;
+    color: #ffffff !important;
+    max-width: 260px;
+}
+
+@media (min-width: 992px) {
+    .user-nav-name {
+        max-width: 240px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .user-nav-name {
+        max-width: 280px;
+    }
+}
+
+@media (min-width: 1400px) {
+    .user-nav-name {
+        max-width: 340px;
+    }
 }
 
 /* Search Dropdown */
@@ -769,7 +840,7 @@ body {
    ========================================================================== */
 .btn-back-to-top {
     position: fixed;
-    bottom: 28px;
+    bottom: 96px;
     right: 28px;
     width: 44px;
     height: 44px;
@@ -812,15 +883,27 @@ body {
 
 .admin-sidebar .admin-nav-link {
     border-radius: 12px;
-    margin: 3px 8px;
-    padding: 11px 16px;
+    margin: 2px 4px;
+    padding: 9px 12px;
     transition: background 0.15s ease, transform 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.88rem;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #94a3b8;
+}
+
+.admin-sidebar .admin-nav-link .badge {
+    flex-shrink: 0 !important;
+    margin-left: auto !important;
 }
 
 .admin-sidebar .admin-nav-link:hover {
     background: rgba(255, 255, 255, 0.08);
     color: #ffffff;
-    transform: translateX(4px);
+    transform: translateX(3px);
 }
 
 .admin-sidebar .admin-nav-link.active {
@@ -828,6 +911,13 @@ body {
     color: #ffffff !important;
     box-shadow: 0 4px 14px rgba(0, 102, 204, 0.35);
     font-weight: 700;
+}
+
+/* User Card in Admin Sidebar */
+.sidebar-user-name {
+    font-size: 0.92rem;
+    line-height: 1.35;
+    word-break: break-word;
 }
 
 .admin-kpi-card {
@@ -861,6 +951,8 @@ body {
     letter-spacing: 0.5px;
     border-bottom: 2px solid #e2e8f0;
     padding: 14px 16px;
+    white-space: nowrap !important;
+    vertical-align: middle;
 }
 
 .admin-table tbody td {
@@ -873,11 +965,175 @@ body {
     background-color: #f8fafc !important;
 }
 
+/* Biến thể Bảng Gọn Gàng (.table-compact) - Tiết kiệm không gian, hiện đại, thanh thoát */
+.table.table-compact thead th {
+    padding: 10px 14px !important;
+    font-size: 0.76rem !important;
+    letter-spacing: 0.4px !important;
+}
+
+.table.table-compact tbody td {
+    padding: 9px 14px !important;
+    font-size: 0.84rem !important;
+}
+
+.table.table-compact .table-user-cell {
+    gap: 0.65rem !important;
+}
+
+.table.table-compact .table-user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    font-size: 0.85rem !important;
+}
+
+.table.table-compact .user-fullname {
+    font-size: 0.86rem !important;
+    font-weight: 700 !important;
+}
+
+.table.table-compact .user-subtext {
+    font-size: 0.71rem !important;
+    margin-top: 1px !important;
+}
+
 .badge-soft-success { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; font-weight: 600; }
 .badge-soft-warning { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; font-weight: 600; }
 .badge-soft-danger { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; font-weight: 600; }
 .badge-soft-primary { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; font-weight: 600; }
 .badge-soft-secondary { background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0; font-weight: 600; }
+
+.kpi-badge-blue { background: #eff6ff !important; color: #0066cc !important; border: 1px solid #bfdbfe !important; font-weight: 700 !important; }
+.kpi-badge-amber { background: #fffbeb !important; color: #b45309 !important; border: 1px solid #fde68a !important; font-weight: 700 !important; }
+.kpi-badge-sky { background: #f0f9ff !important; color: #0284c7 !important; border: 1px solid #bae6fd !important; font-weight: 700 !important; }
+.kpi-badge-emerald { background: #ecfdf5 !important; color: #047857 !important; border: 1px solid #a7f3d0 !important; font-weight: 700 !important; }
+
+/* ==========================================================================
+   PERFECT VISUAL HARMONY & UNIFORM SPACING (TOÀN HỆ THỐNG V-PHONE)
+   ========================================================================== */
+i.fa, i.fas, i.far, i.fal, i.fad, i.fab,
+i.fa-solid, i.fa-regular, i.fa-brands {
+    display: inline-block;
+    line-height: 1;
+    vertical-align: -0.1em;
+}
+
+/* 1. Mọi nút bấm (.btn): Căn giữa chuẩn, giãn cách icon & chữ hoàn hảo */
+.btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.42rem !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+}
+
+/* Nút chỉ chứa icon đơn lẻ (nút tròn, nút xóa, nút icon) */
+.btn.rounded-circle,
+.btn-icon,
+.btn:has(> i:only-child:not(span)) {
+    gap: 0 !important;
+}
+
+/* Đảm bảo tuyệt đối độ ưu tiên cho các class ẩn hiện */
+.d-none,
+.badge.d-none,
+.alert.d-none,
+.dropdown-item.d-none {
+    display: none !important;
+}
+
+.min-w-0 {
+    min-width: 0 !important;
+}
+
+/* 2. Mọi huy hiệu (.badge): Icon và chữ luôn có khoảng thở, không dính */
+.badge:not(.d-none) {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.35rem !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
+}
+
+/* 3. Dropdown Menu (.dropdown-item): Icon thẳng cột đều tăm tắp */
+.dropdown-item:not(.d-none) {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.55rem !important;
+}
+.dropdown-item > i:first-child {
+    width: 1.25rem !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+    font-size: 0.95rem !important;
+}
+
+/* 4. Thẻ thông báo (.alert): Icon lớn rõ ràng, chữ không tràn đè */
+.alert:not(.d-none) {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+.alert > i:first-child {
+    font-size: 1.2rem !important;
+    flex-shrink: 0 !important;
+}
+
+/* 5. Cột bảng biểu & Nhóm nút hành động */
+.table th, .table td {
+    vertical-align: middle !important;
+}
+.table td.text-nowrap,
+.table th.text-nowrap {
+    white-space: nowrap !important;
+}
+.table td .d-flex,
+.table td .d-inline-flex {
+    flex-wrap: nowrap !important;
+}
+.table td .d-flex.flex-wrap,
+.table td .d-inline-flex.flex-wrap {
+    flex-wrap: wrap !important;
+}
+
+/* 6. Đồng bộ Avatar & Họ tên trong toàn bộ bảng biểu */
+.table-user-cell {
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.85rem !important; /* Đảm bảo tên và avatar luôn cách nhau thoáng đãng */
+}
+
+.table-user-avatar,
+.customer-avatar-badge {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    flex-shrink: 0 !important;
+    object-fit: cover !important;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08) !important;
+    text-transform: uppercase !important;
+}
+
+.table-user-cell .user-fullname {
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    font-size: 0.92rem !important;
+    line-height: 1.25 !important;
+}
+
+.table-user-cell .user-subtext {
+    font-size: 0.74rem !important;
+    color: #64748b !important;
+    margin-top: 2px !important;
+    line-height: 1.25 !important;
+}
 
 .footer-vphone {
     background: #072a48;
@@ -1183,22 +1439,68 @@ body {
     letter-spacing: 0.2px;
 }
 
-.status-pill-btn {
+.status-pill-btn,
+.admin-status-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 6px 14px !important;
     border-radius: 9999px !important;
     font-size: 0.82rem !important;
     font-weight: 700 !important;
-    padding: 5px 12px !important;
+    line-height: 1.25 !important;
+    white-space: nowrap !important;
     border: 1px solid transparent !important;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
     cursor: pointer !important;
+    text-decoration: none !important;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
 }
-.status-pill-btn:hover, .status-pill-btn:focus {
+.status-pill-btn:hover,
+.admin-status-btn:hover,
+.status-pill-btn:focus,
+.admin-status-btn:focus {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08) !important;
 }
-.status-pill-btn::after {
+.status-pill-btn::after,
+.admin-status-btn::after {
     display: none !important;
 }
+.status-pill-btn .status-icon,
+.admin-status-btn .status-icon,
+.status-pill-btn > i:first-child,
+.admin-status-btn > i:first-child {
+    width: 16px !important;
+    text-align: center !important;
+    font-size: 0.85rem !important;
+    margin-right: 8px !important; /* Đảm bảo icon không bao giờ dính vào chữ */
+    flex-shrink: 0 !important;
+}
+.status-pill-btn .status-chevron,
+.admin-status-btn .status-chevron,
+.status-pill-btn > i:last-child,
+.admin-status-btn > i:last-child {
+    font-size: 0.65rem !important;
+    margin-left: 8px !important; /* Đảm bảo chữ không bao giờ dính vào mũi tên */
+    opacity: 0.55 !important;
+    transition: transform 0.2s ease !important;
+}
+.dropdown.show .status-pill-btn .status-chevron,
+.dropdown.show .admin-status-btn .status-chevron,
+.dropdown.show .status-pill-btn > i:last-child,
+.dropdown.show .admin-status-btn > i:last-child {
+    transform: rotate(180deg) !important;
+    opacity: 0.85 !important;
+}
+
+/* Các biến thể màu sắc rõ nét của admin status */
+.admin-status-pending { background: #fffbeb !important; color: #b45309 !important; border-color: #fde68a !important; }
+.admin-status-processing { background: #eff6ff !important; color: #1d4ed8 !important; border-color: #bfdbfe !important; }
+.admin-status-payment { background: #faf5ff !important; color: #7e22ce !important; border-color: #e9d5ff !important; }
+.admin-status-shipping { background: #f0f9ff !important; color: #0284c7 !important; border-color: #bae6fd !important; }
+.admin-status-delivered { background: #ecfdf5 !important; color: #15803d !important; border-color: #a7f3d0 !important; }
+.admin-status-cancelled { background: #fef2f2 !important; color: #b91c1c !important; border-color: #fecaca !important; }
 
 .admin-kpi-icon-box {
     width: 48px;
@@ -1297,4 +1599,1365 @@ body {
     border: 1px solid #e2e8f0;
 }
 
+/* ==========================================================================
+   NOTIFICATION DROPDOWN & CENTER
+   ========================================================================== */
+.notif-dropdown-menu {
+    border-radius: 20px !important;
+    border: 1px solid rgba(15, 23, 42, 0.08) !important;
+    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.22), 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+.notif-dropdown-list::-webkit-scrollbar {
+    width: 5px;
+}
+.notif-dropdown-list::-webkit-scrollbar-track {
+    background: #f8fafc;
+}
+.notif-dropdown-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+.notif-dropdown-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+.notif-item {
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: block;
+    color: inherit;
+}
+.notif-item:hover {
+    background-color: #f8fafc !important;
+}
+.notif-item.notif-unread-cancelled {
+    background: #fff8f8;
+    border-left: 4px solid #ef4444 !important;
+}
+.notif-item.notif-unread-shipping {
+    background: #f0f9ff;
+    border-left: 4px solid #0284c7 !important;
+}
+.notif-item.notif-unread-delivered {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a !important;
+}
+.notif-item.notif-unread-processing {
+    background: #eff6ff;
+    border-left: 4px solid #2563eb !important;
+}
+.notif-item.notif-unread-default {
+    background: #f8fbff;
+    border-left: 4px solid #0066cc !important;
+}
+.notif-item.notif-read {
+    background: #ffffff;
+    border-left: 4px solid transparent !important;
+}
+.notif-dot {
+    box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
+    animation: pulseNotifDot 2s infinite;
+}
+@keyframes pulseNotifDot {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
 
+.notif-message-clamp {
+    font-size: 0.77rem;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+/* ==========================================================================
+   FRACTIONAL UTILITIES (Tailwind-like support for Bootstrap 5)
+   Khắc phục triệt để hiện tượng icon dính chữ khi dùng me-1.5, gap-1.5,...
+   ========================================================================== */
+.gap-0\.5 { gap: 0.125rem !important; }
+.gap-1\.5 { gap: 0.375rem !important; }
+.gap-2\.5 { gap: 0.625rem !important; }
+.gap-3\.5 { gap: 1.25rem !important; }
+
+.me-0\.5 { margin-right: 0.125rem !important; }
+.me-1\.5 { margin-right: 0.4rem !important; }
+.me-2\.5 { margin-right: 0.625rem !important; }
+.me-3\.5 { margin-right: 1.25rem !important; }
+
+.ms-0\.5 { margin-left: 0.125rem !important; }
+.ms-1\.5 { margin-left: 0.4rem !important; }
+.ms-2\.5 { margin-left: 0.625rem !important; }
+
+.mb-1\.5 { margin-bottom: 0.4rem !important; }
+.mb-2\.5 { margin-bottom: 0.625rem !important; }
+.mb-3\.5 { margin-bottom: 1.25rem !important; }
+
+.mt-0\.5 { margin-top: 0.125rem !important; }
+.mt-1\.5 { margin-top: 0.4rem !important; }
+.mt-2\.5 { margin-top: 0.625rem !important; }
+
+.p-1\.5 { padding: 0.375rem !important; }
+.p-2\.5 { padding: 0.625rem !important; }
+.p-3\.5 { padding: 1.25rem !important; }
+
+.px-1\.5 { padding-left: 0.375rem !important; padding-right: 0.375rem !important; }
+.px-2\.5 { padding-left: 0.625rem !important; padding-right: 0.625rem !important; }
+.px-3\.5 { padding-left: 1.25rem !important; padding-right: 1.25rem !important; }
+
+.py-1\.5 { padding-top: 0.375rem !important; padding-bottom: 0.375rem !important; }
+.py-2\.5 { padding-top: 0.625rem !important; padding-bottom: 0.625rem !important; }
+
+/* Permission card in modals */
+.perm-card-item {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-color: #e2e8f0 !important;
+}
+.perm-card-item:hover {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+}
+.perm-card-item:has(input:checked) {
+    background-color: #f0f7ff !important;
+    border-color: #93c5fd !important;
+}
+.perm-card-item input.form-check-input {
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   HEAD-TO-HEAD PRODUCT COMPARISON (SO SÁNH ĐỐI ĐẦU 1-VS-1)
+   ========================================================================== */
+.compare-hero {
+    background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+    border-color: #e2e8f0 !important;
+}
+
+.duel-arena-card {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.06) !important;
+}
+
+.duel-box {
+    border-color: #e2e8f0 !important;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.duel-box:hover {
+    border-color: #cbd5e1 !important;
+    box-shadow: 0 12px 30px -8px rgba(0, 102, 204, 0.12) !important;
+}
+
+.duel-img-container {
+    height: 230px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.duel-product-img {
+    max-height: 200px;
+    width: auto;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.1));
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.duel-box:hover .duel-product-img {
+    transform: scale(1.05) translateY(-4px);
+}
+
+.color-swatch-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 1px #cbd5e1;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.color-swatch-dot:hover {
+    transform: scale(1.15);
+}
+
+.color-swatch-dot.active {
+    box-shadow: 0 0 0 2.5px var(--v-blue-primary);
+    transform: scale(1.2);
+}
+
+.duel-vs-circle {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ef4444 0%, #f97316 50%, #eab308 100%);
+    color: #ffffff;
+    font-weight: 900;
+    font-size: 1.3rem;
+    letter-spacing: -0.5px;
+    border: 4px solid #ffffff;
+    box-shadow: 0 0 25px rgba(239, 68, 68, 0.45);
+    animation: pulseDuelVS 3s infinite ease-in-out;
+}
+
+@keyframes pulseDuelVS {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+    }
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 35px rgba(249, 115, 22, 0.65);
+    }
+}
+
+.sticky-compare-bar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    z-index: 1020;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    animation: slideDownSticky 0.25s ease forwards;
+}
+
+@keyframes slideDownSticky {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.sticky-mini-thumb {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+    background: #ffffff;
+    padding: 2px;
+    flex-shrink: 0;
+}
+
+.compare-matrix-table th,
+.compare-matrix-table td {
+    padding: 13px 18px;
+    vertical-align: middle;
+    font-size: 0.88rem;
+}
+
+.compare-matrix-table tr:hover {
+    background-color: #f8fafc;
+}
+
+.compare-matrix-table .group-header-row td {
+    background-color: #f1f5f9 !important;
+    border-top: 2px solid #e2e8f0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.duel-scorecard {
+    border-color: #e2e8f0 !important;
+}
+
+.animate-pulse {
+    animation: pulseAnim 2s infinite;
+}
+
+@keyframes pulseAnim {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.7; transform: scale(1.15); }
+}
+
+.hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+.hover-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    border-color: #0066cc !important;
+}
+
+/* MODERN DUEL ARENA STYLES */
+.duel-image-container,
+.duel-image-glow {
+    height: 220px !important;
+    max-width: 280px !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    overflow: hidden !important;
+    margin: 0 auto !important;
+    border-radius: 20px !important;
+}
+.duel-glow-blue {
+    background: radial-gradient(circle, rgba(0, 102, 204, 0.12) 0%, rgba(255, 255, 255, 0) 72%) !important;
+}
+.duel-glow-red {
+    background: radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, rgba(255, 255, 255, 0) 72%) !important;
+}
+.duel-glow-green {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, rgba(255, 255, 255, 0) 72%) !important;
+}
+.duel-device-img {
+    max-height: 195px !important;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    display: block !important;
+    margin: 0 auto !important;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.12)) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.duel-card-modern:hover .duel-device-img {
+    transform: scale(1.05) translateY(-3px) !important;
+}
+.duel-card-blue {
+    border-color: rgba(0, 102, 204, 0.25) !important;
+}
+.duel-card-blue:hover {
+    border-color: #0066cc !important;
+    box-shadow: 0 12px 30px -8px rgba(0, 102, 204, 0.2) !important;
+}
+.duel-card-red {
+    border-color: rgba(239, 68, 68, 0.25) !important;
+}
+.duel-card-red:hover {
+    border-color: #ef4444 !important;
+    box-shadow: 0 12px 30px -8px rgba(239, 68, 68, 0.2) !important;
+}
+.duel-card-green {
+    border-color: rgba(16, 185, 129, 0.25) !important;
+}
+.duel-card-green:hover {
+    border-color: #10b981 !important;
+    box-shadow: 0 12px 30px -8px rgba(16, 185, 129, 0.2) !important;
+}
+
+/* Smooth scrolling & Section anchor offsets */
+html {
+    scroll-behavior: smooth;
+}
+[id^="section-"],
+tr.group-header-row {
+    scroll-margin-top: 140px !important;
+}
+
+.legend-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    flex-shrink: 0;
+    box-shadow: 0 0 0 1.5px #ffffff;
+}
+
+.stat-dual-progress {
+    height: 20px !important;
+    background-color: #f1f5f9 !important;
+    border-radius: 999px !important;
+    display: flex !important;
+    overflow: hidden !important;
+    position: relative !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+}
+.stat-bar-left {
+    height: 100% !important;
+    background: linear-gradient(90deg, #0284c7 0%, #0066cc 100%) !important;
+    border-radius: 999px 0 0 999px !important;
+    transition: width 0.75s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    padding-left: 10px !important;
+    font-size: 0.7rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+.stat-bar-right {
+    height: 100% !important;
+    margin-left: auto !important;
+    background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%) !important;
+    border-radius: 0 999px 999px 0 !important;
+    transition: width 0.75s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    padding-right: 10px !important;
+    font-size: 0.7rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+.stat-divider-center {
+    position: absolute !important;
+    left: 50% !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    width: 2px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    transform: translateX(-50%) !important;
+    z-index: 3 !important;
+    box-shadow: 0 0 4px rgba(0,0,0,0.2) !important;
+}
+
+.spec-row {
+    transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.quick-jump-nav .btn {
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.duel-card-modern,
+.duel-pros-box {
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.duel-card-modern:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 14px 30px -10px rgba(15, 23, 42, 0.12) !important;
+}
+.duel-pros-box:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 25px -8px rgba(15, 23, 42, 0.1) !important;
+}
+
+/* ==========================================================================
+   FLOATING MULTI-CHANNEL CONTACT WIDGET (CỤM NÚT LIÊN HỆ ĐA KÊNH NỔI)
+   ========================================================================== */
+.vphone-contact-widget {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1045;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+/* Master Toggle Button */
+.vphone-widget-toggle {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+    color: #ffffff;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(0, 102, 204, 0.45), 0 2px 6px rgba(0, 0, 0, 0.12);
+    transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.vphone-widget-toggle:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 28px rgba(0, 102, 204, 0.55), 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.vphone-widget-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Pulsing Aura Waves */
+.pulse-wave {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #0066cc;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: -1;
+    animation: vphonePulseAura 2.4s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.pulse-wave-2 {
+    animation-delay: 1.2s;
+}
+
+@keyframes vphonePulseAura {
+    0% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+    50% {
+        opacity: 0.3;
+    }
+    100% {
+        transform: scale(1.6);
+        opacity: 0;
+    }
+}
+
+/* Icon Switching & Animations */
+.toggle-icon-wrap {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.toggle-icon-wrap .icon-normal,
+.toggle-icon-wrap .icon-opened {
+    position: absolute;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+}
+
+.toggle-icon-wrap .icon-normal {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+    animation: vphoneIconPulse 3.5s ease-in-out infinite;
+}
+
+.toggle-icon-wrap .icon-opened {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+    font-size: 26px;
+}
+
+.vphone-contact-widget.is-open .toggle-icon-wrap .icon-normal {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.5);
+    animation: none;
+}
+
+.vphone-contact-widget.is-open .toggle-icon-wrap .icon-opened {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+}
+
+.vphone-contact-widget.is-open .pulse-wave {
+    display: none;
+}
+
+@keyframes vphoneIconPulse {
+    0%, 100% { transform: scale(1); }
+    10%, 20% { transform: scale(1.12) rotate(-8deg); }
+    15%, 25% { transform: scale(1.12) rotate(8deg); }
+    30% { transform: scale(1) rotate(0deg); }
+}
+
+/* Notification Badge on FAB */
+.toggle-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #ef4444;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.vphone-contact-widget.is-open .toggle-badge {
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+/* Prompt Bubble (Gợi ý chat/hỗ trợ) */
+.vphone-widget-prompt {
+    position: absolute;
+    bottom: 74px;
+    right: 0;
+    background: #ffffff;
+    color: #1e293b;
+    padding: 10px 14px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -4px rgba(15, 23, 42, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    white-space: nowrap;
+    z-index: 1044;
+    animation: vphonePromptBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-origin: bottom right;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.vphone-widget-prompt.d-none {
+    display: none !important;
+}
+
+.prompt-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.prompt-wave {
+    font-size: 16px;
+    display: inline-block;
+    animation: vphoneHandWave 2.5s infinite;
+    transform-origin: 70% 70%;
+}
+
+.prompt-close {
+    background: none;
+    border: none;
+    color: #94a3b8;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0 2px 0 6px;
+    cursor: pointer;
+    transition: color 0.15s ease;
+}
+
+.prompt-close:hover {
+    color: #ef4444;
+}
+
+@keyframes vphoneHandWave {
+    0% { transform: rotate(0deg); }
+    10% { transform: rotate(14deg); }
+    20% { transform: rotate(-8deg); }
+    30% { transform: rotate(14deg); }
+    40% { transform: rotate(-4deg); }
+    50% { transform: rotate(10deg); }
+    60% { transform: rotate(0deg); }
+    100% { transform: rotate(0deg); }
+}
+
+@keyframes vphonePromptBounce {
+    0% { opacity: 0; transform: translateY(12px) scale(0.9); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Contact Popout Menu */
+.vphone-contact-menu {
+    position: absolute;
+    bottom: 74px;
+    right: 0;
+    width: 330px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px) scale(0.94);
+    transform-origin: bottom right;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+    z-index: 1046;
+}
+
+.vphone-contact-widget.is-open .vphone-contact-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Menu Header */
+.vphone-contact-menu .menu-header {
+    background: linear-gradient(135deg, #0b1329 0%, #1e293b 100%);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    position: relative;
+}
+
+.menu-header-avatar {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    padding: 3px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.menu-header-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
+.menu-header-avatar .status-indicator {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 2px solid #0b1329;
+}
+
+.menu-header-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.menu-header-info .menu-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.25;
+}
+
+.menu-header-info .menu-subtitle {
+    font-size: 11.5px;
+    color: rgba(255, 255, 255, 0.75);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 3px;
+}
+
+.online-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    display: inline-block;
+    box-shadow: 0 0 6px #10b981;
+}
+
+.btn-close-menu {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #ffffff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.btn-close-menu:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.08);
+}
+
+/* Channels List */
+.menu-channels {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 360px;
+    overflow-y: auto;
+}
+
+.channel-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 14px;
+    text-decoration: none;
+    color: #1e293b;
+    cursor: pointer;
+    transition: background 0.18s ease, transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    width: 100%;
+    text-align: left;
+}
+
+.channel-item:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px -4px rgba(15, 23, 42, 0.08);
+}
+
+/* Channel Icons */
+.channel-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: #ffffff;
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.channel-item:hover .channel-icon-wrap {
+    transform: scale(1.08);
+}
+
+.channel-hotline .channel-icon-wrap {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+.channel-hotline:hover .channel-icon-wrap i {
+    animation: vphonePhoneRing 0.5s ease infinite alternate;
+}
+
+@keyframes vphonePhoneRing {
+    0% { transform: rotate(-12deg); }
+    100% { transform: rotate(12deg); }
+}
+
+.channel-chatbot .channel-icon-wrap.chatbot-bg {
+    background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%);
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.35);
+}
+
+.channel-callback .channel-icon-wrap.callback-bg {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.3);
+}
+
+.channel-showroom .channel-icon-wrap.showroom-bg {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+}
+
+/* Channel Content Details */
+.channel-details {
+    flex: 1;
+    min-width: 0;
+}
+
+.channel-details .channel-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+}
+
+.channel-details .channel-desc {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.channel-action {
+    flex-shrink: 0;
+}
+
+.badge-action {
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 20px;
+    display: inline-block;
+}
+
+.badge-ai {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
+.badge-call {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.badge-fast {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+/* Menu Footer */
+.menu-footer {
+    padding: 10px 16px;
+    background: #f8fafc;
+    border-top: 1px solid #f1f5f9;
+    font-size: 11.5px;
+    color: #64748b;
+    text-align: center;
+}
+
+/* Mobile Backdrop */
+.vphone-contact-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 1042;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s;
+}
+
+.vphone-contact-backdrop.is-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ==========================================================================
+   AUTOMATED AI CHATBOT WINDOW (CỬA SỔ TRỢ LÝ ẢO V-PHONE AI)
+   ========================================================================== */
+.vphone-chatbot-window {
+    position: fixed;
+    bottom: 92px;
+    right: 24px;
+    width: 380px;
+    height: 540px;
+    background: #ffffff;
+    border-radius: 22px;
+    box-shadow: 0 20px 50px -10px rgba(15, 23, 42, 0.28), 0 0 0 1px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 1048;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.94);
+    transform-origin: bottom right;
+    transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+}
+
+.vphone-chatbot-window.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Chatbot Header */
+.chatbot-header {
+    background: linear-gradient(135deg, #0b1329 0%, #1e293b 100%);
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.chatbot-avatar-wrap {
+    position: relative;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+}
+
+.chatbot-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0066cc 0%, #00b4d8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 17px;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+}
+
+.chatbot-status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 2px solid #0b1329;
+}
+
+.chatbot-header-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.chatbot-name {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.25;
+}
+
+.chatbot-status {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+}
+
+.pulse-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #10b981;
+    display: inline-block;
+    box-shadow: 0 0 6px #10b981;
+}
+
+.chatbot-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chatbot-btn-action {
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    color: #ffffff;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.chatbot-btn-action:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.08);
+}
+
+.prompt-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.prompt-ai-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    animation: vphoneAiOrbPulse 3s infinite ease-in-out;
+}
+
+@keyframes vphoneAiOrbPulse {
+    0%, 100% { transform: scale(1); filter: drop-shadow(0 0 2px rgba(0, 210, 255, 0.4)); }
+    50% { transform: scale(1.12); filter: drop-shadow(0 0 8px rgba(0, 210, 255, 0.8)); }
+}
+
+/* Chat Messages Stream */
+.chatbot-messages {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #f8fafc;
+    scroll-behavior: smooth;
+}
+
+@keyframes chatMsgEntrance {
+    0% {
+        opacity: 0;
+        transform: translateY(14px) scale(0.96);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.chat-msg {
+    display: flex;
+    gap: 10px;
+    max-width: 90%;
+    animation: chatMsgEntrance 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.chat-msg-bot {
+    align-self: flex-start;
+}
+
+.chat-msg-user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.chat-msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0b1329 0%, #1e293b 100%);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.2);
+}
+
+.chat-msg-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-msg-bot .chat-msg-content {
+    align-items: flex-start;
+}
+
+.chat-msg-user .chat-msg-content {
+    align-items: flex-end;
+}
+
+.chat-bubble {
+    padding: 11px 15px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    word-break: break-word;
+}
+
+.chat-msg-bot .chat-bubble {
+    background: #ffffff;
+    color: #1e293b;
+    border-radius: 18px 18px 18px 4px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 3px 12px -2px rgba(15, 23, 42, 0.06);
+}
+
+.chat-msg-user .chat-bubble {
+    background: linear-gradient(135deg, #0066cc 0%, #0052a3 100%);
+    color: #ffffff;
+    border-radius: 18px 18px 4px 18px;
+    box-shadow: 0 4px 14px rgba(0, 102, 204, 0.28);
+}
+
+.chat-time {
+    font-size: 10px;
+    color: #94a3b8;
+    margin-top: 3px;
+    padding: 0 4px;
+}
+
+/* Quick Chips */
+.chatbot-quick-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 4px;
+    padding-left: 42px;
+}
+
+@keyframes chipPopIn {
+    0% {
+        opacity: 0;
+        transform: translateY(8px) scale(0.92);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.chip-item {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #0066cc;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+    animation: chipPopIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.chip-item:hover {
+    background: #0066cc;
+    color: #ffffff;
+    border-color: #0066cc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25);
+}
+
+/* Typing Indicator (Đang phân tích & soạn tin nhắn) */
+.typing-bubble {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px 18px 18px 4px;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.typing-status-text {
+    font-size: 11.5px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #0066cc;
+    animation: vphoneTypingBounce 1.4s infinite ease-in-out both;
+}
+
+.typing-dot:nth-child(2) { animation-delay: -0.32s; }
+.typing-dot:nth-child(3) { animation-delay: -0.16s; }
+
+@keyframes vphoneTypingBounce {
+    0%, 80%, 100% { transform: scale(0.3); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+/* Chatbot Footer Input */
+.chatbot-footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+
+.chatbot-input {
+    flex: 1;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 9px 15px;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    background: #f8fafc;
+}
+
+.chatbot-input:focus {
+    background: #ffffff;
+    border-color: #0066cc;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
+}
+
+.chatbot-send-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #0066cc;
+    border: none;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.15s ease, transform 0.15s ease;
+    flex-shrink: 0;
+}
+
+.chatbot-send-btn:hover {
+    background: #004c99;
+    transform: scale(1.06);
+}
+
+/* Modal Open: Ẩn cụm nút nổi và chatbot để tránh xung đột giao diện */
+body.modal-open .vphone-contact-widget,
+body.modal-open .btn-back-to-top,
+body.modal-open .vphone-chatbot-window {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
+/* Responsive on Mobile Devices */
+@media (max-width: 576px) {
+    .vphone-contact-widget {
+        bottom: 18px;
+        right: 18px;
+    }
+
+    .vphone-widget-toggle {
+        width: 54px;
+        height: 54px;
+    }
+
+    .vphone-contact-menu {
+        width: calc(100vw - 36px);
+        max-width: 320px;
+        bottom: 68px;
+        right: 0;
+    }
+
+    .vphone-widget-prompt {
+        bottom: 68px;
+        max-width: calc(100vw - 40px);
+        font-size: 12.5px;
+        padding: 8px 12px;
+    }
+
+    .vphone-chatbot-window {
+        width: calc(100vw - 24px);
+        height: calc(100vh - 120px);
+        max-height: 520px;
+        bottom: 80px;
+        right: 12px;
+    }
+
+    .btn-back-to-top {
+        bottom: 84px !important;
+        right: 20px !important;
+        width: 40px !important;
+        height: 40px !important;
+    }
+}

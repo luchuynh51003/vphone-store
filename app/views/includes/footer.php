@@ -53,7 +53,9 @@
     </div>
 </div>
 
+<?php require_once __DIR__ . '/floating_contact.php'; ?>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="assets/js/main.js?v=20261015_v4"></script>
+<script src="assets/js/main.js?v=<?= file_exists(__DIR__ . '/../../../assets/js/main.js') ? filemtime(__DIR__ . '/../../../assets/js/main.js') : '20261016_v1' ?>"></script>
 </body>
 </html>

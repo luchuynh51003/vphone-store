@@ -64,4 +64,74 @@ class ProductController {
         $pdo = $this->pdo;
         require_once 'app/views/news.php';
     }
+
+    public function compare() {
+        $pdo = $this->pdo;
+        require_once __DIR__ . '/../../config/database.php';
+        require_once 'app/models/ProductModel.php';
+        require_once 'app/models/ReviewModel.php';
+
+        $prodModel = new ProductModel($pdo);
+        $prodModel->ensureStorageOptionsColumn();
+        $prodModel->ensureColorQuantitiesColumn();
+        $reviewModel = new ReviewModel($pdo);
+
+        $p1Id = isset($_GET['p1']) ? (int)$_GET['p1'] : (isset($_GET['id1']) ? (int)$_GET['id1'] : 0);
+        $p2Id = isset($_GET['p2']) ? (int)$_GET['p2'] : (isset($_GET['id2']) ? (int)$_GET['id2'] : 0);
+        $p3Id = isset($_GET['p3']) ? (int)$_GET['p3'] : (isset($_GET['id3']) ? (int)$_GET['id3'] : 0);
+
+        // Mặc định cặp đối đầu kinh điển: iPhone 18 Pro Max (1) vs Galaxy S26 Ultra (6)
+        if ($p1Id <= 0 && $p2Id <= 0) {
+            $p1Id = 1;
+            $p2Id = 6;
+        } elseif ($p1Id > 0 && $p2Id <= 0) {
+            $p2Id = ($p1Id === 1) ? 6 : (($p1Id === 6) ? 1 : 6);
+        } elseif ($p2Id > 0 && $p1Id <= 0) {
+            $p1Id = ($p2Id === 1) ? 6 : (($p2Id === 6) ? 1 : 1);
+        }
+
+        $product1 = $prodModel->getById($p1Id);
+        $product2 = $prodModel->getById($p2Id);
+        $product3 = ($p3Id > 0 && $p3Id !== $p1Id && $p3Id !== $p2Id) ? $prodModel->getById($p3Id) : null;
+
+        // Fallbacks nếu ID không tồn tại
+        if (!$product1) {
+            $fallback = $prodModel->getAll();
+            $product1 = $fallback[0] ?? null;
+            if ($product1) $p1Id = (int)$product1['id'];
+        }
+        if (!$product2) {
+            $fallback = $prodModel->getAll();
+            $product2 = $fallback[1] ?? $fallback[0] ?? null;
+            if ($product2) $p2Id = (int)$product2['id'];
+        }
+
+        if (!$product1 || !$product2) {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Đánh giá review
+        $ratingSummary1 = $reviewModel->getRatingSummary($product1['id']);
+        $ratingSummary2 = $reviewModel->getRatingSummary($product2['id']);
+        $ratingSummary3 = $product3 ? $reviewModel->getRatingSummary($product3['id']) : null;
+
+        // Danh sách tất cả sản phẩm & hãng cho Modal chọn máy
+        $allProducts = $prodModel->getAll();
+        $brandStmt = $pdo->query("SELECT * FROM brands ORDER BY id ASC");
+        $brands = $brandStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Danh sách cặp đấu HOT
+        $hotMatchups = [
+            ['p1' => 1, 'p2' => 6, 'title' => 'iPhone 18 Pro Max vs Galaxy S26 Ultra', 'badge' => 'Siêu Flagship 2026', 'hot' => true],
+            ['p1' => 14, 'p2' => 26, 'title' => 'iPhone 16 Pro Max vs Galaxy S24 Ultra', 'badge' => 'Kỳ Phùng Địch Thủ', 'hot' => true],
+            ['p1' => 5, 'p2' => 7, 'title' => 'Galaxy Z Tri-Fold vs Huawei Mate XT', 'badge' => 'Đại Chiến Màn Gập 3', 'hot' => true],
+            ['p1' => 2, 'p2' => 8, 'title' => 'iPhone 18 Pro vs Xiaomi 16 Ultra', 'badge' => 'Hiệu Năng & Leica', 'hot' => false],
+            ['p1' => 3, 'p2' => 9, 'title' => 'iPhone Duo vs OPPO Find N5 Duo', 'badge' => 'Màn Gập Siêu Mỏng', 'hot' => false],
+            ['p1' => 10, 'p2' => 6, 'title' => 'iPhone 17 Pro Max vs Galaxy S26 Ultra', 'badge' => 'Cân Não Flagship', 'hot' => false]
+        ];
+
+        $pageTitle = "So Sánh: " . $product1['name'] . " VS " . $product2['name'] . ($product3 ? " VS " . $product3['name'] : "") . " - V-Phone Store";
+        require_once 'app/views/compare.php';
+    }
 }

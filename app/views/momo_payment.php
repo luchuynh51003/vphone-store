@@ -131,7 +131,7 @@ require_once 'app/views/includes/navbar.php';
             </div>
 
             <div class="text-end">
-                <span class="badge bg-white bg-opacity-20 text-white rounded-pill px-3 py-1.5 fw-bold">
+                <span class="badge rounded-pill px-3 py-1.5 fw-bold" style="background: rgba(255, 255, 255, 0.2); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.35);">
                     <span class="pulse-momo-dot me-1.5" style="background:#fff;"></span>Sẵn sàng thanh toán
                 </span>
             </div>

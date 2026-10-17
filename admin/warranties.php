@@ -278,7 +278,7 @@ $claims = $warrantyModel->getAllClaims($filterStatus, $searchKeyword);
                                     </div>
                                     <div class="small">
                                         IMEI: <code class="bg-light border px-1.5 py-0.5 rounded text-dark fw-bold"><?= htmlspecialchars($c['imei']) ?></code>
-                                        <button class="btn btn-sm btn-link p-0 text-muted ms-1" type="button" onclick="navigator.clipboard.writeText('<?= $c['imei'] ?>'); alert('Đã sao chép IMEI: <?= $c['imei'] ?>');" title="Sao chép">
+                                        <button class="btn btn-sm btn-link p-0 text-muted ms-1" type="button" onclick="navigator.clipboard.writeText('<?= $c['imei'] ?>'); Swal.fire({toast: true, position: 'top-end', icon: 'success', title: 'Đã sao chép IMEI: <?= $c['imei'] ?>', showConfirmButton: false, timer: 2000});" title="Sao chép">
                                             <i class="fa-regular fa-copy small"></i>
                                         </button>
                                     </div>
@@ -352,10 +352,10 @@ $claims = $warrantyModel->getAllClaims($filterStatus, $searchKeyword);
                                         </button>
 
                                         <!-- Nút Xóa -->
-                                        <form method="POST" class="d-inline" id="formDeleteClaim<?= $c['id'] ?>" onsubmit="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn hồ sơ bảo hành #BH-<?= $c['id'] ?> này?');">
+                                        <form method="POST" class="d-inline" id="formDeleteClaim<?= $c['id'] ?>">
                                             <input type="hidden" name="delete_claim" value="1">
                                             <input type="hidden" name="claim_id" value="<?= $c['id'] ?>">
-                                            <button type="submit" class="btn btn-light btn-sm rounded-circle text-danger" style="width: 31px; height: 31px;" title="Xóa hồ sơ">
+                                            <button type="button" class="btn btn-light btn-sm rounded-circle text-danger" style="width: 31px; height: 31px;" onclick="confirmDeleteClaim(<?= $c['id'] ?>)" title="Xóa hồ sơ">
                                                 <i class="fa-regular fa-trash-can"></i>
                                             </button>
                                         </form>
@@ -557,6 +557,37 @@ function appendNote(text) {
         noteInput.value += ' ' + text;
     }
     noteInput.focus();
+}
+
+function confirmDeleteClaim(id) {
+    if (typeof Swal === 'undefined') {
+        if (confirm('Bạn có chắc chắn muốn xóa vĩnh viễn hồ sơ bảo hành #BH-' + id + ' này?')) {
+            document.getElementById('formDeleteClaim' + id).submit();
+        }
+        return;
+    }
+    Swal.fire({
+        title: 'Xóa Hồ Sơ Bảo Hành?',
+        html: `Bạn có chắc chắn muốn xóa vĩnh viễn hồ sơ bảo hành <strong>#BH-${id}</strong> này? Thao tác này không thể hoàn tác.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: '<i class="fa-solid fa-trash-can me-1"></i>Xác Nhận Xóa',
+        cancelButtonText: 'Hủy Bỏ',
+        confirmButtonColor: '#dc2626',
+        cancelButtonColor: '#94a3b8',
+        reverseButtons: true,
+        customClass: {
+            popup: 'rounded-4 shadow-lg border-0 p-4',
+            title: 'fw-bold fs-5 text-dark mb-2',
+            confirmButton: 'btn btn-danger rounded-pill px-4 py-2 fw-bold shadow-sm',
+            cancelButton: 'btn btn-light rounded-pill px-4 py-2 fw-bold text-secondary me-2'
+        },
+        buttonsStyling: false
+    }).then((res) => {
+        if (res.isConfirmed) {
+            document.getElementById('formDeleteClaim' + id).submit();
+        }
+    });
 }
 </script>
 

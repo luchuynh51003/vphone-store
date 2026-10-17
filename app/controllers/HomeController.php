@@ -10,6 +10,16 @@ class HomeController {
         $brandId = isset($_GET['brand_id']) ? (int)$_GET['brand_id'] : 0;
         $keyword = isset($_GET['keyword']) ? trim($_GET['keyword']) : '';
 
+        $filters = [
+            'price_range' => $_GET['price'] ?? ($_GET['price_range'] ?? 'all'),
+            'ram' => $_GET['ram'] ?? 'all',
+            'rom' => $_GET['rom'] ?? 'all',
+            'sort' => $_GET['sort'] ?? 'default',
+            'filter_type' => $_GET['filter_type'] ?? 'all',
+            'min_price' => $_GET['min_price'] ?? null,
+            'max_price' => $_GET['max_price'] ?? null,
+        ];
+
         $brands = $this->pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
         $products = $prodModel->getAll(0, $keyword);
 

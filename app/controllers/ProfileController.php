@@ -58,10 +58,7 @@ class ProfileController {
 
             // Xóa ảnh đại diện
             if ($action === 'remove_avatar') {
-                $curr = $userModel->findById($userId);
-                if (!empty($curr['avatar']) && str_starts_with($curr['avatar'], 'assets/images/users/') && file_exists($curr['avatar'])) {
-                    @unlink($curr['avatar']);
-                }
+                $userModel->cleanOldAvatars($userId);
                 $userModel->updateAvatar($userId, null);
                 $_SESSION['user']['avatar'] = '';
 
@@ -377,11 +374,8 @@ class ProfileController {
         $targetPath = $uploadDir . $newFilename;
 
         if (move_uploaded_file($file['tmp_name'], $targetPath) || (PHP_SAPI === 'cli' && @copy($file['tmp_name'], $targetPath))) {
-            // Xóa ảnh cũ nếu có
-            $curr = $userModel->findById($userId);
-            if (!empty($curr['avatar']) && str_starts_with($curr['avatar'], 'assets/images/users/') && file_exists($curr['avatar']) && $curr['avatar'] !== $targetPath) {
-                @unlink($curr['avatar']);
-            }
+            // Xóa sạch tất cả ảnh cũ/thừa của user này (chỉ giữ lại file vừa tải lên)
+            $userModel->cleanOldAvatars($userId, $targetPath);
             return [
                 'success' => true,
                 'path' => $targetPath

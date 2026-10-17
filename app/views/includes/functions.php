@@ -3,6 +3,17 @@ function formatPrice(float|int|string $amount): string {
     return number_format((float)$amount, 0, ',', '.') . ' đ';
 }
 
+function romToGigabytes(string $romStr): int {
+    $r = mb_strtolower(trim($romStr), 'UTF-8');
+    if (strpos($r, 'tb') !== false) {
+        preg_match('/([0-9]+(?:\.[0-9]+)?)/', $r, $m);
+        $num = isset($m[1]) ? (float)$m[1] : 1.0;
+        return (int)round($num * 1024);
+    }
+    preg_match('/([0-9]+)/', $r, $m);
+    return isset($m[1]) ? (int)$m[1] : 0;
+}
+
 function getStorageTiers(string $prodName, string $defaultRom): array {
     $name = mb_strtolower($prodName, 'UTF-8');
     $rom = mb_strtolower($defaultRom, 'UTF-8');
@@ -228,6 +239,7 @@ function getOrderStatusMeta(string $status): array {
     switch ($st) {
         case 'Chờ xử lý':
             return [
+                'key' => 'pending',
                 'status' => 'Chờ xử lý',
                 'label' => 'Chờ xử lý',
                 'shortLabel' => 'Chờ xử lý',
@@ -239,6 +251,7 @@ function getOrderStatusMeta(string $status): array {
             ];
         case 'Đang xử lý':
             return [
+                'key' => 'processing',
                 'status' => 'Đang xử lý',
                 'label' => 'Đang chuẩn bị máy',
                 'shortLabel' => 'Đang chuẩn bị',
@@ -250,6 +263,7 @@ function getOrderStatusMeta(string $status): array {
             ];
         case 'Chờ thanh toán':
             return [
+                'key' => 'payment',
                 'status' => 'Chờ thanh toán',
                 'label' => 'Chờ thanh toán VietQR',
                 'shortLabel' => 'Chờ thanh toán',
@@ -262,6 +276,7 @@ function getOrderStatusMeta(string $status): array {
         case 'Đang giao hàng':
         case 'Đang giao':
             return [
+                'key' => 'shipping',
                 'status' => 'Đang giao hàng',
                 'label' => 'Đang giao hỏa tốc',
                 'shortLabel' => 'Đang giao',
@@ -274,6 +289,7 @@ function getOrderStatusMeta(string $status): array {
         case 'Đã giao thành công':
         case 'Đã giao':
             return [
+                'key' => 'delivered',
                 'status' => 'Đã giao thành công',
                 'label' => 'Đã giao thành công',
                 'shortLabel' => 'Đã giao',
@@ -286,6 +302,7 @@ function getOrderStatusMeta(string $status): array {
         case 'Đã hủy':
         case 'Đã hủy đơn hàng':
             return [
+                'key' => 'cancelled',
                 'status' => 'Đã hủy',
                 'label' => 'Đã hủy đơn hàng',
                 'shortLabel' => 'Đã hủy',
@@ -297,6 +314,7 @@ function getOrderStatusMeta(string $status): array {
             ];
         default:
             return [
+                'key' => 'default',
                 'status' => $st,
                 'label' => $st,
                 'shortLabel' => $st,
@@ -315,10 +333,10 @@ function getOrderStatusMeta(string $status): array {
 function renderOrderStatusPill(string $status, bool $pulse = true, string $customClass = '', ?string $customLabel = null): string {
     $meta = getOrderStatusMeta($status);
     $label = $customLabel ?? $meta['label'];
-    $dotHtml = $pulse ? '<span class="pulse-dot"></span>' : '';
+    $dotHtml = $pulse ? '<span class="pulse-dot me-2"></span>' : '';
     return '<span class="status-pill ' . $meta['pillClass'] . ' ' . $customClass . '">' .
            $dotHtml .
-           '<i class="' . $meta['icon'] . '"></i>' .
+           '<i class="' . $meta['icon'] . ' me-2"></i>' .
            '<span>' . htmlspecialchars($label) . '</span>' .
            '</span>';
 }

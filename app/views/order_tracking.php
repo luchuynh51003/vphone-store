@@ -491,22 +491,37 @@ require_once 'app/views/includes/functions.php';
                     </div>
                 </div>
 
-                <div class="alert alert-danger rounded-4 p-4 border-0 d-flex align-items-start gap-3 mb-3" style="background: #fef2f2;">
-                    <div style="width:48px; height:48px; border-radius:50%; background:#fee2e2; color:#ef4444; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
-                        <i class="fa-solid fa-circle-exclamation fs-4"></i>
-                    </div>
-                    <div class="flex-grow-1">
-                        <h6 class="fw-bold text-danger mb-2 fs-6">Lý do hủy đơn từ Ban Quản Trị V-Phone:</h6>
-                        <?php if (!empty($trackedNotification['cancel_reason'])): ?>
-                            <div class="mb-2">
-                                <span class="badge bg-danger bg-opacity-15 text-danger border border-danger border-opacity-25 px-3 py-1.5 rounded-pill fw-bold" style="font-size: 0.88rem;">
-                                    <?= htmlspecialchars($trackedNotification['cancel_reason']) ?>
-                                </span>
-                            </div>
-                        <?php endif; ?>
-                        <div class="p-3 bg-white rounded-3 border text-secondary small" style="white-space: pre-line; line-height: 1.6;">
-                            <?= htmlspecialchars($trackedNotification['message']) ?>
+                <div class="rounded-4 p-4 mb-3 border shadow-sm" style="background: #ffffff; border-color: #fee2e2 !important;">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 mt-1" style="width: 44px; height: 44px; background: #fee2e2; color: #dc2626; border: 1.5px solid #fecaca;">
+                            <i class="fa-solid fa-triangle-exclamation fs-5"></i>
                         </div>
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+                                <span class="badge bg-danger text-white rounded-pill px-3 py-1 fw-bold shadow-sm" style="font-size: 0.78rem; letter-spacing: 0.3px;">
+                                    <i class="fa-solid fa-ban me-1"></i>LÝ DO HỦY ĐƠN HÀNG
+                                </span>
+                                <span class="text-secondary small fw-medium">Thông báo chính thức từ V-Phone Store</span>
+                            </div>
+                            
+                            <?php if (!empty($trackedNotification['cancel_reason'])): ?>
+                                <div class="p-3 rounded-3 mt-2" style="background: #fff5f5; border: 1.5px solid #fecaca;">
+                                    <div class="fw-bold" style="color: #991b1b; font-size: 1rem; line-height: 1.55;">
+                                        <?= htmlspecialchars($trackedNotification['cancel_reason']) ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <?php
+                        $trackedCleanMsg = $trackedNotification['message'];
+                        if (!empty($trackedNotification['cancel_reason'])) {
+                            $trackedCleanMsg = trim(preg_replace('/Lý do:\s*.*?\n/iu', '', $trackedCleanMsg));
+                        }
+                    ?>
+                    <div class="p-3 rounded-3 bg-light border text-secondary small" style="white-space: pre-line; line-height: 1.6;">
+                        <?= htmlspecialchars($trackedCleanMsg) ?>
                     </div>
                 </div>
 
@@ -776,7 +791,7 @@ require_once 'app/views/includes/functions.php';
                         <span class="badge bg-light border text-secondary rounded-pill small"><?= count($trackedDetails) ?> sản phẩm</span>
                     </h5>
                     <a href="index.php?page=warranty" target="_blank" class="text-success small fw-semibold text-decoration-none">
-                        <i class="fa-solid fa-shield-check me-1"></i>Bảo hành chính hãng 12 tháng <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size:11px;"></i>
+                        <i class="fa-solid fa-shield-halved me-1"></i>Bảo hành chính hãng 12 tháng <i class="fa-solid fa-arrow-up-right-from-square ms-1" style="font-size:11px;"></i>
                     </a>
                 </div>
 
@@ -1060,13 +1075,23 @@ require_once 'app/views/includes/functions.php';
                                             <div class="flex-grow-1">
                                                 <h6 class="fw-bold text-dark mb-1"><?= htmlspecialchars($cNotif['title']) ?></h6>
                                                 <?php if (!empty($cNotif['cancel_reason'])): ?>
-                                                    <div class="mb-2">
-                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-3 py-1 small fw-bold">
-                                                            Lý do: <?= htmlspecialchars($cNotif['cancel_reason']) ?>
-                                                        </span>
+                                                    <div class="p-2.5 px-3 rounded-3 my-2" style="background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.2);">
+                                                        <div class="d-flex align-items-center gap-1.5 text-danger fw-bold small">
+                                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                                            <span>Lý do hủy đơn từ cửa hàng:</span>
+                                                        </div>
+                                                        <div class="text-dark fw-medium mt-1 small" style="line-height: 1.45;">
+                                                            <?= htmlspecialchars($cNotif['cancel_reason']) ?>
+                                                        </div>
                                                     </div>
                                                 <?php endif; ?>
-                                                <p class="text-secondary small mb-0" style="white-space: pre-line;"><?= htmlspecialchars($cNotif['message']) ?></p>
+                                                <?php
+                                                    $cNotifMsg = $cNotif['message'];
+                                                    if (!empty($cNotif['cancel_reason'])) {
+                                                        $cNotifMsg = trim(preg_replace('/Lý do:\s*.*?\n/iu', '', $cNotifMsg));
+                                                    }
+                                                ?>
+                                                <p class="text-secondary small mb-0" style="white-space: pre-line; line-height: 1.5;"><?= htmlspecialchars($cNotifMsg) ?></p>
                                             </div>
                                         </div>
                                     </div>

@@ -42,10 +42,21 @@ if (isset($_GET['action']) && $_GET['action'] === 'toggle_status') {
 // Bộ lọc & Tìm kiếm
 $keyword = trim($_GET['keyword'] ?? '');
 $filterRating = (isset($_GET['rating']) && $_GET['rating'] !== '' && $_GET['rating'] !== 'all') ? (int)$_GET['rating'] : null;
-$filterStatus = (isset($_GET['status']) && $_GET['status'] !== '' && $_GET['status'] !== 'all') ? (int)$_GET['status'] : null;
-$filterProductId = (isset($_GET['product_id']) && (int)$_GET['product_id'] > 0) ? (int)$_GET['product_id'] : null;
 
-$reviews = $reviewModel->getAllReviews($keyword, $filterRating, $filterStatus, $filterProductId);
+$rawStatus = $_GET['status'] ?? '';
+$filterStatus = null;
+if ($rawStatus !== '' && $rawStatus !== 'all') {
+    if (in_array($rawStatus, ['pending', 'unreplied', 'replied'], true)) {
+        $filterStatus = $rawStatus;
+    } elseif (is_numeric($rawStatus)) {
+        $filterStatus = (int)$rawStatus;
+    }
+}
+
+$filterProductId = (isset($_GET['product_id']) && (int)$_GET['product_id'] > 0) ? (int)$_GET['product_id'] : null;
+$filterBuyer = (isset($_GET['buyer']) && $_GET['buyer'] !== '') ? ((int)$_GET['buyer'] === 1) : null;
+
+$reviews = $reviewModel->getAllReviews($keyword, $filterRating, $filterStatus, $filterProductId, $filterBuyer);
 $stats = $reviewModel->getAdminStats();
 ?>
 
@@ -57,6 +68,9 @@ $stats = $reviewModel->getAdminStats();
         <p class="text-secondary small mb-0">Theo dõi, kiểm duyệt và phản hồi đánh giá của khách hàng trên toàn hệ thống V-Phone</p>
     </div>
     <div class="d-flex gap-2">
+        <a href="reviews.php" class="btn btn-outline-secondary btn-sm rounded-pill px-3 fw-bold">
+            <i class="fa-solid fa-rotate-left me-1"></i>Xem Tất Cả (<?= $stats['total_reviews'] ?>)
+        </a>
         <a href="../index.php" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold">
             <i class="fa-solid fa-arrow-up-right-from-square me-1"></i>Xem Website
         </a>
@@ -77,79 +91,104 @@ $stats = $reviewModel->getAdminStats();
     </div>
 <?php endif; ?>
 
-<!-- 5 THẺ THỐNG KÊ KPI TỔNG QUAN -->
+<!-- 6 THẺ THỐNG KÊ KPI TỔNG QUAN (CÓ THỂ CLICK ĐỂ LỌC TRỰC TIẾP) -->
 <div class="row g-3 mb-4">
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="admin-kpi-card h-100">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-secondary small fw-bold text-uppercase">Tổng đánh giá</span>
-                <span class="rounded-circle p-2 bg-primary bg-opacity-10 text-primary" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
-                    <i class="fa-solid fa-comments"></i>
-                </span>
+        <a href="reviews.php" class="text-decoration-none text-reset d-block h-100">
+            <div class="admin-kpi-card h-100 <?= ($filterStatus === null && $filterRating === null && $filterBuyer === null && empty($keyword)) ? 'border-primary border-2 shadow-sm' : '' ?>">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-bold text-uppercase">Tổng đánh giá</span>
+                    <span class="rounded-circle p-2 bg-primary bg-opacity-10 text-primary" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fa-solid fa-comments"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold text-dark mb-0"><?= number_format($stats['total_reviews']) ?></h3>
+                <small class="text-muted" style="font-size:0.75rem;">Toàn bộ hệ thống</small>
             </div>
-            <h3 class="fw-bold text-dark mb-0"><?= number_format($stats['total_reviews']) ?></h3>
-            <small class="text-muted" style="font-size:0.75rem;">Trên toàn cửa hàng</small>
-        </div>
+        </a>
     </div>
 
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="admin-kpi-card h-100">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-secondary small fw-bold text-uppercase">Điểm trung bình</span>
-                <span class="rounded-circle p-2 bg-warning bg-opacity-10 text-warning" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
-                    <i class="fa-solid fa-star"></i>
-                </span>
+        <a href="reviews.php" class="text-decoration-none text-reset d-block h-100">
+            <div class="admin-kpi-card h-100">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-bold text-uppercase">Điểm TB</span>
+                    <span class="rounded-circle p-2 bg-warning bg-opacity-10 text-warning" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fa-solid fa-star"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold text-warning mb-0"><?= number_format($stats['avg_score'], 1) ?> <span class="fs-6 text-muted">/ 5.0</span></h3>
+                <small class="text-muted" style="font-size:0.75rem;">Mức độ hài lòng</small>
             </div>
-            <h3 class="fw-bold text-warning mb-0"><?= number_format($stats['avg_score'], 1) ?> <span class="fs-6 text-muted">/ 5.0</span></h3>
-            <small class="text-muted" style="font-size:0.75rem;">Mức độ hài lòng</small>
-        </div>
+        </a>
     </div>
 
     <div class="col-xl-2 col-md-4 col-6">
-        <div class="admin-kpi-card h-100">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-secondary small fw-bold text-uppercase">Đánh giá 5 sao</span>
-                <span class="rounded-circle p-2 bg-success bg-opacity-10 text-success" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
-                    <i class="fa-solid fa-face-smile"></i>
-                </span>
+        <a href="reviews.php?rating=5" class="text-decoration-none text-reset d-block h-100">
+            <div class="admin-kpi-card h-100 <?= ($filterRating === 5) ? 'border-success border-2 shadow-sm' : '' ?>">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-bold text-uppercase">Đánh giá 5 sao</span>
+                    <span class="rounded-circle p-2 bg-success bg-opacity-10 text-success" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fa-solid fa-face-smile"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold text-success mb-0"><?= number_format($stats['five_star_count']) ?></h3>
+                <small class="text-muted" style="font-size:0.75rem;">Khách cực kỳ thích</small>
             </div>
-            <h3 class="fw-bold text-success mb-0"><?= number_format($stats['five_star_count']) ?></h3>
-            <small class="text-muted" style="font-size:0.75rem;">Khách cực kỳ thích</small>
-        </div>
+        </a>
     </div>
 
-    <div class="col-xl-3 col-md-6 col-6">
-        <div class="admin-kpi-card h-100">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-secondary small fw-bold text-uppercase">Đã mua tại V-Phone</span>
-                <span class="rounded-circle p-2 bg-info bg-opacity-10 text-info" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
-                    <i class="fa-solid fa-shield-check"></i>
-                </span>
+    <div class="col-xl-2 col-md-6 col-6">
+        <a href="reviews.php?buyer=1" class="text-decoration-none text-reset d-block h-100">
+            <div class="admin-kpi-card h-100 <?= ($filterBuyer === true) ? 'border-info border-2 shadow-sm' : '' ?>">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-bold text-uppercase">Đã mua hàng</span>
+                    <span class="rounded-circle p-2 bg-info bg-opacity-10 text-info" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold text-info mb-0"><?= number_format($stats['buyer_reviews_count']) ?></h3>
+                <small class="text-muted" style="font-size:0.75rem;">Người mua xác thực</small>
             </div>
-            <h3 class="fw-bold text-info mb-0"><?= number_format($stats['buyer_reviews_count']) ?></h3>
-            <small class="text-muted" style="font-size:0.75rem;">Người mua xác thực</small>
-        </div>
+        </a>
     </div>
 
-    <div class="col-xl-3 col-md-6 col-12">
-        <div class="admin-kpi-card h-100 border-start <?= $stats['hidden_count'] > 0 ? 'border-danger border-3' : '' ?>">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <span class="text-secondary small fw-bold text-uppercase">Đang ẩn / Cần duyệt</span>
-                <span class="rounded-circle p-2 bg-danger bg-opacity-10 text-danger" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
-                    <i class="fa-solid fa-eye-slash"></i>
-                </span>
+    <div class="col-xl-2 col-md-6 col-6">
+        <a href="reviews.php?status=unreplied" class="text-decoration-none text-reset d-block h-100">
+            <div class="admin-kpi-card h-100 <?= (in_array($filterStatus, ['unreplied', 'pending'], true)) ? 'border-primary border-2 shadow-sm' : '' ?> <?= $stats['unreplied_count'] > 0 ? 'border-start border-primary border-3' : '' ?>">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-bold text-uppercase">Chờ CSKH trả lời</span>
+                    <span class="rounded-circle p-2 bg-purple bg-opacity-10 text-primary" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#f3e8ff;color:#7e22ce;">
+                        <i class="fa-solid fa-comment-dots"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold <?= $stats['unreplied_count'] > 0 ? 'text-primary' : 'text-dark' ?> mb-0"><?= number_format($stats['unreplied_count']) ?></h3>
+                <small class="text-muted" style="font-size:0.75rem;">Cần phản hồi khách</small>
             </div>
-            <h3 class="fw-bold <?= $stats['hidden_count'] > 0 ? 'text-danger' : 'text-dark' ?> mb-0"><?= number_format($stats['hidden_count']) ?></h3>
-            <small class="text-muted" style="font-size:0.75rem;">Chưa hiển thị ngoài web</small>
-        </div>
+        </a>
+    </div>
+
+    <div class="col-xl-2 col-md-6 col-12">
+        <a href="reviews.php?status=0" class="text-decoration-none text-reset d-block h-100">
+            <div class="admin-kpi-card h-100 <?= ($filterStatus === 0) ? 'border-danger border-2 shadow-sm' : '' ?> <?= $stats['hidden_count'] > 0 ? 'border-start border-danger border-3' : '' ?>">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="text-secondary small fw-bold text-uppercase">Đang ẩn / Duyệt</span>
+                    <span class="rounded-circle p-2 bg-danger bg-opacity-10 text-danger" style="width:34px;height:34px;display:flex;align-items:center;justify-content:center;">
+                        <i class="fa-solid fa-eye-slash"></i>
+                    </span>
+                </div>
+                <h3 class="fw-bold <?= $stats['hidden_count'] > 0 ? 'text-danger' : 'text-dark' ?> mb-0"><?= number_format($stats['hidden_count']) ?></h3>
+                <small class="text-muted" style="font-size:0.75rem;">Chưa hiển thị ngoài web</small>
+            </div>
+        </a>
     </div>
 </div>
 
 <!-- BỘ LỌC TÌM KIẾM CHI TIẾT -->
 <div class="card rounded-4 border-0 shadow-sm mb-4">
     <div class="card-body p-3 p-md-4">
-        <form method="GET" action="reviews.php" class="row g-3">
-            <div class="col-lg-4 col-md-6">
+        <form method="GET" action="reviews.php" class="row g-3" id="reviewFilterForm">
+            <div class="col-lg-3 col-md-6">
                 <label class="form-label small fw-bold text-secondary mb-1">Tìm kiếm từ khóa:</label>
                 <div class="input-group">
                     <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
@@ -159,7 +198,7 @@ $stats = $reviewModel->getAdminStats();
 
             <div class="col-lg-3 col-md-6">
                 <label class="form-label small fw-bold text-secondary mb-1">Lọc theo sản phẩm:</label>
-                <select name="product_id" class="form-select bg-light">
+                <select name="product_id" class="form-select bg-light" onchange="this.form.submit()">
                     <option value="">-- Tất cả sản phẩm --</option>
                     <?php foreach ($allProducts as $p): ?>
                         <option value="<?= $p['id'] ?>" <?= $filterProductId === (int)$p['id'] ? 'selected' : '' ?>>
@@ -171,7 +210,7 @@ $stats = $reviewModel->getAdminStats();
 
             <div class="col-lg-2 col-md-4 col-6">
                 <label class="form-label small fw-bold text-secondary mb-1">Số sao:</label>
-                <select name="rating" class="form-select bg-light">
+                <select name="rating" class="form-select bg-light" onchange="this.form.submit()">
                     <option value="all">Tất cả sao</option>
                     <option value="5" <?= $filterRating === 5 ? 'selected' : '' ?>>5 sao (Rất hài lòng)</option>
                     <option value="4" <?= $filterRating === 4 ? 'selected' : '' ?>>4 sao (Hài lòng)</option>
@@ -183,17 +222,24 @@ $stats = $reviewModel->getAdminStats();
 
             <div class="col-lg-2 col-md-4 col-6">
                 <label class="form-label small fw-bold text-secondary mb-1">Trạng thái:</label>
-                <select name="status" class="form-select bg-light">
-                    <option value="all">Tất cả</option>
-                    <option value="1" <?= $filterStatus === 1 ? 'selected' : '' ?>>Đang hiển thị</option>
-                    <option value="0" <?= $filterStatus === 0 ? 'selected' : '' ?>>Đang ẩn</option>
+                <select name="status" class="form-select bg-light" onchange="this.form.submit()">
+                    <option value="all" <?= ($filterStatus === null && $filterBuyer === null) ? 'selected' : '' ?>>Tất cả trạng thái</option>
+                    <option value="1" <?= ($filterStatus === 1) ? 'selected' : '' ?>>Đang hiển thị (<?= $stats['total_reviews'] - $stats['hidden_count'] ?>)</option>
+                    <option value="unreplied" <?= (in_array($filterStatus, ['unreplied', 'pending'], true)) ? 'selected' : '' ?>>Chờ CSKH phản hồi (<?= $stats['unreplied_count'] ?>)</option>
+                    <option value="replied" <?= ($filterStatus === 'replied') ? 'selected' : '' ?>>Đã được CSKH trả lời (<?= $stats['replied_count'] ?>)</option>
+                    <option value="0" <?= ($filterStatus === 0) ? 'selected' : '' ?>>Đang ẩn / Cần duyệt (<?= $stats['hidden_count'] ?>)</option>
                 </select>
             </div>
 
-            <div class="col-lg-1 col-md-4 col-12 d-flex align-items-end">
-                <button type="submit" class="btn btn-primary w-100 rounded-3 fw-bold">
+            <div class="col-lg-2 col-md-4 col-12 d-flex align-items-end gap-2">
+                <button type="submit" class="btn btn-primary flex-grow-1 rounded-3 fw-bold">
                     <i class="fa-solid fa-filter me-1"></i>Lọc
                 </button>
+                <?php if (!empty($keyword) || $filterRating !== null || $filterStatus !== null || $filterProductId !== null || $filterBuyer !== null): ?>
+                    <a href="reviews.php" class="btn btn-outline-secondary rounded-3" title="Đặt lại bộ lọc">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </a>
+                <?php endif; ?>
             </div>
         </form>
     </div>
@@ -226,8 +272,14 @@ $stats = $reviewModel->getAdminStats();
                 <?php if (empty($reviews)): ?>
                     <tr>
                         <td colspan="6" class="text-center py-5 text-muted">
-                            <i class="fa-solid fa-box-open fa-3x mb-3 text-secondary opacity-50 d-block"></i>
-                            Không tìm thấy đánh giá nào phù hợp với bộ lọc hiện tại.
+                            <div class="py-3">
+                                <i class="fa-solid fa-filter-circle-xmark fa-3x mb-3 text-secondary opacity-50 d-block"></i>
+                                <h6 class="fw-bold text-dark mb-1">Không tìm thấy đánh giá nào phù hợp với bộ lọc hiện tại</h6>
+                                <p class="text-secondary small mb-3">Hiện có tổng cộng <strong><?= $stats['total_reviews'] ?></strong> đánh giá được lưu trong hệ thống.</p>
+                                <a href="reviews.php" class="btn btn-primary btn-sm rounded-pill px-4 py-2 fw-bold shadow-sm">
+                                    <i class="fa-solid fa-list me-1"></i>Xem Tất Cả <?= $stats['total_reviews'] ?> Đánh Giá
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 <?php else: ?>
@@ -246,21 +298,30 @@ $stats = $reviewModel->getAdminStats();
                                 </div>
                             </td>
                             <td>
-                                <div class="fw-bold text-dark small mb-1"><?= htmlspecialchars($rev['fullname']) ?></div>
-                                <?php if (!empty($rev['phone'])): ?>
-                                    <div class="text-secondary small" style="font-size: 0.76rem;"><i class="fa-solid fa-phone me-1 text-muted"></i><?= htmlspecialchars($rev['phone']) ?></div>
-                                <?php endif; ?>
-                                <?php if (!empty($rev['email'])): ?>
-                                    <div class="text-secondary small text-truncate" style="font-size: 0.76rem; max-width: 200px;"><i class="fa-solid fa-envelope me-1 text-muted"></i><?= htmlspecialchars($rev['email']) ?></div>
-                                <?php endif; ?>
+                                <div class="table-user-cell">
+                                    <div class="table-user-avatar" style="background: linear-gradient(135deg, #0284c7, #0066cc); font-size: 0.95rem;">
+                                        <?= mb_strtoupper(mb_substr(trim($rev['fullname']), 0, 1, 'UTF-8'), 'UTF-8') ?>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <div class="user-fullname text-truncate" style="max-width: 170px;" title="<?= htmlspecialchars($rev['fullname']) ?>">
+                                            <?= htmlspecialchars($rev['fullname']) ?>
+                                        </div>
+                                        <?php if (!empty($rev['phone'])): ?>
+                                            <div class="user-subtext"><i class="fa-solid fa-phone me-1 text-muted" style="font-size: 0.7rem;"></i><?= htmlspecialchars($rev['phone']) ?></div>
+                                        <?php endif; ?>
+                                        <?php if (!empty($rev['email'])): ?>
+                                            <div class="user-subtext text-truncate" style="max-width: 170px;" title="<?= htmlspecialchars($rev['email']) ?>"><i class="fa-solid fa-envelope me-1 text-muted" style="font-size: 0.7rem;"></i><?= htmlspecialchars($rev['email']) ?></div>
+                                        <?php endif; ?>
 
-                                <?php if (!empty($rev['is_buyer'])): ?>
-                                    <span class="badge badge-verified-buyer rounded-pill mt-1">
-                                        <i class="fa-solid fa-circle-check me-1"></i>Đã mua tại V-Phone
-                                    </span>
-                                <?php else: ?>
-                                    <span class="badge bg-light text-secondary border rounded-pill mt-1" style="font-size:0.68rem;">Khách vãng lai</span>
-                                <?php endif; ?>
+                                        <?php if (!empty($rev['is_buyer'])): ?>
+                                            <span class="badge badge-verified-buyer rounded-pill mt-1" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;">
+                                                <i class="fa-solid fa-circle-check"></i>Đã mua hàng
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge bg-light text-secondary border rounded-pill mt-1" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;">Khách vãng lai</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center gap-2 mb-1">

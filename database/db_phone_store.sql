@@ -18,7 +18,7 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE brands (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(50) NOT NULL);
 
-CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, fullname VARCHAR(100) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, google_id VARCHAR(100) NULL, auth_provider VARCHAR(30) DEFAULT 'local', phone VARCHAR(20), address VARCHAR(255), avatar VARCHAR(255) NULL, password VARCHAR(255) NULL, role TINYINT DEFAULT 0, cart_data LONGTEXT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE users (id INT AUTO_INCREMENT PRIMARY KEY, fullname VARCHAR(100) NOT NULL, email VARCHAR(100) UNIQUE NOT NULL, google_id VARCHAR(100) NULL, auth_provider VARCHAR(30) DEFAULT 'local', phone VARCHAR(20), address VARCHAR(255), avatar VARCHAR(255) NULL, password VARCHAR(255) NULL, role TINYINT DEFAULT 0, staff_role VARCHAR(50) NULL DEFAULT NULL, staff_title VARCHAR(100) NULL DEFAULT NULL, permissions TEXT NULL, status TINYINT(1) NOT NULL DEFAULT 1, cart_data LONGTEXT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 
 CREATE TABLE user_addresses (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -142,7 +142,13 @@ INSERT INTO products (id, brand_id, name, price, sale_price, image, screen, cpu,
 (57, 2, '[Cũ 99%] Samsung Galaxy S23 Ultra 256GB', 22990000, 15990000, 'assets/images/products/samsung-s23-ultra.png', '6.8" 120Hz', 'Snapdragon 8 Gen 2', '8 GB', '256 GB', '5000 mAh', 4, 0, 1, 'Đẹp Like New 99%', '2026-09-25 08:55:29', 'Đen Phantom, Kem Cotton, Xanh Botanic'),
 (58, 2, '[Cũ 99%] Samsung Galaxy Z Fold5 5G', 32990000, 21990000, 'assets/images/products/samsung-z-fold5.jpg', '7.6" Gập', 'Snapdragon 8 Gen 2', '12 GB', '256 GB', '4400 mAh', 3, 0, 1, 'Bản gập nguyên zin 99%', '2026-09-25 08:55:29', 'Xanh Icy Blue, Đen Phantom');
 
-INSERT INTO users (id, fullname, email, phone, address, password, role) VALUES (1, 'Võ Minh Hiếu', 'hieu@vphone.vn', '0901234567', 'Quận 1, TP.HCM', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 0), (2, 'Huỳnh Bá Lực', 'luc@vphone.vn', '0909888999', 'Quận 7, TP.HCM', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 0), (3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', '18006868', 'Trụ sở V-Phone', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 1);
+INSERT INTO users (id, fullname, email, phone, address, password, role, staff_role, staff_title, permissions, status) VALUES 
+(1, 'Võ Minh Hiếu', 'hieu@vphone.vn', '0901234567', 'Quận 1, TP.HCM', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 0, 'admin', 'Khách hàng', '[]', 1),
+(2, 'Huỳnh Bá Lực', 'luc@vphone.vn', '0909888999', 'Quận 7, TP.HCM', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 0, 'admin', 'Khách hàng', '[]', 1),
+(3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', '18006868', 'Trụ sở V-Phone', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 1, 'super_admin', 'Quản Trị Tối Cao', '["orders","products","inventory","warranties","reviews","vouchers","news"]', 1),
+(11, 'Nguyễn Văn Bán (NV Bán Hàng)', 'nhanvien@vphone.vn', '0908889999', 'Cửa hàng V-Phone Store', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 2, 'sales', 'Nhân viên Bán hàng & Đơn hàng', '["orders","vouchers"]', 1),
+(12, 'Trần Văn Kho (NV Kho)', 'kho@vphone.vn', '0907778888', 'Cửa hàng V-Phone Store', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 2, 'warehouse', 'Nhân viên Quản lý Kho', '["products","inventory"]', 1),
+(13, 'Lê Kỹ Thuật (NV Bảo Hành & CSKH)', 'baohanh@vphone.vn', '0906667777', 'Cửa hàng V-Phone Store', '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 2, 'support', 'Chuyên viên CSKH & Bảo hành', '["warranties","reviews"]', 1);
 
 CREATE TABLE IF NOT EXISTS warranty_claims (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -204,6 +210,28 @@ CREATE TABLE IF NOT EXISTS user_notifications (
     INDEX (user_id),
     INDEX (phone),
     INDEX (order_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS callback_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NULL,
+    fullname VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NULL,
+    topic VARCHAR(100) DEFAULT 'Tư vấn mua máy',
+    department VARCHAR(50) DEFAULT 'cskh',
+    note TEXT NULL,
+    status VARCHAR(50) DEFAULT 'pending',
+    reply_message TEXT NULL,
+    replied_by INT NULL,
+    replied_by_name VARCHAR(100) NULL,
+    replied_by_title VARCHAR(100) NULL,
+    replied_at DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX (user_id),
+    INDEX (phone),
+    INDEX (status),
+    INDEX (department)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 

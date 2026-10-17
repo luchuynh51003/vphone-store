@@ -178,6 +178,12 @@ require_once 'app/views/includes/navbar.php';
                     <?php endif; ?>
                 </div>
 
+                <div class="mt-2 text-center">
+                    <a href="index.php?page=compare&p1=<?= $product['id'] ?>" class="btn btn-sm btn-light border text-primary rounded-pill px-3 py-1.5 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-2xs hover-primary">
+                        <i class="fa-solid fa-code-compare"></i> So sánh <?= htmlspecialchars($product['name']) ?> với sản phẩm khác
+                    </a>
+                </div>
+
                 <div class="mt-3 p-3 rounded-4 bg-light border">
                     <div class="fw-bold text-dark small mb-2 d-flex align-items-center gap-1">
                         <i class="fa-solid fa-gift text-danger"></i> Ưu đãi đặc quyền khi mua tại V-Phone:
@@ -201,9 +207,14 @@ require_once 'app/views/includes/navbar.php';
     <div class="row g-4 mt-2">
         <div class="col-lg-7">
             <div class="bg-white p-4 rounded-4 shadow-sm border h-100">
-                <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
-                    <i class="fa-solid fa-microchip text-primary"></i> Thông Số Kỹ Thuật Chi Tiết
-                </h5>
+                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                    <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-microchip text-primary"></i> Thông Số Kỹ Thuật Chi Tiết
+                    </h5>
+                    <a href="index.php?page=compare&p1=<?= $product['id'] ?>" class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3 py-1 shadow-2xs d-inline-flex align-items-center gap-1.5" title="So sánh đối đầu <?= htmlspecialchars($product['name']) ?> với máy khác">
+                        <i class="fa-solid fa-code-compare"></i> So sánh đối đầu
+                    </a>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-striped align-middle mb-0 small">
                         <tbody>
@@ -250,7 +261,7 @@ require_once 'app/views/includes/navbar.php';
                     <div class="d-flex flex-column gap-3 small">
                         <div class="d-flex align-items-start gap-3">
                             <div class="rounded-3 p-2 bg-primary bg-opacity-10 text-primary flex-shrink-0" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fa-solid fa-box-check fs-6"></i>
+                                <i class="fa-solid fa-circle-check fs-6"></i>
                             </div>
                             <div>
                                 <div class="fw-bold text-dark">Hàng chính hãng 100%</div>

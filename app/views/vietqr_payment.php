@@ -401,7 +401,7 @@ require_once 'app/views/includes/navbar.php';
                     <span class="badge bg-white text-dark rounded-pill fw-bold px-2.5 py-1 small">
                         <i class="fa-solid fa-shield-halved text-success me-1"></i>Cổng thanh toán tự động
                     </span>
-                    <span class="badge bg-white bg-opacity-15 text-white rounded-pill px-2.5 py-1 small font-monospace">
+                    <span class="badge rounded-pill px-2.5 py-1 small font-monospace" style="background: rgba(255, 255, 255, 0.2); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.35);">
                         #VP-<?= $orderId ?>
                     </span>
                 </div>
@@ -446,7 +446,7 @@ require_once 'app/views/includes/navbar.php';
                         </div>
 
                         <div class="mt-3 pt-3 border-top w-100 text-center" style="font-size: 0.76rem; color: #64748b;">
-                            <i class="fa-solid fa-shield-check text-success me-1"></i>Quét bằng mọi App Ngân hàng Việt Nam (VCB, MB, Techcombank, BIDV, ACB...)
+                            <i class="fa-solid fa-shield-halved text-success me-1"></i>Quét bằng mọi App Ngân hàng Việt Nam (VCB, MB, Techcombank, BIDV, ACB...)
                         </div>
                     </div>
                 </div>
