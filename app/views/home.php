@@ -18,7 +18,7 @@ foreach ($products as $p) {
         'name' => $p['name'],
         'price' => (int)$pPrice,
         'old_price' => (int)$p['price'],
-        'price_formatted' => number_format($pPrice, 0, ',', '.') . ' đ',
+        'price_formatted' => number_format($pPrice, 0, ',', '.') . ' VNĐ',
         'image' => $p['image'],
         'rom' => $p['rom'] ?? '256 GB',
         'storage_options' => $storageOptions,
@@ -73,7 +73,7 @@ require_once 'app/views/includes/navbar.php';
                                 <a href="index.php?page=detail&id=1" class="btn btn-light text-primary btn-md rounded-pill fw-bold px-4 py-2 shadow">
                                     <i class="fa-solid fa-bolt me-1"></i>Đặt Mua Ngay
                                 </a>
-                                <span class="fw-bold text-white fs-6">Chỉ từ 41.990.000 đ</span>
+                                <span class="fw-bold text-white fs-6">Chỉ từ 41.990.000 VNĐ</span>
                             </div>
                         </div>
                         <div class="col-lg-5 col-md-5 text-center d-flex align-items-center justify-content-center justify-content-lg-end h-100 position-relative pe-lg-3">
@@ -107,7 +107,7 @@ require_once 'app/views/includes/navbar.php';
                                 <a href="index.php?page=detail&id=6" class="btn btn-warning text-dark btn-md rounded-pill fw-bold px-4 py-2 shadow">
                                     <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Khám Phá Galaxy AI
                                 </a>
-                                <span class="fw-bold text-white fs-6">Chỉ từ 34.990.000 đ</span>
+                                <span class="fw-bold text-white fs-6">Chỉ từ 34.990.000 VNĐ</span>
                             </div>
                         </div>
                         <div class="col-lg-5 col-md-5 text-center d-flex align-items-center justify-content-center justify-content-lg-end h-100 position-relative pe-lg-3">
@@ -130,7 +130,7 @@ require_once 'app/views/includes/navbar.php';
                             </span>
                             <div class="banner-title-equal text-white mb-2">Thu Cũ Đổi Mới Lên Đời</div>
                             <div class="banner-desc-equal mb-3">
-                                Lên đời điện thoại Flagship cực dễ dàng. Trợ giá trực tiếp lên đến 5.000.000 đ, duyệt hồ sơ trong 5 phút, trả góp 0% lãi suất.
+                                Lên đời điện thoại Flagship cực dễ dàng. Trợ giá trực tiếp lên đến 5.000.000 VNĐ, duyệt hồ sơ trong 5 phút, trả góp 0% lãi suất.
                             </div>
                             <div class="d-flex gap-2 flex-wrap mb-3">
                                 <span class="badge glass-spec-pill"><i class="fa-solid fa-money-bill-wave text-success me-1"></i>Trợ giá 5 triệu</span>
@@ -141,7 +141,7 @@ require_once 'app/views/includes/navbar.php';
                                 <a href="#product-list" class="btn btn-outline-light btn-md rounded-pill fw-bold px-4 py-2 shadow-sm">
                                     <i class="fa-solid fa-arrow-down me-1"></i>Săn Deal Ngay Hôm Nay
                                 </a>
-                                <span class="fw-bold text-white fs-6">Trợ giá đến 5.000.000 đ</span>
+                                <span class="fw-bold text-white fs-6">Trợ giá đến 5.000.000 VNĐ</span>
                             </div>
                         </div>
                         <div class="col-lg-5 col-md-5 text-center d-flex align-items-center justify-content-center justify-content-lg-end h-100 position-relative pe-lg-3">
@@ -608,10 +608,10 @@ require_once 'app/views/includes/navbar.php';
 
                         <div class="mt-auto pt-2">
                             <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                                <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> đ</div>
-                                <small class="text-decoration-line-through text-muted"><?= number_format($p['price'], 0, ',', '.') ?> đ</small>
+                                <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> VNĐ</div>
+                                <small class="text-decoration-line-through text-muted"><?= number_format($p['price'], 0, ',', '.') ?> VNĐ</small>
                             <?php else: ?>
-                                <div class="text-primary fw-bold fs-5 mb-0"><?= number_format($p['price'], 0, ',', '.') ?> đ</div>
+                                <div class="text-primary fw-bold fs-5 mb-0"><?= number_format($p['price'], 0, ',', '.') ?> VNĐ</div>
                             <?php endif; ?>
                         </div>
 
@@ -670,8 +670,8 @@ require_once 'app/views/includes/navbar.php';
                     <div class="flex-grow-1 min-w-0">
                         <h6 id="modalTitle" class="fw-bold text-dark mb-1 text-truncate">Tên điện thoại</h6>
                         <div class="d-flex align-items-baseline gap-2">
-                            <span id="modalPrice" class="fs-5 fw-bold text-danger">0 đ</span>
-                            <small id="modalOldPrice" class="text-decoration-line-through text-muted small">0 đ</small>
+                            <span id="modalPrice" class="fs-5 fw-bold text-danger">0 VNĐ</span>
+                            <small id="modalOldPrice" class="text-decoration-line-through text-muted small">0 VNĐ</small>
                         </div>
                         <small class="text-primary fw-semibold" id="modalColorNotice">Màu: Đang chọn...</small>
                     </div>
@@ -712,7 +712,7 @@ let extraMoney = 0;
 let bsModalInstance = null;
 
 function formatCurrency(amount) {
-    return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+    return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
 }
 
 function getStorageTiersJS(prodName, defaultRom) {
@@ -895,26 +895,39 @@ function openProductModal(productId, defaultAction) {
         fetch(url)
             .then(r => r.json())
             .then(data => {
-                const toast = document.getElementById('vphoneLiveToast');
-                const toastText = document.getElementById('vphoneToastText');
                 if (data.success === false) {
-                    if (toast && toastText) {
-                        toastText.innerText = data.message || 'Không thể thêm vào giỏ hàng!';
-                        toast.style.display = 'block';
-                        clearTimeout(window.toastTimer);
-                        window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+                    const errMsg = data.message || 'Không thể thêm vào giỏ hàng!';
+                    if (typeof window.showVPhoneToast === 'function') {
+                        window.showVPhoneToast(errMsg, false);
                     } else {
-                        alert(data.message || 'Không thể thêm vào giỏ hàng!');
+                        const toast = document.getElementById('vphoneLiveToast');
+                        const toastText = document.getElementById('vphoneToastText');
+                        if (toast && toastText) {
+                            toastText.innerText = errMsg;
+                            toast.style.display = 'block';
+                        } else {
+                            alert(errMsg);
+                        }
                     }
                     return;
                 }
                 const badge = document.getElementById('cartBadge');
-                if (badge) badge.innerText = data.cart_count;
-                if (toast && toastText) {
-                    toastText.innerText = `Đã thêm "${currentProduct.name} - Màu ${selectedColor} (${selectedRom})" vào giỏ!`;
-                    toast.style.display = 'block';
-                    clearTimeout(window.toastTimer);
-                    window.toastTimer = setTimeout(() => { toast.style.display = 'none'; }, 3500);
+                if (badge) {
+                    badge.innerText = data.cart_count;
+                    badge.classList.remove('badge-bounce');
+                    void badge.offsetWidth;
+                    badge.classList.add('badge-bounce');
+                }
+                const successMsg = `Đã thêm "${currentProduct.name} - Màu ${selectedColor} (${selectedRom})" vào giỏ!`;
+                if (typeof window.showVPhoneToast === 'function') {
+                    window.showVPhoneToast(successMsg, true);
+                } else {
+                    const toast = document.getElementById('vphoneLiveToast');
+                    const toastText = document.getElementById('vphoneToastText');
+                    if (toast && toastText) {
+                        toastText.innerText = successMsg;
+                        toast.style.display = 'block';
+                    }
                 }
             })
             .catch(() => {
@@ -949,7 +962,7 @@ function formatVndShort(amount) {
         const tr = amount / 1000000;
         return (Number.isInteger(tr) ? tr : tr.toFixed(1)) + ' triệu';
     }
-    return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+    return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
 }
 
 function syncFilterUI() {

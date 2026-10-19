@@ -49,7 +49,7 @@ if (empty($GLOBALS['vphone_search_products_loaded'])) {
                     'brand_name' => $np['brand_name'] ?? '',
                     'price' => $nPrice,
                     'old_price' => (int)$np['price'],
-                    'price_formatted' => number_format($nPrice, 0, ',', '.') . ' đ',
+                    'price_formatted' => number_format($nPrice, 0, ',', '.') . ' VNĐ',
                     'image' => $np['image']
                 ];
             }
@@ -61,82 +61,72 @@ if (empty($GLOBALS['vphone_search_products_loaded'])) {
 }
 $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
 ?>
-<nav class="navbar navbar-expand-lg navbar-dark navbar-vphone sticky-top shadow-sm py-2">
-    <button class="btn btn-light rounded-circle shadow-sm ms-3 me-2 d-flex align-items-center justify-content-center" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenuLeft" style="width: 42px; height: 42px; flex-shrink: 0;" title="Mở danh mục">
-        <i class="fa-solid fa-bars fs-5 text-primary"></i>
-    </button>
-
-    <div class="container-fluid px-3 px-xl-4">
-        <a class="navbar-brand fw-bold text-white d-flex align-items-center fs-4 me-2 me-xl-3 flex-shrink-0" href="index.php">
-            <img src="assets/images/vphone-icon.png" alt="V-Phone" style="width: 36px; height: 36px; margin-right: 8px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));">
-            <span>V-Phone</span>
-        </a>
-
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarContent">
-            <div class="position-relative my-2 my-lg-0 search-wrapper flex-grow-1 mx-2 mx-xl-3" style="min-width: 180px; max-width: 440px;">
-                <form action="index.php" method="GET" autocomplete="off">
-                    <div class="input-group bg-white rounded-pill p-1 shadow-sm">
-                        <input id="searchInput" class="form-control border-0 bg-transparent ps-3" type="search" name="keyword" placeholder="Tìm kiếm điện thoại..." value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>" style="font-size: 0.88rem;">
-                        <button class="btn btn-primary rounded-pill px-3 py-1.5" type="submit" title="Tìm kiếm">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </button>
-                    </div>
-                </form>
-                <div id="searchDropdown" class="search-dropdown-menu d-none">
-                    <div id="searchResultsList"></div>
+<nav class="navbar navbar-vphone sticky-top">
+    <div class="container-fluid px-3 px-xl-4 d-flex flex-wrap align-items-center justify-content-between">
+        <!-- NHÓM TRÁI: DANH MỤC & LOGO V-PHONE -->
+        <div class="nav-left-group d-flex align-items-center gap-2 gap-sm-3 flex-shrink-0">
+            <!-- Nút Mở Danh Mục Khám Phá -->
+            <button class="btn btn-nav-category d-flex align-items-center gap-2 flex-shrink-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenuLeft" title="Mở danh mục khám phá">
+                <div class="nav-category-icon-box">
+                    <i class="fa-solid fa-bars-staggered"></i>
                 </div>
-                <script>
-                    window.GLOBAL_SEARCH_PRODUCTS = <?= json_encode($navSearchList ?? [], JSON_UNESCAPED_UNICODE) ?>;
-                    if (!window.STORE_PRODUCTS || window.STORE_PRODUCTS.length === 0) {
-                        window.STORE_PRODUCTS = window.GLOBAL_SEARCH_PRODUCTS;
-                    }
-                </script>
+                <span class="d-none d-sm-inline fw-semibold nav-category-label">Danh mục</span>
+            </button>
+
+            <!-- Logo V-Phone (Bấm về Trang chủ) -->
+            <a class="navbar-brand-vphone d-flex align-items-center flex-shrink-0" href="index.php" title="V-Phone Flagship Store">
+                <img src="assets/images/vphone-icon.png" alt="V-Phone" class="navbar-logo-img">
+                <span class="navbar-logo-text">V-Phone</span>
+                <span class="brand-flagship-tag d-none d-xl-inline-block">FLAGSHIP</span>
+            </a>
+        </div>
+
+        <!-- TRUNG TÂM: Ô TÌM KIẾM HIỆN ĐẠI CAPSULE GLASS -->
+        <div class="nav-search-section position-relative">
+            <form action="index.php" method="GET" autocomplete="off" class="m-0">
+                <div class="nav-search-inner d-flex align-items-center">
+                    <button type="submit" class="nav-search-icon-btn" title="Tìm kiếm">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <input id="searchInput" class="nav-search-input" type="search" name="keyword" placeholder="Tìm kiếm iPhone 16 Pro, Galaxy S25, Xiaomi..." value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
+                </div>
+            </form>
+            <div id="searchDropdown" class="search-dropdown-menu d-none">
+                <div id="searchResultsList"></div>
             </div>
+            <script>
+                window.GLOBAL_SEARCH_PRODUCTS = <?= json_encode($navSearchList ?? [], JSON_UNESCAPED_UNICODE) ?>;
+                if (!window.STORE_PRODUCTS || window.STORE_PRODUCTS.length === 0) {
+                    window.STORE_PRODUCTS = window.GLOBAL_SEARCH_PRODUCTS;
+                }
+            </script>
+        </div>
 
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center gap-1 gap-xl-1.5 flex-nowrap">
-                <li class="nav-item">
-                    <a class="nav-link <?= ($currentPage === 'home') ? 'active' : '' ?>" href="index.php">
-                        <i class="fa-solid fa-house me-1"></i>Trang chủ
-                    </a>
-                </li>
+        <!-- NHÓM PHẢI: TIỆN ÍCH THIẾT YẾU (GIỎ HÀNG - THÔNG BÁO - TÀI KHOẢN) -->
+        <div class="nav-right-group d-flex align-items-center gap-2 gap-sm-2.5 flex-shrink-0">
+            <!-- Giỏ Hàng -->
+            <a class="nav-action-pill nav-cart-pill <?= ($currentPage === 'cart') ? 'active' : '' ?>" href="index.php?page=cart" id="cartNavLink" title="Giỏ hàng của bạn">
+                <div class="nav-action-icon-box position-relative">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span class="nav-badge-pill bg-danger" id="cartBadge"><?= $cartCount ?></span>
+                </div>
+                <span class="d-none d-md-inline fw-semibold nav-action-text">Giỏ hàng</span>
+            </a>
 
-                <li class="nav-item">
-                    <a class="nav-link <?= in_array($currentPage, ['compare', 'so-sanh']) ? 'active' : '' ?>" href="index.php?page=compare" title="So sánh sản phẩm đối đầu 1-vs-1">
-                        <i class="fa-solid fa-code-compare me-1"></i>So sánh
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link position-relative <?= ($currentPage === 'cart') ? 'active' : '' ?>" href="index.php?page=cart" id="cartNavLink">
-                        <i class="fa-solid fa-cart-shopping me-1"></i>Giỏ hàng
-                        <span class="badge bg-danger rounded-pill ms-1" id="cartBadge"><?= $cartCount ?></span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link <?= in_array($currentPage, ['orders', 'tracking']) ? 'active' : '' ?>" href="index.php?page=orders" title="Tra cứu & theo dõi đơn hàng">
-                        <i class="fa-solid fa-truck-fast me-1"></i>Tra cứu đơn
-                    </a>
-                </li>
-
-                <?php if ($currentUser): ?>
-                    <!-- Notification Bell Dropdown -->
-                    <li class="nav-item dropdown position-relative me-2 me-lg-3">
-                        <button class="btn btn-link nav-link position-relative p-2 border-0 text-white shadow-none d-flex align-items-center justify-content-center rounded-circle" 
-                                type="button" id="notifDropdownToggle" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo hệ thống" style="width: 38px; height: 38px;">
-                            <i class="fa-solid fa-bell fs-5"></i>
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger <?= $navUnreadNotifCount > 0 ? '' : 'd-none' ?>" 
-                                  id="navNotifBadge" style="font-size: 0.65rem; padding: 0.25em 0.5em; transform: translate(-45%, 15%) !important; <?= $navUnreadNotifCount > 0 ? '' : 'display: none !important;' ?>">
-                                <?= $navUnreadNotifCount > 9 ? '9+' : ($navUnreadNotifCount > 0 ? $navUnreadNotifCount : '') ?>
-                            </span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-0 notif-dropdown-menu" 
-                             aria-labelledby="notifDropdownToggle" 
-                             style="width: 430px; max-width: calc(100vw - 24px); border-radius: 20px; z-index: 1060; border: 1px solid rgba(15, 23, 42, 0.08); box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.22), 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
+            <?php if ($currentUser): ?>
+                <!-- Chuông Thông Báo -->
+                <div class="dropdown position-relative">
+                    <button class="nav-action-circle position-relative" 
+                            type="button" id="notifDropdownToggle" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo hệ thống">
+                        <i class="fa-solid fa-bell"></i>
+                        <span class="nav-badge-pill bg-danger <?= $navUnreadNotifCount > 0 ? '' : 'd-none' ?>" 
+                              id="navNotifBadge" <?= $navUnreadNotifCount > 0 ? '' : 'style="display: none !important;"' ?>>
+                            <?= $navUnreadNotifCount > 9 ? '9+' : ($navUnreadNotifCount > 0 ? $navUnreadNotifCount : '') ?>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-0 notif-dropdown-menu" 
+                         aria-labelledby="notifDropdownToggle" 
+                         style="width: 430px; max-width: calc(100vw - 24px); border-radius: 20px; z-index: 1060; border: 1px solid rgba(15, 23, 42, 0.08); box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.22), 0 4px 12px rgba(0, 0, 0, 0.05); overflow: hidden;">
                             <!-- Header -->
                             <div class="d-flex align-items-center justify-content-between px-3.5 py-3 border-bottom" style="background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);">
                                 <div class="d-flex align-items-center gap-2">
@@ -363,74 +353,78 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                     <i class="fa-solid fa-arrow-right small opacity-75" style="font-size: 0.68rem;"></i>
                                 </a>
                             </div>
-                        </div>
-                    </li>
+                    </div>
+                </div>
 
-                    <li class="nav-item dropdown ms-1 ms-lg-2">
-                        <a class="nav-link dropdown-toggle bg-white bg-opacity-10 rounded-pill px-3 py-1 text-white d-flex align-items-center user-nav-pill" href="#" role="button" data-bs-toggle="dropdown" title="<?= htmlspecialchars($currentUser['fullname']) ?>">
-                            <?php 
-                                $userNavAvatar = null;
-                                if (!empty($currentUser['avatar'])) {
-                                    if (str_starts_with($currentUser['avatar'], 'http://') || str_starts_with($currentUser['avatar'], 'https://')) {
-                                        $userNavAvatar = $currentUser['avatar'];
-                                    } elseif (file_exists(__DIR__ . '/../../../' . $currentUser['avatar'])) {
-                                        $userNavAvatar = $currentUser['avatar'] . '?v=' . filemtime(__DIR__ . '/../../../' . $currentUser['avatar']);
-                                    }
+                <!-- Tài Khoản (Đã Đăng Nhập) -->
+                <div class="dropdown position-relative">
+                    <a class="nav-user-pill dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown" title="<?= htmlspecialchars($currentUser['fullname']) ?>">
+                        <?php 
+                            $userNavAvatar = null;
+                            if (!empty($currentUser['avatar'])) {
+                                if (str_starts_with($currentUser['avatar'], 'http://') || str_starts_with($currentUser['avatar'], 'https://')) {
+                                    $userNavAvatar = $currentUser['avatar'];
+                                } elseif (file_exists(__DIR__ . '/../../../' . $currentUser['avatar'])) {
+                                    $userNavAvatar = $currentUser['avatar'] . '?v=' . filemtime(__DIR__ . '/../../../' . $currentUser['avatar']);
                                 }
-                            ?>
-                            <?php if ($userNavAvatar): ?>
-                                <img src="<?= htmlspecialchars($userNavAvatar) ?>" alt="Avatar" referrerpolicy="no-referrer" class="rounded-circle border border-white flex-shrink-0 user-nav-avatar" style="width: 28px; height: 28px; object-fit: cover;">
-                            <?php else: ?>
-                                <span class="rounded-circle text-white d-inline-flex align-items-center justify-content-center flex-shrink-0 user-nav-avatar shadow-xs" style="width: 28px; height: 28px; background: linear-gradient(135deg, #0284c7, #0066cc); font-weight: 700; font-size: 0.82rem; border: 1.5px solid rgba(255,255,255,0.4);">
-                                    <?= mb_substr(htmlspecialchars($currentUser['fullname']), 0, 1, 'UTF-8') ?>
-                                </span>
-                            <?php endif; ?>
-                            <span class="user-nav-name"><?= htmlspecialchars($currentUser['fullname']) ?></span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-2" style="min-width: 250px; border-radius: 18px;">
-                            <li class="px-3 py-2.5 bg-light rounded-3 mb-2 border">
-                                <div class="d-flex align-items-center gap-2.5">
-                                    <?php if ($userNavAvatar): ?>
-                                        <img src="<?= htmlspecialchars($userNavAvatar) ?>" alt="Avatar" referrerpolicy="no-referrer" class="rounded-circle border flex-shrink-0 shadow-xs" style="width: 38px; height: 38px; object-fit: cover;">
-                                    <?php else: ?>
-                                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0 shadow-xs" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0284c7, #0066cc); font-weight: 700; font-size: 0.9rem;">
-                                            <?= mb_substr(htmlspecialchars($currentUser['fullname']), 0, 1, 'UTF-8') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <div class="min-w-0 flex-grow-1">
-                                        <div class="fw-bold text-dark text-truncate" title="<?= htmlspecialchars($currentUser['fullname']) ?>"><?= htmlspecialchars($currentUser['fullname']) ?></div>
-                                        <div class="small text-muted text-truncate font-monospace" style="font-size: 0.74rem;"><?= htmlspecialchars($currentUser['email']) ?></div>
+                            }
+                        ?>
+                        <?php if ($userNavAvatar): ?>
+                            <img src="<?= htmlspecialchars($userNavAvatar) ?>" alt="Avatar" referrerpolicy="no-referrer" class="nav-user-avatar">
+                        <?php else: ?>
+                            <span class="nav-user-avatar nav-user-avatar-text shadow-xs">
+                                <?= mb_substr(htmlspecialchars($currentUser['fullname']), 0, 1, 'UTF-8') ?>
+                            </span>
+                        <?php endif; ?>
+                        <div class="d-none d-md-flex flex-column text-start lh-1 min-w-0" style="max-width: 140px;">
+                            <span class="nav-user-sub">Xin chào,</span>
+                            <span class="nav-user-name text-truncate"><?= htmlspecialchars($currentUser['fullname']) ?></span>
+                        </div>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 mt-2 p-2" style="min-width: 250px; border-radius: 18px;">
+                        <li class="px-3 py-2.5 bg-light rounded-3 mb-2 border">
+                            <div class="d-flex align-items-center gap-2.5">
+                                <?php if ($userNavAvatar): ?>
+                                    <img src="<?= htmlspecialchars($userNavAvatar) ?>" alt="Avatar" referrerpolicy="no-referrer" class="rounded-circle border flex-shrink-0 shadow-xs" style="width: 38px; height: 38px; object-fit: cover;">
+                                <?php else: ?>
+                                    <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0 shadow-xs" style="width: 38px; height: 38px; background: linear-gradient(135deg, #0284c7, #0066cc); font-weight: 700; font-size: 0.9rem;">
+                                        <?= mb_substr(htmlspecialchars($currentUser['fullname']), 0, 1, 'UTF-8') ?>
                                     </div>
+                                <?php endif; ?>
+                                <div class="min-w-0 flex-grow-1">
+                                    <div class="fw-bold text-dark text-truncate" title="<?= htmlspecialchars($currentUser['fullname']) ?>"><?= htmlspecialchars($currentUser['fullname']) ?></div>
+                                    <div class="small text-muted text-truncate font-monospace" style="font-size: 0.74rem;"><?= htmlspecialchars($currentUser['email']) ?></div>
                                 </div>
+                            </div>
+                        </li>
+                        <?php if ((int)($currentUser['role'] ?? 0) === 1): ?>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger fw-bold rounded-3 bg-danger bg-opacity-10 mb-1" href="admin/index.php">
+                                    <i class="fa-solid fa-gear me-2"></i>Trang Quản Trị Admin
+                                </a>
                             </li>
-                            <?php if ((int)($currentUser['role'] ?? 0) === 1): ?>
-                                <li>
-                                    <a class="dropdown-item py-2 text-danger fw-bold rounded-3 bg-danger bg-opacity-10 mb-1" href="admin/index.php">
-                                        <i class="fa-solid fa-gear me-2"></i>Trang Quản Trị Admin
-                                    </a>
-                                </li>
-                            <?php elseif ((int)($currentUser['role'] ?? 0) === 2): ?>
-                                <li>
-                                    <a class="dropdown-item py-2 text-success fw-bold rounded-3 bg-success bg-opacity-10 mb-1" href="admin/staff_dashboard.php">
-                                        <i class="fa-solid fa-laptop-file me-2"></i>Bàn Làm Việc Nhân Viên
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                            <li><a class="dropdown-item py-2 fw-semibold <?= ($currentPage === 'profile') ? 'text-primary' : '' ?>" href="index.php?page=profile"><i class="fa-solid fa-address-card me-2 text-primary"></i>Thông tin tài khoản</a></li>
-                            <li><a class="dropdown-item py-2 fw-semibold" href="index.php?page=orders"><i class="fa-solid fa-truck-ramp-box me-2 text-primary"></i>Đơn hàng của tôi</a></li>
-                            <li><a class="dropdown-item py-2" href="index.php?page=cart"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Giỏ hàng của tôi</a></li>
-                            <li><a class="dropdown-item py-2 text-danger" href="index.php?page=logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
-                        </ul>
-                    </li>
-                <?php else: ?>
-                    <li class="nav-item ms-lg-2">
-                        <button class="btn btn-outline-light rounded-pill px-3 py-1 d-flex align-items-center" type="button" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal">
-                            <i class="fa-solid fa-circle-user me-2 text-warning fs-5"></i>
-                            <span>Tài khoản</span>
-                        </button>
-                    </li>
-                <?php endif; ?>
-            </ul>
+                        <?php elseif ((int)($currentUser['role'] ?? 0) === 2): ?>
+                            <li>
+                                <a class="dropdown-item py-2 text-success fw-bold rounded-3 bg-success bg-opacity-10 mb-1" href="admin/staff_dashboard.php">
+                                    <i class="fa-solid fa-laptop-file me-2"></i>Bàn Làm Việc Nhân Viên
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <li><a class="dropdown-item py-2 fw-semibold <?= ($currentPage === 'profile') ? 'text-primary' : '' ?>" href="index.php?page=profile"><i class="fa-solid fa-address-card me-2 text-primary"></i>Thông tin tài khoản</a></li>
+                        <li><a class="dropdown-item py-2 fw-semibold" href="index.php?page=orders"><i class="fa-solid fa-truck-ramp-box me-2 text-primary"></i>Đơn hàng của tôi</a></li>
+                        <li><a class="dropdown-item py-2" href="index.php?page=cart"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Giỏ hàng của tôi</a></li>
+                        <li><a class="dropdown-item py-2 text-danger" href="index.php?page=logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
+                    </ul>
+                </div>
+            <?php else: ?>
+                <!-- Nút Tài Khoản / Đăng Nhập -->
+                <button class="btn btn-nav-auth d-flex align-items-center gap-2" type="button" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal">
+                    <div class="nav-auth-icon-box">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <span class="fw-semibold nav-auth-text d-none d-sm-inline">Tài khoản</span>
+                </button>
+            <?php endif; ?>
         </div>
     </div>
 </nav>
@@ -546,82 +540,111 @@ window.vphoneGoogleConfig = <?= json_encode([
 <div class="offcanvas offcanvas-start sidebar-vphone shadow-lg" tabindex="-1" id="sidebarMenuLeft">
     <div class="sidebar-header-custom">
         <div class="d-flex align-items-center">
-            <img src="assets/images/vphone-icon.png" alt="V-Phone" style="width: 32px; height: 32px; margin-right: 10px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));">
-            <h5 class="fw-bold text-white mb-0">Danh Mục V-Phone</h5>
+            <img src="assets/images/vphone-icon.png" alt="V-Phone" style="width: 28px; height: 28px; margin-right: 8px; object-fit: contain; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));">
+            <h6 class="fw-bold text-white mb-0">Danh Mục V-Phone</h6>
         </div>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close" style="font-size: 0.8rem;"></button>
     </div>
 
-    <div class="p-3 bg-light border-bottom">
+    <!-- KHỐI TÀI KHOẢN NGƯỜI DÙNG TINH GỌN -->
+    <div class="py-2.5 px-3 bg-light border-bottom">
         <?php if ($currentUser): ?>
             <div class="d-flex align-items-center justify-content-between">
-                <div class="d-flex align-items-center gap-2.5 min-w-0">
+                <div class="d-flex align-items-center gap-2 min-w-0">
                     <?php if ($userNavAvatar): ?>
-                        <img src="<?= htmlspecialchars($userNavAvatar) ?>" alt="Avatar" referrerpolicy="no-referrer" class="rounded-circle border border-primary flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover;">
+                        <img src="<?= htmlspecialchars($userNavAvatar) ?>" alt="Avatar" referrerpolicy="no-referrer" class="rounded-circle border border-primary flex-shrink-0" style="width: 32px; height: 32px; object-fit: cover;">
                     <?php else: ?>
-                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 36px; height: 36px; background: linear-gradient(135deg, #0284c7, #0066cc); font-weight: 700; font-size: 0.85rem;">
+                        <div class="rounded-circle text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px; background: linear-gradient(135deg, #0284c7, #0066cc); font-weight: 700; font-size: 0.82rem;">
                             <?= mb_substr(htmlspecialchars($currentUser['fullname']), 0, 1, 'UTF-8') ?>
                         </div>
                     <?php endif; ?>
                     <div class="min-w-0 flex-grow-1">
-                        <div class="fw-bold text-dark text-truncate small">Xin chào, <?= htmlspecialchars($currentUser['fullname']) ?></div>
-                        <small class="text-secondary text-truncate d-block" style="font-size: 0.72rem;"><?= htmlspecialchars($currentUser['email']) ?></small>
+                        <div class="fw-bold text-dark text-truncate small" style="font-size: 0.82rem; line-height: 1.2;">Xin chào, <?= htmlspecialchars($currentUser['fullname']) ?></div>
+                        <small class="text-secondary text-truncate d-block font-monospace" style="font-size: 0.7rem;"><?= htmlspecialchars($currentUser['email']) ?></small>
                     </div>
                 </div>
-                <a href="index.php?page=profile" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 32px; height: 32px;" title="Chỉnh sửa thông tin">
-                    <i class="fa-solid fa-user-pen" style="font-size: 0.8rem;"></i>
+                <a href="index.php?page=profile" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 30px; height: 30px;" title="Chỉnh sửa thông tin">
+                    <i class="fa-solid fa-user-pen" style="font-size: 0.75rem;"></i>
                 </a>
             </div>
         <?php else: ?>
-            <button class="btn btn-primary btn-sm w-100 rounded-pill fw-bold py-2 shadow-xs" data-bs-dismiss="offcanvas" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal">
+            <button class="btn btn-primary btn-sm w-100 rounded-pill fw-bold py-1.5 shadow-xs" data-bs-dismiss="offcanvas" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal" style="font-size: 0.84rem;">
                 <i class="fa-solid fa-circle-user me-1.5"></i> Đăng nhập / Đăng ký
             </button>
         <?php endif; ?>
     </div>
 
-    <div class="offcanvas-body p-3" style="overflow-y: auto;">
-        <!-- KHÁM PHÁ NHANH THEO NHU CẦU -->
-        <div class="text-uppercase fw-bold text-secondary small mb-2 d-flex align-items-center">
-            <i class="fa-solid fa-compass me-2 text-primary"></i>Khám Phá Nhanh
+    <div class="offcanvas-body p-3">
+        <!-- TIỆN ÍCH MUA SẮM THIẾT YẾU -->
+        <div class="text-uppercase fw-bold text-secondary mb-2 d-flex align-items-center justify-content-between" style="font-size: 0.7rem; letter-spacing: 0.4px;">
+            <span><i class="fa-solid fa-compass me-1.5 text-primary"></i>Tiện Ích Nhanh</span>
+            <span class="text-muted fw-normal" style="font-size: 0.68rem;">Thiết yếu</span>
         </div>
         <div class="list-group list-group-flush mb-3 rounded-3 border overflow-hidden">
-            <a href="index.php?page=used-phones" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-3 text-danger fw-bold">
+            <a href="index.php?page=used-phones" class="list-group-item list-group-item-action sidebar-menu-item d-flex justify-content-between align-items-center py-2 px-3 text-danger fw-bold border-0 border-bottom">
                 <div class="d-flex align-items-center gap-2.5 min-w-0">
-                    <i class="fa-solid fa-tags text-danger" style="width: 20px;"></i>
+                    <i class="fa-solid fa-tags text-danger" style="width: 18px;"></i>
                     <span class="text-truncate">Kho máy cũ 99%</span>
                 </div>
                 <span class="badge bg-danger rounded-pill px-2 py-0.5 flex-shrink-0" style="font-size: 0.68rem;">-50%</span>
             </a>
-            <a href="index.php?page=compare" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2 px-3 <?= in_array($currentPage, ['compare', 'so-sanh']) ? 'text-primary fw-bold bg-light' : 'text-dark fw-semibold' ?>">
+            <a href="index.php?page=compare" class="list-group-item list-group-item-action sidebar-menu-item d-flex justify-content-between align-items-center py-2 px-3 <?= in_array($currentPage, ['compare', 'so-sanh']) ? 'text-primary fw-bold bg-light' : 'text-dark fw-semibold' ?> border-0 border-bottom">
                 <div class="d-flex align-items-center gap-2.5 min-w-0">
-                    <i class="fa-solid fa-code-compare text-primary" style="width: 20px;"></i>
+                    <i class="fa-solid fa-code-compare text-primary" style="width: 18px;"></i>
                     <span class="text-truncate">So sánh điện thoại</span>
                 </div>
                 <span class="badge bg-primary rounded-pill px-2 py-0.5 flex-shrink-0" style="font-size: 0.68rem;">Hot</span>
             </a>
-            <a href="index.php?page=news" class="list-group-item list-group-item-action d-flex align-items-center py-2 px-3 text-dark fw-semibold">
+            <a href="index.php?page=orders" class="list-group-item list-group-item-action sidebar-menu-item d-flex align-items-center py-2 px-3 text-dark fw-semibold border-0 border-bottom">
                 <div class="d-flex align-items-center gap-2.5 min-w-0">
-                    <i class="fa-solid fa-newspaper text-primary" style="width: 20px;"></i>
-                    <span class="text-truncate">Tin tức công nghệ</span>
-                </div>
-            </a>
-            <a href="index.php?page=orders" class="list-group-item list-group-item-action d-flex align-items-center py-2 px-3 text-dark fw-semibold">
-                <div class="d-flex align-items-center gap-2.5 min-w-0">
-                    <i class="fa-solid fa-truck-fast text-info" style="width: 20px;"></i>
+                    <i class="fa-solid fa-truck-fast text-info" style="width: 18px;"></i>
                     <span class="text-truncate">Tra cứu đơn hàng</span>
                 </div>
             </a>
-            <a href="index.php?page=warranty" class="list-group-item list-group-item-action d-flex align-items-center py-2 px-3 <?= ($currentPage === 'warranty') ? 'text-primary fw-bold bg-light' : 'text-dark fw-semibold' ?>">
+            <a href="index.php?page=stores" class="list-group-item list-group-item-action sidebar-menu-item d-flex justify-content-between align-items-center py-2 px-3 <?= in_array($currentPage, ['stores', 'cua-hang', 'he-thong-cua-hang']) ? 'text-primary fw-bold bg-light' : 'text-dark fw-semibold' ?> border-0 border-bottom">
                 <div class="d-flex align-items-center gap-2.5 min-w-0">
-                    <i class="fa-solid fa-shield-halved text-success" style="width: 20px;"></i>
-                    <span class="text-truncate">Chính sách bảo hành 12T</span>
+                    <i class="fa-solid fa-store text-primary" style="width: 18px;"></i>
+                    <span class="text-truncate">Hệ thống cửa hàng</span>
                 </div>
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-2 py-0.5 flex-shrink-0" style="font-size: 0.68rem;">15 shop</span>
             </a>
+            <a href="index.php?page=warranty" class="list-group-item list-group-item-action sidebar-menu-item d-flex justify-content-between align-items-center py-2 px-3 <?= ($currentPage === 'warranty') ? 'text-primary fw-bold bg-light' : 'text-dark fw-semibold' ?> border-0 border-bottom">
+                <div class="d-flex align-items-center gap-2.5 min-w-0">
+                    <i class="fa-solid fa-shield-halved text-success" style="width: 18px;"></i>
+                    <span class="text-truncate">Chính sách bảo hành</span>
+                </div>
+                <span class="badge bg-light text-secondary border rounded-pill px-2 py-0.5 flex-shrink-0" style="font-size: 0.68rem;">12T</span>
+            </a>
+
+            <!-- Nút Thu Gọn Các Trang Phụ (Tin Tức, Giới Thiệu) -->
+            <?php $isExtraPageActive = in_array($currentPage, ['news', 'tin-tuc', 'about', 'about-us', 'gioi-thieu']); ?>
+            <button class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 px-3 text-secondary small bg-light border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExtraPages" aria-expanded="<?= $isExtraPageActive ? 'true' : 'false' ?>" aria-controls="collapseExtraPages" id="btnToggleExtraPages" style="font-size: 0.82rem;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-ellipsis text-primary" style="width: 18px;"></i>
+                    <span class="fw-semibold text-primary">Thông tin & Tin tức khác</span>
+                </div>
+                <i class="fa-solid fa-chevron-down small text-primary" style="transition: transform 0.2s ease;"></i>
+            </button>
+            <div class="collapse <?= $isExtraPageActive ? 'show' : '' ?>" id="collapseExtraPages">
+                <a href="index.php?page=news" class="list-group-item list-group-item-action sidebar-menu-item d-flex align-items-center py-2 px-3 ps-4 text-secondary small bg-light bg-opacity-50 border-0 border-top">
+                    <div class="d-flex align-items-center gap-2.5 min-w-0">
+                        <i class="fa-solid fa-newspaper text-muted" style="width: 16px;"></i>
+                        <span class="text-truncate">Tin tức công nghệ</span>
+                    </div>
+                </a>
+                <a href="index.php?page=about" class="list-group-item list-group-item-action sidebar-menu-item d-flex align-items-center py-2 px-3 ps-4 text-secondary small bg-light bg-opacity-50 border-0 border-top <?= in_array($currentPage, ['about', 'about-us', 'gioi-thieu']) ? 'text-primary fw-bold' : '' ?>">
+                    <div class="d-flex align-items-center gap-2.5 min-w-0">
+                        <i class="fa-solid fa-circle-info text-muted" style="width: 16px;"></i>
+                        <span class="text-truncate">Giới thiệu về V-Phone</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <!-- THƯƠNG HIỆU ĐIỆN THOẠI CHÍNH HÃNG -->
-        <div class="text-uppercase fw-bold text-secondary small mb-2 mt-3 d-flex align-items-center">
-            <i class="fa-solid fa-mobile-screen me-2 text-primary"></i>Thương Hiệu Chính Hãng
+        <div class="text-uppercase fw-bold text-secondary mb-2 mt-3 d-flex align-items-center justify-content-between" style="font-size: 0.7rem; letter-spacing: 0.4px;">
+            <span><i class="fa-solid fa-mobile-screen me-1.5 text-primary"></i>Thương Hiệu Chính Hãng</span>
+            <span class="text-muted fw-normal" style="font-size: 0.68rem;">9 Hãng</span>
         </div>
         <div class="list-group list-group-flush mb-3 rounded-3 border overflow-hidden">
             <?php
@@ -644,10 +667,10 @@ window.vphoneGoogleConfig = <?= json_encode([
             <?php foreach ($mainBrands as $bId => $bData): ?>
                 <?= renderSidebarBrandItem($bId, $bData) ?>
             <?php endforeach; ?>
-            <button class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 px-3 text-primary fw-semibold bg-light border-0 border-bottom" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOtherBrands" aria-expanded="<?= $isOtherBrandActive ? 'true' : 'false' ?>" aria-controls="collapseOtherBrands" id="btnToggleOtherBrands">
-                <div class="d-flex align-items-center gap-2.5">
-                    <i class="fa-solid fa-layer-group text-primary" style="width: 20px;"></i>
-                    <span style="font-size: 0.88rem;">Xem thêm thương hiệu khác (<?= count($otherBrands) ?>)</span>
+            <button class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-2 px-3 text-primary fw-semibold bg-light border-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOtherBrands" aria-expanded="<?= $isOtherBrandActive ? 'true' : 'false' ?>" aria-controls="collapseOtherBrands" id="btnToggleOtherBrands" style="font-size: 0.82rem;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-primary" style="width: 18px;"></i>
+                    <span>Xem thêm thương hiệu khác (<?= count($otherBrands) ?>)</span>
                 </div>
                 <i class="fa-solid fa-chevron-down small" style="transition: transform 0.2s ease;"></i>
             </button>
@@ -658,17 +681,13 @@ window.vphoneGoogleConfig = <?= json_encode([
             </div>
         </div>
 
-        <!-- TỔNG ĐÀI HỖ TRỢ -->
-        <div class="p-3 bg-light rounded-4 text-secondary small border">
-            <div class="d-flex align-items-center gap-3">
-                <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
-                    <i class="fa-solid fa-phone-volume fs-6"></i>
-                </div>
-                <div>
-                    <div class="fw-bold text-dark" style="font-size: 0.8rem;">Tổng đài hỗ trợ (Miễn phí)</div>
-                    <a href="tel:18006868" class="text-primary fw-black text-decoration-none" style="font-size: 1.05rem;">1800 6868</a>
-                </div>
+        <!-- TỔNG ĐÀI HỖ TRỢ TINH GỌN (1 DÒNG) -->
+        <div class="py-2 px-3 bg-light rounded-3 text-secondary border d-flex align-items-center justify-content-between mt-2" style="font-size: 0.8rem;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa-solid fa-phone-volume text-primary"></i>
+                <span class="text-muted">Tổng đài:</span>
             </div>
+            <a href="tel:18006868" class="text-primary fw-bold text-decoration-none font-monospace">1800 6868 (Miễn phí)</a>
         </div>
     </div>
 </div>
@@ -746,5 +765,30 @@ function handleNotifClick(notifId, orderId) {
             }
         });
 }
+
+// Eliminate layout shifts & jitter when opening/closing offcanvas or modals
+document.addEventListener('DOMContentLoaded', function () {
+    const sidebarEl = document.getElementById('sidebarMenuLeft');
+    if (sidebarEl) {
+        ['show.bs.offcanvas', 'shown.bs.offcanvas', 'hide.bs.offcanvas', 'hidden.bs.offcanvas'].forEach(function (evt) {
+            sidebarEl.addEventListener(evt, function () {
+                document.body.style.paddingRight = '0px';
+                const navbar = document.querySelector('.navbar-vphone');
+                if (navbar) navbar.style.paddingRight = '0px';
+            });
+        });
+    }
+
+    if (window.MutationObserver) {
+        const obs = new MutationObserver(function (mutations) {
+            for (let i = 0; i < mutations.length; i++) {
+                if (mutations[i].attributeName === 'style' && document.body.style.paddingRight && document.body.style.paddingRight !== '0px') {
+                    document.body.style.paddingRight = '0px';
+                }
+            }
+        });
+        obs.observe(document.body, { attributes: true, attributeFilter: ['style'] });
+    }
+});
 </script>
 

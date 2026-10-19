@@ -62,7 +62,7 @@ if (isset($_POST['update_status'])) {
         if ($oldStatus !== $newStatus) {
             require_once __DIR__ . '/../app/models/NotificationModel.php';
             $notifModel = new NotificationModel($pdo);
-            $totalFmt = number_format($currentOrder['total_money'], 0, ',', '.') . ' đ';
+            $totalFmt = number_format($currentOrder['total_money'], 0, ',', '.') . ' VNĐ';
 
             if ($newStatus === 'Đang giao hàng') {
                 $notifTitle = "Đơn hàng #VP-{$orderId} đang được giao đến bạn!";
@@ -151,7 +151,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['delete_ord
         require_once __DIR__ . '/../app/models/NotificationModel.php';
         $notifModel = new NotificationModel($pdo);
         $notifTitle = "Đơn hàng #VP-{$orderId} đã bị hủy bởi cửa hàng";
-        $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: " . number_format($order['total_money'], 0, ',', '.') . " đ) đã được xử lý hủy bởi V-Phone Store.\nLý do: {$cancelReason}.\nRất xin lỗi quý khách vì sự bất tiện này. Quý khách vui lòng liên hệ hotline 1800 6868 nếu cần hỗ trợ thêm.";
+        $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: " . number_format($order['total_money'], 0, ',', '.') . " VNĐ) đã được xử lý hủy bởi V-Phone Store.\nLý do: {$cancelReason}.\nRất xin lỗi quý khách vì sự bất tiện này. Quý khách vui lòng liên hệ hotline 1800 6868 nếu cần hỗ trợ thêm.";
 
         $notifModel->create(
             $order['user_id'] ? (int)$order['user_id'] : null,
@@ -538,7 +538,7 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                             <!-- TỔNG TIỀN -->
                             <td class="text-nowrap">
                                 <div class="text-danger fw-black fs-6" style="letter-spacing: -0.3px;">
-                                    <?= number_format($o['total_money'], 0, ',', '.') ?> đ
+                                    <?= number_format($o['total_money'], 0, ',', '.') ?> VNĐ
                                 </div>
                                 <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 small mt-1 d-inline-flex align-items-center" style="font-size: 0.68rem;">
                                     <i class="fa-solid fa-truck-fast me-1.5"></i>Freeship
@@ -585,7 +585,7 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                         </span>
                                         <?php if ($isVietQR && $o['status'] !== 'Đã hủy'): ?>
                                             <div class="mt-1">
-                                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill py-0.5 px-2.5 fw-bold d-inline-flex align-items-center" style="font-size: 0.72rem;" onclick="confirmVietQRPayment(<?= (int)$o['id'] ?>, '<?= htmlspecialchars(addslashes($o['fullname'])) ?>', '<?= number_format($o['total_money'], 0, ',', '.') ?> đ', '<?= htmlspecialchars($o['transaction_code'] ?? '') ?>')" title="Xác nhận đã nhận tiền">
+                                                <button type="button" class="btn btn-sm btn-outline-success rounded-pill py-0.5 px-2.5 fw-bold d-inline-flex align-items-center" style="font-size: 0.72rem;" onclick="confirmVietQRPayment(<?= (int)$o['id'] ?>, '<?= htmlspecialchars(addslashes($o['fullname'])) ?>', '<?= number_format($o['total_money'], 0, ',', '.') ?> VNĐ', '<?= htmlspecialchars($o['transaction_code'] ?? '') ?>')" title="Xác nhận đã nhận tiền">
                                                     <i class="fa-solid fa-check me-1"></i>Duyệt TT
                                                 </button>
                                             </div>
@@ -652,7 +652,7 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                     </button>
 
                                     <!-- Nút xóa đơn hàng có thông báo cho khách -->
-                                    <button type="button" class="btn btn-sm btn-light border text-danger rounded-circle hover-danger" style="width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="Hủy & Xóa đơn (có thông báo)" aria-label="Xóa đơn VP-<?= (int)$o['id'] ?>" onclick="openOrderDeleteModal(<?= (int)$o['id'] ?>, '<?= htmlspecialchars(addslashes($o['fullname'])) ?>', '<?= htmlspecialchars($o['phone']) ?>', '<?= number_format($o['total_money'], 0, ',', '.') ?> đ')">
+                                    <button type="button" class="btn btn-sm btn-light border text-danger rounded-circle hover-danger" style="width: 34px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center;" title="Hủy & Xóa đơn (có thông báo)" aria-label="Xóa đơn VP-<?= (int)$o['id'] ?>" onclick="openOrderDeleteModal(<?= (int)$o['id'] ?>, '<?= htmlspecialchars(addslashes($o['fullname'])) ?>', '<?= htmlspecialchars($o['phone']) ?>', '<?= number_format($o['total_money'], 0, ',', '.') ?> VNĐ')">
                                         <i class="fa-solid fa-trash-can"></i>
                                     </button>
                                 </div>
@@ -760,7 +760,7 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                         <tfoot class="table-light">
                             <tr>
                                 <td colspan="4" class="text-end fw-bold">Tổng thanh toán:</td>
-                                <td class="text-end fw-black text-danger fs-6" id="mTotalMoney">0 đ</td>
+                                <td class="text-end fw-black text-danger fs-6" id="mTotalMoney">0 VNĐ</td>
                             </tr>
                         </tfoot>
                     </table>
@@ -924,7 +924,7 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
             <tfoot>
                 <tr>
                     <td colspan="4" style="padding: 10px; border: 1px solid #e2e8f0; text-align: right; font-weight: bold;">TỔNG TIỀN THANH TOÁN:</td>
-                    <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: right; font-weight: bold; color: #d00; font-size: 15px;" id="pTotalMoney">0 đ</td>
+                    <td style="padding: 10px; border: 1px solid #e2e8f0; text-align: right; font-weight: bold; color: #d00; font-size: 15px;" id="pTotalMoney">0 VNĐ</td>
                 </tr>
             </tfoot>
         </table>
@@ -1081,7 +1081,7 @@ function viewOrderDetail(order) {
     document.getElementById('mCustomerAddress').textContent = order.address;
     document.getElementById('mPaymentMethod').textContent = order.payment_method;
     document.getElementById('mOrderNote').textContent = order.note || 'Không có';
-    document.getElementById('mTotalMoney').textContent = new Intl.NumberFormat('vi-VN').format(order.total_money) + ' đ';
+    document.getElementById('mTotalMoney').textContent = new Intl.NumberFormat('vi-VN').format(order.total_money) + ' VNĐ';
 
     document.getElementById('mFormOrderId').value = order.id;
     document.getElementById('mFormStatusSelect').value = order.status;
@@ -1153,8 +1153,8 @@ function viewOrderDetail(order) {
                     <div class="fw-bold text-dark small">${it.product_name}</div>
                 </td>
                 <td class="text-center fw-bold"><span class="badge bg-light text-dark border px-2 py-1">${it.quantity}</span></td>
-                <td class="text-end small">${new Intl.NumberFormat('vi-VN').format(unitPrice)} đ</td>
-                <td class="text-end fw-bold text-danger small">${new Intl.NumberFormat('vi-VN').format(lineTotal)} đ</td>
+                <td class="text-end small">${new Intl.NumberFormat('vi-VN').format(unitPrice)} VNĐ</td>
+                <td class="text-end fw-bold text-danger small">${new Intl.NumberFormat('vi-VN').format(lineTotal)} VNĐ</td>
             `;
             tbody.appendChild(tr);
         });
@@ -1179,7 +1179,7 @@ function printOrderInvoice(order) {
     document.getElementById('pOrderDate').textContent = order.created_at;
     document.getElementById('pPaymentMethod').textContent = order.payment_method;
     document.getElementById('pOrderNote').textContent = order.note || 'Giao giờ hành chính';
-    document.getElementById('pTotalMoney').textContent = new Intl.NumberFormat('vi-VN').format(order.total_money) + ' đ';
+    document.getElementById('pTotalMoney').textContent = new Intl.NumberFormat('vi-VN').format(order.total_money) + ' VNĐ';
 
     const pTbody = document.getElementById('pItemsTbody');
     pTbody.innerHTML = '';
@@ -1192,8 +1192,8 @@ function printOrderInvoice(order) {
                 <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${idx + 1}</td>
                 <td style="padding: 8px; border: 1px solid #e2e8f0; font-weight: 500;">${it.product_name}</td>
                 <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: center;">${it.quantity}</td>
-                <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: right;">${new Intl.NumberFormat('vi-VN').format(unitPrice)} đ</td>
-                <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: right; font-weight: bold;">${new Intl.NumberFormat('vi-VN').format(lineTotal)} đ</td>
+                <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: right;">${new Intl.NumberFormat('vi-VN').format(unitPrice)} VNĐ</td>
+                <td style="padding: 8px; border: 1px solid #e2e8f0; text-align: right; font-weight: bold;">${new Intl.NumberFormat('vi-VN').format(lineTotal)} VNĐ</td>
             `;
             pTbody.appendChild(tr);
         });

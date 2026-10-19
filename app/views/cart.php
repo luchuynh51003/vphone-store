@@ -96,7 +96,7 @@ require_once 'app/views/includes/navbar.php';
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="text-danger fw-bold fs-6"><?= number_format($itemPrice, 0, ',', '.') ?> đ</td>
+                                        <td class="text-danger fw-bold fs-6"><?= number_format($itemPrice, 0, ',', '.') ?> VNĐ</td>
                                         <td>
                                             <form action="index.php?page=cart&action=update&key=<?= urlencode($cKey) ?>" method="POST" class="d-flex align-items-center">
                                                 <div class="input-group input-group-sm" style="width: 110px;">
@@ -106,7 +106,7 @@ require_once 'app/views/includes/navbar.php';
                                                 </div>
                                             </form>
                                         </td>
-                                        <td class="text-primary fw-bold fs-6"><?= number_format($subtotal, 0, ',', '.') ?> đ</td>
+                                        <td class="text-primary fw-bold fs-6"><?= number_format($subtotal, 0, ',', '.') ?> VNĐ</td>
                                         <td>
                                             <button type="button" class="btn btn-sm btn-light text-danger rounded-circle p-2" title="Xóa món này" data-bs-toggle="modal" data-bs-target="#cartConfirmModal" data-cart-action="delete" data-cart-key="<?= htmlspecialchars($cKey) ?>" data-cart-name="<?= htmlspecialchars($item['name']) ?>">
                                                 <i class="fa-solid fa-trash-can"></i>
@@ -130,7 +130,7 @@ require_once 'app/views/includes/navbar.php';
                     <h5 class="fw-bold mb-3 border-bottom pb-2 text-dark"><i class="fa-solid fa-receipt text-primary me-2"></i>Tóm Tắt Đơn Hàng</h5>
                     <div class="d-flex justify-content-between mb-2">
                         <span class="text-secondary">Tạm tính (<?= count($_SESSION['cart']) ?> món):</span>
-                        <span class="fw-bold text-dark"><?= number_format($totalMoney, 0, ',', '.') ?> đ</span>
+                        <span class="fw-bold text-dark"><?= number_format($totalMoney, 0, ',', '.') ?> VNĐ</span>
                     </div>
                     <div class="d-flex justify-content-between mb-3">
                         <span class="text-secondary">Phí vận chuyển:</span>
@@ -139,7 +139,7 @@ require_once 'app/views/includes/navbar.php';
                     <hr>
                     <div class="d-flex justify-content-between mb-4 align-items-baseline">
                         <span class="fs-6 fw-bold text-dark">Tổng thanh toán:</span>
-                        <span class="fs-4 fw-bold text-danger"><?= number_format($totalMoney, 0, ',', '.') ?> đ</span>
+                        <span class="fs-4 fw-bold text-danger"><?= number_format($totalMoney, 0, ',', '.') ?> VNĐ</span>
                     </div>
 
                     <a href="index.php?page=checkout" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2">

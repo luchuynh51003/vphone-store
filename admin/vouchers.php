@@ -95,7 +95,7 @@ $vouchers = $pdo->query('SELECT * FROM vouchers ORDER BY id DESC')->fetchAll();
                 <label for="voucherType" class="form-label small fw-semibold">Loại giảm</label>
                 <select id="voucherType" name="discount_type" class="form-select rounded-3">
                     <option value="percent" <?= ($editingVoucher['discount_type'] ?? 'percent') === 'percent' ? 'selected' : '' ?>>Phần trăm (%)</option>
-                    <option value="fixed" <?= ($editingVoucher['discount_type'] ?? '') === 'fixed' ? 'selected' : '' ?>>Số tiền (đ)</option>
+                    <option value="fixed" <?= ($editingVoucher['discount_type'] ?? '') === 'fixed' ? 'selected' : '' ?>>Số tiền (VNĐ)</option>
                 </select>
             </div>
             <div class="col-md-2">
@@ -103,11 +103,11 @@ $vouchers = $pdo->query('SELECT * FROM vouchers ORDER BY id DESC')->fetchAll();
                 <input id="voucherValue" type="number" name="discount_value" class="form-control rounded-3 fw-bold" min="1" required value="<?= (int)($editingVoucher['discount_value'] ?? 10) ?>">
             </div>
             <div class="col-md-2">
-                <label for="voucherMin" class="form-label small fw-semibold">Đơn tối thiểu (đ)</label>
+                <label for="voucherMin" class="form-label small fw-semibold">Đơn tối thiểu (VNĐ)</label>
                 <input id="voucherMin" type="number" name="minimum_order" class="form-control rounded-3" min="0" value="<?= (int)($editingVoucher['minimum_order'] ?? 0) ?>">
             </div>
             <div class="col-md-3">
-                <label for="voucherMax" class="form-label small fw-semibold">Giảm tối đa (đ, tùy chọn)</label>
+                <label for="voucherMax" class="form-label small fw-semibold">Giảm tối đa (VNĐ, tùy chọn)</label>
                 <input id="voucherMax" type="number" name="max_discount" class="form-control rounded-3" min="0" value="<?= htmlspecialchars((string)($editingVoucher['max_discount'] ?? '')) ?>">
             </div>
             <div class="col-md-3">
@@ -181,13 +181,13 @@ $vouchers = $pdo->query('SELECT * FROM vouchers ORDER BY id DESC')->fetchAll();
                         </td>
                         <td>
                             <div class="fw-bold text-danger fs-6">
-                                <?= $voucher['discount_type'] === 'percent' ? (int)$voucher['discount_value'] . '%' : number_format($voucher['discount_value'], 0, ',', '.') . ' đ' ?>
+                                <?= $voucher['discount_type'] === 'percent' ? (int)$voucher['discount_value'] . '%' : number_format($voucher['discount_value'], 0, ',', '.') . ' VNĐ' ?>
                             </div>
                             <?php if ($voucher['max_discount'] !== null): ?>
-                                <small class="text-muted d-block">Tối đa <?= number_format($voucher['max_discount'], 0, ',', '.') ?> đ</small>
+                                <small class="text-muted d-block">Tối đa <?= number_format($voucher['max_discount'], 0, ',', '.') ?> VNĐ</small>
                             <?php endif; ?>
                         </td>
-                        <td><span class="fw-medium text-dark"><?= number_format($voucher['minimum_order'], 0, ',', '.') ?> đ</span></td>
+                        <td><span class="fw-medium text-dark"><?= number_format($voucher['minimum_order'], 0, ',', '.') ?> VNĐ</span></td>
                         <td>
                             <span class="badge bg-light text-secondary border rounded-pill px-2 py-1">
                                 <?= (int)$voucher['used_count'] ?><?= $voucher['usage_limit'] !== null ? ' / ' . (int)$voucher['usage_limit'] : '' ?>

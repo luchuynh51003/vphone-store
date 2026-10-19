@@ -116,7 +116,7 @@ class VietQRService {
         try {
             require_once __DIR__ . '/../models/NotificationModel.php';
             $notifModel = new NotificationModel($this->pdo);
-            $totalFmt = number_format($order['total_money'], 0, ',', '.') . ' đ';
+            $totalFmt = number_format($order['total_money'], 0, ',', '.') . ' VNĐ';
             $notifTitle = "Thanh toán thành công đơn hàng #VP-{$orderId}!";
             $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được xác nhận thanh toán thành công qua VietQR. Cửa hàng đang chuẩn bị sản phẩm.";
             $notifModel->create(
@@ -188,7 +188,7 @@ class VietQRService {
         if ($amount > 0 && $amount < (float)$order['total_money']) {
             return [
                 'success' => false,
-                'message' => "Số tiền chuyển ({$amount} đ) nhỏ hơn tổng đơn ({$order['total_money']} đ)."
+                'message' => "Số tiền chuyển ({$amount} VNĐ) nhỏ hơn tổng đơn ({$order['total_money']} VNĐ)."
             ];
         }
 

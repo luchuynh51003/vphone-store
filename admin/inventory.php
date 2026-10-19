@@ -434,7 +434,7 @@ $brands = $pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
                         <!-- Giá -->
                         <td>
                             <span class="fw-bold" style="color:#ef4444; font-size:.88rem; white-space:nowrap;">
-                                <?= number_format($qty > 0 || $p['sale_price'] > 0 ? ($p['sale_price'] > 0 ? $p['sale_price'] : $p['price']) : $p['price'], 0, ',', '.') ?>đ
+                                <?= number_format($qty > 0 || $p['sale_price'] > 0 ? ($p['sale_price'] > 0 ? $p['sale_price'] : $p['price']) : $p['price'], 0, ',', '.') ?> VNĐ
                             </span>
                         </td>
 

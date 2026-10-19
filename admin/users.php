@@ -462,7 +462,7 @@ foreach ($userStatsRaw as $usrStat) {
                         <td class="text-nowrap">
                             <div class="small">
                                 <span class="fw-bold text-dark d-block"><?= $ordCount ?> đơn</span>
-                                <div class="text-danger fw-bold text-nowrap mt-0.5" style="font-size: 0.78rem; white-space: nowrap !important;"><?= number_format($spent, 0, ',', '.') ?>&nbsp;đ</div>
+                                <div class="text-danger fw-bold text-nowrap mt-0.5" style="font-size: 0.78rem; white-space: nowrap !important;"><?= number_format($spent, 0, ',', '.') ?>&nbsp;VNĐ</div>
                             </div>
                         </td>
                         <td class="text-center text-nowrap">

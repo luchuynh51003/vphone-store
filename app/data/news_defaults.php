@@ -58,6 +58,6 @@ return [
         'read_time' => '5 phút đọc',
         'image' => 'assets/images/products/iphone-11.png',
         'summary' => 'Với ngân sách dưới 10 triệu, bạn hoàn toàn có thể sở hữu iPhone 11 cũ giá 5tr4, iPhone 13 cũ giá 10tr hay Galaxy A55 5G nguyên zin bảo hành dài hạn.',
-        'content' => '1. iPhone 11 64GB cũ (5.490.000 đ): Dù đã ra mắt lâu nhưng chip A13 Bionic vẫn lướt TikTok, Facebook và chơi Liên Quân cực mượt.\n\n2. iPhone 13 128GB cũ (10.490.000 đ): Thiết kế vuông vức thời thượng, màn hình tai thỏ nhỏ gọn và thời lượng pin cực trâu.\n\n3. Samsung Galaxy A55 5G cũ (5.990.000 đ): Màn hình 120Hz siêu mượt, hỗ trợ 5G và pin 5000 mAh dùng thoải mái 2 ngày.'
+        'content' => '1. iPhone 11 64GB cũ (5.490.000 VNĐ): Dù đã ra mắt lâu nhưng chip A13 Bionic vẫn lướt TikTok, Facebook và chơi Liên Quân cực mượt.\n\n2. iPhone 13 128GB cũ (10.490.000 VNĐ): Thiết kế vuông vức thời thượng, màn hình tai thỏ nhỏ gọn và thời lượng pin cực trâu.\n\n3. Samsung Galaxy A55 5G cũ (5.990.000 VNĐ): Màn hình 120Hz siêu mượt, hỗ trợ 5G và pin 5000 mAh dùng thoải mái 2 ngày.'
     ]
 ];

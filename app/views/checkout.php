@@ -334,7 +334,7 @@ require_once 'app/views/includes/navbar.php';
                                         </div>
                                     </div>
                                     <div class="text-end flex-shrink-0">
-                                        <div class="small fw-bold text-danger"><?= number_format($itemSubtotal, 0, ',', '.') ?> đ</div>
+                                        <div class="small fw-bold text-danger"><?= number_format($itemSubtotal, 0, ',', '.') ?> VNĐ</div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -382,12 +382,12 @@ require_once 'app/views/includes/navbar.php';
                         <div class="d-flex flex-column gap-2 mb-3">
                             <div class="d-flex justify-content-between small text-secondary">
                                 <span>Tạm tính hàng hóa:</span>
-                                <span class="fw-bold text-dark" id="displaySubtotal"><?= number_format($subtotal, 0, ',', '.') ?> đ</span>
+                                <span class="fw-bold text-dark" id="displaySubtotal"><?= number_format($subtotal, 0, ',', '.') ?> VNĐ</span>
                             </div>
 
                             <div class="d-flex justify-content-between small text-success <?= ($discountAmount > 0) ? '' : 'd-none' ?>" id="rowDiscount">
                                 <span id="labelDiscount">Giảm giá voucher:</span>
-                                <span class="fw-bold" id="displayDiscount">-<?= number_format($discountAmount, 0, ',', '.') ?> đ</span>
+                                <span class="fw-bold" id="displayDiscount">-<?= number_format($discountAmount, 0, ',', '.') ?> VNĐ</span>
                             </div>
 
                             <div class="d-flex justify-content-between small text-secondary align-items-center">
@@ -403,7 +403,7 @@ require_once 'app/views/includes/navbar.php';
                                     <small class="text-secondary" style="font-size: 0.75rem;">(Đã gồm VAT & bảo hiểm)</small>
                                 </div>
                                 <div class="fs-4 fw-black text-danger" id="displayTotal">
-                                    <?= number_format($totalMoney, 0, ',', '.') ?> đ
+                                    <?= number_format($totalMoney, 0, ',', '.') ?> VNĐ
                                 </div>
                             </div>
                         </div>

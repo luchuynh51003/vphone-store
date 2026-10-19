@@ -170,7 +170,7 @@ require_once 'app/views/includes/navbar.php';
                             </span>
                         </div>
                         <div class="fs-2 fw-black text-danger mb-0" style="color: #a50064 !important;">
-                            <?= number_format($totalMoney, 0, ',', '.') ?> <span class="fs-5">đ</span>
+                            <?= number_format($totalMoney, 0, ',', '.') ?> <span class="fs-5">VNĐ</span>
                         </div>
                     </div>
 
@@ -193,7 +193,7 @@ require_once 'app/views/includes/navbar.php';
                     <div class="dev-helper-card mb-3">
                         <div class="d-flex align-items-center gap-2 mb-2">
                             <span class="badge bg-danger text-white rounded-pill px-2.5 py-0.5 fw-bold" style="background: #a50064 !important;">
-                                <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Xác nhận thử nghiệm (0đ)
+                                <i class="fa-solid fa-wand-magic-sparkles me-1"></i>Xác nhận thử nghiệm (0 VNĐ)
                             </span>
                             <small class="text-secondary fw-semibold">Dành cho Tester & Chấm đồ án</small>
                         </div>

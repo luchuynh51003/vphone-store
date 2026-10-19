@@ -211,7 +211,7 @@ class MoMoService {
         try {
             require_once __DIR__ . '/../models/NotificationModel.php';
             $notifModel = new NotificationModel($this->pdo);
-            $totalFmt = number_format($order['total_money'], 0, ',', '.') . ' đ';
+            $totalFmt = number_format($order['total_money'], 0, ',', '.') . ' VNĐ';
             $notifTitle = "Thanh toán thành công đơn hàng #VP-{$orderId}!";
             $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được xác nhận thanh toán thành công qua MoMo. Cửa hàng đang chuẩn bị sản phẩm.";
             $notifModel->create(

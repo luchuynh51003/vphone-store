@@ -13,13 +13,14 @@
             </div>
 
             <div class="col-lg-4 col-md-6">
-                <h6 class="text-uppercase fw-bold text-white mb-3 tracking-wide">Hỗ Trợ Khách Hàng</h6>
+                <h6 class="text-uppercase fw-bold text-white mb-3 tracking-wide">Về V-Phone & Hỗ Trợ</h6>
                 <ul class="list-unstyled small opacity-75 d-flex flex-column gap-2">
+                    <li><a href="index.php?page=about" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Giới thiệu về V-Phone Store</a></li>
+                    <li><a href="index.php?page=stores" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Hệ thống 15+ cửa hàng toàn quốc</a></li>
                     <li><a href="index.php?page=orders" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Tra cứu & theo dõi tiến trình đơn hàng</a></li>
                     <li><a href="index.php?page=warranty" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Chính sách bảo hành toàn diện 12 tháng</a></li>
                     <li><a href="index.php?page=warranty#doi-tra" class="text-light text-decoration-none"><i class="fa-solid fa-angle-right me-2 text-info"></i>Chính sách đổi trả 1 - 1 trong 30 ngày</a></li>
                 </ul>
-
             </div>
 
             <div class="col-lg-4 col-md-12">

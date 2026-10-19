@@ -380,7 +380,7 @@ if (currentUserCan('reviews')) {
                                         <div class="fw-bold text-dark small"><?= htmlspecialchars($pOrd['fullname']) ?></div>
                                         <small class="text-muted"><i class="fa-solid fa-phone me-1"></i><?= htmlspecialchars($pOrd['phone']) ?></small>
                                     </td>
-                                    <td class="text-danger fw-bold small"><?= number_format($pOrd['total_money'], 0, ',', '.') ?> đ</td>
+                                    <td class="text-danger fw-bold small"><?= number_format($pOrd['total_money'], 0, ',', '.') ?> VNĐ</td>
                                     <td>
                                         <span class="badge bg-light text-dark border rounded-pill px-2 py-0.5 small"><?= htmlspecialchars($pOrd['payment_method']) ?></span>
                                     </td>

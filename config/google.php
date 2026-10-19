@@ -18,11 +18,16 @@
  * 8. Copy Client ID và Client Secret dán vào bên dưới.
  */
 
-// Tự động phát hiện URL gốc (Base URL) cho Redirect URI
+// Tự động phát hiện và chuẩn hóa URL gốc (Base URL) cho Redirect URI
 $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$rawDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/phone-store')), '/.');
-$scriptDir = (!empty($rawDir) && $rawDir !== '.') ? $rawDir : '/phone-store';
+$rawHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+// Chuẩn hóa 127.0.0.1 thành localhost để luôn đồng nhất với cấu hình Google
+$host = preg_replace('/^127\.0\.0\.1(:[0-9]+)?$/', 'localhost$1', $rawHost);
+$host = preg_replace('/:(80|443)$/', '', $host);
+
+$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/phone-store/index.php');
+$rawDir = rtrim(dirname($scriptName), '/.');
+$scriptDir = ($rawDir === '' || $rawDir === '.') ? '' : $rawDir;
 $dynamicRedirectUri = $protocol . '://' . $host . $scriptDir . '/index.php?page=auth&action=google_callback';
 
 return [

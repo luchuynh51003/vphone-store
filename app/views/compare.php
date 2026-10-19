@@ -398,7 +398,7 @@ tr.group-header-row {
 
 .sticky-compare-bar {
     position: fixed !important;
-    top: 60px !important;
+    top: 76px !important;
     left: 0 !important;
     right: 0 !important;
     z-index: 1020 !important;
@@ -408,6 +408,11 @@ tr.group-header-row {
     border-bottom: 1px solid #e2e8f0 !important;
     box-shadow: 0 8px 25px rgba(15, 23, 42, 0.08) !important;
     transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+@media (max-width: 991.98px) {
+    .sticky-compare-bar {
+        top: 118px !important;
+    }
 }
 .sticky-mini-thumb {
     width: 36px !important;
@@ -991,7 +996,7 @@ $p3Name = htmlspecialchars($product3['name'] ?? 'Sản phẩm 3');
         </div>
 
         <!-- QUICK JUMP PILLS BAR -->
-        <div class="quick-jump-nav sticky-top bg-white rounded-pill p-1.5 border shadow-sm mb-4 d-flex align-items-center gap-1.5 overflow-x-auto" style="top: 76px; z-index: 1010; scrollbar-width: none;">
+        <div class="quick-jump-nav bg-white rounded-pill p-1.5 border shadow-sm mb-4 d-flex align-items-center gap-1.5 overflow-x-auto" style="scrollbar-width: none;">
             <span class="small fw-bold text-muted px-2 d-none d-md-inline-block"><i class="fa-solid fa-compass me-1 text-primary"></i>Nhảy nhanh:</span>
             <a href="#section-price" class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-semibold text-dark">Giá bán</a>
             <a href="#section-screen" class="btn btn-sm btn-light border rounded-pill px-3 py-1 fw-semibold text-dark">Màn hình</a>
@@ -1065,10 +1070,10 @@ $p3Name = htmlspecialchars($product3['name'] ?? 'Sản phẩm 3');
                         </tr>
                         <tr class="spec-row" data-is-diff="<?= $p1['saving'] !== $p2['saving'] ? '1' : '0' ?>">
                             <td class="ps-4 text-secondary fw-semibold">Mức tiết kiệm được:</td>
-                            <td class="text-center text-success fw-bold border-start"><?= $p1['saving'] > 0 ? formatPrice($p1['saving']) : '0 đ' ?></td>
-                            <td class="text-center text-success fw-bold border-start"><?= $p2['saving'] > 0 ? formatPrice($p2['saving']) : '0 đ' ?></td>
+                            <td class="text-center text-success fw-bold border-start"><?= $p1['saving'] > 0 ? formatPrice($p1['saving']) : '0 VNĐ' ?></td>
+                            <td class="text-center text-success fw-bold border-start"><?= $p2['saving'] > 0 ? formatPrice($p2['saving']) : '0 VNĐ' ?></td>
                             <?php if ($hasP3): ?>
-                                <td class="text-center text-success fw-bold border-start"><?= $p3['saving'] > 0 ? formatPrice($p3['saving']) : '0 đ' ?></td>
+                                <td class="text-center text-success fw-bold border-start"><?= $p3['saving'] > 0 ? formatPrice($p3['saving']) : '0 VNĐ' ?></td>
                             <?php endif; ?>
                         </tr>
                         <tr class="spec-row" data-is-diff="<?= ($product1['condition_desc'] ?? '') !== ($product2['condition_desc'] ?? '') ? '1' : '0' ?>">

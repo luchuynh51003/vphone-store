@@ -169,4 +169,14 @@ class HomeController {
         }
         exit;
     }
+
+    public function about(): void {
+        $pageTitle = 'Giới Thiệu V-Phone Store - Hệ Thống Smartphone Chính Hãng';
+        require_once 'app/views/about.php';
+    }
+
+    public function stores(): void {
+        $pageTitle = 'Hệ Thống Cửa Hàng V-Phone - 15+ Chi Nhánh Toàn Quốc';
+        require_once 'app/views/stores.php';
+    }
 }

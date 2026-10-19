@@ -900,7 +900,7 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
                                         </div>
                                         <div class="min-w-0">
                                             <div class="fw-bold text-dark small">Đơn mới #VP-<?= $pOrd['id'] ?> (<?= htmlspecialchars($pOrd['fullname']) ?>)</div>
-                                            <div class="text-danger small fw-bold"><?= number_format($pOrd['total_money'], 0, ',', '.') ?> đ</div>
+                                            <div class="text-danger small fw-bold"><?= number_format($pOrd['total_money'], 0, ',', '.') ?> VNĐ</div>
                                             <small class="text-muted" style="font-size: 0.7rem;"><?= htmlspecialchars($pOrd['created_at']) ?></small>
                                         </div>
                                     </a>

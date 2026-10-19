@@ -374,7 +374,7 @@ require_once 'app/views/includes/navbar.php';
             </div>
             <div class="d-flex justify-content-between mb-2 pb-2 border-bottom">
                 <span class="text-muted">Số tiền đã thanh toán:</span>
-                <span class="fw-black text-danger fs-6"><?= number_format($totalMoney, 0, ',', '.') ?> đ</span>
+                <span class="fw-black text-danger fs-6"><?= number_format($totalMoney, 0, ',', '.') ?> VNĐ</span>
             </div>
             <div class="d-flex justify-content-between">
                 <span class="text-muted">Thời gian xác nhận:</span>
@@ -460,7 +460,7 @@ require_once 'app/views/includes/navbar.php';
                                 Tổng số tiền cần chuyển
                             </div>
                             <div class="vqr-amount-val text-danger">
-                                <?= number_format($totalMoney, 0, ',', '.') ?> <span class="fs-4 fw-bold">đ</span>
+                                <?= number_format($totalMoney, 0, ',', '.') ?> <span class="fs-4 fw-bold">VNĐ</span>
                             </div>
                         </div>
                         <button type="button" class="btn-vqr-copy" onclick="copyValue('<?= (int)round($totalMoney) ?>', this, 'Đã sao chép số tiền!')">
@@ -537,7 +537,7 @@ require_once 'app/views/includes/navbar.php';
                                             <span class="badge bg-primary bg-opacity-10 text-primary fw-bold">x<?= $it['quantity'] ?></span>
                                             <span class="fw-bold text-dark text-truncate" style="max-width: 260px;"><?= htmlspecialchars($it['product_name']) ?></span>
                                         </div>
-                                        <span class="fw-bold text-danger flex-shrink-0"><?= number_format((float)$it['total_price'], 0, ',', '.') ?> đ</span>
+                                        <span class="fw-bold text-danger flex-shrink-0"><?= number_format((float)$it['total_price'], 0, ',', '.') ?> VNĐ</span>
                                     </div>
                                 <?php endforeach; ?>
                             </div>

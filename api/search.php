@@ -23,7 +23,7 @@ if ($isAll) {
                 'brand_name' => $p['brand_name'] ?? '',
                 'price' => $pPrice,
                 'old_price' => (int)$p['price'],
-                'price_formatted' => number_format($pPrice, 0, ',', '.') . ' đ',
+                'price_formatted' => number_format($pPrice, 0, ',', '.') . ' VNĐ',
                 'image' => $p['image']
             ];
         }
@@ -81,7 +81,7 @@ try {
             'brand_name' => $p['brand_name'] ?? '',
             'price' => $pPrice,
             'old_price' => (int)$p['price'],
-            'price_formatted' => number_format($pPrice, 0, ',', '.') . ' đ',
+            'price_formatted' => number_format($pPrice, 0, ',', '.') . ' VNĐ',
             'image' => $p['image']
         ];
     }

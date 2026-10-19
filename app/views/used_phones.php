@@ -30,7 +30,7 @@ foreach ($usedProducts as $p) {
         'name' => $p['name'],
         'price' => (int)$pPrice,
         'old_price' => (int)$p['price'],
-        'price_formatted' => number_format($pPrice, 0, ',', '.') . ' đ',
+        'price_formatted' => number_format($pPrice, 0, ',', '.') . ' VNĐ',
         'image' => $p['image'],
         'rom' => $p['rom'] ?? '128 GB'
     ];
@@ -317,10 +317,10 @@ require_once 'app/views/includes/navbar.php';
 
                         <div class="mt-auto pt-2">
                             <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                                <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> đ</div>
-                                <small class="text-decoration-line-through text-muted"><?= number_format($p['price'], 0, ',', '.') ?> đ (Giá mới)</small>
+                                <div class="text-danger fw-bold fs-5 mb-0"><?= number_format($p['sale_price'], 0, ',', '.') ?> VNĐ</div>
+                                <small class="text-decoration-line-through text-muted"><?= number_format($p['price'], 0, ',', '.') ?> VNĐ (Giá mới)</small>
                             <?php else: ?>
-                                <div class="text-primary fw-bold fs-5 mb-0"><?= number_format($p['price'], 0, ',', '.') ?> đ</div>
+                                <div class="text-primary fw-bold fs-5 mb-0"><?= number_format($p['price'], 0, ',', '.') ?> VNĐ</div>
                             <?php endif; ?>
                         </div>
 
@@ -388,7 +388,7 @@ function formatVndShort(amount) {
         const tr = amount / 1000000;
         return (Number.isInteger(tr) ? tr : tr.toFixed(1)) + ' triệu';
     }
-    return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+    return new Intl.NumberFormat('vi-VN').format(amount) + ' VNĐ';
 }
 
 function syncFilterUI() {

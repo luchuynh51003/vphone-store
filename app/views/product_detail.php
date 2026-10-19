@@ -101,9 +101,9 @@ require_once 'app/views/includes/navbar.php';
 
                 <div class="p-3 rounded-4 bg-light my-2 border">
                     <div class="d-flex align-items-baseline gap-3 flex-wrap">
-                        <h2 class="text-danger fw-bold mb-0" id="displayPrice"><?= number_format($basePrice, 0, ',', '.') ?> đ</h2>
-                        <h5 class="text-decoration-line-through text-secondary mb-0" id="displayOldPrice"><?= number_format($baseOldPrice, 0, ',', '.') ?> đ</h5>
-                        <span class="badge bg-danger rounded-pill px-2 py-1" id="displaySavingTag">Tiết kiệm <?= number_format($saving, 0, ',', '.') ?> đ</span>
+                        <h2 class="text-danger fw-bold mb-0" id="displayPrice"><?= number_format($basePrice, 0, ',', '.') ?> VNĐ</h2>
+                        <h5 class="text-decoration-line-through text-secondary mb-0" id="displayOldPrice"><?= number_format($baseOldPrice, 0, ',', '.') ?> VNĐ</h5>
+                        <span class="badge bg-danger rounded-pill px-2 py-1" id="displaySavingTag">Tiết kiệm <?= number_format($saving, 0, ',', '.') ?> VNĐ</span>
                     </div>
                     <?php if ((int)$product['quantity'] > 0): ?>
                     <div class="small text-success mt-2 fw-semibold">
@@ -190,9 +190,9 @@ require_once 'app/views/includes/navbar.php';
                     </div>
                     <ul class="list-unstyled mb-0 small text-secondary d-flex flex-column gap-1">
                         <li><i class="fa-solid fa-circle-check text-success me-1"></i> Tặng gói bảo hành VIP <strong>1 đổi 1 trong 30 ngày</strong> đầu tiên.</li>
-                        <li><i class="fa-solid fa-circle-check text-success me-1"></i> Giảm thêm tới <strong>200.000đ</strong> khi nhập mã voucher trong giỏ hàng.</li>
+                        <li><i class="fa-solid fa-circle-check text-success me-1"></i> Giảm thêm tới <strong>200.000 VNĐ</strong> khi nhập mã voucher trong giỏ hàng.</li>
                         <li><i class="fa-solid fa-circle-check text-success me-1"></i> Miễn phí giao hàng hỏa tốc trong 2 giờ nội thành.</li>
-                        <li><i class="fa-solid fa-circle-check text-success me-1"></i> Trợ giá thu cũ đổi mới lên đến <strong>2.000.000đ</strong>.</li>
+                        <li><i class="fa-solid fa-circle-check text-success me-1"></i> Trợ giá thu cũ đổi mới lên đến <strong>2.000.000 VNĐ</strong>.</li>
                     </ul>
                     <div class="mt-2 pt-2 border-top">
                         <a href="index.php?page=warranty" target="_blank" class="small text-primary text-decoration-none fw-semibold d-inline-flex align-items-center">
@@ -614,8 +614,8 @@ function selectDetailRom(btn, romName, extra) {
 
     const newP = basePrice + extra;
     const newOldP = baseOldPrice + extra;
-    document.getElementById('displayPrice').innerText = new Intl.NumberFormat('vi-VN').format(newP) + ' đ';
-    document.getElementById('displayOldPrice').innerText = new Intl.NumberFormat('vi-VN').format(newOldP) + ' đ';
+    document.getElementById('displayPrice').innerText = new Intl.NumberFormat('vi-VN').format(newP) + ' VNĐ';
+    document.getElementById('displayOldPrice').innerText = new Intl.NumberFormat('vi-VN').format(newOldP) + ' VNĐ';
 }
 
 function buyNowFromDetail(productId) {

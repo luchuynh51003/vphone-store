@@ -154,7 +154,7 @@ $recentOrders = $pdo->query("SELECT * FROM orders ORDER BY id DESC LIMIT 5")->fe
             <div class="d-flex justify-content-between align-items-start">
                 <div>
                     <span class="text-secondary small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Tổng doanh thu</span>
-                    <h3 class="fw-black text-dark my-2"><?= number_format($totalRevenue, 0, ',', '.') ?> <span class="fs-6 fw-bold text-muted">đ</span></h3>
+                    <h3 class="fw-black text-dark my-2"><?= number_format($totalRevenue, 0, ',', '.') ?> <span class="fs-6 fw-bold text-muted">VNĐ</span></h3>
                     <span class="badge badge-soft-success rounded-pill px-2.5 py-1">
                         <i class="fa-solid fa-arrow-trend-up me-1"></i>Đơn hoàn thành
                     </span>
@@ -347,7 +347,7 @@ $recentOrders = $pdo->query("SELECT * FROM orders ORDER BY id DESC LIMIT 5")->fe
                                             <?= htmlspecialchars($ts['product_name']) ?>
                                         </div>
                                         <small class="text-muted" style="font-size: 0.75rem;">
-                                            Doanh số: <span class="fw-bold text-danger"><?= number_format($ts['total_sales'], 0, ',', '.') ?> đ</span>
+                                            Doanh số: <span class="fw-bold text-danger"><?= number_format($ts['total_sales'], 0, ',', '.') ?> VNĐ</span>
                                         </small>
                                     </div>
                                 </div>
@@ -402,7 +402,7 @@ $recentOrders = $pdo->query("SELECT * FROM orders ORDER BY id DESC LIMIT 5")->fe
                                             <?= htmlspecialchars($lsp['name']) ?>
                                         </div>
                                         <small class="text-muted" style="font-size: 0.75rem;">
-                                            <?= htmlspecialchars($lsp['brand_name'] ?? 'Chưa phân hãng') ?> • <?= number_format($lsp['sale_price'] > 0 ? $lsp['sale_price'] : $lsp['price'], 0, ',', '.') ?> đ
+                                            <?= htmlspecialchars($lsp['brand_name'] ?? 'Chưa phân hãng') ?> • <?= number_format($lsp['sale_price'] > 0 ? $lsp['sale_price'] : $lsp['price'], 0, ',', '.') ?> VNĐ
                                         </small>
                                     </div>
                                 </div>
@@ -517,7 +517,7 @@ $recentOrders = $pdo->query("SELECT * FROM orders ORDER BY id DESC LIMIT 5")->fe
                                 </small>
                             </td>
                             <td><span class="fw-medium text-secondary"><?= htmlspecialchars($ord['phone']) ?></span></td>
-                            <td class="text-danger fw-bold fs-6"><?= number_format($ord['total_money'], 0, ',', '.') ?> đ</td>
+                            <td class="text-danger fw-bold fs-6"><?= number_format($ord['total_money'], 0, ',', '.') ?> VNĐ</td>
                             <td>
                                 <span class="badge bg-light text-dark border px-2 py-1 rounded-pill small">
                                     <?= htmlspecialchars($ord['payment_method']) ?>
@@ -606,7 +606,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         callbacks: {
                             label: function(context) {
                                 if (context.dataset.yAxisID === 'y') {
-                                    return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.raw) + ' đ';
+                                    return 'Doanh thu: ' + new Intl.NumberFormat('vi-VN').format(context.raw) + ' VNĐ';
                                 } else {
                                     return 'Số đơn: ' + context.raw + ' đơn';
                                 }

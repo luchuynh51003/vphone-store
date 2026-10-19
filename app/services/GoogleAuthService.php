@@ -38,9 +38,12 @@ class GoogleAuthService {
             return $this->config['redirect_uri'];
         }
         $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $rawDir = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/phone-store')), '/.');
-        $scriptDir = (!empty($rawDir) && $rawDir !== '.') ? $rawDir : '/phone-store';
+        $rawHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $host = preg_replace('/^127\.0\.0\.1(:[0-9]+)?$/', 'localhost$1', $rawHost);
+        $host = preg_replace('/:(80|443)$/', '', $host);
+        $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/phone-store/index.php');
+        $rawDir = rtrim(dirname($scriptName), '/.');
+        $scriptDir = ($rawDir === '' || $rawDir === '.') ? '' : $rawDir;
         return $protocol . '://' . $host . $scriptDir . '/index.php?page=auth&action=google_callback';
     }
 

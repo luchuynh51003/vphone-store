@@ -213,23 +213,38 @@ if (strpos($loggedPhone, '1800') !== false || strlen($loggedPhone) < 10) {
     <!-- Header Chatbot -->
     <div class="chatbot-header">
         <div class="chatbot-avatar-wrap">
-            <div class="chatbot-avatar">
-                <svg viewBox="0 0 28 28" width="20" height="20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="2" y="5" width="24" height="18" rx="8" fill="white" fill-opacity="0.2"/>
-                    <rect x="4" y="7" width="20" height="14" rx="6" stroke="white" stroke-width="1.8"/>
-                    <circle cx="10" cy="13" r="1.8" fill="#00FFC2"/>
-                    <circle cx="18" cy="13" r="1.8" fill="#00FFC2"/>
-                    <path d="M11 17c1.2 1 4.8 1 6 0" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
-                    <circle cx="14" cy="3" r="1.5" fill="#00FFC2"/>
-                    <line x1="14" y1="4.5" x2="14" y2="7" stroke="white" stroke-width="1.5"/>
+            <div class="chatbot-cyber-orb">
+                <svg viewBox="0 0 32 32" width="22" height="22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="cyberNeonGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#00F5D4"/>
+                            <stop offset="50%" stop-color="#0066FF"/>
+                            <stop offset="100%" stop-color="#7B2CBF"/>
+                        </linearGradient>
+                        <linearGradient id="cyberCoreGlow" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#FFFFFF"/>
+                            <stop offset="100%" stop-color="#00F0FF"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="16" cy="16" r="14.5" stroke="url(#cyberNeonGlow)" stroke-width="1.8" stroke-dasharray="60 20" stroke-linecap="round" class="cyber-ring-outer"/>
+                    <circle cx="16" cy="16" r="10.5" stroke="#00F0FF" stroke-width="1" stroke-dasharray="4 2.5" opacity="0.85" class="cyber-ring-inner"/>
+                    <polygon points="16,7 23,12 23,20 16,25 9,20 9,12" fill="url(#cyberNeonGlow)" fill-opacity="0.25" stroke="url(#cyberCoreGlow)" stroke-width="1.2"/>
+                    <circle cx="16" cy="16" r="2.8" fill="url(#cyberCoreGlow)"/>
+                    <circle cx="16" cy="7" r="1.2" fill="#00FFC2"/>
+                    <circle cx="23" cy="16" r="1.2" fill="#00FFC2"/>
+                    <circle cx="9" cy="16" r="1.2" fill="#00FFC2"/>
+                    <circle cx="16" cy="25" r="1.2" fill="#00FFC2"/>
                 </svg>
             </div>
-            <span class="chatbot-status-dot" title="Đang trực tuyến"></span>
+            <span class="chatbot-status-dot" title="Neural Engine Trực Tuyến 24/7"></span>
         </div>
         <div class="chatbot-header-info">
-            <div class="chatbot-name">Trợ Lý Ảo V-Phone AI</div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="chatbot-name">V-Phone Cyber AI</span>
+                <span class="ai-badge-pro">PRO 2026</span>
+            </div>
             <div class="chatbot-status">
-                <span class="pulse-indicator"></span> Chuyên gia tư vấn bán hàng 24/7
+                <span class="pulse-indicator"></span> Neural Sales Consultant • Phản hồi 0.2s
             </div>
         </div>
         <div class="chatbot-header-actions">
@@ -239,8 +254,8 @@ if (strpos($loggedPhone, '1800') !== false || strlen($loggedPhone) < 10) {
                     <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
                 </svg>
             </button>
-            <button type="button" id="btnCloseChatbot" class="chatbot-btn-action" title="Thu nhỏ chat" aria-label="Đóng">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <button type="button" id="btnCloseChatbot" class="chatbot-btn-action" title="Thu nhỏ / Đóng chat (Esc)" aria-label="Đóng chat">
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
                     <line x1="18" y1="6" x2="6" y2="18"/>
                     <line x1="6" y1="6" x2="18" y2="18"/>
                 </svg>
@@ -250,55 +265,65 @@ if (strpos($loggedPhone, '1800') !== false || strlen($loggedPhone) < 10) {
 
     <!-- Khung Tin Nhắn (Messages Stream) -->
     <div id="chatbotMessages" class="chatbot-messages">
-        <!-- Tin nhắn chào mừng ban đầu từ Bot -->
+        <!-- Tin nhắn chào mừng ban đầu từ Bot (Ngắn gọn, vừa vặn khung chat) -->
         <div class="chat-msg chat-msg-bot">
             <div class="chat-msg-avatar">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="24" height="24" rx="7" fill="#0066CC"/>
-                    <circle cx="8" cy="11" r="1.5" fill="#00FFC2"/>
-                    <circle cx="16" cy="11" r="1.5" fill="#00FFC2"/>
-                    <path d="M9 15c1.5 1 4.5 1 6 0" stroke="#00FFC2" stroke-width="1.5" stroke-linecap="round"/>
-                </svg>
+                <div class="cyber-avatar-mini">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10.5" stroke="#00F0FF" stroke-width="1.5" stroke-dasharray="40 15"/>
+                        <circle cx="12" cy="12" r="2.2" fill="#00FFC2"/>
+                    </svg>
+                </div>
             </div>
             <div class="chat-msg-content">
                 <div class="chat-bubble">
-                    Xin chào! Em là <strong>Trợ lý ảo AI của V-Phone Store 2026</strong>. ✨<br><br>
-                    Em là chuyên viên bán hàng tự động 24/7, có thể giải đáp <strong>mọi câu hỏi liên quan đến mua sắm điện thoại</strong>:<br>
-                    • 📱 Bảng giá, cấu hình & so sánh các dòng Flagship mới nhất<br>
-                    • 💳 Hướng dẫn làm hồ sơ mua trả góp 0% duyệt online 15 phút<br>
-                    • 🛡️ Chính sách bảo hành 1 đổi 1 trong 30 ngày & đồng kiểm mở hộp<br>
-                    • 🔄 Định giá thu cũ đổi mới trợ giá tới 2 triệu đồng.<br><br>
-                    Anh/chị đang quan tâm đến nội dung nào dưới đây ạ?
+                    Xin chào! Em là <strong>V-Phone Cyber AI</strong>. Em có thể tư vấn bảng giá Flagship 2026, trả góp 0%, đồng kiểm và bảo hành 1 đổi 1. Anh/chị cần em hỗ trợ gì ạ?
                 </div>
-                <div class="chat-time"><?= date('H:i') ?></div>
+                <div class="chat-time" id="chatInitialTime"><?= date('H:i') ?></div>
             </div>
         </div>
 
-        <!-- Gợi ý câu hỏi nhanh (Quick Chips) -->
+        <!-- Gợi ý câu hỏi nhanh (Gọn gàng, vừa vặn khung chat không bị tràn) -->
         <div class="chatbot-quick-chips" id="chatbotQuickChips">
-            <button type="button" class="chip-item" data-query="Tư vấn các dòng iPhone mới nhất">📱 iPhone mới nhất</button>
-            <button type="button" class="chip-item" data-query="Tư vấn điện thoại Samsung Galaxy">⚡ Samsung Galaxy</button>
-            <button type="button" class="chip-item" data-query="Điện thoại dưới 10 triệu đáng mua nhất">💰 Máy dưới 10 triệu</button>
-            <button type="button" class="chip-item" data-query="Chính sách mua trả góp 0%">💳 Trả góp 0%</button>
-            <button type="button" class="chip-item" data-query="Chính sách đồng kiểm mở hộp trước khi trả tiền">📦 Kiểm tra hàng trước</button>
-            <button type="button" class="chip-item" data-query="Chính sách bảo hành 1 đổi 1">🛡️ Bảo hành 1-1</button>
-            <button type="button" class="chip-item" data-query="Xem điện thoại cũ 99% giá tốt">✨ Máy cũ 99%</button>
-            <button type="button" class="chip-item" data-query="Hệ thống địa chỉ showroom">📍 Địa chỉ Showroom</button>
-            <button type="button" class="chip-item" data-query="Hotline hỗ trợ và gặp tư vấn viên">📞 Hotline CSKH</button>
+            <button type="button" class="chip-item chip-apple" data-query="Tư vấn các dòng iPhone mới nhất">
+                <svg viewBox="0 0 170 170" width="11" height="11" fill="currentColor" class="chip-icon"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.67-7.81-11.96-14.34-7.38-11.22-12.87-23.75-16.48-37.58-3.61-13.84-5.42-26.65-5.42-38.45 0-14.57 3.65-26.79 10.96-36.68 7.31-9.89 16.59-14.93 27.84-15.13 4.35 0 9.4 1.15 15.15 3.45 5.75 2.3 9.46 3.51 11.13 3.63 1.88-.12 5.75-1.39 11.61-3.81 5.86-2.42 10.63-3.51 14.31-3.27 10.45.61 19.23 4.48 26.35 11.62 7.12 7.14 11.62 15.77 13.5 25.88-9.4 5.68-14.04 13.79-13.92 24.32.12 8.35 3.21 15.42 9.27 21.2 6.06 5.78 13.57 9.17 22.53 10.17-2.12 6.39-4.87 13.16-8.25 20.31zM119.22 33.15c0-6.9 2.45-13.39 7.35-19.47 4.9-6.08 11.08-10.36 18.54-12.84.58 4.2.36 8.52-.66 12.96-1.02 4.44-3.14 8.78-6.36 13.02-3.87 5.09-8.48 8.92-13.83 11.49-5.35 2.57-10.22 3.84-14.61 3.81.44-2.88.94-5.87 1.57-8.97z"/></svg>
+                <span>iPhone Mới Nhất</span>
+            </button>
+            <button type="button" class="chip-item chip-samsung" data-query="Tư vấn điện thoại Samsung Galaxy">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" class="chip-icon"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.8L12 22l-2.4-7.2L2.4 12l7.2-2.8L12 2z"/></svg>
+                <span>Samsung Galaxy AI</span>
+            </button>
+            <button type="button" class="chip-item chip-installment" data-query="Chính sách mua trả góp 0%">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                <span>Trả Góp 0%</span>
+            </button>
+            <button type="button" class="chip-item chip-inspection" data-query="Chính sách đồng kiểm mở hộp trước khi trả tiền">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                <span>Đồng Kiểm Mở Hộp</span>
+            </button>
+            <button type="button" class="chip-item chip-warranty" data-query="Chính sách bảo hành 1 đổi 1">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <span>Bảo Hành 1-1</span>
+            </button>
+            <button type="button" class="chip-item chip-budget" data-query="Điện thoại dưới 10 triệu đáng mua nhất">
+                <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                <span>Dưới 10 Triệu</span>
+            </button>
         </div>
 
-        <!-- Typing Indicator (Đang suy nghĩ & soạn tin nhắn với animation mượt mà) -->
+        <!-- Typing Indicator (Đang suy nghĩ & phân tích với Cyber AI visualizer) -->
         <div id="chatbotTyping" class="chat-msg chat-msg-bot d-none">
             <div class="chat-msg-avatar">
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="24" height="24" rx="7" fill="#0066CC"/>
-                    <circle cx="8" cy="11" r="1.5" fill="#00FFC2"/>
-                    <circle cx="16" cy="11" r="1.5" fill="#00FFC2"/>
-                </svg>
+                <div class="cyber-avatar-mini">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10.5" stroke="#00F0FF" stroke-width="1.5" stroke-dasharray="40 15"/>
+                        <circle cx="12" cy="12" r="2.2" fill="#00FFC2"/>
+                    </svg>
+                </div>
             </div>
             <div class="chat-msg-content">
                 <div class="chat-bubble typing-bubble">
-                    <span class="typing-status-text">V-Phone AI đang phân tích & soạn câu trả lời</span>
+                    <span class="typing-status-text">V-Phone AI đang phân tích kho dữ liệu & soạn câu trả lời</span>
                     <span class="typing-dot"></span>
                     <span class="typing-dot"></span>
                     <span class="typing-dot"></span>
@@ -309,11 +334,17 @@ if (strpos($loggedPhone, '1800') !== false || strlen($loggedPhone) < 10) {
 
     <!-- Khung Nhập Tin Nhắn (Footer Input) -->
     <form id="formChatbot" class="chatbot-footer" autocomplete="off">
-        <input type="text" id="chatbotInput" class="chatbot-input" placeholder="Nhập câu hỏi (VD: iPhone 18 giá bao nhiêu, có trả góp không?)..." maxlength="300" required>
-        <button type="submit" id="btnSendChatbot" class="chatbot-send-btn" aria-label="Gửi tin nhắn">
+        <input type="text" id="chatbotInput" class="chatbot-input" placeholder="Nhập câu hỏi (VD: iPhone 16 giá bao nhiêu, có trả góp không?)..." maxlength="300" required>
+        <button type="submit" id="btnSendChatbot" class="chatbot-send-btn" title="Gửi tin nhắn" aria-label="Gửi tin nhắn">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+        </button>
+        <button type="button" id="btnQuickCloseChat" class="chatbot-quick-close-btn" title="Thu nhỏ / Đóng chat (Esc)" aria-label="Thu nhỏ chat">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
             </svg>
         </button>
     </form>

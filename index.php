@@ -56,6 +56,7 @@ switch ($page) {
 
     case 'detail':
     case 'product':
+    case 'san-pham':
         require_once 'app/controllers/ProductController.php';
         (new ProductController($pdo))->detail();
         break;
@@ -67,14 +68,32 @@ switch ($page) {
         break;
 
     case 'used-phones':
+    case 'used_phones':
     case 'used':
+    case 'may-cu':
         require_once 'app/controllers/ProductController.php';
         (new ProductController($pdo))->used();
         break;
 
     case 'news':
+    case 'tin-tuc':
         require_once 'app/controllers/ProductController.php';
         (new ProductController($pdo))->news();
+        break;
+
+    case 'about':
+    case 'about-us':
+    case 'gioi-thieu':
+        require_once 'app/controllers/HomeController.php';
+        (new HomeController($pdo))->about();
+        break;
+
+    case 'stores':
+    case 'store':
+    case 'cua-hang':
+    case 'he-thong-cua-hang':
+        require_once 'app/controllers/HomeController.php';
+        (new HomeController($pdo))->stores();
         break;
 
     case 'warranty':
@@ -115,7 +134,10 @@ switch ($page) {
         exit;
 
     case 'orders':
+    case 'order':
     case 'tracking':
+    case 'tra-cuu':
+    case 'don-hang':
         require_once 'app/controllers/OrderController.php';
         (new OrderController($pdo))->index();
         break;

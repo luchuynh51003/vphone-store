@@ -844,9 +844,9 @@ require_once 'app/views/includes/functions.php';
 
                             
                             <div class="text-end flex-shrink-0">
-                                <small class="text-muted d-block">Đơn giá: <?= number_format((float)$item['price'], 0, ',', '.') ?> đ</small>
+                                <small class="text-muted d-block">Đơn giá: <?= number_format((float)$item['price'], 0, ',', '.') ?> VNĐ</small>
                                 <div class="fs-5 fw-black text-danger">
-                                    <?= number_format((float)$item['total_price'], 0, ',', '.') ?> đ
+                                    <?= number_format((float)$item['total_price'], 0, ',', '.') ?> VNĐ
                                 </div>
                             </div>
                         </div>
@@ -883,7 +883,7 @@ require_once 'app/views/includes/functions.php';
                             <div class="d-flex justify-content-between justify-content-md-end gap-md-4 align-items-center">
                                 <span class="fw-bold text-dark fs-6">Tổng Thanh Toán:</span>
                                 <span class="display-6 fw-black text-danger" style="font-size: 1.85rem;">
-                                    <?= number_format((float)$trackedOrder['total_money'], 0, ',', '.') ?> đ
+                                    <?= number_format((float)$trackedOrder['total_money'], 0, ',', '.') ?> VNĐ
                                 </span>
                             </div>
                         </div>
@@ -1183,9 +1183,9 @@ require_once 'app/views/includes/functions.php';
                                                 </div>
                                             </div>
                                             <div class="text-end flex-shrink-0 ps-3">
-                                                <small class="text-muted d-block" style="font-size: 0.78rem;">Đơn giá: <?= number_format((float)$d['price'], 0, ',', '.') ?> đ</small>
+                                                <small class="text-muted d-block" style="font-size: 0.78rem;">Đơn giá: <?= number_format((float)$d['price'], 0, ',', '.') ?> VNĐ</small>
                                                 <div class="fs-5 fw-black text-danger mt-0.5">
-                                                    <?= number_format((float)$d['total_price'], 0, ',', '.') ?> đ
+                                                    <?= number_format((float)$d['total_price'], 0, ',', '.') ?> VNĐ
                                                 </div>
                                             </div>
                                         </div>
@@ -1197,7 +1197,7 @@ require_once 'app/views/includes/functions.php';
                                     <div class="d-flex align-items-center flex-wrap gap-2.5">
                                         <span class="text-secondary small fw-bold text-uppercase" style="letter-spacing: 0.5px;">Tổng thanh toán:</span>
                                         <span class="fs-4 fw-black text-danger" style="letter-spacing: -0.5px;">
-                                            <?= number_format((float)$ord['total_money'], 0, ',', '.') ?> đ
+                                            <?= number_format((float)$ord['total_money'], 0, ',', '.') ?> VNĐ
                                         </span>
                                         <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 small fw-bold">
                                             <i class="fa-solid fa-truck-fast me-1"></i>Miễn phí vận chuyển

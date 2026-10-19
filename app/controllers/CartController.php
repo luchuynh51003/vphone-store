@@ -424,9 +424,9 @@ class CartController {
                     'message' => $voucherMessage,
                     'code' => $voucher ? $voucher['code'] : '',
                     'discount' => $disc,
-                    'discount_formatted' => number_format($disc, 0, ',', '.') . ' đ',
+                    'discount_formatted' => number_format($disc, 0, ',', '.') . ' VNĐ',
                     'total' => max(0, $subtotal - $disc),
-                    'total_formatted' => number_format(max(0, $subtotal - $disc), 0, ',', '.') . ' đ'
+                    'total_formatted' => number_format(max(0, $subtotal - $disc), 0, ',', '.') . ' VNĐ'
                 ], JSON_UNESCAPED_UNICODE);
                 exit;
             }
@@ -454,9 +454,9 @@ class CartController {
                     'success' => true,
                     'message' => 'Đã gỡ mã giảm giá.',
                     'discount' => 0,
-                    'discount_formatted' => '0 đ',
+                    'discount_formatted' => '0 VNĐ',
                     'total' => $subtotal,
-                    'total_formatted' => number_format($subtotal, 0, ',', '.') . ' đ'
+                    'total_formatted' => number_format($subtotal, 0, ',', '.') . ' VNĐ'
                 ], JSON_UNESCAPED_UNICODE);
                 exit;
             }
@@ -493,7 +493,7 @@ class CartController {
             } else {
                 if ($appliedVoucher) {
                     $discountAmount = $voucherModel->calculateDiscount($appliedVoucher, $subtotal);
-                    $note = trim($note . ' | Voucher: ' . $appliedVoucher['code'] . ' (giảm ' . number_format($discountAmount, 0, ',', '.') . ' đ)');
+                    $note = trim($note . ' | Voucher: ' . $appliedVoucher['code'] . ' (giảm ' . number_format($discountAmount, 0, ',', '.') . ' VNĐ)');
                 }
                 $totalMoney = max(0, $subtotal - $discountAmount);
                 $orderId = $orderModel->create($currentUser['id'], $fullname, $phone, $address, $note, $totalMoney, $method);

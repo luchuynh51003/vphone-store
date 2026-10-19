@@ -293,7 +293,7 @@ $stats = $reviewModel->getAdminStats();
                                         <a href="../index.php?page=detail&id=<?= $rev['product_id'] ?>#reviews-section" target="_blank" class="fw-bold text-dark text-decoration-none small text-truncate d-block" style="max-width: 190px;" title="<?= htmlspecialchars($rev['product_name']) ?>">
                                             <?= htmlspecialchars($rev['product_name']) ?>
                                         </a>
-                                        <div class="text-danger small fw-semibold"><?= number_format($rev['product_price'], 0, ',', '.') ?> đ</div>
+                                        <div class="text-danger small fw-semibold"><?= number_format($rev['product_price'], 0, ',', '.') ?> VNĐ</div>
                                     </div>
                                 </div>
                             </td>

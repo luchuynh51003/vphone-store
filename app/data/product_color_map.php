@@ -1,4 +1,5 @@
 <?php
+if (!function_exists('getAllProductColorMap')) {
 function getAllProductColorMap(): array {
     static $map = null;
     if ($map === null) {
@@ -317,4 +318,5 @@ JSON;
         $map = json_decode($json, true) ?: [];
     }
     return $map;
+}
 }

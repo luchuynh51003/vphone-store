@@ -63,6 +63,9 @@
                 const badge = document.getElementById('cartBadge');
                 if (badge) {
                     badge.textContent = data.cart_count;
+                    badge.classList.remove('badge-bounce');
+                    void badge.offsetWidth;
+                    badge.classList.add('badge-bounce');
                 }
 
                 const nameStr = productName ? `"${productName}"` : 'sản phẩm';
@@ -111,7 +114,7 @@
 
             let html = "";
             matched.slice(0, 6).forEach(item => {
-                const formattedPrice = item.price_formatted || (new Intl.NumberFormat('vi-VN').format(item.price) + ' đ');
+                const formattedPrice = item.price_formatted || (new Intl.NumberFormat('vi-VN').format(item.price) + ' VNĐ');
                 html += `
                     <a href="index.php?page=detail&id=${item.id}" class="search-item">
                         <img src="${item.image}" alt="${escapeHtml(item.name)}" class="search-thumb" onerror="this.src='assets/images/products/iphone-16.png'">
@@ -429,6 +432,17 @@
         const callbackSuccessMsg = document.getElementById('callbackSuccessMsg');
         const btnSubmitCallback = document.getElementById('btnSubmitCallback');
 
+        // Chatbot elements
+        const chatbotWindow = document.getElementById('vphoneChatbotWindow');
+        const btnOpenChatbot = document.getElementById('btnOpenChatbot');
+        const btnCloseChatbot = document.getElementById('btnCloseChatbot');
+        const btnQuickCloseChat = document.getElementById('btnQuickCloseChat');
+        const btnResetChatbot = document.getElementById('btnResetChatbot');
+        const formChatbot = document.getElementById('formChatbot');
+        const chatbotInput = document.getElementById('chatbotInput');
+        const chatbotMessages = document.getElementById('chatbotMessages');
+        const chatbotTyping = document.getElementById('chatbotTyping');
+
         if (!widget || !toggleBtn) return;
 
         function openWidget() {
@@ -444,9 +458,13 @@
             if (backdrop) backdrop.classList.remove('is-active');
         }
 
-        // Toggle Widget
+        // Toggle Widget hoặc đóng chatbot nếu chatbot đang mở
         toggleBtn.addEventListener('click', function (e) {
             e.stopPropagation();
+            if (chatbotWindow && chatbotWindow.classList.contains('is-open')) {
+                closeChatbot();
+                return;
+            }
             if (widget.classList.contains('is-open')) {
                 closeWidget();
             } else {
@@ -464,13 +482,27 @@
         if (backdrop) {
             backdrop.addEventListener('click', function () {
                 closeWidget();
+                closeChatbot();
             });
         }
 
-        // Keyboard escape to close
+        // Keyboard escape: Đóng cả chatbot hoặc menu widget
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape' && widget.classList.contains('is-open')) {
-                closeWidget();
+            if (e.key === 'Escape') {
+                if (chatbotWindow && chatbotWindow.classList.contains('is-open')) {
+                    closeChatbot();
+                } else if (widget && widget.classList.contains('is-open')) {
+                    closeWidget();
+                }
+            }
+        });
+
+        // Click bên ngoài cửa sổ chatbot để thu nhỏ/đóng
+        document.addEventListener('click', function (e) {
+            if (chatbotWindow && chatbotWindow.classList.contains('is-open')) {
+                if (!chatbotWindow.contains(e.target) && !widget.contains(e.target)) {
+                    closeChatbot();
+                }
             }
         });
 
@@ -503,20 +535,16 @@
         }
 
         // --- AUTOMATED CHATBOT CONTROLLER ---
-        const chatbotWindow = document.getElementById('vphoneChatbotWindow');
-        const btnOpenChatbot = document.getElementById('btnOpenChatbot');
-        const btnCloseChatbot = document.getElementById('btnCloseChatbot');
-        const btnResetChatbot = document.getElementById('btnResetChatbot');
-        const formChatbot = document.getElementById('formChatbot');
-        const chatbotInput = document.getElementById('chatbotInput');
-        const chatbotMessages = document.getElementById('chatbotMessages');
-        const chatbotTyping = document.getElementById('chatbotTyping');
-
         function openChatbot() {
             closeWidget();
             if (chatbotWindow) {
                 chatbotWindow.classList.add('is-open');
                 chatbotWindow.setAttribute('aria-hidden', 'false');
+                if (widget) {
+                    widget.classList.add('chat-is-open');
+                    toggleBtn.setAttribute('title', 'Đóng cửa sổ chat (Esc)');
+                    toggleBtn.setAttribute('aria-label', 'Đóng cửa sổ chat');
+                }
                 scrollChatToBottom();
                 if (chatbotInput) setTimeout(() => chatbotInput.focus(), 200);
                 sessionStorage.setItem('vphone_chatbot_open', '1');
@@ -527,6 +555,14 @@
             if (chatbotWindow) {
                 chatbotWindow.classList.remove('is-open');
                 chatbotWindow.setAttribute('aria-hidden', 'true');
+                if (widget) {
+                    widget.classList.remove('chat-is-open');
+                    toggleBtn.setAttribute('title', 'Kênh hỗ trợ & tư vấn');
+                    toggleBtn.setAttribute('aria-label', 'Mở kênh hỗ trợ');
+                }
+                if (backdrop && !widget.classList.contains('is-open')) {
+                    backdrop.classList.remove('is-active');
+                }
                 sessionStorage.setItem('vphone_chatbot_open', '0');
             }
         }
@@ -538,20 +574,101 @@
         }
 
         function getCurrentTime() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            return `${h}:${m}`;
+            try {
+                // Chuẩn múi giờ Việt Nam (Asia/Ho_Chi_Minh GMT+7)
+                const now = new Date();
+                return new Intl.DateTimeFormat('vi-VN', {
+                    timeZone: 'Asia/Ho_Chi_Minh',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }).format(now);
+            } catch (e) {
+                const now = new Date();
+                const h = String(now.getHours()).padStart(2, '0');
+                const m = String(now.getMinutes()).padStart(2, '0');
+                return `${h}:${m}`;
+            }
+        }
+
+        // Cập nhật ngay thời gian của tin nhắn chào mừng ban đầu
+        const initialTimeEl = document.getElementById('chatInitialTime');
+        if (initialTimeEl) {
+            initialTimeEl.textContent = getCurrentTime();
         }
 
         const botAvatarSvg = `
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="24" height="24" rx="7" fill="#0066CC"/>
-                <circle cx="8" cy="11" r="1.5" fill="#00FFC2"/>
-                <circle cx="16" cy="11" r="1.5" fill="#00FFC2"/>
-                <path d="M9 15c1.5 1 4.5 1 6 0" stroke="#00FFC2" stroke-width="1.5" stroke-linecap="round"/>
-            </svg>
+            <div class="cyber-avatar-mini">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10.5" stroke="#00F0FF" stroke-width="1.5" stroke-dasharray="40 15"/>
+                    <polygon points="12,5 17,9 17,15 12,19 7,15 7,9" fill="#0066CC" fill-opacity="0.3" stroke="#00FFC2" stroke-width="1.2"/>
+                    <circle cx="12" cy="12" r="2.2" fill="#00FFC2"/>
+                </svg>
+            </div>
         `;
+
+        // Helper sinh Vector SVG Icon cho từng loại Quick Chip (Không dùng emoji mặc định)
+        function getChipMeta(text) {
+            const lower = (text || '').toLowerCase();
+            if (lower.includes('iphone') || lower.includes('apple')) {
+                return {
+                    cls: 'chip-apple',
+                    icon: `<svg viewBox="0 0 170 170" width="12" height="12" fill="currentColor" class="chip-icon"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.67-7.81-11.96-14.34-7.38-11.22-12.87-23.75-16.48-37.58-3.61-13.84-5.42-26.65-5.42-38.45 0-14.57 3.65-26.79 10.96-36.68 7.31-9.89 16.59-14.93 27.84-15.13 4.35 0 9.4 1.15 15.15 3.45 5.75 2.3 9.46 3.51 11.13 3.63 1.88-.12 5.75-1.39 11.61-3.81 5.86-2.42 10.63-3.51 14.31-3.27 10.45.61 19.23 4.48 26.35 11.62 7.12 7.14 11.62 15.77 13.5 25.88-9.4 5.68-14.04 13.79-13.92 24.32.12 8.35 3.21 15.42 9.27 21.2 6.06 5.78 13.57 9.17 22.53 10.17-2.12 6.39-4.87 13.16-8.25 20.31zM119.22 33.15c0-6.9 2.45-13.39 7.35-19.47 4.9-6.08 11.08-10.36 18.54-12.84.58 4.2.36 8.52-.66 12.96-1.02 4.44-3.14 8.78-6.36 13.02-3.87 5.09-8.48 8.92-13.83 11.49-5.35 2.57-10.22 3.84-14.61 3.81.44-2.88.94-5.87 1.57-8.97z"/></svg>`
+                };
+            }
+            if (lower.includes('samsung') || lower.includes('galaxy') || lower.includes('game') || lower.includes('gaming')) {
+                return {
+                    cls: 'chip-samsung',
+                    icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="chip-icon"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.8L12 22l-2.4-7.2L2.4 12l7.2-2.8L12 2z"/></svg>`
+                };
+            }
+            if (lower.includes('tra gop') || lower.includes('trả góp') || lower.includes('0%')) {
+                return {
+                    cls: 'chip-installment',
+                    icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`
+                };
+            }
+            if (lower.includes('bao hanh') || lower.includes('bảo hành') || lower.includes('1-1') || lower.includes('1 doi 1')) {
+                return {
+                    cls: 'chip-warranty',
+                    icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>`
+                };
+            }
+            if (lower.includes('dong kiem') || lower.includes('đồng kiểm') || lower.includes('kiem tra') || lower.includes('kiểm tra')) {
+                return {
+                    cls: 'chip-inspection',
+                    icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>`
+                };
+            }
+            if (lower.includes('cu') || lower.includes('cũ') || lower.includes('99%') || lower.includes('thu cu')) {
+                return {
+                    cls: 'chip-used',
+                    icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M11 3L8 9l4 12 4-12-3-6"/><path d="M2 9h20"/></svg>`
+                };
+            }
+            if (lower.includes('showroom') || lower.includes('dia chi') || lower.includes('địa chỉ') || lower.includes('map')) {
+                return {
+                    cls: 'chip-showroom',
+                    icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`
+                };
+            }
+            if (lower.includes('hotline') || lower.includes('tong dai') || lower.includes('1800') || lower.includes('goi') || lower.includes('gọi')) {
+                return {
+                    cls: 'chip-hotline',
+                    icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>`
+                };
+            }
+            if (lower.includes('gia') || lower.includes('giá') || lower.includes('trieu') || lower.includes('triệu')) {
+                return {
+                    cls: 'chip-budget',
+                    icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>`
+                };
+            }
+            return {
+                cls: 'chip-samsung',
+                icon: `<svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor" class="chip-icon"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.8L12 22l-2.4-7.2L2.4 12l7.2-2.8L12 2z"/></svg>`
+            };
+        }
 
         function appendChatMessage(sender, htmlContent, suggestions = [], onStreamDone = null) {
             if (!chatbotMessages) return null;
@@ -587,17 +704,19 @@
                 // Stream typewriter reveal effect
                 const bubbleEl = msgDiv.querySelector('.chat-bubble');
                 streamHtml(bubbleEl, htmlContent, () => {
-                    // Append suggestion chips after typing finished
+                    // Append suggestion chips sau khi bot gõ xong (Hoàn toàn bằng Vector SVG, không emoji)
                     if (Array.isArray(suggestions) && suggestions.length > 0) {
                         const chipsDiv = document.createElement('div');
                         chipsDiv.className = 'chatbot-quick-chips';
                         suggestions.forEach((s, idx) => {
+                            const cleanQuery = s.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F900}-\u{1F9FF}\u{1F1E0}-\u{1F1FF}]/gu, '').trim();
+                            const meta = getChipMeta(cleanQuery);
                             const btn = document.createElement('button');
                             btn.type = 'button';
-                            btn.className = 'chip-item';
-                            btn.setAttribute('data-query', s);
-                            btn.textContent = s;
-                            btn.style.animationDelay = (idx * 0.06) + 's';
+                            btn.className = `chip-item ${meta.cls}`;
+                            btn.setAttribute('data-query', cleanQuery);
+                            btn.innerHTML = `${meta.icon}<span>${escapeHtml(cleanQuery)}</span>`;
+                            btn.style.animationDelay = (idx * 0.05) + 's';
                             chipsDiv.appendChild(btn);
                         });
                         insertMessageToDom(chipsDiv);
@@ -712,7 +831,15 @@
         }
 
         if (btnCloseChatbot) {
-            btnCloseChatbot.addEventListener('click', function () {
+            btnCloseChatbot.addEventListener('click', function (e) {
+                e.stopPropagation();
+                closeChatbot();
+            });
+        }
+
+        if (btnQuickCloseChat) {
+            btnQuickCloseChat.addEventListener('click', function (e) {
+                e.stopPropagation();
                 closeChatbot();
             });
         }
@@ -727,20 +854,36 @@
                         </div>
                         <div class="chat-msg-content">
                             <div class="chat-bubble">
-                                Cuộc trò chuyện đã được làm mới! Em là <strong>Trợ lý ảo AI của V-Phone Store</strong>. ✨<br><br>
-                                Em có thể tư vấn các dòng Flagship 2026, so sánh giá bán, hỗ trợ trả góp 0%, đồng kiểm và bảo hành 1 đổi 1. Anh/chị cần hỗ trợ gì ạ?
+                                Cuộc trò chuyện đã được làm mới! Em là <strong>V-Phone Cyber AI</strong>. Em có thể tư vấn bảng giá Flagship 2026, trả góp 0%, đồng kiểm và bảo hành 1 đổi 1. Anh/chị cần em hỗ trợ gì ạ?
                             </div>
                             <div class="chat-time">${getCurrentTime()}</div>
                         </div>
                     </div>
                     <div class="chatbot-quick-chips">
-                        <button type="button" class="chip-item" data-query="Tư vấn các dòng iPhone mới nhất">📱 iPhone mới nhất</button>
-                        <button type="button" class="chip-item" data-query="Tư vấn điện thoại Samsung Galaxy">⚡ Samsung Galaxy</button>
-                        <button type="button" class="chip-item" data-query="Điện thoại dưới 10 triệu đáng mua nhất">💰 Máy dưới 10 triệu</button>
-                        <button type="button" class="chip-item" data-query="Chính sách mua trả góp 0%">💳 Trả góp 0%</button>
-                        <button type="button" class="chip-item" data-query="Chính sách đồng kiểm mở hộp trước khi trả tiền">📦 Kiểm tra hàng trước</button>
-                        <button type="button" class="chip-item" data-query="Chính sách bảo hành 1 đổi 1">🛡️ Bảo hành 1-1</button>
-                        <button type="button" class="chip-item" data-query="Hotline hỗ trợ và gặp tư vấn viên">📞 Hotline CSKH</button>
+                        <button type="button" class="chip-item chip-apple" data-query="Tư vấn các dòng iPhone mới nhất">
+                            <svg viewBox="0 0 170 170" width="11" height="11" fill="currentColor" class="chip-icon"><path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.35.13-9.16-1.9-14.42-6.08-3.69-3.04-7.67-7.81-11.96-14.34-7.38-11.22-12.87-23.75-16.48-37.58-3.61-13.84-5.42-26.65-5.42-38.45 0-14.57 3.65-26.79 10.96-36.68 7.31-9.89 16.59-14.93 27.84-15.13 4.35 0 9.4 1.15 15.15 3.45 5.75 2.3 9.46 3.51 11.13 3.63 1.88-.12 5.75-1.39 11.61-3.81 5.86-2.42 10.63-3.51 14.31-3.27 10.45.61 19.23 4.48 26.35 11.62 7.12 7.14 11.62 15.77 13.5 25.88-9.4 5.68-14.04 13.79-13.92 24.32.12 8.35 3.21 15.42 9.27 21.2 6.06 5.78 13.57 9.17 22.53 10.17-2.12 6.39-4.87 13.16-8.25 20.31zM119.22 33.15c0-6.9 2.45-13.39 7.35-19.47 4.9-6.08 11.08-10.36 18.54-12.84.58 4.2.36 8.52-.66 12.96-1.02 4.44-3.14 8.78-6.36 13.02-3.87 5.09-8.48 8.92-13.83 11.49-5.35 2.57-10.22 3.84-14.61 3.81.44-2.88.94-5.87 1.57-8.97z"/></svg>
+                            <span>iPhone Mới Nhất</span>
+                        </button>
+                        <button type="button" class="chip-item chip-samsung" data-query="Tư vấn điện thoại Samsung Galaxy">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" class="chip-icon"><path d="M12 2l2.4 7.2L21.6 12l-7.2 2.8L12 22l-2.4-7.2L2.4 12l7.2-2.8L12 2z"/></svg>
+                            <span>Samsung Galaxy AI</span>
+                        </button>
+                        <button type="button" class="chip-item chip-installment" data-query="Chính sách mua trả góp 0%">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                            <span>Trả Góp 0%</span>
+                        </button>
+                        <button type="button" class="chip-item chip-inspection" data-query="Chính sách đồng kiểm mở hộp trước khi trả tiền">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                            <span>Đồng Kiểm Mở Hộp</span>
+                        </button>
+                        <button type="button" class="chip-item chip-warranty" data-query="Chính sách bảo hành 1 đổi 1">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                            <span>Bảo Hành 1-1</span>
+                        </button>
+                        <button type="button" class="chip-item chip-budget" data-query="Điện thoại dưới 10 triệu đáng mua nhất">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" class="chip-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+                            <span>Dưới 10 Triệu</span>
+                        </button>
                     </div>
                     <div id="chatbotTyping" class="chat-msg chat-msg-bot d-none">
                         <div class="chat-msg-avatar">
@@ -748,7 +891,7 @@
                         </div>
                         <div class="chat-msg-content">
                             <div class="chat-bubble typing-bubble">
-                                <span class="typing-status-text">V-Phone AI đang phân tích & soạn câu trả lời</span>
+                                <span class="typing-status-text">V-Phone AI đang phân tích kho dữ liệu & soạn câu trả lời</span>
                                 <span class="typing-dot"></span>
                                 <span class="typing-dot"></span>
                                 <span class="typing-dot"></span>

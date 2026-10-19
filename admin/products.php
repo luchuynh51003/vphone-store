@@ -428,10 +428,10 @@ select.fm-input { appearance: auto; }
                         </td>
                         <td>
                             <div class="text-danger fw-bold fs-6">
-                                <?= number_format($p['sale_price'] > 0 ? $p['sale_price'] : $p['price'], 0, ',', '.') ?> đ
+                                <?= number_format($p['sale_price'] > 0 ? $p['sale_price'] : $p['price'], 0, ',', '.') ?> VNĐ
                             </div>
                             <?php if ($p['sale_price'] > 0 && $p['sale_price'] < $p['price']): ?>
-                                <small class="text-muted text-decoration-line-through"><?= number_format($p['price'], 0, ',', '.') ?> đ</small>
+                                <small class="text-muted text-decoration-line-through"><?= number_format($p['price'], 0, ',', '.') ?> VNĐ</small>
                             <?php endif; ?>
                         </td>
                         <td>
