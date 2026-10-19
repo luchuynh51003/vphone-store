@@ -192,6 +192,17 @@ class AuthController {
             exit;
         }
 
+        $userRole = (int)($user['role'] ?? 0);
+        $perms = [];
+        if (!empty($user['permissions'])) {
+            $decoded = json_decode($user['permissions'], true);
+            $perms = is_array($decoded) ? $decoded : [];
+        }
+        if ($userRole === 1) {
+            require_once __DIR__ . '/../../admin/includes/permissions.php';
+            $perms = array_keys(VPHONE_PERMISSIONS);
+        }
+
         $_SESSION['user'] = [
             'id' => (int)$user['id'],
             'fullname' => $user['fullname'],
@@ -199,7 +210,10 @@ class AuthController {
             'phone' => $user['phone'] ?? '',
             'address' => $user['address'] ?? 'Chưa cập nhật',
             'avatar' => $user['avatar'] ?? '',
-            'role' => (int)$user['role'],
+            'role' => $userRole,
+            'staff_role' => $user['staff_role'] ?? ($userRole === 1 ? 'admin' : ($userRole === 2 ? 'staff' : '')),
+            'staff_title' => $user['staff_title'] ?? ($userRole === 1 ? 'Quản trị viên' : ($userRole === 2 ? 'Nhân viên cửa hàng' : 'Khách hàng')),
+            'permissions' => $perms,
             'auth_provider' => $user['auth_provider'] ?? 'google'
         ];
 
@@ -321,6 +335,17 @@ class AuthController {
             $user = $userModel->findById($newId);
         }
 
+        $userRole = (int)($user['role'] ?? 0);
+        $perms = [];
+        if (!empty($user['permissions'])) {
+            $decoded = json_decode($user['permissions'], true);
+            $perms = is_array($decoded) ? $decoded : [];
+        }
+        if ($userRole === 1) {
+            require_once __DIR__ . '/../../admin/includes/permissions.php';
+            $perms = array_keys(VPHONE_PERMISSIONS);
+        }
+
         $_SESSION['user'] = [
             'id' => (int)$user['id'],
             'fullname' => $user['fullname'],
@@ -328,7 +353,10 @@ class AuthController {
             'phone' => $user['phone'] ?? '',
             'address' => $user['address'] ?? 'Chưa cập nhật',
             'avatar' => $user['avatar'] ?? '',
-            'role' => (int)$user['role'],
+            'role' => $userRole,
+            'staff_role' => $user['staff_role'] ?? ($userRole === 1 ? 'admin' : ($userRole === 2 ? 'staff' : '')),
+            'staff_title' => $user['staff_title'] ?? ($userRole === 1 ? 'Quản trị viên' : ($userRole === 2 ? 'Nhân viên cửa hàng' : 'Khách hàng')),
+            'permissions' => $perms,
             'auth_provider' => $user['auth_provider'] ?? 'google'
         ];
 
