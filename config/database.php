@@ -58,6 +58,14 @@ try {
             }
         } catch (Throwable $ignore) {}
 
+        // Đảm bảo các voucher khuyến mãi của Chatbot luôn tồn tại
+        try {
+            $checkV = $pdo->query("SELECT COUNT(*) FROM vouchers WHERE code = 'VPHONE500'")->fetchColumn();
+            if (!$checkV) {
+                $pdo->exec("INSERT INTO vouchers (code, discount_type, discount_value, minimum_order, is_active, created_at) VALUES ('VPHONE500', 'fixed', 500000, 15000000, 1, NOW()), ('FLAGSHIP2026', 'fixed', 1000000, 20000000, 1, NOW())");
+            }
+        } catch (Throwable $ignore) {}
+
         // Đảm bảo các cột Google OAuth luôn tồn tại trong users
         try {
             $userCols = $pdo->query("SHOW COLUMNS FROM users")->fetchAll(PDO::FETCH_COLUMN);
