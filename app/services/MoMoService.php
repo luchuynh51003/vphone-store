@@ -24,7 +24,7 @@ class MoMoService {
     private function getBaseUrl(): string {
         $scheme = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $uri = $_SERVER['REQUEST_URI'] ?? '/phone-store/';
+        $uri = $_SERVER['REQUEST_URI'] ?? '/vphone-store/';
         $dir = rtrim(dirname($uri), '/\\');
         if (strpos($dir, 'index.php') !== false) {
             $dir = dirname($dir);

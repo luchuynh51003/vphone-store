@@ -13,6 +13,8 @@
  *    - http://localhost
  *    - http://127.0.0.1
  * 7. Tại "Authorized redirect URIs", thêm:
+ *    - http://localhost/vphone-store/index.php?page=auth&action=google_callback
+ *    - http://localhost/vphone-store/index.php?page=google-callback
  *    - http://localhost/phone-store/index.php?page=auth&action=google_callback
  *    - http://localhost/phone-store/index.php?page=google-callback
  * 8. Copy Client ID và Client Secret dán vào bên dưới.
@@ -25,7 +27,7 @@ $rawHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $host = preg_replace('/^127\.0\.0\.1(:[0-9]+)?$/', 'localhost$1', $rawHost);
 $host = preg_replace('/:(80|443)$/', '', $host);
 
-$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/phone-store/index.php');
+$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/vphone-store/index.php');
 $rawDir = rtrim(dirname($scriptName), '/.');
 $scriptDir = ($rawDir === '' || $rawDir === '.') ? '' : $rawDir;
 $dynamicRedirectUri = $protocol . '://' . $host . $scriptDir . '/index.php?page=auth&action=google_callback';

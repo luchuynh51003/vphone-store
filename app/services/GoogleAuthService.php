@@ -41,7 +41,7 @@ class GoogleAuthService {
         $rawHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
         $host = preg_replace('/^127\.0\.0\.1(:[0-9]+)?$/', 'localhost$1', $rawHost);
         $host = preg_replace('/:(80|443)$/', '', $host);
-        $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/phone-store/index.php');
+        $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '/vphone-store/index.php');
         $rawDir = rtrim(dirname($scriptName), '/.');
         $scriptDir = ($rawDir === '' || $rawDir === '.') ? '' : $rawDir;
         return $protocol . '://' . $host . $scriptDir . '/index.php?page=auth&action=google_callback';
