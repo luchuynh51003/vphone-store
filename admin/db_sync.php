@@ -29,7 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'import') {
         $res = $syncTool->import();
         if ($res['success']) {
-            $message = "<strong>Đã nạp toàn bộ CSDL từ Git vào máy này thành công!</strong><br><i class=\"fa-solid fa-chart-simple text-info me-1\"></i> Thống kê hiện tại: <strong>{$res['orders_count']}</strong> đơn hàng, <strong>{$res['products_count']}</strong> sản phẩm, <strong>{$res['users_count']}</strong> tài khoản người dùng.<br><i class=\"fa-solid fa-arrow-right text-primary me-1\"></i> Bạn có thể vào xem đơn hàng vừa tạo ngay lập tức!";
+            $exportedTimeStr = htmlspecialchars($res['exported_at'] ?? 'Chưa xác định');
+            $message = "<strong>Đã nạp toàn bộ CSDL từ Git vào máy này thành công!</strong><br>"
+                     . "<div class=\"my-1.5 p-2 px-3 bg-warning bg-opacity-10 rounded-3 border border-warning border-opacity-25 d-inline-block\">"
+                     . "<i class=\"fa-regular fa-clock text-dark me-1.5\"></i>"
+                     . "<strong>Thời điểm xuất của bản sao lưu:</strong> "
+                     . "<span class=\"badge bg-warning text-dark font-monospace px-2 py-1 fw-bold fs-6 ms-1\">{$exportedTimeStr}</span>"
+                     . "</div><br>"
+                     . "<i class=\"fa-solid fa-chart-simple text-info me-1\"></i> Thống kê dữ liệu đã nạp: <strong>{$res['orders_count']}</strong> đơn hàng, <strong>{$res['products_count']}</strong> sản phẩm, <strong>{$res['users_count']}</strong> tài khoản người dùng.<br>"
+                     . "<i class=\"fa-solid fa-arrow-right text-primary me-1\"></i> Bạn có thể kiểm tra danh sách đơn hàng vừa cập nhật ngay bên dưới!";
             $messageType = 'success';
         } else {
             $message = "Lỗi khi nạp: " . htmlspecialchars($res['message']);
@@ -147,11 +155,11 @@ $latestOrders = $pdo->query("SELECT id, fullname, phone, total_money, status, cr
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <small class="text-muted text-uppercase fw-bold" style="font-size: 0.72rem;">File Git Backup</small>
-                        <div class="fw-bold text-dark my-1" style="font-size: 1.1rem;">
+                        <div class="fw-bold text-dark my-1" style="font-size: 1.05rem;">
                             <?= $backupInfo['exists'] ? $backupInfo['size_formatted'] : 'Chưa có' ?>
                         </div>
-                        <small class="text-muted text-truncate d-block" style="max-width: 170px;">
-                            <?= $backupInfo['exists'] ? $backupInfo['updated_at'] : 'database/db_phone_store.sql' ?>
+                        <small class="text-secondary d-block font-monospace" style="font-size: 0.76rem;" title="Thời điểm xuất bản sao lưu này">
+                            <i class="fa-regular fa-clock me-1 text-primary"></i>Xuất: <strong class="text-dark"><?= $backupInfo['exists'] ? htmlspecialchars($backupInfo['exported_at']) : '--' ?></strong>
                         </small>
                     </div>
                     <div class="rounded-circle p-3 bg-info bg-opacity-10 text-info">
@@ -216,6 +224,16 @@ $latestOrders = $pdo->query("SELECT id, fullname, phone, total_money, status, cr
                         Sau khi bạn chạy lệnh <code>git pull</code> trên máy trường để kéo code mới về, bấm nút bên dưới để nạp đè toàn bộ đơn hàng và dữ liệu từ máy Mac vào MySQL của máy trường.
                     </p>
 
+                    <!-- THÔNG TIN THỜI ĐIỂM XUẤT CỦA BẢN SAO LƯU HIỆN CÓ -->
+                    <div class="p-2.5 px-3 bg-light rounded-3 border mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+                        <span class="small text-muted fw-semibold">
+                            <i class="fa-regular fa-clock text-primary me-1.5"></i>Bản sao lưu trong Git xuất lúc:
+                        </span>
+                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 font-monospace px-2.5 py-1 fs-6">
+                            <?= $backupInfo['exists'] ? htmlspecialchars($backupInfo['exported_at']) : 'Chưa có file' ?>
+                        </span>
+                    </div>
+
                     <div class="bg-light p-3 rounded-3 mb-4 font-monospace small border">
                         <div class="text-muted">// Trên máy trường (Windows/Mac), chỉ cần kéo code về:</div>
                         <div class="text-success fw-bold mt-1">git pull</div>
@@ -223,7 +241,7 @@ $latestOrders = $pdo->query("SELECT id, fullname, phone, total_money, status, cr
                     </div>
 
                     <div class="mt-auto">
-                        <form method="POST" onsubmit="return confirm('Xác nhận nạp đè dữ liệu từ file Git vào MySQL máy này? Toàn bộ dữ liệu sẽ đồng bộ y hệt máy trước.');">
+                        <form method="POST" onsubmit="return confirm('Xác nhận nạp bản sao lưu (Được xuất lúc: <?= addslashes($backupInfo['exported_at'] ?? '') ?>) vào MySQL máy này?');">
                             <input type="hidden" name="action" value="import">
                             <button type="submit" class="btn btn-success btn-lg w-100 rounded-pill fw-bold shadow-sm py-2.5 d-flex align-items-center justify-content-center gap-2 text-white">
                                 <i class="fa-solid fa-arrows-rotate"></i>

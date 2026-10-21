@@ -40,9 +40,13 @@ class DatabaseSyncTool {
                 return ['success' => false, 'message' => 'Không tìm thấy bảng nào trong CSDL!'];
             }
 
+            $now = time();
+            $rawDate = date('Y-m-d H:i:s', $now);
+            $formattedDate = date('H:i:s - d/m/Y', $now);
+
             $sql = "-- =========================================================================\n";
             $sql .= "-- CƠ SỞ DỮ LIỆU ĐỒ ÁN V-PHONE STORE (ĐÃ SAO LƯU TỰ ĐỘNG)\n";
-            $sql .= "-- Thời gian sao lưu: " . date('Y-m-d H:i:s') . "\n";
+            $sql .= "-- Thời gian sao lưu: " . $rawDate . " (" . $formattedDate . ")\n";
             $sql .= "-- =========================================================================\n\n";
             $sql .= "CREATE DATABASE IF NOT EXISTS `db_phone_store` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;\n";
             $sql .= "USE `db_phone_store`;\n\n";
@@ -162,6 +166,9 @@ class DatabaseSyncTool {
                 return ['success' => false, 'message' => 'File sao lưu SQL bị rỗng!'];
             }
 
+            // Đọc thời gian xuất từ header file SQL trước khi nạp
+            $exportedAt = $this->getExportTimeFromSqlFile() ?? 'Không xác định';
+
             // Thực thi SQL nhiều truy vấn
             $this->pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, 1);
             $this->pdo->exec($sql);
@@ -175,6 +182,7 @@ class DatabaseSyncTool {
             return [
                 'success' => true,
                 'message' => 'Đã nạp toàn bộ dữ liệu từ Git vào MySQL thành công!',
+                'exported_at' => $exportedAt,
                 'table_count' => count($tables),
                 'orders_count' => $orderCount,
                 'products_count' => $prodCount,
@@ -184,6 +192,28 @@ class DatabaseSyncTool {
         } catch (Throwable $e) {
             return ['success' => false, 'message' => 'Lỗi khi nạp CSDL: ' . $e->getMessage()];
         }
+    }
+
+    /**
+     * Đọc thời gian sao lưu chính xác từ header file SQL
+     */
+    public function getExportTimeFromSqlFile(): ?string {
+        if (!file_exists($this->dumpFile)) return null;
+        $handle = @fopen($this->dumpFile, 'r');
+        if (!$handle) return null;
+        $timeStr = null;
+        for ($i = 0; $i < 15; $i++) {
+            $line = fgets($handle);
+            if ($line === false) break;
+            if (preg_match('/Thời gian sao lưu:\s*([0-9]{4}-[0-9]{2}-[0-9]{2}\s+[0-9]{2}:[0-9]{2}:[0-9]{2})/u', $line, $matches)) {
+                $rawTime = trim($matches[1]);
+                $dt = DateTime::createFromFormat('Y-m-d H:i:s', $rawTime);
+                $timeStr = $dt ? $dt->format('H:i:s - d/m/Y') : $rawTime;
+                break;
+            }
+        }
+        fclose($handle);
+        return $timeStr;
     }
 
     /**
@@ -200,12 +230,14 @@ class DatabaseSyncTool {
 
         $size = filesize($this->dumpFile);
         $mtime = filemtime($this->dumpFile);
+        $exportedAt = $this->getExportTimeFromSqlFile();
 
         return [
             'exists' => true,
             'file' => $this->dumpFile,
             'size_bytes' => $size,
             'size_formatted' => round($size / 1024, 2) . ' KB',
+            'exported_at' => $exportedAt ? $exportedAt : date('H:i:s - d/m/Y', $mtime),
             'updated_at' => date('d/m/Y H:i:s', $mtime),
             'timestamp' => $mtime
         ];
@@ -231,20 +263,22 @@ if (php_sapi_name() === 'cli' && isset($argv[0]) && realpath($argv[0]) === __FIL
         $res = $tool->import();
         if ($res['success']) {
             echo "[THANH CONG] Nap thanh cong!\n";
+            echo "[THOI DIEM XUAT] Ban sao luu tao luc: {$res['exported_at']}\n";
             echo "[THONG KE] So bang: {$res['table_count']}, Don hang: {$res['orders_count']}, San pham: {$res['products_count']}, Tai khoan: {$res['users_count']}\n";
         } else {
             echo "[LOI] That bai: {$res['message']}\n";
         }
     } else {
         $info = $tool->getBackupInfo();
-        echo "=== THÔNG TIN BACKUP DATABASE ===\n";
+        echo "=== THONG TIN BACKUP DATABASE ===\n";
         if ($info['exists']) {
             echo "File: {$info['file']}\n";
-            echo "Kích thước: {$info['size_formatted']}\n";
-            echo "Lần cập nhật cuối: {$info['updated_at']}\n";
+            echo "Kich thuoc: {$info['size_formatted']}\n";
+            echo "Thoi diem xuat: {$info['exported_at']}\n";
+            echo "Lan cap nhat cuoi: {$info['updated_at']}\n";
         } else {
-            echo "Chưa có file sao lưu.\n";
+            echo "Chua co file sao luu.\n";
         }
-        echo "Cách dùng: php database/db_sync_tool.php [export|import]\n";
+        echo "Cach dung: php database/db_sync_tool.php [export|import]\n";
     }
 }
