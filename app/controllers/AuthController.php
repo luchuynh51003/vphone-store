@@ -386,4 +386,185 @@ class AuthController {
         header('Location: index.php');
         exit;
     }
+
+    /**
+     * Gửi yêu cầu quên mật khẩu (Sinh mã OTP & Token)
+     */
+    public function forgotPassword() {
+        if (ob_get_length()) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+
+        $email = strtolower(trim($_POST['email'] ?? ''));
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Vui lòng nhập địa chỉ email hợp lệ!'
+            ]);
+            exit;
+        }
+
+        $userModel = new UserModel($this->pdo);
+        $user = $userModel->findByEmail($email);
+
+        if (!$user) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Không tìm thấy tài khoản nào liên kết với email này trên hệ thống!'
+            ]);
+            exit;
+        }
+
+        // Kiểm tra tài khoản có bị khóa không
+        if (isset($user['status']) && (int)$user['status'] === 0) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Tài khoản của bạn đang bị tạm khóa. Vui lòng liên hệ quản trị viên!'
+            ]);
+            exit;
+        }
+
+        // Nếu tài khoản Google chưa từng tạo mật khẩu
+        if (empty($user['password']) && !empty($user['google_id'])) {
+            echo json_encode([
+                'success' => false,
+                'is_google' => true,
+                'message' => 'Tài khoản này được đăng ký thông qua Google. Bạn có thể bấm nút "Đăng nhập với Google" để vào ngay mà không cần mật khẩu!'
+            ]);
+            exit;
+        }
+
+        // Sinh mã OTP và Token
+        $resetData = $userModel->createPasswordReset($email);
+        $otp = $resetData['otp'];
+        $token = $resetData['token'];
+
+        // Tạo link đặt lại mật khẩu trực tiếp
+        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        $scriptDir = rtrim(dirname($_SERVER['SCRIPT_NAME'] ?? '/vphone-store/index.php'), '/.\\');
+        $scriptDir = ($scriptDir === '' || $scriptDir === '.') ? '' : $scriptDir;
+        $resetUrl = $protocol . '://' . $host . $scriptDir . '/index.php?page=reset-password&token=' . urlencode($token);
+
+        require_once __DIR__ . '/../services/MailService.php';
+        $mailSent = MailService::sendPasswordResetEmail($email, $user['fullname'] ?: 'Quý khách', $otp, $resetUrl);
+
+        // Lưu email vào session để dùng cho bước tiếp theo
+        $_SESSION['reset_password_email'] = $email;
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Mã xác nhận OTP đã được gửi đến email ' . htmlspecialchars($email) . '!',
+            'email' => $email,
+            'otp' => $otp, // Trả về OTP để test nhanh & tiện lợi trên Localhost
+            'token' => $token,
+            'reset_url' => $resetUrl,
+            'mail_sent' => $mailSent
+        ]);
+        exit;
+    }
+
+    /**
+     * Xác thực mã OTP đặt lại mật khẩu
+     */
+    public function verifyResetOtp() {
+        if (ob_get_length()) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+
+        $email = strtolower(trim($_POST['email'] ?? ($_SESSION['reset_password_email'] ?? '')));
+        $otp = trim($_POST['otp'] ?? '');
+
+        if (empty($email) || empty($otp)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Vui lòng nhập đầy đủ email và mã OTP 6 chữ số!'
+            ]);
+            exit;
+        }
+
+        $userModel = new UserModel($this->pdo);
+        $resetRecord = $userModel->verifyPasswordResetOtp($email, $otp);
+
+        if (!$resetRecord) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Mã OTP không chính xác hoặc đã hết hạn (hiệu lực 15 phút)! Vui lòng kiểm tra lại.'
+            ]);
+            exit;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Xác thực OTP thành công! Vui lòng nhập mật khẩu mới.',
+            'token' => $resetRecord['token'],
+            'email' => $email
+        ]);
+        exit;
+    }
+
+    /**
+     * Thực hiện đổi mật khẩu mới sau khi xác thực OTP hoặc Token
+     */
+    public function resetPassword() {
+        if (ob_get_length()) ob_clean();
+        header('Content-Type: application/json; charset=utf-8');
+
+        $email = strtolower(trim($_POST['email'] ?? ($_SESSION['reset_password_email'] ?? '')));
+        $otp = trim($_POST['otp'] ?? '');
+        $token = trim($_POST['token'] ?? '');
+        $newPassword = trim($_POST['new_password'] ?? '');
+        $confirmPassword = trim($_POST['confirm_password'] ?? '');
+
+        if (empty($newPassword) || mb_strlen($newPassword, 'UTF-8') < 6) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Mật khẩu mới phải có độ dài từ 6 ký tự trở lên!'
+            ]);
+            exit;
+        }
+
+        if ($newPassword !== $confirmPassword) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Xác nhận mật khẩu không khớp. Vui lòng nhập lại chính xác!'
+            ]);
+            exit;
+        }
+
+        $userModel = new UserModel($this->pdo);
+
+        // Kiểm tra qua Token hoặc qua OTP
+        $valid = null;
+        if (!empty($token)) {
+            $valid = $userModel->verifyPasswordResetToken($token);
+            if ($valid) $email = $valid['email'];
+        } elseif (!empty($email) && !empty($otp)) {
+            $valid = $userModel->verifyPasswordResetOtp($email, $otp);
+        }
+
+        if (!$valid) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Yêu cầu đặt lại mật khẩu không hợp lệ hoặc đã hết hạn! Vui lòng thử lại từ đầu.'
+            ]);
+            exit;
+        }
+
+        $done = $userModel->completePasswordReset($email, $newPassword);
+        if (!$done) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Không thể cập nhật mật khẩu. Vui lòng thử lại!'
+            ]);
+            exit;
+        }
+
+        unset($_SESSION['reset_password_email']);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Đặt lại mật khẩu thành công! Bạn có thể đăng nhập ngay với mật khẩu mới.',
+            'email' => $email
+        ]);
+        exit;
+    }
 }

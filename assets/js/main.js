@@ -522,13 +522,234 @@
     function initAuthModal() {
         const loginForm = document.getElementById('formModalLogin');
         const registerForm = document.getElementById('formModalRegister');
+        const forgotForm = document.getElementById('formModalForgot');
+        const resetForm = document.getElementById('formModalReset');
         const authAlert = document.getElementById('authAlert');
         const authModalElement = document.getElementById('unifiedAuthModal');
+
+        const btnOpenForgot = document.getElementById('btnOpenForgotTab');
+        const backToLoginBtns = document.querySelectorAll('.btn-back-to-login');
+        const tabBtnLogin = document.getElementById('tabBtnLogin');
+        const tabBtnForgot = document.getElementById('tabBtnForgot');
+        const modalForgotStep1 = document.getElementById('modalForgotStep1');
+        const modalForgotStep2 = document.getElementById('modalForgotStep2');
+        const modalDisplayEmail = document.getElementById('modalDisplayEmail');
+        const modalHiddenEmail = document.getElementById('modalHiddenEmail');
+        const modalHiddenToken = document.getElementById('modalHiddenToken');
+        const modalForgotOtp = document.getElementById('modalForgotOtp');
+        const modalBtnResend = document.getElementById('modalBtnResendOtp');
 
         if (new URLSearchParams(window.location.search).get('show_login') === '1' && authModalElement && window.bootstrap) {
             bootstrap.Modal.getOrCreateInstance(authModalElement).show();
         }
 
+        // Chuyển sang tab Quên mật khẩu
+        if (btnOpenForgot && tabBtnForgot && window.bootstrap) {
+            btnOpenForgot.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (authAlert) {
+                    authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
+                    authAlert.innerHTML = '';
+                }
+                const tab = new bootstrap.Tab(tabBtnForgot);
+                tab.show();
+                if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
+                if (modalForgotStep2) modalForgotStep2.classList.add('d-none');
+                const emailInput = document.getElementById('modalForgotEmail');
+                if (emailInput) {
+                    const loginEmail = loginForm ? loginForm.querySelector('input[type="email"]') : null;
+                    if (loginEmail && loginEmail.value) {
+                        emailInput.value = loginEmail.value;
+                    }
+                    setTimeout(() => emailInput.focus(), 200);
+                }
+            });
+        }
+
+        // Quay lại tab Đăng nhập
+        if (backToLoginBtns && tabBtnLogin && window.bootstrap) {
+            backToLoginBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (authAlert) {
+                        authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
+                        authAlert.innerHTML = '';
+                    }
+                    const tab = new bootstrap.Tab(tabBtnLogin);
+                    tab.show();
+                });
+            });
+        }
+
+        // Gửi lại mã OTP trong Modal
+        if (modalBtnResend) {
+            modalBtnResend.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (modalForgotStep2) modalForgotStep2.classList.add('d-none');
+                if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
+            });
+        }
+
+        // Xử lý gửi Form Quên mật khẩu trong Modal (Bước 1)
+        if (forgotForm) {
+            forgotForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const submitBtn = forgotForm.querySelector('button[type="submit"]');
+                const origHtml = submitBtn ? submitBtn.innerHTML : '';
+
+                if (authAlert) {
+                    authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
+                    authAlert.innerHTML = '';
+                }
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang kiểm tra...';
+                }
+
+                try {
+                    const response = await fetch(forgotForm.action, {
+                        method: 'POST',
+                        body: new FormData(forgotForm),
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    const res = await response.json();
+
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origHtml;
+                    }
+
+                    if (!res.success) {
+                        if (authAlert) {
+                            authAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>' + (res.message || 'Có lỗi xảy ra!');
+                            authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                        }
+                        return;
+                    }
+
+                    // Chuyển sang Bước 2 trong Modal
+                    const userEmail = res.email || document.getElementById('modalForgotEmail').value;
+                    if (modalDisplayEmail) modalDisplayEmail.textContent = userEmail;
+                    if (modalHiddenEmail) modalHiddenEmail.value = userEmail;
+                    if (modalHiddenToken && res.token) modalHiddenToken.value = res.token;
+
+                    let alertMsg = '<i class="fa-solid fa-circle-check me-1"></i>' + res.message;
+                    if (res.otp) {
+                        alertMsg += `<div class="mt-1.5 p-1.5 bg-white bg-opacity-75 rounded border border-success border-opacity-25 text-dark" style="font-size: 0.78rem;"><strong>Mã OTP test:</strong> <span class="badge bg-success fs-6 ms-1">${res.otp}</span></div>`;
+                    }
+                    if (authAlert) {
+                        authAlert.innerHTML = alertMsg;
+                        authAlert.className = 'alert alert-success small py-2 rounded-3 mb-3';
+                    }
+
+                    if (modalForgotStep1) modalForgotStep1.classList.add('d-none');
+                    if (modalForgotStep2) modalForgotStep2.classList.remove('d-none');
+                    if (modalForgotOtp) {
+                        setTimeout(() => modalForgotOtp.focus(), 200);
+                    }
+
+                } catch (err) {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origHtml;
+                    }
+                    if (authAlert) {
+                        authAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>Lỗi kết nối máy chủ! Vui lòng thử lại.';
+                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    }
+                }
+            });
+        }
+
+        // Xử lý gửi Form Đặt lại mật khẩu trong Modal (Bước 2)
+        if (resetForm) {
+            resetForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const submitBtn = resetForm.querySelector('button[type="submit"]');
+                const origHtml = submitBtn ? submitBtn.innerHTML : '';
+
+                const p1 = document.getElementById('modalNewPass') ? document.getElementById('modalNewPass').value : '';
+                const p2 = document.getElementById('modalConfirmPass') ? document.getElementById('modalConfirmPass').value : '';
+
+                if (p1.length < 6) {
+                    if (authAlert) {
+                        authAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>Mật khẩu mới phải có ít nhất 6 ký tự!';
+                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    }
+                    return;
+                }
+                if (p1 !== p2) {
+                    if (authAlert) {
+                        authAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>Xác nhận mật khẩu không trùng khớp!';
+                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    }
+                    return;
+                }
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang cập nhật...';
+                }
+
+                try {
+                    const response = await fetch(resetForm.action, {
+                        method: 'POST',
+                        body: new FormData(resetForm),
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    const res = await response.json();
+
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origHtml;
+                    }
+
+                    if (!res.success) {
+                        if (authAlert) {
+                            authAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>' + (res.message || 'Không thể đổi mật khẩu!');
+                            authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                        }
+                        return;
+                    }
+
+                    // Thành công: Thông báo và quay lại tab Đăng nhập
+                    if (authAlert) {
+                        authAlert.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>' + res.message;
+                        authAlert.className = 'alert alert-success small py-2 rounded-3 mb-3';
+                    }
+
+                    if (modalForgotStep2) modalForgotStep2.classList.add('d-none');
+                    if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
+                    resetForm.reset();
+
+                    // Chuyển về tab Login sau 1.5s
+                    setTimeout(() => {
+                        if (tabBtnLogin && window.bootstrap) {
+                            new bootstrap.Tab(tabBtnLogin).show();
+                            const loginEmail = loginForm ? loginForm.querySelector('input[type="email"]') : null;
+                            if (loginEmail && res.email) {
+                                loginEmail.value = res.email;
+                                const loginPass = loginForm.querySelector('input[type="password"]');
+                                if (loginPass) loginPass.focus();
+                            }
+                        }
+                    }, 1500);
+
+                } catch (err) {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origHtml;
+                    }
+                    if (authAlert) {
+                        authAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>Lỗi kết nối máy chủ! Vui lòng thử lại.';
+                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    }
+                }
+            });
+        }
+
+        // Xử lý Login và Register
         [loginForm, registerForm].forEach(form => {
             if (!form) return;
 

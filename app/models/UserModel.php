@@ -36,6 +36,7 @@ class UserModel {
             }
             $this->ensureGoogleColumns();
             $this->ensureStaffColumns();
+            $this->ensurePasswordResetsTable();
         } catch (Throwable $e) {}
     }
 
@@ -370,5 +371,76 @@ class UserModel {
         }
         $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = ?");
         return $stmt->execute([$userId]);
+    }
+
+    public function ensurePasswordResetsTable(): void {
+        try {
+            $sql = "CREATE TABLE IF NOT EXISTS password_resets (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(100) NOT NULL,
+                token VARCHAR(64) NOT NULL,
+                otp VARCHAR(10) NOT NULL,
+                expires_at DATETIME NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                INDEX (email),
+                INDEX (token),
+                INDEX (otp)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+            $this->pdo->exec($sql);
+        } catch (Throwable $e) {}
+    }
+
+    public function createPasswordReset(string $email): array {
+        $this->ensurePasswordResetsTable();
+        $email = strtolower(trim($email));
+
+        // Xóa các mã reset cũ của email này
+        $del = $this->pdo->prepare("DELETE FROM password_resets WHERE email = ?");
+        $del->execute([$email]);
+
+        // Tạo OTP ngẫu nhiên 6 chữ số
+        $otp = (string)random_int(100000, 999999);
+        $token = bin2hex(random_bytes(32));
+        $expiresAt = date('Y-m-d H:i:s', time() + (15 * 60)); // 15 phút
+
+        $stmt = $this->pdo->prepare("INSERT INTO password_resets (email, token, otp, expires_at) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$email, $token, $otp, $expiresAt]);
+
+        return [
+            'email' => $email,
+            'otp' => $otp,
+            'token' => $token,
+            'expires_at' => $expiresAt
+        ];
+    }
+
+    public function verifyPasswordResetOtp(string $email, string $otp): ?array {
+        $this->ensurePasswordResetsTable();
+        $stmt = $this->pdo->prepare("SELECT * FROM password_resets WHERE email = ? AND otp = ? AND expires_at >= NOW() ORDER BY id DESC LIMIT 1");
+        $stmt->execute([strtolower(trim($email)), trim($otp)]);
+        $res = $stmt->fetch();
+        return $res ?: null;
+    }
+
+    public function verifyPasswordResetToken(string $token): ?array {
+        $this->ensurePasswordResetsTable();
+        $stmt = $this->pdo->prepare("SELECT * FROM password_resets WHERE token = ? AND expires_at >= NOW() ORDER BY id DESC LIMIT 1");
+        $stmt->execute([trim($token)]);
+        $res = $stmt->fetch();
+        return $res ?: null;
+    }
+
+    public function completePasswordReset(string $email, string $newPassword): bool {
+        $email = strtolower(trim($email));
+        $user = $this->findByEmail($email);
+        if (!$user) return false;
+
+        $updated = $this->updatePassword((int)$user['id'], $newPassword);
+        if ($updated) {
+            $del = $this->pdo->prepare("DELETE FROM password_resets WHERE email = ?");
+            $del->execute([$email]);
+            return true;
+        }
+        return false;
     }
 }

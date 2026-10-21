@@ -157,6 +157,12 @@ switch ($page) {
             $auth->googleCallback();
         } elseif ($action === 'google') {
             $auth->googleAuth();
+        } elseif ($action === 'forgot_password') {
+            $auth->forgotPassword();
+        } elseif ($action === 'verify_otp') {
+            $auth->verifyResetOtp();
+        } elseif ($action === 'reset_password') {
+            $auth->resetPassword();
         } elseif ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             $authRedirect = ($_GET['redirect'] ?? '') === 'checkout' ? '&redirect=checkout' : '';
             header('Location: index.php?show_login=1' . $authRedirect);
@@ -168,6 +174,13 @@ switch ($page) {
         } else {
             $auth->login();
         }
+        break;
+
+    case 'forgot-password':
+    case 'quen-mat-khau':
+    case 'reset-password':
+        $pageTitle = 'Quên & Đặt Lại Mật Khẩu - V-Phone Store';
+        require_once 'app/views/forgot_password.php';
         break;
 
     case 'google-login':
