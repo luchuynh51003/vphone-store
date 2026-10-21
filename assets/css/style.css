@@ -1130,18 +1130,26 @@ body {
 }
 
 /* ==========================================================================
-   STEPPERS & FORM CONTROLS
+   CHECKOUT EXPERIENCE (LUXURY FINTECH & APPLE STORE DESIGN)
    ========================================================================== */
+.checkout-page-wrapper {
+    padding-top: 1.5rem;
+    padding-bottom: 4rem;
+}
+
+/* Stepper Bar */
 .checkout-stepper-wrapper {
-    background: var(--v-card-bg, #ffffff);
-    border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
     border-radius: 9999px;
     padding: 8px 24px;
     display: inline-flex;
     align-items: center;
     gap: 16px;
     max-width: 100%;
+    backdrop-filter: blur(12px);
+    transition: all 0.25s ease;
 }
 
 .step-badge {
@@ -1152,11 +1160,12 @@ body {
     font-weight: 700;
     user-select: none;
     white-space: nowrap;
+    text-decoration: none;
 }
 
 .step-circle {
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
@@ -1164,49 +1173,243 @@ body {
     font-size: 0.82rem;
     font-weight: 800;
     flex-shrink: 0;
+    transition: all 0.25s ease;
 }
 
 .step-badge.step-completed .step-circle {
     background: #10b981;
     color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35);
 }
-
-.step-badge.step-completed .step-text { color: #10b981; }
+.step-badge.step-completed .step-text {
+    color: #10b981;
+}
 
 .step-badge.step-active .step-circle {
-    background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%);
+    background: linear-gradient(135deg, #0284c7 0%, #0066cc 100%);
     color: #ffffff;
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.4);
 }
-
-.step-badge.step-active .step-text { color: #0066cc; }
+.step-badge.step-active .step-text {
+    color: #0284c7;
+    font-weight: 800;
+}
 
 .step-badge.step-pending .step-circle {
     background: #f1f5f9;
     color: #94a3b8;
     border: 1.5px solid #e2e8f0;
 }
-
-.step-badge.step-pending .step-text { color: #94a3b8; }
+.step-badge.step-pending .step-text {
+    color: #94a3b8;
+}
 
 .step-connector {
-    width: 32px;
-    height: 2px;
+    width: 36px;
+    height: 2.5px;
     background: #e2e8f0;
     border-radius: 99px;
     flex-shrink: 0;
+    transition: all 0.25s ease;
 }
-
 .step-connector.active {
-    background: #10b981;
+    background: linear-gradient(90deg, #10b981 0%, #0284c7 100%);
 }
 
+/* Panels & Cards */
+.checkout-panel-card {
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.04);
+    margin-bottom: 24px;
+    transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.checkout-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.checkout-panel-title {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+}
+
+.checkout-panel-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.95rem;
+    background: rgba(2, 132, 199, 0.1);
+    color: #0284c7;
+    flex-shrink: 0;
+}
+
+/* Form Controls with Left Icon */
+.checkout-form-group {
+    margin-bottom: 18px;
+}
+.checkout-form-group:last-child {
+    margin-bottom: 0;
+}
+
+.checkout-label {
+    display: block;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 7px;
+}
+
+.checkout-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.checkout-input-group .input-icon {
+    position: absolute;
+    left: 16px;
+    font-size: 0.95rem;
+    color: #94a3b8;
+    pointer-events: none;
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 3;
+}
+
+.checkout-input-group .input-icon.icon-textarea {
+    top: 15px;
+    transform: none;
+}
+
+.checkout-form-control {
+    width: 100%;
+    height: 48px;
+    padding: 10px 16px 10px 46px;
+    font-size: 0.92rem;
+    font-weight: 500;
+    color: #0f172a;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.checkout-form-control::placeholder {
+    color: #94a3b8;
+    font-weight: 400;
+}
+
+.checkout-form-control:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+.checkout-form-control:focus {
+    border-color: #0284c7 !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.12) !important;
+    color: #0f172a !important;
+}
+
+.checkout-input-group:focus-within .input-icon {
+    color: #0284c7 !important;
+}
+
+textarea.checkout-form-control {
+    height: auto !important;
+    min-height: 80px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    resize: none;
+}
+
+/* Saved Address Selector Box */
+.saved-addr-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.saved-addr-item {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    user-select: none;
+}
+
+.saved-addr-item:hover {
+    border-color: #93c5fd;
+    background: #f0f7ff;
+}
+
+.saved-addr-item.active,
+.saved-addr-item.border-primary {
+    border-color: #0284c7 !important;
+    background: #f0f7ff !important;
+    box-shadow: 0 0 0 1px #0284c7;
+}
+
+.custom-addr-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.saved-addr-item.active .custom-addr-radio,
+.saved-addr-item.border-primary .custom-addr-radio {
+    border-color: #0284c7;
+    background: #0284c7;
+}
+
+.saved-addr-item.active .custom-addr-radio::after,
+.saved-addr-item.border-primary .custom-addr-radio::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffffff;
+}
+
+/* Payment Method Luxury Cards */
 .payment-card-luxury {
     border: 1.5px solid #e2e8f0;
     border-radius: 16px;
     padding: 16px 20px;
     cursor: pointer;
-    transition: border-color 0.15s ease, background 0.15s ease;
-    background: var(--v-card-bg, #ffffff);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #ffffff;
     position: relative;
     display: block;
     user-select: none;
@@ -1215,11 +1418,207 @@ body {
 .payment-card-luxury:hover {
     border-color: #93c5fd;
     background: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
 }
 
 .payment-card-luxury.active {
-    border-color: #0066cc;
-    background: #f0f7ff;
+    border-color: #0284c7 !important;
+    background: #f0f7ff !important;
+    box-shadow: 0 0 0 1px #0284c7, 0 6px 20px rgba(2, 132, 199, 0.12);
+}
+
+.custom-radio-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    background: transparent;
+}
+
+.payment-card-luxury.active .custom-radio-circle {
+    border-color: #0284c7;
+    background: #0284c7;
+}
+
+.custom-radio-circle .radio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffffff;
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.payment-card-luxury.active .custom-radio-circle .radio-dot {
+    transform: scale(1);
+}
+
+.payment-icon-box {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+    transition: transform 0.2s ease;
+}
+
+.payment-card-luxury:hover .payment-icon-box {
+    transform: scale(1.04);
+}
+
+.payment-bank-chip {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    display: inline-block;
+}
+
+/* Order Summary Sidebar */
+.checkout-summary-card {
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 4px 24px -2px rgba(15, 23, 42, 0.04);
+    transition: all 0.25s ease;
+}
+
+.checkout-summary-thumb {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 4px;
+}
+
+.checkout-summary-thumb img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.checkout-item-badge {
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+}
+
+/* Voucher Section */
+.checkout-voucher-panel {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.voucher-chip-btn {
+    font-size: 0.73rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: 1px solid rgba(2, 132, 199, 0.3);
+    background: #ffffff;
+    color: #0284c7;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.voucher-chip-btn:hover {
+    background: #0284c7;
+    color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+}
+
+.checkout-total-price {
+    font-size: 1.55rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    color: #e11d48;
+}
+
+/* Primary CTA Button */
+.btn-checkout-submit {
+    width: 100%;
+    padding: 15px 24px;
+    border-radius: 9999px;
+    font-size: 0.98rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    border: none;
+    background: linear-gradient(135deg, #0284c7 0%, #0066cc 100%);
+    color: #ffffff;
+    box-shadow: 0 8px 24px -4px rgba(2, 132, 199, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+}
+
+.btn-checkout-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -4px rgba(2, 132, 199, 0.55);
+    color: #ffffff;
+}
+
+.btn-checkout-submit:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+}
+
+.btn-checkout-submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Trust / Guarantee Card */
+.checkout-trust-card {
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    border-radius: 16px;
+    padding: 18px 20px;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.03);
+}
+
+.checkout-trust-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
 }
 
 .checkout-form-control,
@@ -4409,31 +4808,182 @@ body.modal-open .vphone-chatbot-window {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
 }
 
+/* Checkout Experience Dark Mode Overrides */
 [data-bs-theme="dark"] .checkout-stepper-wrapper {
     background: #131f37 !important;
-    border-color: rgba(255, 255, 255, 0.09) !important;
-}
-[data-bs-theme="dark"] .step-badge.step-pending .step-circle {
-    background: #0e172a !important;
-    color: #64748b;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-}
-[data-bs-theme="dark"] .step-connector {
-    background: rgba(255, 255, 255, 0.09) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45) !important;
 }
 
+[data-bs-theme="dark"] .step-badge.step-pending .step-circle {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #64748b !important;
+}
+[data-bs-theme="dark"] .step-badge.step-pending .step-text {
+    color: #64748b !important;
+}
+[data-bs-theme="dark"] .step-badge.step-active .step-text {
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .step-connector {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"] .checkout-panel-card,
+[data-bs-theme="dark"] .checkout-summary-card,
+[data-bs-theme="dark"] .checkout-trust-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9 !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-bs-theme="dark"] .checkout-panel-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .checkout-panel-title {
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .checkout-panel-icon {
+    background: rgba(56, 189, 248, 0.15) !important;
+    color: #38bdf8 !important;
+}
+
+[data-bs-theme="dark"] .checkout-label {
+    color: #cbd5e1 !important;
+}
+
+[data-bs-theme="dark"] .checkout-form-control {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .checkout-form-control::placeholder {
+    color: #64748b !important;
+}
+
+[data-bs-theme="dark"] .checkout-form-control:hover {
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    background: #111e38 !important;
+}
+
+[data-bs-theme="dark"] .checkout-form-control:focus {
+    border-color: #38bdf8 !important;
+    background: #0e172a !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.2) !important;
+    color: #ffffff !important;
+}
+
+[data-bs-theme="dark"] .checkout-input-group .input-icon {
+    color: #64748b !important;
+}
+
+[data-bs-theme="dark"] .checkout-input-group:focus-within .input-icon {
+    color: #38bdf8 !important;
+}
+
+/* Saved Address Box in Dark Mode */
+[data-bs-theme="dark"] .saved-addr-box {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .saved-addr-item {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    color: #f1f5f9 !important;
+}
+
+[data-bs-theme="dark"] .saved-addr-item:hover {
+    background: #1a2a4a !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .saved-addr-item.active,
+[data-bs-theme="dark"] .saved-addr-item.border-primary {
+    background: rgba(2, 132, 199, 0.18) !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 1px #38bdf8 !important;
+}
+
+[data-bs-theme="dark"] .custom-addr-radio {
+    border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .saved-addr-item.active .custom-addr-radio,
+[data-bs-theme="dark"] .saved-addr-item.border-primary .custom-addr-radio {
+    border-color: #38bdf8 !important;
+    background: #38bdf8 !important;
+}
+
+/* Payment Luxury Cards in Dark Mode */
 [data-bs-theme="dark"] .payment-card-luxury {
     background: #131f37 !important;
     border-color: rgba(255, 255, 255, 0.09) !important;
     color: #f1f5f9 !important;
 }
+
 [data-bs-theme="dark"] .payment-card-luxury:hover {
     background: #1a2a4a !important;
-    border-color: #38bdf8 !important;
+    border-color: rgba(56, 189, 248, 0.4) !important;
 }
+
 [data-bs-theme="dark"] .payment-card-luxury.active {
-    background: rgba(0, 102, 204, 0.2) !important;
+    background: linear-gradient(to right, rgba(56, 189, 248, 0.12), rgba(2, 132, 199, 0.04)) !important;
     border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 1px #38bdf8, 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+}
+
+[data-bs-theme="dark"] .custom-radio-circle {
+    border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+[data-bs-theme="dark"] .payment-card-luxury.active .custom-radio-circle {
+    border-color: #38bdf8 !important;
+    background: #38bdf8 !important;
+}
+
+[data-bs-theme="dark"] .payment-bank-chip {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+}
+
+/* Order Summary Box in Dark Mode */
+[data-bs-theme="dark"] .checkout-summary-thumb {
+    background: rgba(255, 255, 255, 0.04) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+[data-bs-theme="dark"] .checkout-item-badge {
+    background: #0e172a !important;
+    color: #cbd5e1 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .checkout-voucher-panel {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-bs-theme="dark"] .voucher-chip-btn {
+    background: rgba(56, 189, 248, 0.1) !important;
+    border-color: rgba(56, 189, 248, 0.25) !important;
+    color: #38bdf8 !important;
+}
+
+[data-bs-theme="dark"] .voucher-chip-btn:hover {
+    background: #38bdf8 !important;
+    color: #0b1329 !important;
+}
+
+[data-bs-theme="dark"] .checkout-total-price {
+    color: #f43f5e !important;
+    text-shadow: 0 0 20px rgba(244, 63, 94, 0.25);
 }
 
 [data-bs-theme="dark"] .review-card-item {
@@ -4791,26 +5341,7 @@ body.modal-open .vphone-chatbot-window {
     color: #cbd5e1 !important;
 }
 
-/* Additional Storefront Dark Mode Overrides (Stepper, Reviews, Policy, Filters) */
-[data-bs-theme="dark"] .checkout-stepper-wrapper {
-    background: #131f37 !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
-}
-[data-bs-theme="dark"] .step-badge.step-pending .step-circle {
-    background: #0e172a !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-    color: #64748b;
-}
-[data-bs-theme="dark"] .step-badge.step-pending .step-text {
-    color: #64748b;
-}
-[data-bs-theme="dark"] .step-badge.step-active .step-text {
-    color: #38bdf8 !important;
-}
-[data-bs-theme="dark"] .step-connector {
-    background: rgba(255, 255, 255, 0.1) !important;
-}
+/* Additional Storefront Dark Mode Overrides (Reviews, Policy, Filters) */
 [data-bs-theme="dark"] .policy-card,
 [data-bs-theme="dark"] .policy-card-vibrant {
     background: #131f37 !important;
@@ -5178,9 +5709,7 @@ span i.me-1 {
 .nav-link > i + span,
 .admin-nav-link > i + span,
 .alert > i + span,
-.theme-opt-btn > i + span,
-/* r */
-/* r */
+.theme-opt-btn > i + span {
     margin-left: 0.45rem !important;
 }
 
@@ -5808,6 +6337,302 @@ html.theme-switching .footer-vphone {
 [data-bs-theme="dark"] .auth-divider-text {
     color: #94a3b8;
 }
+
+/* ==========================================================================
+   16. COMPREHENSIVE DARK MODE SYSTEM OVERRIDES
+   Ensures zero white borders, zero jarring white cards, and full readability
+   ========================================================================== */
+
+/* Profile Page */
+[data-bs-theme="dark"] .profile-page {
+    background-color: #0b1329 !important;
+}
+[data-bs-theme="dark"] .profile-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+[data-bs-theme="dark"] .profile-avatar-large {
+    border-color: #131f37 !important;
+    outline-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] .avatar-camera-btn {
+    border-color: #131f37 !important;
+}
+[data-bs-theme="dark"] .stat-box {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .stat-box:hover {
+    background: #1a2948 !important;
+    border-color: rgba(56, 189, 248, 0.3) !important;
+}
+[data-bs-theme="dark"] .stat-box .stat-lbl {
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .address-item-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .address-item-card.is-default-card {
+    background: #162544 !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 4px 20px rgba(56, 189, 248, 0.12) !important;
+}
+[data-bs-theme="dark"] .address-item-card:hover {
+    border-color: rgba(56, 189, 248, 0.5) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+[data-bs-theme="dark"] .profile-nav-pills .nav-link {
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .profile-nav-pills .nav-link:hover {
+    background-color: #1a2a4a !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .profile-nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%) !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .form-floating-custom .input-group-text {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .form-floating-custom .form-control {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f1f5f9 !important;
+}
+
+/* Order Tracking & History */
+[data-bs-theme="dark"] .order-tracking-page {
+    background-color: #0b1329 !important;
+}
+[data-bs-theme="dark"] .compact-lookup-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+[data-bs-theme="dark"] .lookup-icon-circle {
+    background: rgba(2, 132, 199, 0.2) !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .order-filter-nav-wrap {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+[data-bs-theme="dark"] .order-tab-item {
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .order-tab-item:hover {
+    color: #ffffff !important;
+    background: #1e2f50 !important;
+}
+[data-bs-theme="dark"] .order-tab-item:not([class*="active-"]) .order-tab-count {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .order-history-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .order-history-card:hover {
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+[data-bs-theme="dark"] .order-history-card-header {
+    background: #0e172a !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .order-code-badge {
+    background: rgba(56, 189, 248, 0.15) !important;
+    color: #38bdf8 !important;
+    border-color: rgba(56, 189, 248, 0.3) !important;
+}
+[data-bs-theme="dark"] .order-product-item {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .order-history-card-footer {
+    background: #0e172a !important;
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .tracking-header-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .tracking-stepper-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .timeline-track-line {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] .step-icon-bubble {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-color: #131f37 !important;
+}
+[data-bs-theme="dark"] .step-title-text {
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .step-sub-text {
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .info-card-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] .order-products-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] .order-products-box .bg-white {
+    background: #0e172a !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .product-row-item {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+[data-bs-theme="dark"] .product-row-item:hover {
+    background-color: #1a2a4a !important;
+}
+[data-bs-theme="dark"] .prod-thumb-container {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .prod-thumb-container img {
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+}
+[data-bs-theme="dark"] .variant-tag,
+[data-bs-theme="dark"] .variant-chip {
+    background: #0e172a !important;
+    color: #cbd5e1 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .order-cost-summary-box {
+    background: #0e172a !important;
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Stores Page */
+[data-bs-theme="dark"] .stores-page {
+    background-color: #0b1329 !important;
+}
+[data-bs-theme="dark"] .stores-filter-btn {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .stores-filter-btn:hover {
+    background: #1a2a4a !important;
+    border-color: #38bdf8 !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .stores-region-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .stores-region-header h4 {
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .store-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .store-card:hover {
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
+}
+[data-bs-theme="dark"] .stores-feature-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .store-card-top {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Warranty Page */
+[data-bs-theme="dark"] .warranty-nav-btn {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .warranty-nav-btn:hover {
+    background: #1a2a4a !important;
+    border-color: #38bdf8 !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .warranty-lookup-card {
+    background: #131f37 !important;
+    border-color: rgba(56, 189, 248, 0.25) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+}
+[data-bs-theme="dark"] .warranty-feature-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .step-item-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+[data-bs-theme="dark"] .warranty-table thead th {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-bottom-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] .warranty-table tbody td {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .warranty-table tbody tr:hover {
+    background-color: rgba(56, 189, 248, 0.08) !important;
+}
+[data-bs-theme="dark"] .warranty-accordion .accordion-item {
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    background: #131f37 !important;
+}
+[data-bs-theme="dark"] .warranty-accordion .accordion-button {
+    background: #131f37 !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .warranty-accordion .accordion-button:not(.collapsed) {
+    background: #1a2a4a !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .warranty-accordion .accordion-body {
+    background: #131f37 !important;
+    color: #cbd5e1 !important;
+}
+
+/* Fallback for any white card or light container in Dark Mode */
+[data-bs-theme="dark"] .bg-white {
+    background-color: #131f37 !important;
+}
+[data-bs-theme="dark"] .bg-light {
+    background-color: #0e172a !important;
+}
+[data-bs-theme="dark"] div[style*="background: #ffffff"]:not(.vqr-qr-frame):not(.momo-qr-frame):not([class*="qr-"]),
+[data-bs-theme="dark"] div[style*="background:#ffffff"]:not(.vqr-qr-frame):not(.momo-qr-frame):not([class*="qr-"]),
+[data-bs-theme="dark"] div[style*="background: #fff"]:not(.vqr-qr-frame):not(.momo-qr-frame):not([class*="qr-"]),
+[data-bs-theme="dark"] div[style*="background:#fff"]:not(.vqr-qr-frame):not(.momo-qr-frame):not([class*="qr-"]),
+[data-bs-theme="dark"] div[style*="background-color: #ffffff"]:not(.vqr-qr-frame):not(.momo-qr-frame):not([class*="qr-"]),
+[data-bs-theme="dark"] div[style*="background-color:#ffffff"]:not(.vqr-qr-frame):not(.momo-qr-frame):not([class*="qr-"]),
+[data-bs-theme="dark"] div[style*="background-color: #fff"]:not(.vqr-qr-frame):not(.momo-qr-frame):not([class*="qr-"]),
+[data-bs-theme="dark"] div[style*="background-color:#fff"]:not(.vqr-qr-frame):not(.momo-qr-frame):not([class*="qr-"]) {
+    background-color: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
 
 
 

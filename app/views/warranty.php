@@ -267,6 +267,62 @@ html {
     line-height: 1.65;
     background: #ffffff;
 }
+
+/* Dark Mode Enhancements for Warranty */
+[data-bs-theme="dark"] .warranty-nav-btn {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .warranty-nav-btn:hover {
+    background: #1a2a4a !important;
+    border-color: #38bdf8 !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .warranty-lookup-card {
+    background: #131f37 !important;
+    border-color: rgba(56, 189, 248, 0.25) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4) !important;
+}
+[data-bs-theme="dark"] .warranty-feature-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .step-item-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+[data-bs-theme="dark"] .warranty-table thead th {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-bottom-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] .warranty-table tbody td {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .warranty-table tbody tr:hover {
+    background-color: rgba(56, 189, 248, 0.08) !important;
+}
+[data-bs-theme="dark"] .warranty-accordion .accordion-item {
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    background: #131f37 !important;
+}
+[data-bs-theme="dark"] .warranty-accordion .accordion-button {
+    background: #131f37 !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .warranty-accordion .accordion-button:not(.collapsed) {
+    background: #1a2a4a !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .warranty-accordion .accordion-body {
+    background: #131f37 !important;
+    color: #cbd5e1 !important;
+}
+
 </style>
 
 <div class="container my-3 pb-5">

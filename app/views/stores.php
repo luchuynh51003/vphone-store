@@ -369,6 +369,42 @@ html {
         border-radius: 18px;
     }
 }
+
+/* Dark Mode Enhancements for Stores */
+[data-bs-theme="dark"] .stores-filter-btn {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .stores-filter-btn:hover {
+    background: #1a2a4a !important;
+    border-color: #38bdf8 !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .stores-region-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .stores-region-header h4 {
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .store-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .store-card:hover {
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5) !important;
+}
+[data-bs-theme="dark"] .stores-feature-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .store-card-top {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
 </style>
 
 <div class="container my-3 pb-5">

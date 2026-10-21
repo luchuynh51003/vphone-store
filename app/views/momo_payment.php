@@ -87,6 +87,17 @@ require_once 'app/views/includes/navbar.php';
     0% { transform: scale(1); opacity: 0.8; }
     100% { transform: scale(2.6); opacity: 0; }
 }
+
+/* Dark Mode Enhancements for MoMo */
+[data-bs-theme="dark"] .momo-card-wrapper {
+    background: #131f37 !important;
+    border-color: rgba(216, 45, 139, 0.35) !important;
+}
+[data-bs-theme="dark"] .dev-helper-card {
+    background: rgba(216, 45, 139, 0.12) !important;
+    border-color: rgba(216, 45, 139, 0.3) !important;
+}
+
 </style>
 
 <div class="container my-3 my-md-4">

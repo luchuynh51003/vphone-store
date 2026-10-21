@@ -323,6 +323,25 @@ require_once 'app/views/includes/navbar.php';
     margin-bottom: 24px;
     box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
 }
+
+/* Dark Mode Enhancements for VietQR */
+[data-bs-theme="dark"] .vqr-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] .vqr-info-box {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .vqr-alert-box {
+    background: rgba(245, 158, 11, 0.12) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+}
+[data-bs-theme="dark"] .vqr-success-card {
+    background: #131f37 !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
 </style>
 
 <div class="container vqr-gateway-container">

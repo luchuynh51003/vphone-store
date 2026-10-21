@@ -56,10 +56,10 @@ require_once 'app/views/includes/header.php';
 require_once 'app/views/includes/navbar.php';
 ?>
 
-<div class="container my-3 my-md-4">
-    <div class="d-flex justify-content-center mb-4">
+<div class="container checkout-page-wrapper">
+    <div class="d-flex justify-content-center mb-4 pb-1">
         <div class="checkout-stepper-wrapper">
-            <a href="index.php?page=cart" class="step-badge step-completed text-decoration-none" title="Xem lại giỏ hàng">
+            <a href="index.php?page=cart" class="step-badge step-completed" title="Xem lại giỏ hàng">
                 <span class="step-circle"><i class="fa-solid fa-check"></i></span>
                 <span class="step-text">Giỏ hàng</span>
             </a>
@@ -81,15 +81,15 @@ require_once 'app/views/includes/navbar.php';
     </div>
 
     <?php if ($orderSuccess): ?>
-        <div class="bg-white p-4 p-md-5 rounded-4 shadow-sm text-center col-lg-7 mx-auto border my-4">
-            <div style="width: 84px; height: 84px; border-radius: 50%; background: #ecfdf5; border: 3px solid #10b981; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);">
+        <div class="checkout-panel-card p-4 p-md-5 text-center col-lg-7 mx-auto my-3">
+            <div style="width: 84px; height: 84px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); border: 3px solid #10b981; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);">
                 <i class="fa-solid fa-check text-success fs-1"></i>
             </div>
-            <h3 class="fw-black text-dark mb-2">Đặt Hàng Thành Công!</h3>
+            <h3 class="fw-black mb-2">Đặt Hàng Thành Công!</h3>
             <p class="text-secondary mb-3">Cảm ơn bạn đã tin tưởng V-Phone Store. Mã đơn hàng của bạn là:</p>
             <div class="display-6 fw-bold text-primary mb-4" style="letter-spacing: 1px;">#VP-<?= (int)$orderId ?></div>
 
-            <div class="alert alert-light border rounded-4 text-start small p-3 p-md-4 mb-4">
+            <div class="alert alert-light border rounded-4 text-start small p-3 p-md-4 mb-4" style="background: rgba(255, 255, 255, 0.04);">
                 <div class="mb-2 d-flex align-items-center gap-2">
                     <i class="fa-solid fa-truck-fast text-primary fs-6"></i>
                     <span>Đơn hàng đang được bộ phận vận hành đóng gói và giao tận nơi hỏa tốc.</span>
@@ -105,10 +105,10 @@ require_once 'app/views/includes/navbar.php';
             </div>
 
             <div class="d-flex flex-wrap justify-content-center gap-3">
-                <a href="index.php?page=orders&order_code=<?= (int)$orderId ?><?= !empty($deliveryPhone) ? '&phone=' . rawurlencode($deliveryPhone) : '' ?>" class="btn btn-primary rounded-pill px-4 fw-bold py-2 shadow-sm">
+                <a href="index.php?page=orders&order_code=<?= (int)$orderId ?><?= !empty($deliveryPhone) ? '&phone=' . rawurlencode($deliveryPhone) : '' ?>" class="btn btn-primary rounded-pill px-4 fw-bold py-2.5 shadow-sm">
                     <i class="fa-solid fa-truck-ramp-box me-2"></i>Theo dõi đơn hàng này
                 </a>
-                <a href="index.php" class="btn btn-outline-secondary rounded-pill px-4 fw-bold py-2">
+                <a href="index.php" class="btn btn-outline-secondary rounded-pill px-4 fw-bold py-2.5">
                     <i class="fa-solid fa-store me-2"></i>Tiếp tục mua sắm
                 </a>
             </div>
@@ -116,7 +116,7 @@ require_once 'app/views/includes/navbar.php';
     <?php else: ?>
         <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom">
             <div>
-                <div class="d-flex align-items-center gap-2 mb-1">
+                <div class="d-flex align-items-center gap-2 mb-1.5">
                     <a href="<?= $isBuyNowMode ? 'index.php' : 'index.php?page=cart' ?>" class="btn btn-sm btn-light border rounded-pill px-3 py-1 text-secondary fw-semibold">
                         <i class="fa-solid fa-arrow-left me-1"></i><?= $isBuyNowMode ? 'Quay lại cửa hàng' : 'Xem lại giỏ hàng' ?>
                     </a>
@@ -130,7 +130,7 @@ require_once 'app/views/includes/navbar.php';
                         </span>
                     <?php endif; ?>
                 </div>
-                <h3 class="fw-black text-dark mb-0">
+                <h3 class="fw-black mb-1">
                     <?= $isBuyNowMode ? 'Xác Nhận & Thanh Toán Đơn Hàng' : 'Thanh Toán Đơn Hàng' ?>
                 </h3>
                 <small class="text-secondary">Vui lòng kiểm tra địa chỉ nhận máy và chọn phương thức thanh toán phù hợp</small>
@@ -147,18 +147,20 @@ require_once 'app/views/includes/navbar.php';
         <form method="POST" action="index.php?page=checkout<?= $isBuyNowMode ? '&mode=buy_now' : '' ?>" id="checkoutMainForm">
             <div class="row g-4">
                 <div class="col-lg-7">
-                    <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
-                        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                            <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-location-dot text-primary"></i>Địa Chỉ Nhận Hàng
+                    <!-- Delivery Info Panel -->
+                    <div class="checkout-panel-card">
+                        <div class="checkout-panel-header">
+                            <h5 class="checkout-panel-title">
+                                <span class="checkout-panel-icon"><i class="fa-solid fa-location-dot"></i></span>
+                                <span>Địa Chỉ Nhận Hàng</span>
                             </h5>
-                            <span class="badge bg-light text-secondary border rounded-pill small">Giao tận nơi</span>
+                            <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 small fw-semibold">Giao tận nơi</span>
                         </div>
 
                         <?php if (!empty($userAddresses) && count($userAddresses) > 0): ?>
-                            <div class="mb-4 p-3 bg-light rounded-4 border">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <label class="form-label small fw-bold text-dark mb-0">
+                            <div class="saved-addr-box mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2.5">
+                                    <label class="checkout-label mb-0">
                                         <i class="fa-solid fa-address-book text-primary me-1"></i> Chọn nhanh từ sổ địa chỉ đã lưu (<?= count($userAddresses) ?>)
                                     </label>
                                     <a href="index.php?page=profile&tab=addresses" target="_blank" class="small text-primary text-decoration-none fw-semibold">
@@ -168,18 +170,20 @@ require_once 'app/views/includes/navbar.php';
                                 <div class="d-flex flex-column gap-2" id="savedAddressSelector">
                                     <?php foreach ($userAddresses as $addr): ?>
                                         <?php $isSelected = ($addr['address'] === $deliveryAddress && $addr['phone'] === $deliveryPhone); ?>
-                                        <div class="p-2 px-3 bg-white rounded-3 border d-flex align-items-start gap-2 saved-addr-item <?= $isSelected ? 'border-primary bg-primary bg-opacity-10' : '' ?>" style="cursor: pointer;" onclick="selectSavedAddress(<?= htmlspecialchars(json_encode($addr), ENT_QUOTES, 'UTF-8') ?>)">
-                                            <input class="form-check-input mt-1" type="radio" name="selected_saved_address" id="addr_radio_<?= $addr['id'] ?>" <?= $isSelected ? 'checked' : '' ?>>
-                                            <label class="form-check-label w-100" for="addr_radio_<?= $addr['id'] ?>" style="cursor: pointer;">
-                                                <div class="d-flex align-items-center gap-2 mb-1">
-                                                    <span class="fw-bold text-dark small"><?= htmlspecialchars($addr['recipient_name']) ?></span>
+                                        <div class="saved-addr-item <?= $isSelected ? 'active border-primary' : '' ?>" onclick="selectSavedAddress(<?= htmlspecialchars(json_encode($addr), ENT_QUOTES, 'UTF-8') ?>)">
+                                            <div class="custom-addr-radio mt-1">
+                                                <input class="d-none" type="radio" name="selected_saved_address" id="addr_radio_<?= $addr['id'] ?>" <?= $isSelected ? 'checked' : '' ?>>
+                                            </div>
+                                            <label class="form-check-label w-100 mb-0" for="addr_radio_<?= $addr['id'] ?>" style="cursor: pointer;">
+                                                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                                    <span class="fw-bold small"><?= htmlspecialchars($addr['recipient_name']) ?></span>
                                                     <span class="text-secondary small">| <?= htmlspecialchars($addr['phone']) ?></span>
-                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-2 py-0 small" style="font-size:0.68rem;"><?= htmlspecialchars($addr['label'] ?? 'Nhà riêng') ?></span>
+                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-2 py-0.5" style="font-size:0.68rem;"><?= htmlspecialchars($addr['label'] ?? 'Nhà riêng') ?></span>
                                                     <?php if ($addr['is_default'] == 1): ?>
-                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0 small ms-auto" style="font-size:0.68rem;">Mặc định</span>
+                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5 ms-auto" style="font-size:0.68rem;">Mặc định</span>
                                                     <?php endif; ?>
                                                 </div>
-                                                <div class="small text-muted"><?= htmlspecialchars($addr['address']) ?></div>
+                                                <div class="small text-secondary"><?= htmlspecialchars($addr['address']) ?></div>
                                             </label>
                                         </div>
                                     <?php endforeach; ?>
@@ -187,109 +191,122 @@ require_once 'app/views/includes/navbar.php';
                             </div>
                         <?php endif; ?>
 
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-dark mb-1">Họ và tên người nhận <span class="text-danger">*</span></label>
+                        <div class="checkout-form-group">
+                            <label class="checkout-label" for="customerFullname">
+                                Họ và tên người nhận <span class="text-danger">*</span>
+                            </label>
                             <div class="checkout-input-group">
                                 <i class="fa-solid fa-user input-icon"></i>
                                 <input type="text" name="fullname" id="customerFullname" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryName) ?>" placeholder="Ví dụ: Nguyễn Văn A">
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-dark mb-1">Số điện thoại liên hệ <span class="text-danger">*</span></label>
+                        <div class="checkout-form-group">
+                            <label class="checkout-label" for="customerPhone">
+                                Số điện thoại liên hệ <span class="text-danger">*</span>
+                            </label>
                             <div class="checkout-input-group">
                                 <i class="fa-solid fa-phone input-icon"></i>
                                 <input type="tel" name="phone" id="customerPhone" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryPhone) ?>" placeholder="Ví dụ: 0901234567">
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label small fw-bold text-dark mb-1">Địa chỉ giao hàng tận nơi <span class="text-danger">*</span></label>
+                        <div class="checkout-form-group">
+                            <label class="checkout-label" for="customerAddress">
+                                Địa chỉ giao hàng tận nơi <span class="text-danger">*</span>
+                            </label>
                             <div class="checkout-input-group">
                                 <i class="fa-solid fa-map-location-dot input-icon"></i>
                                 <input type="text" name="address" id="customerAddress" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryAddress) ?>" placeholder="Số nhà, tên đường, phường/xã, quận/huyện...">
                             </div>
                         </div>
 
-                        <div class="mb-0">
-                            <label class="form-label small fw-bold text-dark mb-1">Ghi chú cho shipper (Tùy chọn)</label>
+                        <div class="checkout-form-group mb-0">
+                            <label class="checkout-label" for="customerNote">
+                                Ghi chú cho shipper (Tùy chọn)
+                            </label>
                             <div class="checkout-input-group">
-                                <i class="fa-solid fa-pen input-icon" style="top: 24px;"></i>
-                                <textarea name="note" id="customerNote" rows="2" class="checkout-form-control pt-2" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi giao 15 phút..."><?= htmlspecialchars($deliveryNote) ?></textarea>
+                                <i class="fa-solid fa-pen input-icon icon-textarea"></i>
+                                <textarea name="note" id="customerNote" rows="2" class="checkout-form-control" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi giao 15 phút..."><?= htmlspecialchars($deliveryNote) ?></textarea>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
-                        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                            <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-credit-card text-primary"></i>Phương Thức Thanh Toán
+                    <!-- Payment Options Panel -->
+                    <div class="checkout-panel-card">
+                        <div class="checkout-panel-header">
+                            <h5 class="checkout-panel-title">
+                                <span class="checkout-panel-icon"><i class="fa-solid fa-credit-card"></i></span>
+                                <span>Phương Thức Thanh Toán</span>
                             </h5>
-                            <span class="small text-secondary"><i class="fa-solid fa-lock text-success me-1"></i>Bảo mật SSL</span>
+                            <span class="small text-secondary"><i class="fa-solid fa-shield-halved text-success me-1"></i>Bảo mật SSL 256-bit</span>
                         </div>
 
                         <div class="d-flex flex-column gap-3" id="paymentOptionsGroup">
+                            <!-- COD Option -->
                             <label class="payment-card-luxury <?= $paymentMethod === 'COD' ? 'active' : '' ?>" for="pay_cod">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="custom-radio-circle">
                                         <input type="radio" name="payment_method" value="COD" id="pay_cod" <?= $paymentMethod === 'COD' ? 'checked' : '' ?> class="d-none">
                                         <span class="radio-dot"></span>
                                     </div>
-                                    <div class="payment-icon-box bg-success bg-opacity-10 text-success">
-                                        <i class="fa-solid fa-hand-holding-dollar fs-5"></i>
+                                    <div class="payment-icon-box" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                                        <i class="fa-solid fa-hand-holding-dollar"></i>
                                     </div>
                                     <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center gap-2 flex-wrap">
-                                            <span class="fw-bold text-dark">Thanh toán tiền mặt khi nhận máy (COD)</span>
-                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0" style="font-size:0.7rem;">Khuyên dùng</span>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                            <span class="fw-bold">Thanh toán tiền mặt khi nhận máy (COD)</span>
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Khuyên dùng</span>
                                         </div>
                                         <small class="text-secondary d-block">Kiểm tra máy chuẩn seal, phụ kiện đầy đủ rồi mới gửi tiền cho shipper.</small>
                                     </div>
                                 </div>
                             </label>
 
+                            <!-- VietQR Option -->
                             <label class="payment-card-luxury <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'active' : '' ?>" for="pay_qr">
                                 <div class="d-flex align-items-start gap-3">
                                     <div class="custom-radio-circle mt-1">
                                         <input type="radio" name="payment_method" value="Chuyển khoản QR VietQR" id="pay_qr" <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'checked' : '' ?> class="d-none">
                                         <span class="radio-dot"></span>
                                     </div>
-                                    <div class="payment-icon-box bg-primary bg-opacity-10 text-primary">
-                                        <i class="fa-solid fa-qrcode fs-5"></i>
+                                    <div class="payment-icon-box" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">
+                                        <i class="fa-solid fa-qrcode"></i>
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                            <span class="fw-bold text-dark">Chuyển khoản ngân hàng qua mã VietQR 24/7</span>
+                                            <span class="fw-bold">Chuyển khoản ngân hàng qua mã VietQR 24/7</span>
                                             <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Tự động nhận diện 24/7</span>
                                             <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.68rem;">Khuyên dùng</span>
                                         </div>
                                         <small class="text-secondary d-block mb-2">Tự động sinh mã VietQR Napas 24/7 chính xác số tiền & nội dung đơn hàng. Tự động kích hoạt ngay sau khi chuyển mà không cần chụp bill.</small>
-                                        <div class="d-flex align-items-center gap-2 flex-wrap pt-1 border-top" style="font-size:0.75rem; color:#64748b;">
-                                            <span><i class="fa-solid fa-bolt text-warning me-1"></i>Hỗ trợ:</span>
-                                            <span class="badge bg-light text-dark border">MBBank</span>
-                                            <span class="badge bg-light text-dark border">Vietcombank</span>
-                                            <span class="badge bg-light text-dark border">Techcombank</span>
-                                            <span class="badge bg-light text-dark border">ACB</span>
-                                            <span class="badge bg-light text-dark border">VPBank</span>
-                                            <span class="badge bg-light text-dark border">BIDV</span>
-                                            <span class="badge bg-light text-secondary border">+50 ngân hàng khác</span>
+                                        <div class="d-flex align-items-center gap-1 flex-wrap pt-2 border-top" style="font-size:0.75rem;">
+                                            <span class="text-secondary me-1"><i class="fa-solid fa-bolt text-warning me-1"></i>Hỗ trợ:</span>
+                                            <span class="payment-bank-chip">MBBank</span>
+                                            <span class="payment-bank-chip">Vietcombank</span>
+                                            <span class="payment-bank-chip">Techcombank</span>
+                                            <span class="payment-bank-chip">ACB</span>
+                                            <span class="payment-bank-chip">VPBank</span>
+                                            <span class="payment-bank-chip">BIDV</span>
+                                            <span class="payment-bank-chip text-secondary">+50 ngân hàng</span>
                                         </div>
                                     </div>
                                 </div>
                             </label>
 
+                            <!-- MoMo Sandbox Option -->
                             <label class="payment-card-luxury <?= $paymentMethod === 'Ví điện tử MoMo' ? 'active' : '' ?>" for="pay_momo">
                                 <div class="d-flex align-items-start gap-3">
                                     <div class="custom-radio-circle mt-1">
                                         <input type="radio" name="payment_method" value="Ví điện tử MoMo" id="pay_momo" <?= $paymentMethod === 'Ví điện tử MoMo' ? 'checked' : '' ?> class="d-none">
                                         <span class="radio-dot"></span>
                                     </div>
-                                    <div class="payment-icon-box text-white" style="background: #a50064; border-radius: 12px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="fa-solid fa-wallet fs-5"></i>
+                                    <div class="payment-icon-box text-white" style="background: linear-gradient(135deg, #d82d8b, #a50064); box-shadow: 0 4px 12px rgba(165, 0, 100, 0.3);">
+                                        <i class="fa-solid fa-wallet"></i>
                                     </div>
                                     <div class="flex-grow-1">
                                         <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                            <span class="fw-bold text-dark">Ví điện tử MoMo (Sandbox Developer)</span>
+                                            <span class="fw-bold">Ví điện tử MoMo (Sandbox Developer)</span>
                                             <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Cổng MoMo Test v2</span>
                                             <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.68rem;">Tự động duyệt</span>
                                         </div>
@@ -301,17 +318,20 @@ require_once 'app/views/includes/navbar.php';
                     </div>
                 </div>
 
+                <!-- Right Column: Order Summary & Voucher -->
                 <div class="col-lg-5">
-                    <div class="bg-white p-4 rounded-4 shadow-sm border mb-3 sticky-top" style="top: 80px; z-index: 10;">
-                        <div class="d-flex align-items-center justify-content-between mb-3 border-bottom pb-2">
-                            <h5 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
-                                <i class="fa-solid fa-receipt text-primary"></i>Tóm Tắt Đơn Hàng
+                    <div class="checkout-summary-card sticky-top" style="top: 90px; z-index: 10;">
+                        <div class="checkout-panel-header">
+                            <h5 class="checkout-panel-title">
+                                <span class="checkout-panel-icon"><i class="fa-solid fa-receipt"></i></span>
+                                <span>Tóm Tắt Đơn Hàng</span>
                             </h5>
-                            <span class="badge bg-light text-primary border rounded-pill">
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2.5 py-1 fw-bold">
                                 <?= $isBuyNowMode ? '1 máy mua ngay' : count($itemsToCheckout) . ' sản phẩm' ?>
                             </span>
                         </div>
 
+                        <!-- Product List -->
                         <div class="d-flex flex-column gap-2 mb-3">
                             <?php foreach ($itemsToCheckout as $item): ?>
                                 <?php
@@ -319,18 +339,18 @@ require_once 'app/views/includes/navbar.php';
                                     $itemQty = (int)($item['quantity'] ?? 1);
                                     $itemSubtotal = $itemPrice * $itemQty;
                                 ?>
-                                <div class="d-flex align-items-center gap-3 p-2 bg-light rounded-3 border">
-                                    <div class="bg-white p-1 rounded-3 border d-flex align-items-center justify-content-center" style="width: 54px; height: 54px; flex-shrink:0;">
-                                        <img src="<?= htmlspecialchars($item['image'] ?? 'assets/images/products/iphone-16.png') ?>" alt="" style="max-width: 100%; max-height: 100%; object-fit: contain;" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
+                                <div class="d-flex align-items-center gap-3 p-2.5 rounded-3 border" style="background: rgba(241, 245, 249, 0.4);">
+                                    <div class="checkout-summary-thumb">
+                                        <img src="<?= htmlspecialchars($item['image'] ?? 'assets/images/products/iphone-16.png') ?>" alt="" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
                                     </div>
                                     <div class="flex-grow-1 min-w-0">
-                                        <div class="small fw-bold text-dark text-truncate" title="<?= htmlspecialchars($item['name'] ?? 'Điện thoại') ?>">
+                                        <div class="small fw-bold text-truncate" title="<?= htmlspecialchars($item['name'] ?? 'Điện thoại') ?>">
                                             <?= htmlspecialchars($item['name'] ?? 'Điện thoại') ?>
                                         </div>
                                         <div class="d-flex gap-1 flex-wrap mt-1">
-                                            <span class="badge bg-white text-primary border" style="font-size:0.68rem;"><?= htmlspecialchars($item['rom'] ?? 'Tiêu chuẩn') ?></span>
-                                            <span class="badge bg-white text-secondary border" style="font-size:0.68rem;"><?= htmlspecialchars($item['color'] ?? 'Tiêu chuẩn') ?></span>
-                                            <span class="badge bg-dark text-white" style="font-size:0.68rem;">x<?= $itemQty ?></span>
+                                            <span class="checkout-item-badge text-primary"><?= htmlspecialchars($item['rom'] ?? 'Tiêu chuẩn') ?></span>
+                                            <span class="checkout-item-badge"><?= htmlspecialchars($item['color'] ?? 'Tiêu chuẩn') ?></span>
+                                            <span class="badge bg-dark text-white rounded-2" style="font-size:0.68rem;">x<?= $itemQty ?></span>
                                         </div>
                                     </div>
                                     <div class="text-end flex-shrink-0">
@@ -340,21 +360,25 @@ require_once 'app/views/includes/navbar.php';
                             <?php endforeach; ?>
                         </div>
 
-                        <div class="border rounded-4 p-3 mb-3 bg-light">
+                        <!-- Voucher Section -->
+                        <div class="checkout-voucher-panel">
                             <div class="d-flex align-items-center justify-content-between mb-2">
-                                <label for="voucherInput" class="form-label fw-bold small mb-0 text-dark">
+                                <label for="voucherInput" class="checkout-label mb-0">
                                     <i class="fa-solid fa-ticket text-primary me-1"></i>Mã giảm giá ưu đãi
                                 </label>
                                 <?php if ($appliedVoucher): ?>
-                                    <button type="button" class="btn btn-link btn-sm text-danger p-0 text-decoration-none small" onclick="removeVoucherAjax()">
+                                    <button type="button" class="btn btn-link btn-sm text-danger p-0 text-decoration-none small fw-semibold" onclick="removeVoucherAjax()">
                                         <i class="fa-solid fa-xmark me-1"></i>Gỡ mã
                                     </button>
                                 <?php endif; ?>
                             </div>
                             
                             <div class="input-group">
-                                <input type="text" id="voucherInput" name="voucher_code" class="form-control text-uppercase fw-bold rounded-start-pill ps-3" placeholder="Nhập mã voucher (VD: WELCOME50)" value="<?= htmlspecialchars($appliedVoucher['code'] ?? '') ?>">
-                                <button type="button" class="btn btn-primary rounded-end-pill px-3 fw-bold" id="btnApplyVoucher" onclick="applyVoucherAjax()">
+                                <span class="input-group-text border-end-0 bg-transparent text-secondary ps-3">
+                                    <i class="fa-solid fa-tag"></i>
+                                </span>
+                                <input type="text" id="voucherInput" name="voucher_code" class="form-control text-uppercase fw-bold border-start-0 border-end-0" placeholder="Mã voucher (VD: WELCOME50)" value="<?= htmlspecialchars($appliedVoucher['code'] ?? '') ?>">
+                                <button type="button" class="btn btn-primary px-3 fw-bold rounded-end-3" id="btnApplyVoucher" onclick="applyVoucherAjax()">
                                     Áp dụng
                                 </button>
                             </div>
@@ -364,25 +388,26 @@ require_once 'app/views/includes/navbar.php';
                             </div>
 
                             <div class="mt-2 pt-2 border-top">
-                                <small class="text-secondary d-block mb-1" style="font-size: 0.75rem;">Gợi ý mã hot:</small>
-                                <div class="d-flex gap-1 flex-wrap">
-                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-2 py-0 text-primary fw-semibold" style="font-size: 0.72rem; background: #fff;" onclick="fillAndApplyVoucher('WELCOME50')">
-                                        WELCOME50 (-50k)
+                                <small class="text-secondary d-block mb-1.5" style="font-size: 0.75rem;">Gợi ý mã hot hôm nay:</small>
+                                <div class="d-flex gap-1.5 flex-wrap">
+                                    <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('WELCOME50')">
+                                        <i class="fa-solid fa-bolt-lightning text-warning me-1"></i>WELCOME50 (-50k)
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-2 py-0 text-primary fw-semibold" style="font-size: 0.72rem; background: #fff;" onclick="fillAndApplyVoucher('VPHONE10')">
-                                        VPHONE10 (-10%)
+                                    <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('VPHONE10')">
+                                        <i class="fa-solid fa-fire text-danger me-1"></i>VPHONE10 (-10%)
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-2 py-0 text-primary fw-semibold" style="font-size: 0.72rem; background: #fff;" onclick="fillAndApplyVoucher('FLASH20')">
-                                        FLASH20 (-20%)
+                                    <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('FLASH20')">
+                                        <i class="fa-solid fa-gift text-primary me-1"></i>FLASH20 (-20%)
                                     </button>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Price Breakdown -->
                         <div class="d-flex flex-column gap-2 mb-3">
                             <div class="d-flex justify-content-between small text-secondary">
                                 <span>Tạm tính hàng hóa:</span>
-                                <span class="fw-bold text-dark" id="displaySubtotal"><?= number_format($subtotal, 0, ',', '.') ?> VNĐ</span>
+                                <span class="fw-bold" id="displaySubtotal"><?= number_format($subtotal, 0, ',', '.') ?> VNĐ</span>
                             </div>
 
                             <div class="d-flex justify-content-between small text-success <?= ($discountAmount > 0) ? '' : 'd-none' ?>" id="rowDiscount">
@@ -392,36 +417,49 @@ require_once 'app/views/includes/navbar.php';
 
                             <div class="d-flex justify-content-between small text-secondary align-items-center">
                                 <span>Phí vận chuyển:</span>
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 fw-bold">MIỄN PHÍ TOÀN QUỐC</span>
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 fw-bold">
+                                    <i class="fa-solid fa-shield-check me-1"></i>MIỄN PHÍ TOÀN QUỐC
+                                </span>
                             </div>
 
-                            <hr class="my-2">
+                            <hr class="my-2 opacity-50">
 
                             <div class="d-flex justify-content-between align-items-baseline">
                                 <div>
-                                    <div class="fw-bold text-dark fs-6">Tổng thanh toán:</div>
+                                    <div class="fw-bold fs-6">Tổng thanh toán:</div>
                                     <small class="text-secondary" style="font-size: 0.75rem;">(Đã gồm VAT & bảo hiểm)</small>
                                 </div>
-                                <div class="fs-4 fw-black text-danger" id="displayTotal">
+                                <div class="checkout-total-price" id="displayTotal">
                                     <?= number_format($totalMoney, 0, ',', '.') ?> VNĐ
                                 </div>
                             </div>
                         </div>
 
-                        <button type="submit" id="btnSubmitOrder" class="btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2">
+                        <button type="submit" id="btnSubmitOrder" class="btn-checkout-submit">
                             <i class="fa-solid fa-lock"></i>
                             <span>XÁC NHẬN ĐẶT HÀNG</span>
                         </button>
                     </div>
 
-                    <div class="bg-white rounded-4 p-3 border shadow-sm">
-                        <div class="d-flex align-items-center gap-3 mb-2">
-                            <i class="fa-solid fa-shield-halved text-primary fs-4"></i>
-                            <small class="text-secondary"><strong>Bảo hành chính hãng 12 tháng</strong>, 1 đổi 1 trong 30 ngày.</small>
+                    <!-- Trust & Reassurance Panel -->
+                    <div class="checkout-trust-card mt-3">
+                        <div class="d-flex align-items-center gap-3 mb-2.5">
+                            <div class="checkout-trust-icon bg-primary bg-opacity-10 text-primary">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block small">Bảo hành chính hãng 12 tháng</strong>
+                                <small class="text-secondary">Lỗi 1 đổi 1 trong 30 ngày tại tất cả chi nhánh</small>
+                            </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
-                            <i class="fa-solid fa-truck-fast text-success fs-4"></i>
-                            <small class="text-secondary"><strong>Giao hỏa tốc 2 giờ</strong>, kiểm tra máy 100% trước khi thanh toán.</small>
+                            <div class="checkout-trust-icon bg-success bg-opacity-10 text-success">
+                                <i class="fa-solid fa-truck-fast"></i>
+                            </div>
+                            <div>
+                                <strong class="d-block small">Giao hỏa tốc 2 giờ nội thành</strong>
+                                <small class="text-secondary">Kiểm tra máy chuẩn seal 100% trước khi thanh toán</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -437,19 +475,19 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!submitBtn) return;
         if (method === 'Chuyển khoản QR VietQR') {
             submitBtn.innerHTML = '<i class="fa-solid fa-qrcode me-2"></i><span>TIẾP TỤC QUÉT MÃ VIETQR</span><i class="fa-solid fa-arrow-right ms-2 small"></i>';
-            submitBtn.className = 'btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2';
-            submitBtn.style.background = '';
-            submitBtn.style.border = '';
+            submitBtn.className = 'btn-checkout-submit';
+            submitBtn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
+            submitBtn.style.boxShadow = '0 8px 24px -4px rgba(2, 132, 199, 0.45)';
         } else if (method === 'Ví điện tử MoMo') {
             submitBtn.innerHTML = '<i class="fa-solid fa-wallet me-2"></i><span>THANH TOÁN QUA MOMO SANDBOX</span><i class="fa-solid fa-arrow-right ms-2 small"></i>';
-            submitBtn.className = 'btn btn-danger btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2';
-            submitBtn.style.background = 'linear-gradient(135deg, #d82d8b 0%, #a50064 100%)';
-            submitBtn.style.border = 'none';
+            submitBtn.className = 'btn-checkout-submit';
+            submitBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #a50064 100%)';
+            submitBtn.style.boxShadow = '0 8px 24px -4px rgba(165, 0, 100, 0.45)';
         } else {
             submitBtn.innerHTML = '<i class="fa-solid fa-lock me-2"></i><span>XÁC NHẬN ĐẶT HÀNG (COD)</span>';
-            submitBtn.className = 'btn btn-primary btn-lg w-100 rounded-pill fw-bold shadow-sm py-3 d-flex align-items-center justify-content-center gap-2';
-            submitBtn.style.background = '';
-            submitBtn.style.border = '';
+            submitBtn.className = 'btn-checkout-submit';
+            submitBtn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0066cc 100%)';
+            submitBtn.style.boxShadow = '0 8px 24px -4px rgba(2, 132, 199, 0.45)';
         }
     }
 
@@ -566,12 +604,12 @@ function selectSavedAddress(addr) {
     if (phoneInp && addr.phone) phoneInp.value = addr.phone;
     if (addrInp && addr.address) addrInp.value = addr.address;
 
-    document.querySelectorAll('.saved-addr-item').forEach(el => el.classList.remove('border-primary', 'bg-primary', 'bg-opacity-10'));
+    document.querySelectorAll('.saved-addr-item').forEach(el => el.classList.remove('active', 'border-primary'));
     const radio = document.getElementById('addr_radio_' + addr.id);
     if (radio) {
         radio.checked = true;
         const container = radio.closest('.saved-addr-item');
-        if (container) container.classList.add('border-primary', 'bg-primary', 'bg-opacity-10');
+        if (container) container.classList.add('active', 'border-primary');
     }
 }
 </script>

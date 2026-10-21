@@ -303,6 +303,25 @@ html {
 .badge-soft-green { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; font-weight: 700; }
 .badge-soft-amber { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-weight: 700; }
 .badge-soft-purple { background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; font-weight: 700; }
+
+/* Dark Mode Enhancements for About */
+[data-bs-theme="dark"] .about-story-card,
+[data-bs-theme="dark"] .about-vm-card,
+[data-bs-theme="dark"] .about-value-card,
+[data-bs-theme="dark"] .about-team-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .about-stats-bar {
+    background: rgba(14, 23, 42, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] div[style*="linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%)"] {
+    background: linear-gradient(135deg, #0f1d38 0%, #13274c 100%) !important;
+    border-color: rgba(56, 189, 248, 0.25) !important;
+}
+
 </style>
 
 <div class="container my-3 pb-5">

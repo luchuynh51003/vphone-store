@@ -422,6 +422,77 @@ tr.group-header-row {
     padding: 2px !important;
     flex-shrink: 0 !important;
 }
+
+/* ==========================================================================
+   DARK MODE OVERRIDES CHO TRANG SO SÁNH (COMPARE PAGE)
+   ========================================================================== */
+[data-bs-theme="dark"] .sticky-compare-bar {
+    background: rgba(19, 31, 55, 0.96) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45) !important;
+}
+[data-bs-theme="dark"] .sticky-mini-thumb {
+    background: transparent !important;
+}
+[data-bs-theme="dark"] .duel-card-modern {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .duel-card-blue {
+    border-color: rgba(56, 189, 248, 0.35) !important;
+}
+[data-bs-theme="dark"] .duel-card-red {
+    border-color: rgba(239, 68, 68, 0.35) !important;
+}
+[data-bs-theme="dark"] .duel-card-green {
+    border-color: rgba(16, 185, 129, 0.35) !important;
+}
+[data-bs-theme="dark"] .duel-pros-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .quick-jump-nav {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] .quick-jump-nav .btn-light {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .quick-jump-nav .btn-light:hover {
+    background: #1a2a4a !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .stat-dual-progress {
+    background-color: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] .compare-matrix-table .group-header-row td {
+    background-color: #1a2a4a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .color-swatch-dot {
+    border-color: #0e172a !important;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+}
+[data-bs-theme="dark"] .spec-winner-cell {
+    background-color: rgba(16, 185, 129, 0.15) !important;
+}
+[data-bs-theme="dark"] .compare-page-modern .bg-white {
+    background: #131f37 !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .compare-page-modern .border-bottom,
+[data-bs-theme="dark"] .compare-page-modern .border-top,
+[data-bs-theme="dark"] .compare-page-modern .border-start,
+[data-bs-theme="dark"] .compare-page-modern .border-end,
+[data-bs-theme="dark"] .compare-page-modern .border {
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
 </style>
 
 <?php

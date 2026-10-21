@@ -415,6 +415,130 @@ require_once 'app/views/includes/functions.php';
     .order-history-card-footer { padding: 16px 18px; }
     .order-product-item { gap: 14px; }
 }
+
+/* Dark Mode Enhancements for Order Tracking & History */
+[data-bs-theme="dark"] .order-tracking-page {
+    background-color: #0b1329 !important;
+}
+[data-bs-theme="dark"] .compact-lookup-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+[data-bs-theme="dark"] .lookup-icon-circle {
+    background: rgba(2, 132, 199, 0.2) !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .order-filter-nav-wrap {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+}
+[data-bs-theme="dark"] .order-tab-item {
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .order-tab-item:hover {
+    color: #ffffff !important;
+    background: #1e2f50 !important;
+}
+[data-bs-theme="dark"] .order-tab-item:not([class*="active-"]) .order-tab-count {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .order-history-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .order-history-card:hover {
+    border-color: rgba(56, 189, 248, 0.4) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5) !important;
+}
+[data-bs-theme="dark"] .order-history-card-header {
+    background: #0e172a !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .order-code-badge {
+    background: rgba(56, 189, 248, 0.15) !important;
+    color: #38bdf8 !important;
+    border-color: rgba(56, 189, 248, 0.3) !important;
+}
+[data-bs-theme="dark"] .order-product-item {
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .order-history-card-footer {
+    background: #0e172a !important;
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .tracking-header-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .tracking-stepper-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .timeline-track-line {
+    background: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] .step-icon-bubble {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-color: #131f37 !important;
+}
+[data-bs-theme="dark"] .step-title-text {
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .step-sub-text {
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .info-card-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] .order-products-box {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] .order-products-box .bg-white {
+    background: #0e172a !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .product-row-item {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+[data-bs-theme="dark"] .product-row-item:hover {
+    background-color: #1a2a4a !important;
+}
+[data-bs-theme="dark"] .prod-thumb-container {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .prod-thumb-container img {
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+}
+[data-bs-theme="dark"] .variant-tag,
+[data-bs-theme="dark"] .variant-chip {
+    background: #0e172a !important;
+    color: #cbd5e1 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .order-cost-summary-box {
+    background: #0e172a !important;
+    border-top-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] div[style*="background: #ffffff; border-color: #fee2e2"] {
+    background: rgba(239, 68, 68, 0.12) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+}
+[data-bs-theme="dark"] div[style*="background: #fff5f5"] {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: rgba(239, 68, 68, 0.35) !important;
+}
+
 </style>
 
 <div class="order-tracking-page">

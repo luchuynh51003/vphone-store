@@ -195,6 +195,74 @@ require_once 'app/views/includes/functions.php';
 .address-item-card:hover {
     box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
 }
+
+/* Dark Mode Enhancements for Profile */
+[data-bs-theme="dark"] .profile-page {
+    background-color: #0b1329 !important;
+}
+[data-bs-theme="dark"] .profile-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+[data-bs-theme="dark"] .profile-avatar-large {
+    border-color: #131f37 !important;
+    outline-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] .avatar-camera-btn {
+    border-color: #131f37 !important;
+}
+[data-bs-theme="dark"] .stat-box {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .stat-box:hover {
+    background: #1a2948 !important;
+    border-color: rgba(56, 189, 248, 0.3) !important;
+}
+[data-bs-theme="dark"] .stat-box .stat-lbl {
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .address-item-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .address-item-card.is-default-card {
+    background: #162544 !important;
+    border-color: #38bdf8 !important;
+    box-shadow: 0 4px 20px rgba(56, 189, 248, 0.12) !important;
+}
+[data-bs-theme="dark"] .address-item-card:hover {
+    border-color: rgba(56, 189, 248, 0.5) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+}
+[data-bs-theme="dark"] .profile-nav-pills .nav-link {
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .profile-nav-pills .nav-link:hover {
+    background-color: #1a2a4a !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .profile-nav-pills .nav-link.active {
+    background: linear-gradient(135deg, #0066cc 0%, #0284c7 100%) !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .form-floating-custom .input-group-text {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .form-floating-custom .form-control {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .form-floating-custom .form-control:focus {
+    border-color: #38bdf8 !important;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18) !important;
+}
+
 </style>
 
 <div class="profile-page">

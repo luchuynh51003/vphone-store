@@ -1,6 +1,6 @@
 -- =========================================================================
 -- CƠ SỞ DỮ LIỆU ĐỒ ÁN V-PHONE STORE (ĐÃ SAO LƯU TỰ ĐỘNG)
--- Thời gian sao lưu: 2026-10-21 23:32:00
+-- Thời gian sao lưu: 2026-10-21 23:52:50
 -- =========================================================================
 
 CREATE DATABASE IF NOT EXISTS `db_phone_store` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -119,9 +119,9 @@ CREATE TABLE `order_details` (
   KEY `product_id` (`product_id`),
   CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
   CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dữ liệu bảng `order_details` (9 dòng)
+-- Dữ liệu bảng `order_details` (13 dòng)
 INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `product_name`, `price`, `quantity`, `total_price`) VALUES
 (1, 1, 11, 'iPhone 17 Pro (128 GB - Màu: Titan Tự Nhiên)', '28490000', 1, '28490000'),
 (2, 2, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
@@ -131,7 +131,11 @@ INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `product_name`, `pr
 (7, 11, 7, 'Huawei Mate XT (Gập 3 Màn) (128 GB - Màu: Đỏ Ruihong)', '74990000', 1, '74990000'),
 (8, 12, 31, 'Galaxy Z Flip6 5G (128 GB - Màu: Xám Metal)', '24490000', 1, '24490000'),
 (9, 13, 5, 'Galaxy Z Tri-Fold (Gập 3 Màn) (256 GB - Màu: Đen Phantom)', '56990000', 1, '56990000'),
-(10, 14, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000');
+(10, 14, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
+(12, 16, 9, 'OPPO Find N5 Duo (Hologram) (256 GB - Màu: Đen)', '42990000', 1, '42990000'),
+(13, 17, 5, 'Galaxy Z Tri-Fold (Gập 3 Màn) (256 GB - Màu: Đen Phantom)', '56990000', 1, '56990000'),
+(14, 18, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
+(15, 19, 10, 'iPhone 17 Pro Max (256 GB - Màu: Cam)', '32990000', 1, '32990000');
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `orders`
@@ -153,9 +157,9 @@ CREATE TABLE `orders` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dữ liệu bảng `orders` (9 dòng)
+-- Dữ liệu bảng `orders` (13 dòng)
 INSERT INTO `orders` (`id`, `user_id`, `fullname`, `phone`, `address`, `note`, `total_money`, `payment_method`, `payment_status`, `transaction_code`, `paid_at`, `status`, `created_at`) VALUES
 (1, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '', '28490000', 'Chuyển khoản QR VietQR', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-08 19:06:22'),
 (2, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '| Voucher: GIAM100K (giảm 100.000 VNĐ)', '64890000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã hủy', '2026-10-09 12:00:34'),
@@ -165,7 +169,11 @@ INSERT INTO `orders` (`id`, `user_id`, `fullname`, `phone`, `address`, `note`, `
 (11, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', '[MoMo Sandbox: Đã thanh toán qua MoMo lúc 15/10/2026 12:58:58 - Mã GD: MOMO-MOMO_1258588195] [MoMo Sandbox: Đã thanh toán qua MoMo lúc 15/10/2026 12:58:58 - Mã GD: MOMO-MOMO_1258588195]', '74990000', 'Ví điện tử MoMo', 'Đã thanh toán', 'MOMO-MOMO_1258588195', '2026-10-15 12:58:58', 'Đang xử lý', '2026-10-15 17:48:20'),
 (12, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 13:03:36 - Mã GD: SIM-VQR-130336-4178] (Giả lập khách chuyển khoản thành công)', '24490000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-130336-4178', '2026-10-15 13:03:36', 'Đã giao thành công', '2026-10-15 17:59:21'),
 (13, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 13:36:06 - Mã GD: SIM-VQR-133606-7104] (Giả lập khách chuyển khoản thành công)', '56990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-133606-7104', '2026-10-15 13:36:06', 'Đang xử lý', '2026-10-15 18:35:57'),
-(14, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 14:04:49 - Mã GD: SIM-VQR-140449-9019] (Giả lập khách chuyển khoản thành công)', '64990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-140449-9019', '2026-10-15 14:04:49', 'Đang xử lý', '2026-10-15 19:04:36');
+(14, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 14:04:49 - Mã GD: SIM-VQR-140449-9019] (Giả lập khách chuyển khoản thành công)', '64990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-140449-9019', '2026-10-15 14:04:49', 'Đang xử lý', '2026-10-15 19:04:36'),
+(16, 17, 'Trương Trí Thiện', '123456', 'Chưa cập nhật', '', '42990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-21 23:46:52'),
+(17, 18, 'Võ Minh Thái', '123456', 'Chưa cập nhật', '| Voucher: VPHONE10 (giảm 500.000 VNĐ)', '56490000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đang xử lý', '2026-10-21 23:47:26'),
+(18, 19, 'Nguyễn Ảnh Minh Hoàng', '123456', 'Chưa cập nhật', '| Voucher: FLASH20 (giảm 2.000.000 VNĐ)', '62990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Chờ xử lý', '2026-10-21 23:48:06'),
+(19, 20, 'Đặng Tiến Hưng', '123456', 'Chưa cập nhật', '| Voucher: FLASH20 (giảm 2.000.000 VNĐ)', '30990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-21 23:49:05');
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `password_resets`
@@ -181,11 +189,11 @@ CREATE TABLE `password_resets` (
   KEY `email` (`email`),
   KEY `token` (`token`),
   KEY `otp` (`otp`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dữ liệu bảng `password_resets` (1 dòng)
 INSERT INTO `password_resets` (`id`, `email`, `token`, `otp`, `expires_at`, `created_at`) VALUES
-(2, 'luc@vphone.vn', 'cb2b1b851fa43e1641e0d91b7bb433e9537cefbcec5093cc245a1de7352461ab', '458452', '2026-10-21 23:38:53', '2026-10-21 23:23:53');
+(4, 'luc@vphone.vn', 'a19dce53cf36517696406b740182f4fb10c3e260c0b536a559ba96eaa17e4d8a', '730867', '2026-10-21 23:53:01', '2026-10-21 23:38:01');
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `product_reviews`
@@ -262,13 +270,13 @@ CREATE TABLE `products` (
 INSERT INTO `products` (`id`, `brand_id`, `name`, `price`, `sale_price`, `image`, `screen`, `cpu`, `ram`, `rom`, `battery`, `quantity`, `is_featured`, `is_used`, `condition_desc`, `colors`, `created_at`, `storage_options`, `color_quantities`) VALUES
 (1, 1, 'iPhone 18 Pro Max (Khung Nhôm)', '37990000', '34990000', 'assets/images/products/iphone-18-promax.png', '6.9\" 144Hz', 'Apple A20 Pro (2nm)', '16 GB', '256 GB', '5100 mAh', 25, 1, 0, 'Mới 100%', 'Đỏ Burgundy, Xanh Glacier Blue, Đen, Bạc', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Đỏ Burgundy\",\"quantity\":7},{\"color\":\"Xanh Glacier Blue\",\"quantity\":6},{\"color\":\"Đen\",\"quantity\":6},{\"color\":\"Bạc\",\"quantity\":6}]'),
 (2, 1, 'iPhone 18 Pro (Khung Nhôm)', '33990000', '30990000', 'assets/images/products/iphone-18-promax.png', '6.3\" 144Hz', 'Apple A20 Pro (2nm)', '16 GB', '256 GB', '3900 mAh', 20, 1, 0, 'Mới 100%', 'Đỏ Burgundy, Xanh Glacier Blue, Đen, Bạc', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Đỏ Burgundy\",\"quantity\":5},{\"color\":\"Xanh Glacier Blue\",\"quantity\":5},{\"color\":\"Đen\",\"quantity\":5},{\"color\":\"Bạc\",\"quantity\":5}]'),
-(3, 1, 'iPhone Duo (Màn Gập Apple)', '69990000', '64990000', 'assets/images/products/iphone-18-duo.png', '7.9\" Gập', 'Apple A20 Pro Bionic', '16 GB', '256 GB', '5200 mAh', 8, 1, 0, 'Mới 100%', 'Trắng Ánh Sao, Trời Đêm', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Trắng Ánh Sao\",\"quantity\":2},{\"color\":\"Trời Đêm\",\"quantity\":6}]'),
-(5, 2, 'Galaxy Z Tri-Fold (Gập 3 Màn)', '62990000', '56990000', 'assets/images/products/samsung-tri-fold.png', '10.2\" Gập 3', 'Snapdragon 8 Gen 5 AI', '24 GB', '256 GB', '6200 mAh', 7, 1, 0, 'Mới 100%', 'Đen Phantom', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Đen Phantom\",\"quantity\":7}]'),
+(3, 1, 'iPhone Duo (Màn Gập Apple)', '69990000', '64990000', 'assets/images/products/iphone-18-duo.png', '7.9\" Gập', 'Apple A20 Pro Bionic', '16 GB', '256 GB', '5200 mAh', 7, 1, 0, 'Mới 100%', 'Trắng Ánh Sao, Trời Đêm', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Trắng Ánh Sao\",\"quantity\":1},{\"color\":\"Trời Đêm\",\"quantity\":6}]'),
+(5, 2, 'Galaxy Z Tri-Fold (Gập 3 Màn)', '62990000', '56990000', 'assets/images/products/samsung-tri-fold.png', '10.2\" Gập 3', 'Snapdragon 8 Gen 5 AI', '24 GB', '256 GB', '6200 mAh', 6, 1, 0, 'Mới 100%', 'Đen Phantom', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Đen Phantom\",\"quantity\":6}]'),
 (6, 2, 'Galaxy S26 Ultra (Titan AI)', '38990000', '34990000', 'assets/images/products/samsung-s26-ultra.png', '6.8\" 165Hz', 'Snapdragon 8 Gen 5 for Galaxy', '16 GB', '256 GB', '5800 mAh', 30, 1, 0, 'Mới 100%', 'Tím Cobalt, Đen Classic, Xanh Sky Blue, Trắng Classic', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Tím Cobalt\",\"quantity\":8},{\"color\":\"Đen Classic\",\"quantity\":8},{\"color\":\"Xanh Sky Blue\",\"quantity\":7},{\"color\":\"Trắng Classic\",\"quantity\":7}]'),
 (7, 9, 'Huawei Mate XT (Gập 3 Màn)', '79990000', '74990000', 'assets/images/products/huawei-mate-xt.png', '10.2\" Gập 3', 'Kirin 9010 5G Flagship', '16 GB', '256 GB', '5600 mAh', 6, 1, 0, 'Mới 100%', 'Đỏ Ruihong', '2026-09-25 15:55:29', NULL, '[{\"color\":\"Đỏ Ruihong\",\"quantity\":1},{\"color\":\"Đen Huyền Vũ\",\"quantity\":3}]'),
 (8, 3, 'Xiaomi 16 Ultra (Leica Edition)', '35990000', '32490000', 'assets/images/products/xiaomi-16-ultra.png', '6.78\" 2K+', 'Snapdragon 8 Gen 5', '24 GB', '256 GB', '5800 mAh', 15, 1, 0, 'Mới 100%', 'Đen Da Thuần, Xanh Lam', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Đen Da Thuần\",\"quantity\":8},{\"color\":\"Xanh Lam\",\"quantity\":7}]'),
-(9, 4, 'OPPO Find N5 Duo (Hologram)', '46990000', '42990000', 'assets/images/products/oppo-find-n5.png', '7.9\" Gập', 'Dimensity 9500 Ultra', '16 GB', '256 GB', '5250 mAh', 10, 1, 0, 'Mới 100%', 'Đen', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Đen\",\"quantity\":10}]'),
-(10, 1, 'iPhone 17 Pro Max', '36990000', '32990000', 'assets/images/products/iphone-17-promax.png', '6.9\" 120Hz', 'Apple A19 Pro Bionic', '12 GB', '256 GB', '4850 mAh', 20, 1, 0, 'Mới 100%', 'Bạc, Cam, Xanh', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Bạc\",\"quantity\":20}]'),
+(9, 4, 'OPPO Find N5 Duo (Hologram)', '46990000', '42990000', 'assets/images/products/oppo-find-n5.png', '7.9\" Gập', 'Dimensity 9500 Ultra', '16 GB', '256 GB', '5250 mAh', 9, 1, 0, 'Mới 100%', 'Đen', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Đen\",\"quantity\":9}]'),
+(10, 1, 'iPhone 17 Pro Max', '36990000', '32990000', 'assets/images/products/iphone-17-promax.png', '6.9\" 120Hz', 'Apple A19 Pro Bionic', '12 GB', '256 GB', '4850 mAh', 19, 1, 0, 'Mới 100%', 'Bạc, Cam, Xanh', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Bạc\",\"quantity\":20}]'),
 (11, 1, 'iPhone 17 Pro', '30990000', '28490000', 'assets/images/products/iphone-17-pro.png', '6.3\" 120Hz', 'Apple A19 Pro Bionic', '12 GB', '128 GB', '3600 mAh', 15, 1, 0, 'Mới 100%', 'Bạc, Cam, Xanh', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Bạc\",\"quantity\":15}]'),
 (12, 1, 'iPhone 17 Air (Siêu Mỏng)', '27990000', '25990000', 'assets/images/products/iphone-17-air.png', '6.6\" 120Hz', 'Apple A19', '8 GB', '256 GB', '3800 mAh', 20, 0, 0, 'Mới 100%', 'Đen, Trắng, Xanh', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Bạc Ánh Kim\",\"quantity\":7},{\"color\":\"Xanh Băng\",\"quantity\":7},{\"color\":\"Đen\",\"quantity\":6}]'),
 (13, 1, 'iPhone 17 Standard', '23990000', '21990000', 'assets/images/products/iphone-17.png', '6.1\" OLED', 'Apple A19', '8 GB', '128 GB', '3700 mAh', 25, 0, 0, 'Mới 100%', 'Đen, Trắng, Hồng, Xanh, Xanh Lá', '2026-09-25 08:55:29', NULL, '[{\"color\":\"Xanh\",\"quantity\":7},{\"color\":\"Hồng\",\"quantity\":6},{\"color\":\"Trắng\",\"quantity\":6},{\"color\":\"Đen\",\"quantity\":6}]'),
@@ -359,9 +367,9 @@ CREATE TABLE `user_notifications` (
   KEY `user_id` (`user_id`),
   KEY `phone` (`phone`),
   KEY `order_id` (`order_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dữ liệu bảng `user_notifications` (11 dòng)
+-- Dữ liệu bảng `user_notifications` (14 dòng)
 INSERT INTO `user_notifications` (`id`, `user_id`, `phone`, `order_id`, `title`, `message`, `cancel_reason`, `type`, `is_read`, `created_at`) VALUES
 (1, 1, '0901234567', 15, 'Đơn hàng #VP-15 đã bị hủy bởi cửa hàng', 'Đơn hàng #VP-15 (Tổng thanh toán: 34.990.000 VNĐ) đã được xử lý hủy bởi V-Phone Store.\nLý do: Sản phẩm tạm thời hết hàng trong kho. V-Phone xin lỗi quý khách vì sự bất tiện này..\nRất xin lỗi quý khách vì sự bất tiện này. Quý khách vui lòng liên hệ hotline 1800 6868 nếu cần hỗ trợ thêm.', 'Sản phẩm tạm thời hết hàng trong kho. V-Phone xin lỗi quý khách vì sự bất tiện này.', 'order_cancelled', 1, '2026-10-15 21:06:57'),
 (2, 1, '0901234567', 9, 'Đơn hàng #VP-9 đã bị hủy bởi cửa hàng', 'Đơn hàng #VP-9 (Tổng thanh toán: 42.990.000 VNĐ) đã được xử lý hủy bởi V-Phone Store.\nLý do: Sản phẩm tạm thời hết hàng trong kho. V-Phone xin lỗi quý khách vì sự bất tiện này..\nRất xin lỗi quý khách vì sự bất tiện này. Quý khách vui lòng liên hệ hotline 1800 6868 nếu cần hỗ trợ thêm.', 'Sản phẩm tạm thời hết hàng trong kho. V-Phone xin lỗi quý khách vì sự bất tiện này.', 'order_cancelled', 1, '2026-10-15 21:08:49'),
@@ -373,7 +381,10 @@ INSERT INTO `user_notifications` (`id`, `user_id`, `phone`, `order_id`, `title`,
 (8, 2, '0909888999', 7, 'Đơn hàng #VP-7 đã được xác nhận!', 'Đơn hàng #VP-7 (Tổng thanh toán: 64.990.000 VNĐ) đã được tiếp nhận. Cửa hàng đang tiến hành chuẩn bị sản phẩm.', NULL, 'order_processing', 1, '2026-10-16 08:22:06'),
 (9, 2, '0909888999', 8, 'Đơn hàng #VP-8 đã được xác nhận!', 'Đơn hàng #VP-8 (Tổng thanh toán: 64.990.000 VNĐ) đã được tiếp nhận. Cửa hàng đang tiến hành chuẩn bị sản phẩm.', NULL, 'order_processing', 1, '2026-10-16 08:22:06'),
 (10, 2, '0909888999', 13, 'Đơn hàng #VP-13 đang được giao đến bạn!', 'Đơn hàng #VP-13 (Tổng thanh toán: 56.990.000 VNĐ) đã được đóng gói và bàn giao cho đơn vị vận chuyển. Shipper sẽ sớm liên hệ giao hàng đến bạn!', NULL, 'order_shipping', 1, '2026-10-16 08:22:06'),
-(11, 2, '0909888999', 14, 'Đơn hàng #VP-14 đã được xác nhận!', 'Đơn hàng #VP-14 (Tổng thanh toán: 64.990.000 VNĐ) đã được tiếp nhận. Cửa hàng đang tiến hành chuẩn bị sản phẩm.', NULL, 'order_processing', 1, '2026-10-16 08:22:06');
+(11, 2, '0909888999', 14, 'Đơn hàng #VP-14 đã được xác nhận!', 'Đơn hàng #VP-14 (Tổng thanh toán: 64.990.000 VNĐ) đã được tiếp nhận. Cửa hàng đang tiến hành chuẩn bị sản phẩm.', NULL, 'order_processing', 1, '2026-10-16 08:22:06'),
+(12, 20, '123456', 19, 'Đơn hàng #VP-19 đã giao thành công!', 'Đơn hàng #VP-19 (Tổng thanh toán: 30.990.000 VNĐ) đã được giao thành công. Cảm ơn quý khách đã tin tưởng và ủng hộ V-Phone Store!', NULL, 'order_delivered', 0, '2026-10-21 23:49:33'),
+(13, 18, '123456', 17, 'Đơn hàng #VP-17 đã được xác nhận!', 'Đơn hàng #VP-17 (Tổng thanh toán: 56.490.000 VNĐ) đã được tiếp nhận. Cửa hàng đang tiến hành kiểm tra và chuẩn bị sản phẩm.', NULL, 'order_processing', 0, '2026-10-21 23:49:37'),
+(14, 17, '123456', 16, 'Đơn hàng #VP-16 đã giao thành công!', 'Đơn hàng #VP-16 (Tổng thanh toán: 42.990.000 VNĐ) đã được giao thành công. Cảm ơn quý khách đã tin tưởng và ủng hộ V-Phone Store!', NULL, 'order_delivered', 0, '2026-10-21 23:49:47');
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `users`
@@ -397,20 +408,24 @@ CREATE TABLE `users` (
   `status` tinyint(1) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dữ liệu bảng `users` (10 dòng)
+-- Dữ liệu bảng `users` (14 dòng)
 INSERT INTO `users` (`id`, `fullname`, `email`, `google_id`, `auth_provider`, `phone`, `address`, `avatar`, `password`, `role`, `cart_data`, `created_at`, `staff_role`, `staff_title`, `permissions`, `status`) VALUES
 (1, 'Võ Minh Hiếu', 'hieu@vphone.vn', NULL, 'local', '0901234567', 'Quận 1, TP.HCM', NULL, '$2y$10$33vtXT.qs4BNnJHX6h0beO7FJR2yZtucxlwkwu.KIKWx3qvzN8u1G', 1, '[]', '2026-10-08 09:30:19', 'admin', 'Quản trị viên', NULL, 1),
 (2, 'Huỳnh Bá Lực', 'luc@vphone.vn', NULL, 'local', '0909888999', 'Quận 7, TP.HCM', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 2, '[]', '2026-10-08 09:30:19', 'staff', 'Nhân viên bán hàng', '[\"orders\",\"warranties\",\"reviews\"]', 1),
-(3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', NULL, 'local', '18006868', 'Trụ sở V-Phone', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 1, '{\"25_8990000_64GBenMidnight\":{\"cart_key\":\"25_8990000_64GBenMidnight\",\"id\":25,\"name\":\"iPhone SE 2022\",\"rom\":\"64 GB\",\"color\":\"Đen Midnight\",\"price\":8990000,\"image\":\"assets\\/images\\/products\\/iphone-se-2022.png\",\"quantity\":1}}', '2026-10-08 09:30:19', 'super_admin', 'Quản Trị Tối Cao', NULL, 1),
+(3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', NULL, 'local', '18006868', 'Trụ sở V-Phone', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 1, '{\"25_8990000_64GBenMidnight\":{\"cart_key\":\"25_8990000_64GBenMidnight\",\"id\":25,\"name\":\"iPhone SE 2022\",\"rom\":\"64 GB\",\"color\":\"Đen Midnight\",\"price\":8990000,\"image\":\"assets\\/images\\/products\\/iphone-se-2022.jpg\",\"quantity\":1}}', '2026-10-08 09:30:19', 'super_admin', 'Quản Trị Tối Cao', NULL, 1),
 (8, 'Lực Huỳnh', 'beluc5102003@gmail.com', '112858085185933992393', 'google', '0888443655', 'Chưa cập nhật', 'assets/images/users/avatar_user_8.png', NULL, 1, '{\"3_64990000_256GBTrngnhSao\":{\"cart_key\":\"3_64990000_256GBTrngnhSao\",\"id\":3,\"name\":\"iPhone Duo (Màn Gập Apple)\",\"rom\":\"256 GB\",\"color\":\"Trắng Ánh Sao\",\"price\":64990000,\"image\":\"assets\\/images\\/products\\/iphone-18-duo-trang-anh-sao.png\",\"quantity\":1}}', '2026-10-15 19:23:57', 'admin', 'Quản trị viên', NULL, 1),
 (10, 'lokidptri2k3', 'ongnoitapchoi2003@gmail.com', '108680907798119891576', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_10.png', NULL, 0, '[]', '2026-10-15 19:45:59', NULL, NULL, NULL, 1),
 (12, 'Nguyễn Văn Bán (NV Bán Hàng)', 'nhanvien@vphone.vn', NULL, 'local', '0908889999', 'Cửa hàng V-Phone', NULL, '$2y$10$Q9ReBr6uvYmSZd9ZXBsImOMjHiGNbYtn8NV37w575UAPeWJvcZrRa', 2, '[]', '2026-10-16 08:43:18', 'sales', 'Nhân viên Bán hàng & Đơn hàng', '[\"orders\",\"vouchers\"]', 1),
 (13, 'Trần Văn Kho (NV Kho)', 'kho@vphone.vn', NULL, 'local', '0907778888', 'Cửa hàng V-Phone', NULL, '$2y$10$/hwVIOgM0h6HiOgHc/X/MesEzw4fB9gaYKlOz6Og5r6JfylX/mkU.', 2, '[]', '2026-10-16 08:43:19', 'warehouse', 'Nhân viên Quản lý Kho', '[\"products\",\"inventory\"]', 1),
 (14, 'Lê Kỹ Thuật (NV Bảo Hành & CSKH)', 'baohanh@vphone.vn', NULL, 'local', '0906667777', 'Cửa hàng V-Phone', NULL, '$2y$10$jzUiNXhVKIostXxvQsI6Ce2Ti2IP8kzoKiDF4UezvrVFrXEu6X9Fe', 2, NULL, '2026-10-16 08:43:19', 'support', 'Chuyên viên CSKH & Bảo hành', '[\"warranties\",\"reviews\"]', 1),
 (15, 'Nghiện Nhạc', 'ongnoitapchoi2009@gmail.com', '104701851243694340335', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_15.png', NULL, 0, NULL, '2026-10-17 14:24:29', NULL, NULL, NULL, 1),
-(16, 'octiukiu l7', 'l7octiukiu@gmail.com', '110911761992361094636', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_16.png', NULL, 0, NULL, '2026-10-20 11:17:37', NULL, NULL, NULL, 1);
+(16, 'octiukiu l7', 'l7octiukiu@gmail.com', '110911761992361094636', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_16.png', NULL, 0, NULL, '2026-10-20 11:17:37', NULL, NULL, NULL, 1),
+(17, 'Trương Trí Thiện', 'thien@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$cVHfuJM1qlBtUiWO4Vn8RuSBUVzi80lgnQluAlSVmaxJPPHjU5HYe', 0, '[]', '2026-10-21 23:46:48', NULL, NULL, NULL, 1),
+(18, 'Võ Minh Thái', 'thai@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$9vAtYxdJ8l2Mlywvm8bKQuITRt6Gj5MnjjOpL5TlWHzqBByvfhEf6', 0, '[]', '2026-10-21 23:47:17', NULL, NULL, NULL, 1),
+(19, 'Nguyễn Ảnh Minh Hoàng', 'hoang@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$35lz4AaKxNLVGpnDSDKkueP4M.9it17g5iwtJAzM7P2HlTPViK5aS', 0, '[]', '2026-10-21 23:47:56', NULL, NULL, NULL, 1),
+(20, 'Đặng Tiến Hưng', 'hung@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$HkEXasZ/5Mxxjz47047dseRPc5jOWwAtU.mLT0AW9CVubhtRcGpny', 0, '[]', '2026-10-21 23:48:48', NULL, NULL, NULL, 1);
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `vouchers`
@@ -430,14 +445,14 @@ CREATE TABLE `vouchers` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=427 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=435 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dữ liệu bảng `vouchers` (10 dòng)
 INSERT INTO `vouchers` (`id`, `code`, `discount_type`, `discount_value`, `minimum_order`, `max_discount`, `starts_at`, `expires_at`, `usage_limit`, `used_count`, `is_active`, `created_at`) VALUES
 (1, 'VPHONE5', 'percent', '5', '500000', '250000', NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
-(2, 'VPHONE10', 'percent', '10', '1000000', '500000', NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
+(2, 'VPHONE10', 'percent', '10', '1000000', '500000', NULL, NULL, NULL, 1, 1, '2026-10-08 09:30:19'),
 (3, 'VPHONE15', 'percent', '15', '5000000', '1000000', NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
-(4, 'FLASH20', 'percent', '20', '10000000', '2000000', NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
+(4, 'FLASH20', 'percent', '20', '10000000', '2000000', NULL, NULL, NULL, 2, 1, '2026-10-08 09:30:19'),
 (5, 'WELCOME50', 'fixed', '50000', '500000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
 (6, 'GIAM100K', 'fixed', '100000', '1000000', NULL, NULL, NULL, NULL, 1, 1, '2026-10-08 09:30:19'),
 (7, 'GIAM200K', 'fixed', '200000', '2000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),

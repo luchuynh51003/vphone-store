@@ -363,7 +363,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                             <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 py-1 text-primary fw-semibold d-inline-flex align-items-center gap-1.5 shadow-none" 
                                                     id="btnToggleMoreNotifs" 
                                                     onclick="toggleMoreNotifications(event)" 
-                                                    style="font-size: 0.76rem; background: #ffffff; transition: all 0.2s;">
+                                                    style="font-size: 0.76rem; transition: all 0.2s;">
                                                 <i class="fa-solid fa-angles-down" id="iconToggleNotifs"></i>
                                                 <span id="textToggleNotifs">Xem thêm <?= $extraCount ?> thông báo cũ hơn</span>
                                             </button>
@@ -420,7 +420,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                 <?php endif; ?>
                                 <div class="min-w-0 flex-grow-1">
                                     <div class="fw-bold text-dark text-truncate" title="<?= htmlspecialchars($currentUser['fullname']) ?>"><?= htmlspecialchars($currentUser['fullname']) ?></div>
-                                    <div class="small text-muted text-truncate font-monospace" style="font-size: 0.74rem;"><?= htmlspecialchars($currentUser['email']) ?></div>
+                                    <div class="small text-muted text-truncate font-monospace" style="font-size: 0.74rem;"><?= htmlspecialchars($currentUser['email'] ?? '') ?></div>
                                 </div>
                             </div>
                         </li>
