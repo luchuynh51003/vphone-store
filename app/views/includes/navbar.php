@@ -104,6 +104,33 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
 
         <!-- NHÓM PHẢI: TIỆN ÍCH THIẾT YẾU (GIỎ HÀNG - THÔNG BÁO - TÀI KHOẢN) -->
         <div class="nav-right-group d-flex align-items-center gap-2 gap-sm-2.5 flex-shrink-0">
+            <!-- Bộ Chọn Chế Độ Giao Diện (Sáng / Tối / Theo Hệ Thống) -->
+            <div class="dropdown position-relative">
+                <button class="nav-action-circle theme-toggle-btn dropdown-toggle no-caret" id="themeDropdownBtn" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Giao diện: Tự động theo hệ thống máy">
+                    <i class="fa-solid fa-circle-half-stroke" id="themeCurrentIcon"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2 theme-select-dropdown" style="min-width: 200px;">
+                    <li>
+                        <button class="dropdown-item rounded-3 py-2 small d-flex align-items-center justify-content-between theme-opt-btn theme-opt-light" type="button" onclick="setVPhoneThemeMode('light')">
+                            <span><i class="fa-solid fa-sun text-warning me-2" style="width: 16px;"></i>Chế độ Sáng</span>
+                            <i class="fa-solid fa-check small text-primary d-none check-icon check-light"></i>
+                        </button>
+                    </li>
+                    <li>
+                        <button class="dropdown-item rounded-3 py-2 small d-flex align-items-center justify-content-between theme-opt-btn theme-opt-dark" type="button" onclick="setVPhoneThemeMode('dark')">
+                            <span><i class="fa-solid fa-moon text-info me-2" style="width: 16px;"></i>Chế độ Tối</span>
+                            <i class="fa-solid fa-check small text-primary d-none check-icon check-dark"></i>
+                        </button>
+                    </li>
+                    <li><hr class="dropdown-divider my-1"></li>
+                    <li>
+                        <button class="dropdown-item rounded-3 py-2 small d-flex align-items-center justify-content-between theme-opt-btn theme-opt-auto active" type="button" onclick="setVPhoneThemeMode('auto')">
+                            <span><i class="fa-solid fa-desktop text-primary me-2" style="width: 16px;"></i>Theo hệ thống máy</span>
+                            <i class="fa-solid fa-check small text-primary d-none check-icon check-auto"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
             <!-- Giỏ Hàng -->
             <a class="nav-action-pill nav-cart-pill <?= ($currentPage === 'cart') ? 'active' : '' ?>" href="index.php?page=cart" id="cartNavLink" title="Giỏ hàng của bạn">
                 <div class="nav-action-icon-box position-relative">
@@ -575,6 +602,24 @@ window.vphoneGoogleConfig = <?= json_encode([
     </div>
 
     <div class="offcanvas-body p-3">
+        <!-- CHUYỂN ĐỔI CHẾ ĐỘ SÁNG / TỐI / HỆ THỐNG (MOBILE) -->
+        <div class="p-2.5 px-3 rounded-3 mb-3 bg-light border theme-toggle-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <span class="small fw-bold text-dark"><i class="fa-solid fa-circle-half-stroke text-primary me-1.5"></i>Giao diện</span>
+                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill small" id="mobileThemeStatusBadge">Theo hệ thống</span>
+            </div>
+            <div class="theme-segmented-group" role="group">
+                <button type="button" class="btn btn-theme-choice" id="mBtnLight" onclick="setVPhoneThemeMode('light')" title="Chế độ Sáng">
+                    <i class="fa-solid fa-sun text-warning"></i><span>Sáng</span>
+                </button>
+                <button type="button" class="btn btn-theme-choice" id="mBtnDark" onclick="setVPhoneThemeMode('dark')" title="Chế độ Tối">
+                    <i class="fa-solid fa-moon text-info"></i><span>Tối</span>
+                </button>
+                <button type="button" class="btn btn-theme-choice active" id="mBtnAuto" onclick="setVPhoneThemeMode('auto')" title="Theo hệ thống máy">
+                    <i class="fa-solid fa-desktop text-primary"></i><span>Tự động</span>
+                </button>
+            </div>
+        </div>
         <!-- TIỆN ÍCH MUA SẮM THIẾT YẾU -->
         <div class="text-uppercase fw-bold text-secondary mb-2 d-flex align-items-center justify-content-between" style="font-size: 0.7rem; letter-spacing: 0.4px;">
             <span><i class="fa-solid fa-compass me-1.5 text-primary"></i>Tiện Ích Nhanh</span>
@@ -682,12 +727,12 @@ window.vphoneGoogleConfig = <?= json_encode([
         </div>
 
         <!-- TỔNG ĐÀI HỖ TRỢ TINH GỌN (1 DÒNG) -->
-        <div class="py-2 px-3 bg-light rounded-3 text-secondary border d-flex align-items-center justify-content-between mt-2" style="font-size: 0.8rem;">
+        <div class="py-2.5 px-3 rounded-3 border d-flex align-items-center justify-content-between mt-2 sidebar-support-bar" style="font-size: 0.82rem; background: rgba(2, 132, 199, 0.08); border-color: rgba(2, 132, 199, 0.2) !important;">
             <div class="d-flex align-items-center gap-2">
                 <i class="fa-solid fa-phone-volume text-primary"></i>
                 <span class="text-muted">Tổng đài:</span>
             </div>
-            <a href="tel:18006868" class="text-primary fw-bold text-decoration-none font-monospace">1800 6868 (Miễn phí)</a>
+            <a href="tel:18006868" class="text-primary fw-bold text-decoration-none text-nowrap flex-shrink-0" style="letter-spacing: 0.2px;">1800 6868 <span class="small fw-normal text-muted" style="font-size: 0.72rem;">(Miễn phí)</span></a>
         </div>
     </div>
 </div>

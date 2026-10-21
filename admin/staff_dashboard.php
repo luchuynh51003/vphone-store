@@ -91,6 +91,29 @@ if (currentUserCan('reviews')) {
     padding: 12px 20px;
     box-shadow: 0 4px 14px rgba(11, 19, 41, 0.2);
 }
+[data-bs-theme="dark"] .staff-hero-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .staff-stat-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .staff-stat-card:hover {
+    border-color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .task-card-active {
+    background: #131f37 !important;
+    border-color: #10b981 !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .task-card-disabled {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #64748b !important;
+}
 </style>
 
 <!-- 1. KHỐI CHÀO MỪNG NHÂN VIÊN CA TRỰC (CLEAN & MODERN TECH) -->

@@ -389,6 +389,18 @@ foreach ($userStatsRaw as $usrStat) {
     justify-content: center;
     flex-shrink: 0;
 }
+[data-bs-theme="dark"] #usersTable thead th {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-bottom-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] #usersTable tbody td {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] #usersTable tbody tr:hover td {
+    background-color: #1a2948 !important;
+}
 </style>
 
     <div class="table-responsive">

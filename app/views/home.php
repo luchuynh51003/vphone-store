@@ -348,6 +348,57 @@ require_once 'app/views/includes/navbar.php';
     color: #ffffff !important;
     font-weight: 600;
 }
+[data-bs-theme="dark"] .brand-filter-wrapper {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35) !important;
+}
+[data-bs-theme="dark"] .btn-brand-pill {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .btn-brand-pill:hover {
+    background: #1a2a4a !important;
+    border-color: #38bdf8 !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .btn-brand-pill.active {
+    background: #0066cc !important;
+    border-color: #0066cc !important;
+    color: #ffffff !important;
+}
+[data-bs-theme="dark"] .compact-filter-toolbar {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-bs-theme="dark"] .btn-filter-dropdown {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .btn-filter-dropdown:hover {
+    background: #1a2a4a !important;
+    border-color: #38bdf8 !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .btn-filter-dropdown.active {
+    background: rgba(2, 132, 199, 0.2) !important;
+    border-color: #38bdf8 !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .dropdown-item {
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .dropdown-item:hover {
+    background: #1a2a4a !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .policy-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9 !important;
+}
 </style>
 
 <div class="container my-3">

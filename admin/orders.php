@@ -410,6 +410,26 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
     color: #dc2626 !important;
     border-color: #fecaca !important;
 }
+[data-bs-theme="dark"] .timeline-step {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .timeline-step.active {
+    background: rgba(56, 189, 248, 0.15) !important;
+    border-color: #38bdf8 !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .timeline-step.completed {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #34d399 !important;
+    color: #34d399 !important;
+}
+[data-bs-theme="dark"] .timeline-step.canceled {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #f87171 !important;
+    color: #f87171 !important;
+}
 </style>
 
 <!-- BẢNG DANH SÁCH ĐƠN HÀNG FLAGSHIP -->
@@ -976,6 +996,26 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
     background: #fef2f2;
     border-color: #ef4444;
     color: #ef4444;
+}
+[data-bs-theme="dark"] .timeline-step {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .timeline-step.active {
+    background: rgba(56, 189, 248, 0.15) !important;
+    border-color: #38bdf8 !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .timeline-step.completed {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: #34d399 !important;
+    color: #34d399 !important;
+}
+[data-bs-theme="dark"] .timeline-step.canceled {
+    background: rgba(239, 68, 68, 0.15) !important;
+    border-color: #f87171 !important;
+    color: #f87171 !important;
 }
 </style>
 

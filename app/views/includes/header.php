@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
+    <script>
+        (function() {
+            try {
+                var mode = localStorage.getItem('vphone_theme_mode') || localStorage.getItem('vphone_theme') || 'auto';
+                var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var effective = (mode === 'auto') ? (isDark ? 'dark' : 'light') : mode;
+                document.documentElement.setAttribute('data-bs-theme', effective);
+                document.documentElement.setAttribute('data-theme-mode', mode);
+                document.documentElement.classList.remove('theme-dark', 'theme-light');
+                document.documentElement.classList.add('theme-' + effective);
+            } catch (e) {}
+        })();
+    </script>
     <title><?= isset($pageTitle) ? $pageTitle : "V-Phone - Siêu Thị Flagship 2026" ?></title>
     <link rel="icon" type="image/png" href="assets/images/favicon.png?v=2026">
     <link rel="shortcut icon" href="assets/images/favicon.png?v=2026">

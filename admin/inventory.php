@@ -268,6 +268,69 @@ $brands = $pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
 .inv-filter-tab.tab-all.active  { background: #eff6ff; color: #2563eb; border-color: #bfdbfe; }
 .inv-filter-tab.tab-low.active  { background: #fffbeb; color: #b45309; border-color: #fde68a; }
 .inv-filter-tab.tab-out.active  { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+[data-bs-theme="dark"] .inv-kpi-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .inv-kpi-card.active-all {
+    background: linear-gradient(135deg, rgba(2, 132, 199, 0.25), #131f37) !important;
+    border-color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .inv-kpi-card.active-low {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), #131f37) !important;
+    border-color: #fbbf24 !important;
+}
+[data-bs-theme="dark"] .inv-kpi-card.active-out {
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.25), #131f37) !important;
+    border-color: #f87171 !important;
+}
+[data-bs-theme="dark"] .inv-table thead th {
+    background: #0e172a !important;
+    color: #94a3b8 !important;
+    border-bottom-color: rgba(255, 255, 255, 0.09) !important;
+}
+[data-bs-theme="dark"] .inv-table tbody tr {
+    border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+[data-bs-theme="dark"] .inv-table tbody tr:hover {
+    background: #1a2948 !important;
+}
+[data-bs-theme="dark"] .prod-name {
+    color: #f8fafc !important;
+}
+[data-bs-theme="dark"] .color-chip {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .qty-input {
+    background: #0e172a !important;
+    border-color: #243556 !important;
+    color: #f1f5f9 !important;
+}
+[data-bs-theme="dark"] .inv-filter-tab {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    color: #cbd5e1 !important;
+}
+[data-bs-theme="dark"] .inv-filter-tab:hover {
+    background: #1a2a4a !important;
+    color: #38bdf8 !important;
+}
+[data-bs-theme="dark"] .btn-add-stock {
+    background: #0e172a !important;
+}
+[data-bs-theme="dark"] .status-ok { background: rgba(16, 185, 129, 0.16) !important; color: #34d399 !important; border-color: rgba(16, 185, 129, 0.3) !important; }
+[data-bs-theme="dark"] .status-low { background: rgba(245, 158, 11, 0.16) !important; color: #fbbf24 !important; border-color: rgba(245, 158, 11, 0.3) !important; }
+[data-bs-theme="dark"] .status-out { background: rgba(239, 68, 68, 0.16) !important; color: #f87171 !important; border-color: rgba(239, 68, 68, 0.3) !important; }
+.inv-thumb-wrap { background: #f8fafc; }
+[data-bs-theme="dark"] .inv-thumb-wrap { background: #1e293b !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; }
+.color-chip-qty { background: #e2e8f0; border-radius: 6px; padding: 1px 5px; font-size: .68rem; font-weight: 800; }
+[data-bs-theme="dark"] .color-chip-qty { background: #0f172a !important; color: #38bdf8 !important; }
+.inv-progress-wrap { background: #e2e8f0; }
+[data-bs-theme="dark"] .inv-progress-wrap { background: rgba(255, 255, 255, 0.1) !important; }
+[data-bs-theme="dark"] .brand-chip { background: rgba(56, 189, 248, 0.15) !important; color: #38bdf8 !important; border-color: rgba(56, 189, 248, 0.3) !important; }
 </style>
 
 <!-- PAGE HEADER -->
@@ -414,7 +477,7 @@ $brands = $pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
                     <tr class="inv-row" data-name="<?= htmlspecialchars(mb_strtolower($p['name'] . ' ' . ($p['rom'] ?? ''), 'UTF-8')) ?>" data-brand="<?= (int)$p['brand_id'] ?>">
                         <!-- Ảnh -->
                         <td>
-                            <div style="width:44px; height:44px; background:#f8fafc; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                            <div class="inv-thumb-wrap" style="width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                                 <img src="../<?= htmlspecialchars($p['image']) ?>" alt=""
                                      style="max-width:40px; max-height:40px; object-fit:contain;">
                             </div>
@@ -444,7 +507,7 @@ $brands = $pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
                                 <?= $qty ?>
                             </div>
                             <div style="font-size:.7rem; color:#94a3b8; margin-top:1px;">máy</div>
-                            <div class="progress mt-1 mx-auto" style="height: 4px; width: 50px; background: #e2e8f0; border-radius: 4px;">
+                            <div class="progress mt-1 mx-auto inv-progress-wrap" style="height: 4px; width: 50px; border-radius: 4px;">
                                 <?php
                                     $barPct = min(100, max(0, ($qty / 20) * 100));
                                     $barClass = $qty == 0 ? 'bg-danger' : ($qty <= 5 ? 'bg-warning' : ($qty <= 15 ? 'bg-primary' : 'bg-success'));
@@ -477,7 +540,7 @@ $brands = $pdo->query("SELECT * FROM brands ORDER BY id ASC")->fetchAll();
                                     <?php if (array_key_exists($color, $colorQuantitiesByName)): ?>
                                         <span class="color-chip">
                                             <?= htmlspecialchars($color) ?>
-                                            <span style="background:#e2e8f0; border-radius:6px; padding:1px 5px; font-size:.68rem; font-weight:800;">
+                                            <span class="color-chip-qty">
                                                 <?= $colorQuantitiesByName[$color] ?>
                                             </span>
                                         </span>

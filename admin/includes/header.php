@@ -511,10 +511,421 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
                 display: block !important;
             }
         }
+        /* ===== ADMIN DARK MODE DEEP INTEGRATION ===== */
+        [data-bs-theme="dark"] body {
+            background-color: #0b1329 !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .admin-content {
+            background: #0b1329 !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .admin-topbar {
+            background: #131f37 !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+        }
+        [data-bs-theme="dark"] .admin-kpi-card {
+            background: #131f37 !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            color: #f1f5f9 !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+        }
+        [data-bs-theme="dark"] .admin-kpi-card:hover {
+            border-color: rgba(56, 189, 248, 0.4) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5) !important;
+        }
+        [data-bs-theme="dark"] .admin-kpi-card .text-dark,
+        [data-bs-theme="dark"] .admin-kpi-card h3,
+        [data-bs-theme="dark"] .admin-kpi-card h4 {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .admin-table-card {
+            background: #131f37 !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+        }
+        [data-bs-theme="dark"] .admin-table thead th {
+            background: #0e172a !important;
+            color: #94a3b8 !important;
+            border-bottom-color: rgba(255, 255, 255, 0.09) !important;
+        }
+        [data-bs-theme="dark"] .admin-table tbody td {
+            border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .admin-table tbody tr:hover td {
+            background-color: #1a2948 !important;
+        }
+        [data-bs-theme="dark"] .inv-kpi-card {
+            background: #131f37 !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .inv-kpi-card.active-all {
+            background: linear-gradient(135deg, rgba(2, 132, 199, 0.2), #131f37) !important;
+            border-color: #38bdf8 !important;
+        }
+        [data-bs-theme="dark"] .inv-kpi-card.active-low {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), #131f37) !important;
+            border-color: #fbbf24 !important;
+        }
+        [data-bs-theme="dark"] .inv-kpi-card.active-out {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), #131f37) !important;
+            border-color: #f87171 !important;
+        }
+        [data-bs-theme="dark"] .inv-table thead th {
+            background: #0e172a !important;
+            color: #94a3b8 !important;
+            border-bottom-color: rgba(255, 255, 255, 0.09) !important;
+        }
+        [data-bs-theme="dark"] .inv-table tbody tr {
+            border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+        }
+        [data-bs-theme="dark"] .inv-table tbody tr:hover {
+            background: #1a2948 !important;
+        }
+        [data-bs-theme="dark"] .prod-name {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .color-chip {
+            background: #0e172a !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] .qty-input {
+            background: #0e172a !important;
+            border-color: #243556 !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .kpi-badge-blue { background: rgba(56, 189, 248, 0.16) !important; color: #38bdf8 !important; }
+        [data-bs-theme="dark"] .kpi-badge-amber { background: rgba(245, 158, 11, 0.16) !important; color: #fbbf24 !important; }
+        [data-bs-theme="dark"] .kpi-badge-emerald { background: rgba(16, 185, 129, 0.16) !important; color: #34d399 !important; }
+        [data-bs-theme="dark"] .kpi-badge-rose { background: rgba(239, 68, 68, 0.16) !important; color: #f87171 !important; }
+        [data-bs-theme="dark"] .badge-soft-success { background-color: rgba(16, 185, 129, 0.16) !important; color: #34d399 !important; border: 1px solid rgba(16, 185, 129, 0.3) !important; }
+        [data-bs-theme="dark"] .badge-soft-danger { background-color: rgba(239, 68, 68, 0.16) !important; color: #f87171 !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; }
+        [data-bs-theme="dark"] .badge-soft-warning { background-color: rgba(245, 158, 11, 0.16) !important; color: #fbbf24 !important; border: 1px solid rgba(245, 158, 11, 0.3) !important; }
+        [data-bs-theme="dark"] .badge-soft-primary { background-color: rgba(56, 189, 248, 0.16) !important; color: #38bdf8 !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; }
+        [data-bs-theme="dark"] .badge-soft-secondary { background-color: rgba(148, 163, 184, 0.16) !important; color: #94a3b8 !important; border: 1px solid rgba(148, 163, 184, 0.3) !important; }
+        [data-bs-theme="dark"] .badge-soft-info { background-color: rgba(14, 165, 233, 0.16) !important; color: #38bdf8 !important; border: 1px solid rgba(14, 165, 233, 0.3) !important; }
+        [data-bs-theme="dark"] .card {
+            background-color: #131f37 !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .bg-white {
+            background-color: #131f37 !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .bg-light {
+            background-color: #0e172a !important;
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] .text-dark {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .text-secondary {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .text-muted {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-primary {
+            background-color: transparent !important;
+            color: #38bdf8 !important;
+            border-color: #38bdf8 !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-primary:hover {
+            background-color: #0066cc !important;
+            color: #ffffff !important;
+            border-color: #0066cc !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-secondary {
+            background-color: transparent !important;
+            color: #cbd5e1 !important;
+            border-color: #475569 !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-secondary:hover {
+            background-color: #334155 !important;
+            color: #ffffff !important;
+            border-color: #64748b !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-success {
+            background-color: transparent !important;
+            color: #34d399 !important;
+            border-color: #34d399 !important;
+        }
+        [data-bs-theme="dark"] .btn-outline-success:hover {
+            background-color: #10b981 !important;
+            color: #ffffff !important;
+            border-color: #10b981 !important;
+        }
+        [data-bs-theme="dark"] .border,
+        [data-bs-theme="dark"] .border-top,
+        [data-bs-theme="dark"] .border-bottom,
+        [data-bs-theme="dark"] .border-start,
+        [data-bs-theme="dark"] .border-end {
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-bs-theme="dark"] .form-control,
+        [data-bs-theme="dark"] .form-select {
+            background-color: #0e172a !important;
+            border-color: #243556 !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .form-control:focus,
+        [data-bs-theme="dark"] .form-select:focus {
+            border-color: #38bdf8 !important;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.22) !important;
+        }
+        [data-bs-theme="dark"] .text-primary,
+        [data-bs-theme="dark"] a.text-primary,
+        [data-bs-theme="dark"] i.text-primary,
+        [data-bs-theme="dark"] span.text-primary,
+        [data-bs-theme="dark"] .modal-title.text-primary {
+            color: #38bdf8 !important;
+            --bs-primary-rgb: 56, 189, 248 !important;
+        }
+        [data-bs-theme="dark"] .table-user-cell .user-fullname,
+        [data-bs-theme="dark"] .user-fullname {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .table-user-cell .user-subtext,
+        [data-bs-theme="dark"] .user-subtext {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .table-user-cell .user-subtext i,
+        [data-bs-theme="dark"] .table-user-cell .user-subtext span {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .badge.bg-light,
+        [data-bs-theme="dark"] .badge.bg-white,
+        [data-bs-theme="dark"] .badge.bg-body-tertiary {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+        [data-bs-theme="dark"] .badge.bg-light.text-muted,
+        [data-bs-theme="dark"] .badge.bg-light.text-secondary {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .badge.bg-light.text-dark,
+        [data-bs-theme="dark"] .badge.bg-white.text-dark {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .brand-chip {
+            background: rgba(56, 189, 248, 0.15) !important;
+            color: #38bdf8 !important;
+            border-color: rgba(56, 189, 248, 0.3) !important;
+        }
+        [data-bs-theme="dark"] .order-id-chip {
+            background: rgba(56, 189, 248, 0.15) !important;
+            color: #38bdf8 !important;
+            border-color: rgba(56, 189, 248, 0.3) !important;
+        }
+        [data-bs-theme="dark"] .color-chip {
+            background: #1e293b !important;
+            color: #e2e8f0 !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+        [data-bs-theme="dark"] .color-chip span,
+        [data-bs-theme="dark"] .color-chip .color-chip-qty {
+            background: #0f172a !important;
+            color: #38bdf8 !important;
+        }
+        [data-bs-theme="dark"] .color-chip.unset {
+            background: rgba(245, 158, 11, 0.15) !important;
+            color: #fbbf24 !important;
+            border-color: rgba(245, 158, 11, 0.3) !important;
+        }
+        [data-bs-theme="dark"] .inv-thumb-wrap,
+        [data-bs-theme="dark"] div[style*="background:#f8fafc"],
+        [data-bs-theme="dark"] div[style*="background: #f8fafc"] {
+            background: #1e293b !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-bs-theme="dark"] .btn-light,
+        [data-bs-theme="dark"] .btn-white {
+            background-color: #1e293b !important;
+            color: #f1f5f9 !important;
+            border-color: rgba(255, 255, 255, 0.14) !important;
+        }
+        [data-bs-theme="dark"] .btn-light:hover,
+        [data-bs-theme="dark"] .btn-white:hover {
+            background-color: #2b3d5b !important;
+            color: #ffffff !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+        }
+        [data-bs-theme="dark"] .btn-light.text-muted,
+        [data-bs-theme="dark"] .btn-light.text-secondary {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .btn-light.text-dark,
+        [data-bs-theme="dark"] .btn-white.text-dark {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .form-label,
+        [data-bs-theme="dark"] label {
+            color: #e2e8f0 !important;
+        }
+        [data-bs-theme="dark"] .modal-content {
+            background-color: #131f37 !important;
+            color: #f1f5f9 !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+        }
+        [data-bs-theme="dark"] .modal-header {
+            background-color: #131f37 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-bs-theme="dark"] .modal-body {
+            background-color: #131f37 !important;
+            color: #f1f5f9 !important;
+        }
+        [data-bs-theme="dark"] .modal-footer {
+            background-color: #131f37 !important;
+            border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-bs-theme="dark"] .modal-title {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .modal-body .bg-light,
+        [data-bs-theme="dark"] .modal-body div[class*="bg-light"] {
+            background-color: #0e172a !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-bs-theme="dark"] .perm-card-item {
+            background-color: #0e172a !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-bs-theme="dark"] .perm-card-item:hover {
+            background-color: #16243f !important;
+            border-color: rgba(56, 189, 248, 0.35) !important;
+        }
+        [data-bs-theme="dark"] .perm-card-item .text-dark {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .perm-card-item .text-secondary {
+            color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .admin-order-table-card,
+        [data-bs-theme="dark"] .admin-order-table-wrap {
+            background-color: #131f37 !important;
+            border-color: rgba(255, 255, 255, 0.08) !important;
+        }
+        [data-bs-theme="dark"] .swal2-popup {
+            background-color: #131f37 !important;
+            color: #f1f5f9 !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        [data-bs-theme="dark"] .swal2-title {
+            color: #f8fafc !important;
+        }
+        [data-bs-theme="dark"] .swal2-html-container {
+            color: #cbd5e1 !important;
+        }
+        [data-bs-theme="dark"] .input-group-text {
+            background-color: #1a2948 !important;
+            border-color: #243556 !important;
+            color: #cbd5e1 !important;
+        }
+
+        /* Fractional spacing utilities */
+        .me-1\.5, .me-1-5 { margin-right: 0.45rem !important; }
+        .me-2\.5, .me-2-5 { margin-right: 0.65rem !important; }
+        .ms-1\.5, .ms-1-5 { margin-left: 0.45rem !important; }
+        .gap-1\.5, .gap-1-5 { gap: 0.45rem !important; }
+        .gap-2\.5, .gap-2-5 { gap: 0.65rem !important; }
+
+        /* Universal icon clearance for compound elements */
+        .btn > i.me-1, .badge > i.me-1, .dropdown-item i.me-1, a i.me-1 { margin-right: 0.45rem !important; }
+        /* r */
+        .badge > i:first-child:not(:only-child),
+        .dropdown-item > i:first-child:not(:only-child),
+        .admin-nav-link > i:first-child:not(:only-child),
+        .theme-opt-btn i:first-child:not(:only-child) {
+            margin-right: 0.45rem !important;
+            display: inline-block;
+            vertical-align: -0.05em;
+        }
+
+        /* Segmented Theme Choice in Admin Sidebar Footer */
+        .admin-theme-segmented-group {
+            display: flex !important;
+            width: 100% !important;
+            padding: 3px !important;
+            border-radius: 9999px !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            gap: 2px !important;
+        }
+        .admin-theme-segmented-group .btn-admin-theme-choice {
+            flex: 1 1 0px !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            height: 30px !important;
+            padding: 0 4px !important;
+            border-radius: 9999px !important;
+            border: none !important;
+            font-size: 0.76rem !important;
+            font-weight: 600 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.35rem !important;
+            color: #94a3b8 !important;
+            background: transparent !important;
+            transition: background-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease !important;
+            white-space: nowrap !important;
+            cursor: pointer !important;
+        }
+        .admin-theme-segmented-group .btn-admin-theme-choice:hover {
+            color: #ffffff !important;
+            background: rgba(255, 255, 255, 0.12) !important;
+        }
+        .admin-theme-segmented-group .btn-admin-theme-choice.active {
+            background: #0284c7 !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.45) !important;
+        }
+        .admin-theme-segmented-group .btn-admin-theme-choice i {
+            font-size: 0.78rem !important;
+            margin-right: 0 !important;
+            flex-shrink: 0 !important;
+        }
+
+        /* Silky smooth targeted transitions */
+        html.theme-switching body, html.theme-switching .admin-content, html.theme-switching .admin-topbar, html.theme-switching .admin-kpi-card, html.theme-switching .admin-table-card, html.theme-switching .inv-kpi-card, html.theme-switching .card {
+            transition: background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        body, .admin-content, .admin-topbar, .admin-kpi-card, .admin-table-card, .inv-kpi-card, .card {
+            transition: background-color 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                        border-color 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                        box-shadow 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+                        color 0.28s ease;
+        }
+
+        @keyframes themeIconSpinPop {
+            0% { transform: rotate(-135deg) scale(0.45); opacity: 0.2; }
+            60% { transform: rotate(18deg) scale(1.28); opacity: 0.95; }
+            100% { transform: rotate(0deg) scale(1); opacity: 1; }
+        }
+        .theme-icon-animate {
+            display: inline-block;
+            animation: themeIconSpinPop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
     </style>
     <script>
         (function() {
             try {
+                var mode = localStorage.getItem('vphone_theme_mode') || localStorage.getItem('vphone_theme') || 'auto';
+                var isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var effective = (mode === 'auto') ? (isDark ? 'dark' : 'light') : mode;
+                document.documentElement.setAttribute('data-bs-theme', effective);
+                document.documentElement.setAttribute('data-theme-mode', mode);
+                document.documentElement.classList.remove('theme-dark', 'theme-light');
+                document.documentElement.classList.add('theme-' + effective);
+
                 var pinned = localStorage.getItem('adminSidebarPinned');
                 if (pinned !== 'false' && window.innerWidth >= 992) {
                     document.documentElement.classList.add('sidebar-pinned');
@@ -833,6 +1244,17 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
 
         <!-- CHÂN TRANG CỐ ĐỊNH Ở DƯỚI -->
         <div class="p-3 pt-2 pb-3 flex-shrink-0" style="border-top: 1px solid rgba(255, 255, 255, 0.08); background: rgba(0, 0, 0, 0.2);">
+            <div class="admin-theme-segmented-group mb-2" role="group">
+                <button type="button" class="btn-admin-theme-choice" id="admBtnLight" onclick="setVPhoneThemeMode('light')" title="Chế độ Sáng">
+                    <i class="fa-solid fa-sun text-warning"></i><span>Sáng</span>
+                </button>
+                <button type="button" class="btn-admin-theme-choice" id="admBtnDark" onclick="setVPhoneThemeMode('dark')" title="Chế độ Tối">
+                    <i class="fa-solid fa-moon text-info"></i><span>Tối</span>
+                </button>
+                <button type="button" class="btn-admin-theme-choice active" id="admBtnAuto" onclick="setVPhoneThemeMode('auto')" title="Theo hệ thống máy">
+                    <i class="fa-solid fa-desktop text-primary"></i><span>Máy</span>
+                </button>
+            </div>
             <a href="../index.php" class="admin-nav-link" style="color: #38bdf8; margin: 2px 0;">
                 <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Xem Website</span>
             </a>
@@ -865,6 +1287,33 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
             </div>
 
             <div class="d-flex align-items-center gap-3">
+                <!-- Bộ Chọn Chế Độ Giao Diện Admin (Sáng / Tối / Theo Hệ Thống) -->
+                <div class="dropdown me-1">
+                    <button class="btn btn-light btn-sm rounded-circle border theme-toggle-btn shadow-xs dropdown-toggle no-caret" id="themeDropdownBtnAdmin" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="width: 38px; height: 38px; display: inline-flex; align-items: center; justify-content: center;" title="Giao diện: Tự động theo hệ thống máy">
+                        <i class="fa-solid fa-circle-half-stroke" id="themeCurrentIconAdmin"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-2 theme-select-dropdown" style="min-width: 200px; z-index: 1070;">
+                        <li>
+                            <button class="dropdown-item rounded-3 py-2 small d-flex align-items-center justify-content-between theme-opt-btn theme-opt-light" type="button" onclick="setVPhoneThemeMode('light')">
+                                <span><i class="fa-solid fa-sun text-warning me-2" style="width: 16px;"></i>Chế độ Sáng</span>
+                                <i class="fa-solid fa-check small text-primary d-none check-icon check-light"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="dropdown-item rounded-3 py-2 small d-flex align-items-center justify-content-between theme-opt-btn theme-opt-dark" type="button" onclick="setVPhoneThemeMode('dark')">
+                                <span><i class="fa-solid fa-moon text-info me-2" style="width: 16px;"></i>Chế độ Tối</span>
+                                <i class="fa-solid fa-check small text-primary d-none check-icon check-dark"></i>
+                            </button>
+                        </li>
+                        <li><hr class="dropdown-divider my-1"></li>
+                        <li>
+                            <button class="dropdown-item rounded-3 py-2 small d-flex align-items-center justify-content-between theme-opt-btn theme-opt-auto active" type="button" onclick="setVPhoneThemeMode('auto')">
+                                <span><i class="fa-solid fa-desktop text-primary me-2" style="width: 16px;"></i>Theo hệ thống máy</span>
+                                <i class="fa-solid fa-check small text-primary d-none check-icon check-auto"></i>
+                            </button>
+                        </li>
+                    </ul>
+                </div>
                 <a href="../index.php" target="_blank" class="btn btn-outline-primary btn-sm rounded-pill px-3 fw-bold d-flex align-items-center gap-1">
                     <i class="fa-solid fa-store"></i>
                     <span class="d-none d-md-inline">Xem Cửa Hàng</span>
