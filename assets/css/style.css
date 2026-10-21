@@ -5791,5 +5791,24 @@ html.theme-switching .footer-vphone {
     color: #f87171 !important;
 }
 
+/* Auth modal divider with seamless transparent center text */
+.auth-divider-line {
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.12);
+}
+.auth-divider-text {
+    font-size: 0.8rem;
+    color: #64748b;
+    white-space: nowrap;
+    padding: 0 12px;
+}
+[data-bs-theme="dark"] .auth-divider-line {
+    background-color: rgba(255, 255, 255, 0.12);
+}
+[data-bs-theme="dark"] .auth-divider-text {
+    color: #94a3b8;
+}
+
+
 
 

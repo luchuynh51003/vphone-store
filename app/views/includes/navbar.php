@@ -445,7 +445,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                 </div>
             <?php else: ?>
                 <!-- Nút Tài Khoản / Đăng Nhập -->
-                <button class="btn btn-nav-auth d-flex align-items-center gap-2" type="button" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal">
+                <button class="btn btn-nav-auth d-flex align-items-center gap-2" type="button" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal" data-auth-tab="login">
                     <div class="nav-auth-icon-box">
                         <i class="fa-solid fa-user"></i>
                     </div>
@@ -480,6 +480,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                 </ul>
 
                 <div class="tab-content">
+                    <!-- 1. TAB ĐĂNG NHẬP -->
                     <div class="tab-pane fade show active" id="tab-login">
                         <div id="loginAlert" class="alert d-none small py-2 rounded-3 mb-3 auth-tab-alert"></div>
 
@@ -496,9 +497,10 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                             </a>
                         </div>
 
-                        <div class="position-relative text-center my-3">
-                            <hr class="text-muted opacity-25 m-0">
-                            <span class="position-absolute top-50 start-50 translate-middle bg-body px-2 small text-muted" style="font-size: 0.82rem;">hoặc dùng tài khoản Email</span>
+                        <div class="d-flex align-items-center my-3">
+                            <div class="flex-grow-1 auth-divider-line"></div>
+                            <span class="auth-divider-text user-select-none">hoặc dùng tài khoản Email</span>
+                            <div class="flex-grow-1 auth-divider-line"></div>
                         </div>
 
                         <form id="formModalLogin" method="POST" action="index.php?page=auth&action=login">
@@ -516,12 +518,64 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm mb-3">ĐĂNG NHẬP NGAY</button>
-                            <div class="p-2 rounded-3 bg-light text-secondary small text-center">
+                            <div class="p-2 rounded-3 bg-light text-secondary small text-center mb-2">
                                 Gợi ý test: <strong>admin@vphone.vn</strong> hoặc <strong>hieu@vphone.vn</strong> (Pass: <strong>123456</strong>)
+                            </div>
+                            <div class="text-center mt-2">
+                                <span class="small text-muted">Chưa có tài khoản? </span>
+                                <a href="javascript:void(0)" class="small text-primary fw-semibold text-decoration-none btn-switch-to-register">Đăng ký mới</a>
                             </div>
                         </form>
                     </div>
 
+                    <!-- 2. TAB ĐĂNG KÝ MỚI -->
+                    <div class="tab-pane fade" id="tab-register">
+                        <div id="registerAlert" class="alert d-none small py-2 rounded-3 mb-3 auth-tab-alert"></div>
+                        <!-- Nút Đăng ký nhanh bằng Google -->
+                        <div class="mb-3">
+                            <a href="index.php?page=google-login" class="btn btn-outline-secondary w-100 rounded-pill py-2 d-flex align-items-center justify-content-center shadow-sm btn-google-auth-trigger fw-semibold text-decoration-none" style="border-color: #dadce0; background: #ffffff; color: #3c4043; transition: all 0.2s ease;">
+                                <svg class="me-2" width="20" height="20" viewBox="0 0 24 24">
+                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                                </svg>
+                                <span>Đăng ký nhanh bằng Google</span>
+                            </a>
+                        </div>
+
+                        <div class="d-flex align-items-center my-3">
+                            <div class="flex-grow-1 auth-divider-line"></div>
+                            <span class="auth-divider-text user-select-none">hoặc điền thông tin tài khoản</span>
+                            <div class="flex-grow-1 auth-divider-line"></div>
+                        </div>
+
+                        <form id="formModalRegister" method="POST" action="index.php?page=auth&action=register">
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Họ và tên *</label>
+                                <input type="text" name="fullname" class="form-control rounded-pill" required placeholder="Ví dụ: Nguyễn Văn A">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Email *</label>
+                                <input type="email" name="email" class="form-control rounded-pill" required placeholder="email@example.com">
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label small fw-semibold">Số điện thoại</label>
+                                <input type="tel" name="phone" class="form-control rounded-pill" placeholder="0901234567">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold">Mật khẩu *</label>
+                                <input type="password" name="password" class="form-control rounded-pill" required placeholder="Tối thiểu 6 ký tự">
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm mb-2">TẠO TÀI KHOẢN</button>
+                            <div class="text-center mt-2">
+                                <span class="small text-muted">Đã có tài khoản? </span>
+                                <a href="javascript:void(0)" class="small text-primary fw-semibold text-decoration-none btn-back-to-login">Đăng nhập ngay</a>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- 3. TAB QUÊN MẬT KHẨU -->
                     <div class="tab-pane fade" id="tab-forgot">
                         <div id="forgotAlert" class="alert d-none small py-2 rounded-3 mb-3 auth-tab-alert"></div>
 
@@ -590,47 +644,6 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                             </form>
                         </div>
                     </div>
-
-                    <div class="tab-pane fade" id="tab-register">
-                        <div id="registerAlert" class="alert d-none small py-2 rounded-3 mb-3 auth-tab-alert"></div>
-                        <!-- Nút Đăng ký nhanh bằng Google -->
-                        <div class="mb-3">
-                            <a href="index.php?page=google-login" class="btn btn-outline-secondary w-100 rounded-pill py-2 d-flex align-items-center justify-content-center shadow-sm btn-google-auth-trigger fw-semibold text-decoration-none" style="border-color: #dadce0; background: #ffffff; color: #3c4043; transition: all 0.2s ease;">
-                                <svg class="me-2" width="20" height="20" viewBox="0 0 24 24">
-                                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                                </svg>
-                                <span>Đăng ký nhanh bằng Google</span>
-                            </a>
-                        </div>
-
-                        <div class="position-relative text-center my-3">
-                            <hr class="text-muted opacity-25 m-0">
-                            <span class="position-absolute top-50 start-50 translate-middle bg-body px-2 small text-muted" style="font-size: 0.82rem;">hoặc điền thông tin tài khoản</span>
-                        </div>
-
-                        <form id="formModalRegister" method="POST" action="index.php?page=auth&action=register">
-                            <div class="mb-2">
-                                <label class="form-label small fw-semibold">Họ và tên *</label>
-                                <input type="text" name="fullname" class="form-control rounded-pill" required placeholder="Ví dụ: Nguyễn Văn A">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-semibold">Email *</label>
-                                <input type="email" name="email" class="form-control rounded-pill" required placeholder="email@example.com">
-                            </div>
-                            <div class="mb-2">
-                                <label class="form-label small fw-semibold">Số điện thoại</label>
-                                <input type="tel" name="phone" class="form-control rounded-pill" placeholder="0901234567">
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label small fw-semibold">Mật khẩu *</label>
-                                <input type="password" name="password" class="form-control rounded-pill" required placeholder="Tối thiểu 6 ký tự">
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm">TẠO TÀI KHOẢN</button>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>
@@ -675,7 +688,7 @@ window.vphoneGoogleConfig = <?= json_encode([
                 </a>
             </div>
         <?php else: ?>
-            <button class="btn btn-primary btn-sm w-100 rounded-pill fw-bold py-1.5 shadow-xs" data-bs-dismiss="offcanvas" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal" style="font-size: 0.84rem;">
+            <button class="btn btn-primary btn-sm w-100 rounded-pill fw-bold py-1.5 shadow-xs" data-bs-dismiss="offcanvas" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal" data-auth-tab="login" style="font-size: 0.84rem;">
                 <i class="fa-solid fa-circle-user me-1.5"></i> Đăng nhập / Đăng ký
             </button>
         <?php endif; ?>

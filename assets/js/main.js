@@ -562,9 +562,37 @@
             });
         }
 
-        // Xóa thông báo khi chuyển đổi tab
+        // Xử lý sự kiện Modal Auth: Mặc định LUÔN hiển thị tab ĐĂNG NHẬP
         if (authModalElement) {
-            authModalElement.addEventListener('hidden.bs.modal', clearAllAuthAlerts);
+            authModalElement.addEventListener('show.bs.modal', function (event) {
+                clearAllAuthAlerts();
+                const trigger = event.relatedTarget;
+                const requestedTab = trigger ? trigger.getAttribute('data-auth-tab') : null;
+
+                if (requestedTab === 'register' && tabBtnRegister && window.bootstrap) {
+                    bootstrap.Tab.getOrCreateInstance(tabBtnRegister).show();
+                } else if (requestedTab === 'forgot' && tabBtnForgot && window.bootstrap) {
+                    bootstrap.Tab.getOrCreateInstance(tabBtnForgot).show();
+                } else {
+                    // Mặc định luôn luôn kích hoạt tab ĐĂNG NHẬP đầu tiên!
+                    if (tabBtnLogin && window.bootstrap) {
+                        bootstrap.Tab.getOrCreateInstance(tabBtnLogin).show();
+                    }
+                }
+
+                if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
+                if (modalForgotStep2) modalForgotStep2.classList.add('d-none');
+            });
+
+            authModalElement.addEventListener('hidden.bs.modal', function () {
+                clearAllAuthAlerts();
+                if (tabBtnLogin && window.bootstrap) {
+                    bootstrap.Tab.getOrCreateInstance(tabBtnLogin).show();
+                }
+                if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
+                if (modalForgotStep2) modalForgotStep2.classList.add('d-none');
+            });
+
             const tabButtons = authModalElement.querySelectorAll('#authModalTabs button');
             tabButtons.forEach(btn => {
                 btn.addEventListener('shown.bs.tab', clearAllAuthAlerts);
@@ -572,7 +600,20 @@
         }
 
         if (new URLSearchParams(window.location.search).get('show_login') === '1' && authModalElement && window.bootstrap) {
+            if (tabBtnLogin) bootstrap.Tab.getOrCreateInstance(tabBtnLogin).show();
             bootstrap.Modal.getOrCreateInstance(authModalElement).show();
+        }
+
+        // Chuyển sang tab Đăng ký
+        const switchToRegisterBtns = document.querySelectorAll('.btn-switch-to-register');
+        if (switchToRegisterBtns && tabBtnRegister && window.bootstrap) {
+            switchToRegisterBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    clearAllAuthAlerts();
+                    bootstrap.Tab.getOrCreateInstance(tabBtnRegister).show();
+                });
+            });
         }
 
         // Chuyển sang tab Quên mật khẩu
@@ -581,8 +622,7 @@
                 e.preventDefault();
                 clearAllAuthAlerts();
 
-                const tab = new bootstrap.Tab(tabBtnForgot);
-                tab.show();
+                bootstrap.Tab.getOrCreateInstance(tabBtnForgot).show();
                 if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
                 if (modalForgotStep2) modalForgotStep2.classList.add('d-none');
                 const emailInput = document.getElementById('modalForgotEmail');
@@ -602,8 +642,7 @@
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
                     clearAllAuthAlerts();
-                    const tab = new bootstrap.Tab(tabBtnLogin);
-                    tab.show();
+                    bootstrap.Tab.getOrCreateInstance(tabBtnLogin).show();
                 });
             });
         }
