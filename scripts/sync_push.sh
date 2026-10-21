@@ -47,3 +47,4 @@ echo "[THANH CONG] Hoan tat dong bo toan bo du lieu len GitHub!"
 echo "Sang may truong, chay: ./scripts/sync_pull.sh (hoac click dup scripts/sync_pull.bat tren Windows)"
 echo "hoac vao admin/db_sync.php tren trinh duyet."
 echo "========================================================"
+

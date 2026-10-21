@@ -3948,6 +3948,39 @@ body.modal-open .vphone-chatbot-window {
 [data-bs-theme="dark"] .product-img-wrapper {
     background: radial-gradient(circle, #1a2948 0%, #0e172a 100%) !important;
 }
+[data-bs-theme="dark"] .product-img-wrapper img {
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
+}
+[data-bs-theme="dark"] .product-card:hover .product-img-wrapper img {
+    filter: drop-shadow(0 12px 24px rgba(56, 189, 248, 0.25)) scale(1.06) !important;
+}
+[data-bs-theme="dark"] .detail-img-box {
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(15, 23, 42, 0) 70%) !important;
+    border-radius: 20px;
+}
+[data-bs-theme="dark"] #detailMainImg {
+    filter: drop-shadow(0 14px 28px rgba(0, 0, 0, 0.6));
+}
+[data-bs-theme="dark"] .duel-image-container {
+    background-color: transparent !important;
+}
+[data-bs-theme="dark"] .duel-device-img {
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+}
+[data-bs-theme="dark"] .sticky-mini-thumb {
+    background: #0e172a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] img[style*="background: #fff"],
+[data-bs-theme="dark"] img[style*="background:#fff"],
+[data-bs-theme="dark"] img[style*="background: #ffffff"],
+[data-bs-theme="dark"] img[style*="background:#ffffff"],
+[data-bs-theme="dark"] div[style*="background: #fff"],
+[data-bs-theme="dark"] div[style*="background:#fff"],
+[data-bs-theme="dark"] div[style*="background: #ffffff"],
+[data-bs-theme="dark"] div[style*="background:#ffffff"] {
+    background-color: #0e172a !important;
+}
 [data-bs-theme="dark"] .card-prod-title {
     color: #f1f5f9 !important;
 }

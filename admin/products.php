@@ -65,9 +65,19 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['save_produ
         $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $allowed = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
         if (in_array($ext, $allowed) && $file['size'] <= 10 * 1024 * 1024) {
-            $newFileName = 'prod_' . time() . '_' . rand(1000, 9999) . '.' . $ext;
-            if (move_uploaded_file($file['tmp_name'], $uploadDir . $newFileName)) {
-                $image = 'assets/images/products/' . $newFileName;
+            $baseName = 'prod_' . time() . '_' . rand(1000, 9999);
+            $rawFileName = $baseName . '.' . $ext;
+            $pngFileName = $baseName . '.png';
+            if (move_uploaded_file($file['tmp_name'], $uploadDir . $rawFileName)) {
+                $scriptPath = __DIR__ . '/../scripts/make_transparent_single.py';
+                if (file_exists($scriptPath)) {
+                    @shell_exec('python3 ' . escapeshellarg($scriptPath) . ' ' . escapeshellarg($uploadDir . $rawFileName) . ' ' . escapeshellarg($uploadDir . $pngFileName) . ' 2>&1');
+                }
+                if (file_exists($uploadDir . $pngFileName)) {
+                    $image = 'assets/images/products/' . $pngFileName;
+                } else {
+                    $image = 'assets/images/products/' . $rawFileName;
+                }
             }
         }
     }

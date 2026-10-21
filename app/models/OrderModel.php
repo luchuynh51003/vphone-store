@@ -163,18 +163,18 @@ class OrderModel {
         if (strpos($lower, 'iphone 15') !== false) return 'assets/images/products/iphone-15-promax.png';
         if (strpos($lower, 'iphone 14') !== false) return 'assets/images/products/iphone-14-promax.png';
         if (strpos($lower, 'iphone 13') !== false) return 'assets/images/products/iphone-13.png';
-        if (strpos($lower, 'iphone 12') !== false) return 'assets/images/products/iphone-12.jpg';
+        if (strpos($lower, 'iphone 12') !== false) return 'assets/images/products/iphone-12.png';
         if (strpos($lower, 'iphone 11') !== false) return 'assets/images/products/iphone-11.png';
         if (strpos($lower, 's26 ultra') !== false) return 'assets/images/products/samsung-s26-ultra.png';
         if (strpos($lower, 'tri-fold') !== false) return 'assets/images/products/samsung-tri-fold.png';
         if (strpos($lower, 's24') !== false) return 'assets/images/products/samsung-s24-ultra.png';
         if (strpos($lower, 'z fold') !== false) return 'assets/images/products/samsung-z-fold6.png';
-        if (strpos($lower, 'z flip') !== false) return 'assets/images/products/samsung-z-flip6.jpg';
+        if (strpos($lower, 'z flip') !== false) return 'assets/images/products/samsung-z-flip6.png';
         if (strpos($lower, 'mate xt') !== false) return 'assets/images/products/huawei-mate-xt.png';
         if (strpos($lower, 'xiaomi') !== false) return 'assets/images/products/xiaomi-16-ultra.png';
         if (strpos($lower, 'oppo') !== false) return 'assets/images/products/oppo-find-n5.png';
         if (strpos($lower, 'pixel') !== false) return 'assets/images/products/google-pixel-9.png';
-        if (strpos($lower, 'rog') !== false) return 'assets/images/products/asus-rog-phone-8.jpg';
+        if (strpos($lower, 'rog') !== false) return 'assets/images/products/asus-rog-phone-8.png';
         if (strpos($lower, 'sony') !== false) return 'assets/images/products/sony-xperia-1-vi.png';
 
         return 'assets/images/products/iphone-16-promax.png';
