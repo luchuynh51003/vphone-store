@@ -289,35 +289,6 @@ $latestOrders = $pdo->query("SELECT id, fullname, phone, total_money, status, cr
             </div>
         </div>
     </div>
-
-    <!-- HƯỚNG DẪN CÁCH 2: DÙNG CLOUD DATABASE (TÙY CHỌN DÀNH CHO BẠN) -->
-    <div class="card border-0 rounded-4 shadow-sm bg-gradient p-4" style="background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fff;">
-        <div class="d-flex align-items-start gap-3">
-            <div class="rounded-circle p-3 bg-primary bg-opacity-25 text-primary flex-shrink-0">
-                <i class="fa-solid fa-cloud fs-3 text-info"></i>
-            </div>
-            <div>
-                <h5 class="fw-bold text-white mb-2">Cách 2 (Cao cấp hơn): Dùng chung 1 Cơ Sở Dữ Liệu Online (Cloud MySQL)</h5>
-                <p class="text-white-50 small mb-3">
-                    Nếu bạn không muốn mỗi lần làm xong phải bấm "Xuất" rồi sang máy khác bấm "Nạp", bạn có thể tạo 1 Database MySQL miễn phí trên mạng (ví dụ: <strong>Aiven</strong>, <strong>Clever Cloud</strong> hoặc <strong>TiDB Cloud</strong>).
-                </p>
-                <div class="row g-2 small text-white-50">
-                    <div class="col-md-4">
-                        <strong class="text-white d-block mb-1"><i class="fa-solid fa-check text-success me-1"></i>1. Dữ liệu đồng bộ tức thì:</strong>
-                        Mua hàng trên Mac, máy trường chỉ cần bấm F5 là thấy ngay, không cần push/pull file SQL.
-                    </div>
-                    <div class="col-md-4">
-                        <strong class="text-white d-block mb-1"><i class="fa-solid fa-check text-success me-1"></i>2. Cấu hình duy nhất 1 lần:</strong>
-                        Chỉ cần thay đổi <code>$host, $username, $password</code> trong file <code>config/database.php</code> trỏ tới Cloud.
-                    </div>
-                    <div class="col-md-4">
-                        <strong class="text-white d-block mb-1"><i class="fa-solid fa-wifi text-warning me-1"></i>3. Yêu cầu duy nhất:</strong>
-                        Máy trường cần có kết nối mạng Internet để truy cập vào Cloud Database.
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
