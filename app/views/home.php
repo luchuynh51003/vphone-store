@@ -715,7 +715,7 @@ require_once 'app/views/includes/navbar.php';
             </div>
             <div class="modal-body p-4 pt-3">
                 <div class="d-flex align-items-center mb-3 p-3 bg-light rounded-4 border">
-                    <div style="width: 75px; height: 75px; display:flex; align-items:center; justify-content:center; background:#fff; border-radius:12px; margin-right:15px; flex-shrink:0;">
+                    <div style="width: 75px; height: 75px; display:flex; align-items:center; justify-content:center; background:rgba(125,125,125,0.06); border-radius:12px; margin-right:15px; flex-shrink:0;">
                         <img id="modalImg" src="" alt="" style="max-height: 65px; max-width: 65px; object-fit: contain;">
                     </div>
                     <div class="flex-grow-1 min-w-0">

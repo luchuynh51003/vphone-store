@@ -518,18 +518,34 @@
         });
     }
 
+    // Global helper ẩn/hiện mật khẩu
+    window.togglePassVisibility = function(inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const isPassword = input.type === 'password';
+        input.type = isPassword ? 'text' : 'password';
+        const icon = btn.querySelector('i');
+        if (icon) {
+            icon.className = isPassword ? 'fa-solid fa-eye-slash text-primary' : 'fa-solid fa-eye text-muted';
+        }
+    };
+
     // --- 5. UNIFIED AUTH MODAL ---
     function initAuthModal() {
         const loginForm = document.getElementById('formModalLogin');
         const registerForm = document.getElementById('formModalRegister');
         const forgotForm = document.getElementById('formModalForgot');
         const resetForm = document.getElementById('formModalReset');
-        const authAlert = document.getElementById('authAlert');
         const authModalElement = document.getElementById('unifiedAuthModal');
+
+        const loginAlert = document.getElementById('loginAlert');
+        const registerAlert = document.getElementById('registerAlert');
+        const forgotAlert = document.getElementById('forgotAlert');
 
         const btnOpenForgot = document.getElementById('btnOpenForgotTab');
         const backToLoginBtns = document.querySelectorAll('.btn-back-to-login');
         const tabBtnLogin = document.getElementById('tabBtnLogin');
+        const tabBtnRegister = document.getElementById('tabBtnRegister');
         const tabBtnForgot = document.getElementById('tabBtnForgot');
         const modalForgotStep1 = document.getElementById('modalForgotStep1');
         const modalForgotStep2 = document.getElementById('modalForgotStep2');
@@ -539,6 +555,22 @@
         const modalForgotOtp = document.getElementById('modalForgotOtp');
         const modalBtnResend = document.getElementById('modalBtnResendOtp');
 
+        function clearAllAuthAlerts() {
+            document.querySelectorAll('.auth-tab-alert').forEach(al => {
+                al.className = 'alert d-none small py-2 rounded-3 mb-3 auth-tab-alert';
+                al.innerHTML = '';
+            });
+        }
+
+        // Xóa thông báo khi chuyển đổi tab
+        if (authModalElement) {
+            authModalElement.addEventListener('hidden.bs.modal', clearAllAuthAlerts);
+            const tabButtons = authModalElement.querySelectorAll('#authModalTabs button');
+            tabButtons.forEach(btn => {
+                btn.addEventListener('shown.bs.tab', clearAllAuthAlerts);
+            });
+        }
+
         if (new URLSearchParams(window.location.search).get('show_login') === '1' && authModalElement && window.bootstrap) {
             bootstrap.Modal.getOrCreateInstance(authModalElement).show();
         }
@@ -547,10 +579,8 @@
         if (btnOpenForgot && tabBtnForgot && window.bootstrap) {
             btnOpenForgot.addEventListener('click', function(e) {
                 e.preventDefault();
-                if (authAlert) {
-                    authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
-                    authAlert.innerHTML = '';
-                }
+                clearAllAuthAlerts();
+
                 const tab = new bootstrap.Tab(tabBtnForgot);
                 tab.show();
                 if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
@@ -571,10 +601,7 @@
             backToLoginBtns.forEach(btn => {
                 btn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    if (authAlert) {
-                        authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
-                        authAlert.innerHTML = '';
-                    }
+                    clearAllAuthAlerts();
                     const tab = new bootstrap.Tab(tabBtnLogin);
                     tab.show();
                 });
@@ -585,8 +612,11 @@
         if (modalBtnResend) {
             modalBtnResend.addEventListener('click', function(e) {
                 e.preventDefault();
+                clearAllAuthAlerts();
                 if (modalForgotStep2) modalForgotStep2.classList.add('d-none');
                 if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
+                const emailInput = document.getElementById('modalForgotEmail');
+                if (emailInput) setTimeout(() => emailInput.focus(), 150);
             });
         }
 
@@ -597,10 +627,7 @@
                 const submitBtn = forgotForm.querySelector('button[type="submit"]');
                 const origHtml = submitBtn ? submitBtn.innerHTML : '';
 
-                if (authAlert) {
-                    authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
-                    authAlert.innerHTML = '';
-                }
+                clearAllAuthAlerts();
 
                 if (submitBtn) {
                     submitBtn.disabled = true;
@@ -621,9 +648,9 @@
                     }
 
                     if (!res.success) {
-                        if (authAlert) {
-                            authAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>' + (res.message || 'Có lỗi xảy ra!');
-                            authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                        if (forgotAlert) {
+                            forgotAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1.5"></i>' + (res.message || 'Có lỗi xảy ra!');
+                            forgotAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
                         }
                         return;
                     }
@@ -633,20 +660,32 @@
                     if (modalDisplayEmail) modalDisplayEmail.textContent = userEmail;
                     if (modalHiddenEmail) modalHiddenEmail.value = userEmail;
                     if (modalHiddenToken && res.token) modalHiddenToken.value = res.token;
+                    if (modalForgotOtp && res.otp) modalForgotOtp.value = res.otp;
 
-                    let alertMsg = '<i class="fa-solid fa-circle-check me-1"></i>' + res.message;
-                    if (res.otp) {
-                        alertMsg += `<div class="mt-1.5 p-1.5 bg-white bg-opacity-75 rounded border border-success border-opacity-25 text-dark" style="font-size: 0.78rem;"><strong>Mã OTP test:</strong> <span class="badge bg-success fs-6 ms-1">${res.otp}</span></div>`;
-                    }
-                    if (authAlert) {
-                        authAlert.innerHTML = alertMsg;
-                        authAlert.className = 'alert alert-success small py-2 rounded-3 mb-3';
+                    let alertMsg = `
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="fa-solid fa-circle-check fs-5 text-success flex-shrink-0"></i>
+                            <div class="flex-grow-1">
+                                <div>Mã xác thực đã được tạo cho <strong>${userEmail}</strong></div>
+                                ${res.otp ? `
+                                <div class="mt-1 d-flex align-items-center gap-2">
+                                    <span class="small text-muted">Mã OTP test nhanh:</span>
+                                    <span class="badge bg-success font-monospace px-2 py-1 fs-6">${res.otp}</span>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                    if (forgotAlert) {
+                        forgotAlert.innerHTML = alertMsg;
+                        forgotAlert.className = 'alert alert-success small py-2 px-3 rounded-3 mb-3 auth-tab-alert';
                     }
 
                     if (modalForgotStep1) modalForgotStep1.classList.add('d-none');
                     if (modalForgotStep2) modalForgotStep2.classList.remove('d-none');
-                    if (modalForgotOtp) {
-                        setTimeout(() => modalForgotOtp.focus(), 200);
+                    const newPassInput = document.getElementById('modalNewPass');
+                    if (newPassInput) {
+                        setTimeout(() => newPassInput.focus(), 200);
                     }
 
                 } catch (err) {
@@ -654,9 +693,9 @@
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = origHtml;
                     }
-                    if (authAlert) {
-                        authAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>Lỗi kết nối máy chủ! Vui lòng thử lại.';
-                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    if (forgotAlert) {
+                        forgotAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1.5"></i>Lỗi kết nối máy chủ! Vui lòng thử lại.';
+                        forgotAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
                     }
                 }
             });
@@ -673,16 +712,16 @@
                 const p2 = document.getElementById('modalConfirmPass') ? document.getElementById('modalConfirmPass').value : '';
 
                 if (p1.length < 6) {
-                    if (authAlert) {
-                        authAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>Mật khẩu mới phải có ít nhất 6 ký tự!';
-                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    if (forgotAlert) {
+                        forgotAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1.5"></i>Mật khẩu mới phải có ít nhất 6 ký tự!';
+                        forgotAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
                     }
                     return;
                 }
                 if (p1 !== p2) {
-                    if (authAlert) {
-                        authAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>Xác nhận mật khẩu không trùng khớp!';
-                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    if (forgotAlert) {
+                        forgotAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1.5"></i>Xác nhận mật khẩu không trùng khớp!';
+                        forgotAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
                     }
                     return;
                 }
@@ -706,24 +745,24 @@
                     }
 
                     if (!res.success) {
-                        if (authAlert) {
-                            authAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i>' + (res.message || 'Không thể đổi mật khẩu!');
-                            authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                        if (forgotAlert) {
+                            forgotAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1.5"></i>' + (res.message || 'Không thể đổi mật khẩu!');
+                            forgotAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
                         }
                         return;
                     }
 
-                    // Thành công: Thông báo và quay lại tab Đăng nhập
-                    if (authAlert) {
-                        authAlert.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i>' + res.message;
-                        authAlert.className = 'alert alert-success small py-2 rounded-3 mb-3';
+                    // Thành công
+                    if (forgotAlert) {
+                        forgotAlert.innerHTML = '<i class="fa-solid fa-circle-check me-1.5"></i>' + res.message;
+                        forgotAlert.className = 'alert alert-success small py-2 rounded-3 mb-3 auth-tab-alert';
                     }
 
                     if (modalForgotStep2) modalForgotStep2.classList.add('d-none');
                     if (modalForgotStep1) modalForgotStep1.classList.remove('d-none');
                     resetForm.reset();
 
-                    // Chuyển về tab Login sau 1.5s
+                    // Chuyển về tab Login sau 1s và hiển thị thông báo trong loginAlert
                     setTimeout(() => {
                         if (tabBtnLogin && window.bootstrap) {
                             new bootstrap.Tab(tabBtnLogin).show();
@@ -733,34 +772,36 @@
                                 const loginPass = loginForm.querySelector('input[type="password"]');
                                 if (loginPass) loginPass.focus();
                             }
+                            if (loginAlert) {
+                                loginAlert.innerHTML = '<i class="fa-solid fa-circle-check me-1.5"></i>Đã cập nhật mật khẩu mới thành công! Mời bạn đăng nhập.';
+                                loginAlert.className = 'alert alert-success small py-2 rounded-3 mb-3 auth-tab-alert';
+                            }
                         }
-                    }, 1500);
+                    }, 1000);
 
                 } catch (err) {
                     if (submitBtn) {
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = origHtml;
                     }
-                    if (authAlert) {
-                        authAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i>Lỗi kết nối máy chủ! Vui lòng thử lại.';
-                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    if (forgotAlert) {
+                        forgotAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1.5"></i>Lỗi kết nối máy chủ! Vui lòng thử lại.';
+                        forgotAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
                     }
                 }
             });
         }
 
-        // Xử lý Login và Register
-        [loginForm, registerForm].forEach(form => {
-            if (!form) return;
-
-            form.addEventListener('submit', async function (event) {
+        // Xử lý Login
+        if (loginForm) {
+            loginForm.addEventListener('submit', async function (event) {
                 event.preventDefault();
-                const submitBtn = form.querySelector('button[type="submit"]');
+                const submitBtn = loginForm.querySelector('button[type="submit"]');
                 const origHtml = submitBtn ? submitBtn.innerHTML : '';
 
-                if (authAlert) {
-                    authAlert.className = 'alert d-none small py-2 rounded-3 mb-3';
-                    authAlert.textContent = '';
+                if (loginAlert) {
+                    loginAlert.className = 'alert d-none small py-2 rounded-3 mb-3 auth-tab-alert';
+                    loginAlert.innerHTML = '';
                 }
 
                 if (submitBtn) {
@@ -769,9 +810,9 @@
                 }
 
                 try {
-                    const response = await fetch(form.action, {
+                    const response = await fetch(loginForm.action, {
                         method: 'POST',
-                        body: new FormData(form),
+                        body: new FormData(loginForm),
                         headers: { 'X-Requested-With': 'XMLHttpRequest' }
                     });
                     const result = await response.json();
@@ -781,9 +822,9 @@
                             submitBtn.disabled = false;
                             submitBtn.innerHTML = origHtml;
                         }
-                        if (authAlert) {
-                            authAlert.textContent = result.message || 'Thao tác không thành công.';
-                            authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                        if (loginAlert) {
+                            loginAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1.5"></i>' + (result.message || 'Đăng nhập không thành công.');
+                            loginAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
                         }
                         return;
                     }
@@ -800,13 +841,70 @@
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = origHtml;
                     }
-                    if (authAlert) {
-                        authAlert.textContent = 'Có lỗi kết nối. Vui lòng thử lại!';
-                        authAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3';
+                    if (loginAlert) {
+                        loginAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1.5"></i>Có lỗi kết nối. Vui lòng thử lại!';
+                        loginAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
                     }
                 }
             });
-        });
+        }
+
+        // Xử lý Register
+        if (registerForm) {
+            registerForm.addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const submitBtn = registerForm.querySelector('button[type="submit"]');
+                const origHtml = submitBtn ? submitBtn.innerHTML : '';
+
+                if (registerAlert) {
+                    registerAlert.className = 'alert d-none small py-2 rounded-3 mb-3 auth-tab-alert';
+                    registerAlert.innerHTML = '';
+                }
+
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Đang xử lý...';
+                }
+
+                try {
+                    const response = await fetch(registerForm.action, {
+                        method: 'POST',
+                        body: new FormData(registerForm),
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    });
+                    const result = await response.json();
+
+                    if (!result.success) {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.innerHTML = origHtml;
+                        }
+                        if (registerAlert) {
+                            registerAlert.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1.5"></i>' + (result.message || 'Đăng ký không thành công.');
+                            registerAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
+                        }
+                        return;
+                    }
+
+                    if (result.is_admin) {
+                        window.location.href = 'admin/index.php';
+                    } else if (result.redirect) {
+                        window.location.href = result.redirect;
+                    } else {
+                        window.location.reload();
+                    }
+                } catch (error) {
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = origHtml;
+                    }
+                    if (registerAlert) {
+                        registerAlert.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1.5"></i>Có lỗi kết nối. Vui lòng thử lại!';
+                        registerAlert.className = 'alert alert-danger small py-2 rounded-3 mb-3 auth-tab-alert';
+                    }
+                }
+            });
+        }
     }
 
     // --- 6. GOOGLE AUTHENTICATION ---

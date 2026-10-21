@@ -462,7 +462,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
             <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center">
                     <img src="assets/images/vphone-icon.png" alt="V-Phone" style="width: 32px; height: 32px; margin-right: 8px; object-fit: contain;">
-                    <h5 class="modal-title fw-bold text-dark">Tài Khoản V-Phone</h5>
+                    <h5 class="modal-title fw-bold text-body mb-0">Tài Khoản V-Phone</h5>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -478,9 +478,11 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                         <button class="nav-link rounded-pill fw-bold small py-2" data-bs-toggle="pill" data-bs-target="#tab-forgot" type="button" id="tabBtnForgot">QUÊN MẬT KHẨU</button>
                     </li>
                 </ul>
-                <div id="authAlert" class="alert d-none small py-2 rounded-3 mb-3"></div>
+
                 <div class="tab-content">
                     <div class="tab-pane fade show active" id="tab-login">
+                        <div id="loginAlert" class="alert d-none small py-2 rounded-3 mb-3 auth-tab-alert"></div>
+
                         <!-- Nút Đăng nhập bằng Google -->
                         <div class="mb-3">
                             <a href="index.php?page=google-login" class="btn btn-outline-secondary w-100 rounded-pill py-2 d-flex align-items-center justify-content-center shadow-sm btn-google-auth-trigger fw-semibold text-decoration-none" style="border-color: #dadce0; background: #ffffff; color: #3c4043; transition: all 0.2s ease;">
@@ -496,7 +498,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
 
                         <div class="position-relative text-center my-3">
                             <hr class="text-muted opacity-25 m-0">
-                            <span class="position-absolute top-50 start-50 translate-middle bg-white px-2 small text-muted" style="font-size: 0.82rem;">hoặc dùng tài khoản Email</span>
+                            <span class="position-absolute top-50 start-50 translate-middle bg-body px-2 small text-muted" style="font-size: 0.82rem;">hoặc dùng tài khoản Email</span>
                         </div>
 
                         <form id="formModalLogin" method="POST" action="index.php?page=auth&action=login">
@@ -505,13 +507,13 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                 <input type="email" name="email" class="form-control rounded-pill" required placeholder="name@vphone.vn">
                             </div>
                             <div class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <label class="form-label small fw-semibold mb-0">Mật khẩu</label>
+                                <label class="form-label small fw-semibold">Mật khẩu</label>
+                                <input type="password" name="password" class="form-control rounded-pill" required placeholder="Nhập mật khẩu">
+                                <div class="text-end mt-2">
                                     <a href="javascript:void(0)" id="btnOpenForgotTab" class="small text-primary text-decoration-none fw-semibold">
-                                        <i class="fa-solid fa-key me-1"></i>Quên mật khẩu?
+                                        Quên mật khẩu?
                                     </a>
                                 </div>
-                                <input type="password" name="password" class="form-control rounded-pill" required placeholder="Nhập mật khẩu">
                             </div>
                             <button type="submit" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm mb-3">ĐĂNG NHẬP NGAY</button>
                             <div class="p-2 rounded-3 bg-light text-secondary small text-center">
@@ -521,10 +523,12 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                     </div>
 
                     <div class="tab-pane fade" id="tab-forgot">
+                        <div id="forgotAlert" class="alert d-none small py-2 rounded-3 mb-3 auth-tab-alert"></div>
+
                         <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
-                            <span class="small fw-bold text-dark"><i class="fa-solid fa-shield-halved text-primary me-1"></i>Khôi phục mật khẩu</span>
-                            <a href="javascript:void(0)" class="small text-secondary text-decoration-none btn-back-to-login">
-                                <i class="fa-solid fa-arrow-left me-1"></i>Đăng nhập
+                            <span class="small fw-bold text-body"><i class="fa-solid fa-key text-warning me-1.5"></i>Khôi phục mật khẩu</span>
+                            <a href="javascript:void(0)" class="small text-muted text-decoration-none btn-back-to-login">
+                                <i class="fa-solid fa-arrow-left me-1"></i>Quay lại đăng nhập
                             </a>
                         </div>
 
@@ -535,42 +539,52 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                             </p>
                             <form id="formModalForgot" method="POST" action="index.php?page=auth&action=forgot_password">
                                 <div class="mb-3">
-                                    <label class="form-label small fw-semibold">Email đăng ký tài khoản</label>
+                                    <label class="form-label small fw-semibold">Email tài khoản</label>
                                     <input type="email" name="email" id="modalForgotEmail" class="form-control rounded-pill" required placeholder="name@vphone.vn">
                                 </div>
                                 <button type="submit" id="btnSubmitModalForgot" class="btn btn-primary w-100 rounded-pill fw-bold py-2 shadow-sm mb-3">
-                                    <i class="fa-solid fa-paper-plane me-2"></i>GỬI MÃ XÁC THỰC OTP
+                                    <i class="fa-solid fa-paper-plane me-1.5"></i>GỬI MÃ XÁC THỰC OTP
                                 </button>
                             </form>
                         </div>
 
                         <!-- Step 2 in Modal: Nhập OTP & Mật khẩu mới -->
                         <div id="modalForgotStep2" class="d-none">
-                            <div class="p-2.5 rounded-3 bg-light mb-3 text-center border">
-                                <span class="small text-muted d-block" style="font-size: 0.75rem;">Mã OTP đã gửi đến:</span>
-                                <strong id="modalDisplayEmail" class="small text-dark"></strong>
+                            <div class="p-2.5 rounded-3 mb-3 text-center border" style="background: rgba(0, 102, 204, 0.06); border-color: rgba(0, 102, 204, 0.2) !important;">
+                                <span class="small text-muted d-block" style="font-size: 0.74rem;">Đang đổi mật khẩu cho:</span>
+                                <strong id="modalDisplayEmail" class="small text-primary"></strong>
                             </div>
                             <form id="formModalReset" method="POST" action="index.php?page=auth&action=reset_password">
                                 <input type="hidden" name="email" id="modalHiddenEmail">
                                 <input type="hidden" name="token" id="modalHiddenToken">
-                                <div class="mb-2">
+                                <div class="mb-2.5">
                                     <label class="form-label small fw-semibold">Mã OTP (6 chữ số)</label>
-                                    <input type="text" name="otp" id="modalForgotOtp" class="form-control rounded-pill text-center fw-bold fs-5" required maxlength="6" placeholder="123456">
+                                    <input type="text" name="otp" id="modalForgotOtp" class="form-control rounded-pill text-center fw-bold" required maxlength="6" placeholder="123456" style="font-size: 1.15rem; letter-spacing: 4px; font-family: monospace;">
                                 </div>
-                                <div class="mb-2">
+                                <div class="mb-2.5 position-relative">
                                     <label class="form-label small fw-semibold">Mật khẩu mới</label>
-                                    <input type="password" name="new_password" id="modalNewPass" class="form-control rounded-pill" required minlength="6" placeholder="Tối thiểu 6 ký tự">
+                                    <div class="position-relative">
+                                        <input type="password" name="new_password" id="modalNewPass" class="form-control rounded-pill pe-5" required minlength="6" placeholder="Tối thiểu 6 ký tự">
+                                        <button class="btn btn-link text-muted position-absolute end-0 top-50 translate-middle-y z-3 text-decoration-none pe-3 border-0 bg-transparent shadow-none" type="button" onclick="togglePassVisibility('modalNewPass', this)" tabindex="-1">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="mb-3">
+                                <div class="mb-3 position-relative">
                                     <label class="form-label small fw-semibold">Xác nhận mật khẩu</label>
-                                    <input type="password" name="confirm_password" id="modalConfirmPass" class="form-control rounded-pill" required minlength="6" placeholder="Nhập lại mật khẩu mới">
+                                    <div class="position-relative">
+                                        <input type="password" name="confirm_password" id="modalConfirmPass" class="form-control rounded-pill pe-5" required minlength="6" placeholder="Nhập lại mật khẩu mới">
+                                        <button class="btn btn-link text-muted position-absolute end-0 top-50 translate-middle-y z-3 text-decoration-none pe-3 border-0 bg-transparent shadow-none" type="button" onclick="togglePassVisibility('modalConfirmPass', this)" tabindex="-1">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <button type="submit" id="btnSubmitModalReset" class="btn btn-success w-100 rounded-pill fw-bold py-2 shadow-sm mb-2">
-                                    <i class="fa-solid fa-circle-check me-2"></i>LƯU MẬT KHẨU MỚI
+                                    <i class="fa-solid fa-circle-check me-1.5"></i>LƯU MẬT KHẨU MỚI
                                 </button>
                                 <div class="text-center">
-                                    <a href="javascript:void(0)" id="modalBtnResendOtp" class="small text-primary text-decoration-none" style="font-size: 0.78rem;">
-                                        <i class="fa-solid fa-rotate-right me-1"></i>Gửi lại mã OTP
+                                    <a href="javascript:void(0)" id="modalBtnResendOtp" class="small text-muted text-decoration-none" style="font-size: 0.78rem;">
+                                        <i class="fa-solid fa-rotate-right me-1"></i>Chưa nhận được mã? Gửi lại
                                     </a>
                                 </div>
                             </form>
@@ -578,6 +592,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                     </div>
 
                     <div class="tab-pane fade" id="tab-register">
+                        <div id="registerAlert" class="alert d-none small py-2 rounded-3 mb-3 auth-tab-alert"></div>
                         <!-- Nút Đăng ký nhanh bằng Google -->
                         <div class="mb-3">
                             <a href="index.php?page=google-login" class="btn btn-outline-secondary w-100 rounded-pill py-2 d-flex align-items-center justify-content-center shadow-sm btn-google-auth-trigger fw-semibold text-decoration-none" style="border-color: #dadce0; background: #ffffff; color: #3c4043; transition: all 0.2s ease;">
@@ -593,7 +608,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
 
                         <div class="position-relative text-center my-3">
                             <hr class="text-muted opacity-25 m-0">
-                            <span class="position-absolute top-50 start-50 translate-middle bg-white px-2 small text-muted" style="font-size: 0.82rem;">hoặc điền thông tin tài khoản</span>
+                            <span class="position-absolute top-50 start-50 translate-middle bg-body px-2 small text-muted" style="font-size: 0.82rem;">hoặc điền thông tin tài khoản</span>
                         </div>
 
                         <form id="formModalRegister" method="POST" action="index.php?page=auth&action=register">

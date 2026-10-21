@@ -288,7 +288,7 @@ $stats = $reviewModel->getAdminStats();
                             <td class="fw-bold text-secondary">#<?= $rev['id'] ?></td>
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <img src="../<?= htmlspecialchars($rev['product_image']) ?>" alt="" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; background: #fff; border: 1px solid #e2e8f0; padding: 2px;">
+                                    <img src="../<?= htmlspecialchars($rev['product_image']) ?>" alt="" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; background: rgba(125,125,125,0.06); border: 1px solid rgba(125,125,125,0.15); padding: 2px;">
                                     <div class="min-w-0">
                                         <a href="../index.php?page=detail&id=<?= $rev['product_id'] ?>#reviews-section" target="_blank" class="fw-bold text-dark text-decoration-none small text-truncate d-block" style="max-width: 190px;" title="<?= htmlspecialchars($rev['product_name']) ?>">
                                             <?= htmlspecialchars($rev['product_name']) ?>

@@ -1,6 +1,6 @@
 -- =========================================================================
 -- CƠ SỞ DỮ LIỆU ĐỒ ÁN V-PHONE STORE (ĐÃ SAO LƯU TỰ ĐỘNG)
--- Thời gian sao lưu: 2026-10-21 23:21:35
+-- Thời gian sao lưu: 2026-10-21 23:32:00
 -- =========================================================================
 
 CREATE DATABASE IF NOT EXISTS `db_phone_store` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -181,7 +181,11 @@ CREATE TABLE `password_resets` (
   KEY `email` (`email`),
   KEY `token` (`token`),
   KEY `otp` (`otp`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu bảng `password_resets` (1 dòng)
+INSERT INTO `password_resets` (`id`, `email`, `token`, `otp`, `expires_at`, `created_at`) VALUES
+(2, 'luc@vphone.vn', 'cb2b1b851fa43e1641e0d91b7bb433e9537cefbcec5093cc245a1de7352461ab', '458452', '2026-10-21 23:38:53', '2026-10-21 23:23:53');
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `product_reviews`
@@ -397,7 +401,7 @@ CREATE TABLE `users` (
 
 -- Dữ liệu bảng `users` (10 dòng)
 INSERT INTO `users` (`id`, `fullname`, `email`, `google_id`, `auth_provider`, `phone`, `address`, `avatar`, `password`, `role`, `cart_data`, `created_at`, `staff_role`, `staff_title`, `permissions`, `status`) VALUES
-(1, 'Võ Minh Hiếu', 'hieu@vphone.vn', NULL, 'local', '0901234567', 'Quận 1, TP.HCM', NULL, '$2y$10$Qeym/jqTZXKQbeKLV.fgz.xYyFLFQiXwrpcqLcE7hRUbHyL.w6Rku', 1, '[]', '2026-10-08 09:30:19', 'admin', 'Quản trị viên', NULL, 1),
+(1, 'Võ Minh Hiếu', 'hieu@vphone.vn', NULL, 'local', '0901234567', 'Quận 1, TP.HCM', NULL, '$2y$10$33vtXT.qs4BNnJHX6h0beO7FJR2yZtucxlwkwu.KIKWx3qvzN8u1G', 1, '[]', '2026-10-08 09:30:19', 'admin', 'Quản trị viên', NULL, 1),
 (2, 'Huỳnh Bá Lực', 'luc@vphone.vn', NULL, 'local', '0909888999', 'Quận 7, TP.HCM', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 2, '[]', '2026-10-08 09:30:19', 'staff', 'Nhân viên bán hàng', '[\"orders\",\"warranties\",\"reviews\"]', 1),
 (3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', NULL, 'local', '18006868', 'Trụ sở V-Phone', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 1, '{\"25_8990000_64GBenMidnight\":{\"cart_key\":\"25_8990000_64GBenMidnight\",\"id\":25,\"name\":\"iPhone SE 2022\",\"rom\":\"64 GB\",\"color\":\"Đen Midnight\",\"price\":8990000,\"image\":\"assets\\/images\\/products\\/iphone-se-2022.jpg\",\"quantity\":1}}', '2026-10-08 09:30:19', 'super_admin', 'Quản Trị Tối Cao', NULL, 1),
 (8, 'Lực Huỳnh', 'beluc5102003@gmail.com', '112858085185933992393', 'google', '0888443655', 'Chưa cập nhật', 'assets/images/users/avatar_user_8.png', NULL, 1, '{\"3_64990000_256GBTrngnhSao\":{\"cart_key\":\"3_64990000_256GBTrngnhSao\",\"id\":3,\"name\":\"iPhone Duo (Màn Gập Apple)\",\"rom\":\"256 GB\",\"color\":\"Trắng Ánh Sao\",\"price\":64990000,\"image\":\"assets\\/images\\/products\\/iphone-18-duo-trang-anh-sao.png\",\"quantity\":1}}', '2026-10-15 19:23:57', 'admin', 'Quản trị viên', NULL, 1),

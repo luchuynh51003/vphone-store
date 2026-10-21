@@ -1326,7 +1326,7 @@ $p3Name = htmlspecialchars($product3['name'] ?? 'Sản phẩm 3');
     <div class="container d-flex align-items-center justify-content-between py-2 px-3">
         <!-- Machine 1 Mini -->
         <div class="d-flex align-items-center gap-2 min-w-0" style="flex: 1;">
-            <img src="<?= htmlspecialchars($product1['image']) ?>" alt="<?= htmlspecialchars($product1['name']) ?>" class="sticky-mini-thumb rounded-2 border" style="width: 38px; height: 38px; object-fit: contain; background: #fff; flex-shrink: 0;">
+            <img src="<?= htmlspecialchars($product1['image']) ?>" alt="<?= htmlspecialchars($product1['name']) ?>" class="sticky-mini-thumb rounded-2 border" style="width: 38px; height: 38px; object-fit: contain; background: rgba(125,125,125,0.06); flex-shrink: 0;">
             <div class="min-w-0">
                 <div class="fw-bold text-dark text-truncate small"><?= htmlspecialchars($product1['name']) ?></div>
                 <div class="text-danger fw-bold small"><?= formatPrice($p1['effPrice']) ?></div>
@@ -1344,7 +1344,7 @@ $p3Name = htmlspecialchars($product3['name'] ?? 'Sản phẩm 3');
 
         <!-- Machine 2 Mini -->
         <div class="d-flex align-items-center gap-2 min-w-0" style="flex: 1;">
-            <img src="<?= htmlspecialchars($product2['image']) ?>" alt="<?= htmlspecialchars($product2['name']) ?>" class="sticky-mini-thumb rounded-2 border" style="width: 38px; height: 38px; object-fit: contain; background: #fff; flex-shrink: 0;">
+            <img src="<?= htmlspecialchars($product2['image']) ?>" alt="<?= htmlspecialchars($product2['name']) ?>" class="sticky-mini-thumb rounded-2 border" style="width: 38px; height: 38px; object-fit: contain; background: rgba(125,125,125,0.06); flex-shrink: 0;">
             <div class="min-w-0">
                 <div class="fw-bold text-dark text-truncate small"><?= htmlspecialchars($product2['name']) ?></div>
                 <div class="text-danger fw-bold small"><?= formatPrice($p2['effPrice']) ?></div>
@@ -1362,7 +1362,7 @@ $p3Name = htmlspecialchars($product3['name'] ?? 'Sản phẩm 3');
             </div>
             <!-- Machine 3 Mini -->
             <div class="d-flex align-items-center gap-2 min-w-0 d-none d-md-flex" style="flex: 1;">
-                <img src="<?= htmlspecialchars($product3['image']) ?>" alt="<?= htmlspecialchars($product3['name']) ?>" class="sticky-mini-thumb rounded-2 border" style="width: 38px; height: 38px; object-fit: contain; background: #fff; flex-shrink: 0;">
+                <img src="<?= htmlspecialchars($product3['image']) ?>" alt="<?= htmlspecialchars($product3['name']) ?>" class="sticky-mini-thumb rounded-2 border" style="width: 38px; height: 38px; object-fit: contain; background: rgba(125,125,125,0.06); flex-shrink: 0;">
                 <div class="min-w-0">
                     <div class="fw-bold text-dark text-truncate small"><?= htmlspecialchars($product3['name']) ?></div>
                     <div class="text-danger fw-bold small"><?= formatPrice($p3['effPrice']) ?></div>
@@ -1429,7 +1429,7 @@ $p3Name = htmlspecialchars($product3['name'] ?? 'Sản phẩm 3');
                              data-brand-id="<?= (int)$ap['brand_id'] ?>">
                             <div class="p-2.5 rounded-3 border bg-white h-100 d-flex flex-column justify-content-between hover-card position-relative <?= $isCurSelected ? 'border-primary bg-primary bg-opacity-10' : '' ?>">
                                 <div class="d-flex gap-2.5 align-items-center mb-2">
-                                    <img src="<?= htmlspecialchars($ap['image']) ?>" alt="<?= htmlspecialchars($ap['name']) ?>" class="rounded-2 border flex-shrink-0" style="width: 50px; height: 50px; object-fit: contain; background: #fff;">
+                                    <img src="<?= htmlspecialchars($ap['image']) ?>" alt="<?= htmlspecialchars($ap['name']) ?>" class="rounded-2 border flex-shrink-0" style="width: 50px; height: 50px; object-fit: contain; background: rgba(125,125,125,0.06);">
                                     <div class="min-w-0 flex-grow-1">
                                         <div class="fw-bold text-dark text-truncate small" title="<?= htmlspecialchars($ap['name']) ?>"><?= htmlspecialchars($ap['name']) ?></div>
                                         <div class="text-danger fw-bold small"><?= formatPrice($apPrice) ?></div>

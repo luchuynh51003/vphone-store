@@ -1006,7 +1006,7 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
         <?php
             $isWarehouseActive = in_array($adminPage, ['products.php', 'brands.php', 'inventory.php']);
             $isBusinessActive = in_array($adminPage, ['orders.php', 'support.php', 'warranties.php', 'users.php', 'reviews.php', 'vouchers.php', 'news.php']);
-            $isSystemActive = in_array($adminPage, ['staff.php', 'staff_dashboard.php']);
+            $isSystemActive = in_array($adminPage, ['staff.php', 'staff_dashboard.php', 'db_sync.php']);
             $isStaffWarehouseActive = in_array($adminPage, ['products.php', 'brands.php', 'inventory.php']);
             $isStaffBusinessActive = in_array($adminPage, ['orders.php', 'support.php', 'warranties.php', 'reviews.php', 'vouchers.php', 'news.php']);
             $totalBizAlerts = $pendingOrdersCount + $pendingWarrantiesCount + $pendingReviewsCount + $pendingSupportCount;
@@ -1235,6 +1235,9 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
                             </a>
                             <a href="staff_dashboard.php" class="admin-nav-link <?= ($adminPage === 'staff_dashboard.php') ? 'active' : '' ?>" style="color: #34d399;">
                                 <i class="fa-solid fa-id-badge text-success"></i> <span>Xem Portal Nhân viên</span>
+                            </a>
+                            <a href="db_sync.php" class="admin-nav-link <?= ($adminPage === 'db_sync.php') ? 'active' : '' ?>" style="color: #38bdf8;">
+                                <i class="fa-solid fa-database text-info"></i> <span class="flex-grow-1 text-truncate">Đồng bộ CSDL Git</span>
                             </a>
                         </div>
                     </div>
