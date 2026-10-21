@@ -6,6 +6,274 @@
 (function () {
     "use strict";
 
+    // --- 0. DARK MODE & SYSTEM THEME ENGINE (3-MODE: LIGHT / DARK / AUTO) ---
+    window.getSystemPrefersDark = function () {
+        try {
+            return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        } catch (e) {
+            return false;
+        }
+    };
+
+    window.getVPhoneThemeMode = function () {
+        try {
+            const mode = localStorage.getItem('vphone_theme_mode') || localStorage.getItem('vphone_theme');
+            if (mode === 'dark' || mode === 'light' || mode === 'auto') return mode;
+        } catch (e) {}
+        return 'auto';
+    };
+
+    window.getVPhoneEffectiveTheme = function (mode) {
+        if (!mode) mode = window.getVPhoneThemeMode();
+        if (mode === 'auto') {
+            return window.getSystemPrefersDark() ? 'dark' : 'light';
+        }
+        return (mode === 'dark') ? 'dark' : 'light';
+    };
+
+    window.getVPhoneTheme = function () {
+        return document.documentElement.getAttribute('data-bs-theme') || window.getVPhoneEffectiveTheme();
+    };
+
+    window.updateThemeUI = function (mode, effectiveTheme) {
+        if (!mode) mode = window.getVPhoneThemeMode();
+        if (!effectiveTheme) effectiveTheme = window.getVPhoneEffectiveTheme(mode);
+        const isDark = (effectiveTheme === 'dark');
+
+        // 0. Apply HTML attributes & classes
+        document.documentElement.setAttribute('data-bs-theme', effectiveTheme);
+        document.documentElement.setAttribute('data-theme-mode', mode);
+        document.documentElement.classList.remove('theme-dark', 'theme-light');
+        document.documentElement.classList.add('theme-' + effectiveTheme);
+
+        // Helper: Trigger smooth spin-pop icon animation
+        function triggerIconAnim(iconEl) {
+            if (!iconEl) return;
+            iconEl.classList.remove('theme-icon-animate');
+            void iconEl.offsetWidth; // force reflow
+            iconEl.classList.add('theme-icon-animate');
+        }
+
+        // 1. Storefront Dropdown Button & Icon (#themeDropdownBtn, #themeCurrentIcon)
+        const btnDropdown = document.getElementById('themeDropdownBtn');
+        const iconDropdown = document.getElementById('themeCurrentIcon');
+        if (btnDropdown && iconDropdown) {
+            if (mode === 'auto') {
+                iconDropdown.className = 'fa-solid fa-circle-half-stroke text-primary';
+                btnDropdown.setAttribute('title', 'Giao diện: Tự động theo hệ thống máy (hiện là ' + (isDark ? 'Tối' : 'Sáng') + ')');
+            } else if (mode === 'dark') {
+                iconDropdown.className = 'fa-solid fa-moon text-info';
+                btnDropdown.setAttribute('title', 'Giao diện: Chế độ Tối');
+            } else {
+                iconDropdown.className = 'fa-solid fa-sun text-warning';
+                btnDropdown.setAttribute('title', 'Giao diện: Chế độ Sáng');
+            }
+            triggerIconAnim(iconDropdown);
+        }
+
+        // 2. Admin Topbar Dropdown Button & Icon (#themeDropdownBtnAdmin, #themeCurrentIconAdmin)
+        const btnDropdownAdmin = document.getElementById('themeDropdownBtnAdmin');
+        const iconDropdownAdmin = document.getElementById('themeCurrentIconAdmin');
+        if (btnDropdownAdmin && iconDropdownAdmin) {
+            if (mode === 'auto') {
+                iconDropdownAdmin.className = 'fa-solid fa-circle-half-stroke text-primary';
+                btnDropdownAdmin.setAttribute('title', 'Giao diện: Tự động theo hệ thống máy (hiện là ' + (isDark ? 'Tối' : 'Sáng') + ')');
+            } else if (mode === 'dark') {
+                iconDropdownAdmin.className = 'fa-solid fa-moon text-info';
+                btnDropdownAdmin.setAttribute('title', 'Giao diện: Chế độ Tối');
+            } else {
+                iconDropdownAdmin.className = 'fa-solid fa-sun text-warning';
+                btnDropdownAdmin.setAttribute('title', 'Giao diện: Chế độ Sáng');
+            }
+            triggerIconAnim(iconDropdownAdmin);
+        }
+
+        // 3. Dropdown Menu Item Checks & Active States (.theme-opt-btn, .check-icon)
+        document.querySelectorAll('.theme-opt-btn').forEach(btn => {
+            const isLightBtn = btn.classList.contains('theme-opt-light');
+            const isDarkBtn = btn.classList.contains('theme-opt-dark');
+            const isAutoBtn = btn.classList.contains('theme-opt-auto');
+            const isSelected = (mode === 'light' && isLightBtn) ||
+                               (mode === 'dark' && isDarkBtn) ||
+                               (mode === 'auto' && isAutoBtn);
+
+            btn.classList.toggle('active', isSelected);
+            const check = btn.querySelector('.check-icon');
+            if (check) {
+                check.classList.toggle('d-none', !isSelected);
+            }
+        });
+
+        // 4. Mobile Offcanvas Segmented Control (#mBtnLight, #mBtnDark, #mBtnAuto, #mobileThemeStatusBadge)
+        const mLight = document.getElementById('mBtnLight');
+        const mDark = document.getElementById('mBtnDark');
+        const mAuto = document.getElementById('mBtnAuto');
+        if (mLight && mDark && mAuto) {
+            mLight.classList.toggle('active', mode === 'light');
+            mDark.classList.toggle('active', mode === 'dark');
+            mAuto.classList.toggle('active', mode === 'auto');
+        }
+        const mBadge = document.getElementById('mobileThemeStatusBadge');
+        if (mBadge) {
+            if (mode === 'auto') {
+                mBadge.textContent = 'Theo hệ thống (' + (isDark ? 'Tối' : 'Sáng') + ')';
+            } else if (mode === 'dark') {
+                mBadge.textContent = 'Chế độ Tối';
+            } else {
+                mBadge.textContent = 'Chế độ Sáng';
+            }
+        }
+
+        // 5. Admin Sidebar Footer Segmented Control (#admBtnLight, #admBtnDark, #admBtnAuto)
+        const admLight = document.getElementById('admBtnLight');
+        const admDark = document.getElementById('admBtnDark');
+        const admAuto = document.getElementById('admBtnAuto');
+        if (admLight && admDark && admAuto) {
+            admLight.classList.toggle('active', mode === 'light');
+            admDark.classList.toggle('active', mode === 'dark');
+            admAuto.classList.toggle('active', mode === 'auto');
+        }
+
+        // 6. Legacy Toggle Pills (.theme-toggle-pill)
+        document.querySelectorAll('.theme-toggle-pill').forEach(btn => {
+            const textSpan = btn.querySelector('.theme-mode-text');
+            const iconEl = btn.querySelector('i');
+            if (iconEl) {
+                iconEl.className = isDark ? 'fa-solid fa-sun text-warning me-1.5' : 'fa-solid fa-moon text-info me-1.5';
+            }
+            if (textSpan) {
+                textSpan.textContent = (mode === 'auto') ? 'Theo hệ thống' : (isDark ? 'Chế độ Tối' : 'Chế độ Sáng');
+            }
+        });
+
+        // 7. Legacy Single Button (#themeToggleBtn, #themeToggleBtnAdmin)
+        const legacyNavBtn = document.getElementById('themeToggleBtn');
+        if (legacyNavBtn) {
+            legacyNavBtn.innerHTML = isDark
+                ? '<i class="fa-solid fa-sun text-warning" style="font-size: 1rem; filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));"></i>'
+                : '<i class="fa-solid fa-moon text-white" style="font-size: 0.95rem;"></i>';
+        }
+        const legacyAdminBtn = document.getElementById('themeToggleBtnAdmin');
+        if (legacyAdminBtn) {
+            legacyAdminBtn.innerHTML = isDark
+                ? '<i class="fa-solid fa-sun text-warning" style="font-size: 1rem; filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));"></i>'
+                : '<i class="fa-solid fa-moon text-secondary" style="font-size: 0.95rem;"></i>';
+        }
+    };
+
+    window.updateThemeToggleButtons = function (theme) {
+        window.updateThemeUI(window.getVPhoneThemeMode(), theme || window.getVPhoneEffectiveTheme());
+    };
+
+    window.setVPhoneThemeMode = function (mode, save = true) {
+        if (mode !== 'light' && mode !== 'dark' && mode !== 'auto') mode = 'auto';
+
+        // Trigger ultra-smooth transition across entire DOM
+        try {
+            document.documentElement.classList.add('theme-switching');
+            if (window._vphoneSwitchTimer) clearTimeout(window._vphoneSwitchTimer);
+            window._vphoneSwitchTimer = setTimeout(function () {
+                document.documentElement.classList.remove('theme-switching');
+            }, 260);
+        } catch (e) {}
+
+        if (save) {
+            try {
+                localStorage.setItem('vphone_theme_mode', mode);
+                localStorage.setItem('vphone_theme', mode);
+            } catch (e) {}
+        }
+        const effective = window.getVPhoneEffectiveTheme(mode);
+        window.updateThemeUI(mode, effective);
+
+        try {
+            window.dispatchEvent(new CustomEvent('vphoneThemeChanged', {
+                detail: { mode: mode, theme: effective, isDark: effective === 'dark' }
+            }));
+        } catch (e) {}
+
+        return effective;
+    };
+
+    window.setVPhoneTheme = function (theme, save = true) {
+        return window.setVPhoneThemeMode(theme, save);
+    };
+
+    window.cycleVPhoneThemeMode = function () {
+        const cur = window.getVPhoneThemeMode();
+        const next = (cur === 'auto') ? 'light' : (cur === 'light' ? 'dark' : 'auto');
+        window.setVPhoneThemeMode(next, true);
+        return next;
+    };
+
+    window.toggleVPhoneTheme = function () {
+        return window.cycleVPhoneThemeMode();
+    };
+
+    // Auto sync with OS theme in real time whenever OS preference changes
+    try {
+        const osDarkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const onOSThemeChange = function (e) {
+            if (window.getVPhoneThemeMode() === 'auto') {
+                try {
+                    document.documentElement.classList.add('theme-switching');
+                    if (window._vphoneSwitchTimer) clearTimeout(window._vphoneSwitchTimer);
+                    window._vphoneSwitchTimer = setTimeout(function () {
+                        document.documentElement.classList.remove('theme-switching');
+                    }, 260);
+                } catch (err) {}
+                const newEffective = e.matches ? 'dark' : 'light';
+                window.updateThemeUI('auto', newEffective);
+                try {
+                    window.dispatchEvent(new CustomEvent('vphoneThemeChanged', {
+                        detail: { mode: 'auto', theme: newEffective, isDark: e.matches, isOSChange: true }
+                    }));
+                } catch (err) {}
+            }
+        };
+        if (osDarkQuery && osDarkQuery.addEventListener) {
+            osDarkQuery.addEventListener('change', onOSThemeChange);
+        } else if (osDarkQuery && osDarkQuery.addListener) {
+            osDarkQuery.addListener(onOSThemeChange);
+        }
+    } catch (e) {}
+
+    // Universal Icon Spacing Engine (Eliminates text-icon collisions system-wide without breaking flex forms)
+    window.fixIconTextCollisions = function (root) {
+        const scope = root || document;
+        const selectors = '.badge, .admin-nav-link, .sidebar-menu-item, .glass-spec-pill, .theme-toggle-pill';
+        scope.querySelectorAll(selectors).forEach(container => {
+            const style = window.getComputedStyle ? window.getComputedStyle(container) : null;
+            if (style && (style.display === 'flex' || style.display === 'inline-flex') && style.gap && style.gap !== '0px' && style.gap !== 'normal') {
+                return; // Container already has active flex gap, don't add margin!
+            }
+            Array.from(container.childNodes).forEach(node => {
+                if (node.nodeType === Node.ELEMENT_NODE && (node.tagName === 'I' || node.tagName === 'SVG')) {
+                    const next = node.nextSibling;
+                    if (next && next.nodeType === Node.TEXT_NODE && next.textContent.trim().length > 0) {
+                        node.style.marginRight = '0.35rem';
+                        node.style.display = 'inline-block';
+                    }
+                    const prev = node.previousSibling;
+                    if (prev && prev.nodeType === Node.TEXT_NODE && prev.textContent.trim().length > 0) {
+                        node.style.marginLeft = '0.35rem';
+                        node.style.display = 'inline-block';
+                    }
+                }
+            });
+        });
+    };
+
+    // Immediate theme UI synchronization & DOM ready sync
+    window.updateThemeUI();
+    window.fixIconTextCollisions();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () {
+            window.updateThemeUI();
+            window.fixIconTextCollisions();
+        });
+    }
+
     // --- 1. TOAST NOTIFICATION SYSTEM (Instant & Reliable) ---
     window.toastTimer = null;
 
@@ -1227,5 +1495,6 @@
         initAuthModal();
         initGoogleAuth();
         initFloatingContactWidget();
+        window.updateThemeToggleButtons();
     });
 })();

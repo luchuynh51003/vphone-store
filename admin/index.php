@@ -549,7 +549,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const revData = <?= json_encode($chartRevenue) ?>;
         const ordData = <?= json_encode($chartOrders) ?>;
 
-        new Chart(revCtx, {
+        window.vphoneRevChart = new Chart(revCtx, {
             type: 'bar',
             data: {
                 labels: labels,
@@ -652,7 +652,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const statusData = <?= json_encode(array_values($orderStatusData)) ?>;
         const total = statusData.reduce((a, b) => a + b, 0);
 
-        new Chart(statusCtx, {
+        window.vphoneStatusChart = new Chart(statusCtx, {
             type: 'doughnut',
             data: {
                 labels: ['Đã giao thành công', 'Chờ xử lý', 'Đang giao hàng', 'Đã hủy'],
@@ -686,6 +686,48 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    function applyThemeToAdminCharts(theme) {
+        const isDark = (theme === 'dark');
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const gridColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(226, 232, 240, 0.6)';
+
+        if (window.vphoneRevChart && window.vphoneRevChart.options && window.vphoneRevChart.options.scales) {
+            if (window.vphoneRevChart.options.scales.x) {
+                window.vphoneRevChart.options.scales.x.ticks = window.vphoneRevChart.options.scales.x.ticks || {};
+                window.vphoneRevChart.options.scales.x.ticks.color = textColor;
+            }
+            if (window.vphoneRevChart.options.scales.y) {
+                window.vphoneRevChart.options.scales.y.ticks = window.vphoneRevChart.options.scales.y.ticks || {};
+                window.vphoneRevChart.options.scales.y.ticks.color = textColor;
+                if (window.vphoneRevChart.options.scales.y.grid) {
+                    window.vphoneRevChart.options.scales.y.grid.color = gridColor;
+                }
+            }
+            if (window.vphoneRevChart.options.scales.y1) {
+                window.vphoneRevChart.options.scales.y1.ticks = window.vphoneRevChart.options.scales.y1.ticks || {};
+                window.vphoneRevChart.options.scales.y1.ticks.color = textColor;
+            }
+            if (window.vphoneRevChart.options.plugins && window.vphoneRevChart.options.plugins.legend) {
+                window.vphoneRevChart.options.plugins.legend.labels.color = isDark ? '#f1f5f9' : '#1e293b';
+            }
+            window.vphoneRevChart.update();
+        }
+
+        if (window.vphoneStatusChart && window.vphoneStatusChart.data && window.vphoneStatusChart.data.datasets) {
+            if (window.vphoneStatusChart.data.datasets[0]) {
+                window.vphoneStatusChart.data.datasets[0].borderColor = isDark ? '#131f37' : '#ffffff';
+            }
+            window.vphoneStatusChart.update();
+        }
+    }
+
+    const initialTheme = document.documentElement.getAttribute('data-bs-theme') || 'light';
+    applyThemeToAdminCharts(initialTheme);
+
+    window.addEventListener('vphoneThemeChanged', function(e) {
+        applyThemeToAdminCharts(e.detail ? e.detail.theme : 'light');
+    });
 });
 </script>
 

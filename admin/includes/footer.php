@@ -18,7 +18,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../assets/js/main.js?v=20261015_v3"></script>
+<script src="../assets/js/main.js?v=<?= file_exists(__DIR__ . '/../../assets/js/main.js') ? filemtime(__DIR__ . '/../../assets/js/main.js') : '20261021_v1' ?>"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('adminDeleteConfirmModal');
