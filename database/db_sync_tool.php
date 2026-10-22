@@ -5,8 +5,11 @@
  */
 
 class DatabaseSyncTool {
-    private $pdo;
-    private $dumpFile;
+    /** @var PDO */
+    protected $pdo;
+
+    /** @var string */
+    protected string $dumpFile = '';
 
     public function __construct(?PDO $pdo = null) {
         if ($pdo) {

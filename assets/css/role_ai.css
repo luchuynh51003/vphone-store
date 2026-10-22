@@ -1,0 +1,671 @@
+/**
+ * V-Phone Store 2026 - Multi-Role AI Neural Assistant Styling
+ * Thiết kế Tinh Gọn, Nhẹ Nhàng, Không Che Khuất Màn Hình
+ * Hỗ trợ hoàn hảo Light & Dark Mode
+ */
+
+/* =========================================================================
+   1. FLOATING LAUNCHER BUTTON (NÚT BẤM NỔI GỌN GÀNG GÓC PHẢI)
+   ========================================================================= */
+.role-ai-floating-trigger {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1045;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px 7px 8px;
+    border-radius: 999px;
+    background: #0f172a;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.35);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: none;
+    text-decoration: none;
+}
+
+.role-ai-floating-trigger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -4px rgba(15, 23, 42, 0.45);
+    color: #ffffff;
+}
+
+.role-ai-trigger-orb {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    font-size: 0.8rem;
+    color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    flex-shrink: 0;
+}
+
+.role-ai-trigger-pulse {
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    animation: roleAiAura 2.2s infinite ease-out;
+    pointer-events: none;
+}
+
+@keyframes roleAiAura {
+    0% { transform: scale(0.9); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.3; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+.role-ai-trigger-label {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+    text-align: left;
+}
+
+.role-ai-trigger-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.role-ai-trigger-badge {
+    font-size: 0.65rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.role-ai-trigger-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 5px #10b981;
+    display: inline-block;
+}
+
+/* =========================================================================
+   2. MAIN CHATBOX WINDOW (CỬA SỔ HỘI THOẠI - GỌN GÀNG, NHỎ GỌN)
+   ========================================================================= */
+.role-ai-window {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 375px;
+    max-width: calc(100vw - 28px);
+    height: 495px;
+    max-height: calc(100vh - 85px);
+    border-radius: 22px;
+    background: #ffffff;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.22);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px) scale(0.96);
+    transform-origin: bottom right;
+    pointer-events: none;
+    transition: opacity 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.22s;
+}
+
+.role-ai-window.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* Khi thu nhỏ (Minimized) */
+.role-ai-window.is-minimized {
+    height: 48px !important;
+    min-height: 48px !important;
+    border-radius: 14px !important;
+    box-shadow: 0 8px 24px -4px rgba(15, 23, 42, 0.35);
+    overflow: hidden;
+}
+
+.role-ai-window.is-minimized .role-ai-body,
+.role-ai-window.is-minimized .role-ai-chips-bar,
+.role-ai-window.is-minimized .role-ai-chips-wrap,
+.role-ai-window.is-minimized .role-ai-footer {
+    display: none !important;
+}
+
+/* Header (Kéo thả di chuyển trực tiếp trên header) */
+.role-ai-header {
+    background: linear-gradient(135deg, #0b1329 0%, #1e1b4b 100%);
+    color: #ffffff;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    flex-shrink: 0;
+    cursor: grab;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;
+}
+
+.role-ai-header:active {
+    cursor: grabbing;
+}
+
+.role-ai-header-profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.role-ai-header-orb {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    color: #ffffff;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+}
+
+.role-ai-header-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.role-ai-header-subtitle {
+    font-size: 0.68rem;
+    color: #cbd5e1;
+    margin: 1px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.role-ai-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.role-ai-btn-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.08);
+    border: none;
+    color: #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.role-ai-btn-icon:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+/* Messages Body */
+.role-ai-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f8fafc;
+    scroll-behavior: smooth;
+}
+
+.role-ai-body::-webkit-scrollbar {
+    width: 4px;
+}
+.role-ai-body::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+.role-ai-msg {
+    display: flex;
+    gap: 8px;
+    max-width: 90%;
+    animation: roleAiFadeUp 0.2s ease-out;
+}
+
+@keyframes roleAiFadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.role-ai-msg.msg-bot {
+    align-self: flex-start;
+}
+
+.role-ai-msg.msg-user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.role-ai-msg-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    color: #ffffff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.role-ai-msg-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.role-ai-bubble {
+    padding: 9px 13px;
+    border-radius: 15px;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    word-break: break-word;
+}
+
+.msg-bot .role-ai-bubble {
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    border-top-left-radius: 4px;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+}
+
+.msg-user .role-ai-bubble {
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    color: #ffffff;
+    border-top-right-radius: 4px;
+    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.2);
+}
+
+.role-ai-msg-time {
+    font-size: 0.64rem;
+    color: #94a3b8;
+    padding: 0 2px;
+}
+.msg-user .role-ai-msg-time {
+    text-align: right;
+}
+
+/* Typing */
+.role-ai-typing {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 8px 12px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    border-top-left-radius: 4px;
+    width: fit-content;
+}
+
+.role-ai-typing-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #64748b;
+    animation: roleAiBounce 1.4s infinite ease-in-out both;
+}
+
+.role-ai-typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.role-ai-typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes roleAiBounce {
+    0%, 80%, 100% { transform: scale(0); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+}
+
+/* =========================================================================
+   GỢI Ý CÂU HỎI NHANH (CHIPS BAR - THIẾT KẾ HIỆN ĐẠI FLAGSHIP 2026)
+   ========================================================================= */
+.role-ai-chips-bar {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-top: 1px solid rgba(226, 232, 240, 0.9);
+    padding: 7px 10px 8px;
+    flex-shrink: 0;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Thanh header trên thanh gợi ý (Top bar) */
+.role-ai-chips-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    padding: 0 1px;
+}
+
+.role-ai-chips-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.67rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+}
+
+.role-ai-chips-label i {
+    font-size: 0.72rem;
+    color: #6366f1;
+}
+
+.role-ai-chips-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Nút mũi tên điều hướng <, > và nút xem tất cả ⊞ */
+.role-ai-chip-arrow,
+.role-ai-chip-toggle {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    background: #f8fafc;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+    padding: 0;
+}
+
+.role-ai-chip-arrow:hover,
+.role-ai-chip-toggle:hover {
+    background: #ffffff;
+    color: #4f46e5;
+    border-color: #6366f1;
+    box-shadow: 0 2px 6px -1px rgba(99, 102, 241, 0.2);
+    transform: translateY(-0.5px);
+}
+
+.role-ai-chip-arrow:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+    color: #94a3b8;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Container cuộn toàn chiều rộng cho các Chip */
+.role-ai-chips-wrap {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+    padding: 1px 1px 3px;
+    width: 100%;
+    cursor: grab;
+}
+
+.role-ai-chips-wrap::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+.role-ai-chips-wrap:active {
+    cursor: grabbing;
+}
+
+/* Mỗi Chip gợi ý (Aesthetic Capsule Pill) */
+.role-ai-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+    color: #334155;
+    font-size: 0.74rem;
+    font-weight: 550;
+    line-height: 1.3;
+    white-space: nowrap;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.role-ai-chip i {
+    font-size: 0.72rem;
+    flex-shrink: 0;
+}
+
+.role-ai-chip:hover {
+    background: #ffffff;
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #4338ca;
+    transform: translateY(-1.5px);
+    box-shadow: 0 4px 12px -2px rgba(99, 102, 241, 0.18);
+}
+
+.role-ai-chip:active {
+    transform: scale(0.96);
+}
+
+/* Chế độ mở rộng toàn bộ (Expanded Grid View) */
+.role-ai-chips-bar.is-expanded {
+    background: #ffffff;
+    box-shadow: 0 -4px 16px -4px rgba(15, 23, 42, 0.06);
+}
+
+.role-ai-chips-bar.is-expanded .role-ai-chips-wrap {
+    flex-wrap: wrap;
+    max-height: 125px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 4px 2px 6px;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+.role-ai-chips-bar.is-expanded .role-ai-chips-wrap::-webkit-scrollbar {
+    display: block;
+    width: 4px;
+}
+
+.role-ai-chips-bar.is-expanded .role-ai-chips-wrap::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+}
+
+.role-ai-chips-bar.is-expanded .role-ai-chip-arrow {
+    display: none;
+}
+
+.role-ai-chips-bar.is-expanded .role-ai-chip-toggle {
+    background: #6366f1;
+    color: #ffffff;
+    border-color: #6366f1;
+    box-shadow: 0 2px 6px rgba(99, 102, 241, 0.35);
+}
+
+/* Footer Input */
+.role-ai-footer {
+    padding: 8px 10px 10px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    flex-shrink: 0;
+}
+
+.role-ai-input-form {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1.2px solid #cbd5e1;
+    border-radius: 999px;
+    padding: 2px 4px 2px 12px;
+    transition: border-color 0.2s ease;
+}
+.role-ai-input-form:focus-within {
+    border-color: #6366f1;
+    background: #ffffff;
+}
+
+.role-ai-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 6px 0;
+    font-size: 0.82rem;
+    color: #0f172a;
+    outline: none;
+    min-width: 0;
+}
+.role-ai-input::placeholder {
+    color: #94a3b8;
+    font-size: 0.78rem;
+}
+
+.role-ai-btn-send {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+.role-ai-btn-send:hover {
+    transform: scale(1.05);
+}
+
+/* Dark Mode */
+[data-bs-theme="dark"] .role-ai-window {
+    background: #0f172a;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.6);
+}
+[data-bs-theme="dark"] .role-ai-body {
+    background: #0b1329;
+}
+[data-bs-theme="dark"] .msg-bot .role-ai-bubble {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+[data-bs-theme="dark"] .role-ai-chips-bar,
+[data-bs-theme="dark"] .role-ai-footer {
+    background: #0d172e;
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+[data-bs-theme="dark"] .role-ai-chips-label {
+    color: #94a3b8;
+}
+[data-bs-theme="dark"] .role-ai-chips-label i {
+    color: #818cf8;
+}
+[data-bs-theme="dark"] .role-ai-chip {
+    background: #18233c;
+    border-color: rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+}
+[data-bs-theme="dark"] .role-ai-chip:hover {
+    background: #223050;
+    border-color: #818cf8;
+    color: #ffffff;
+    box-shadow: 0 4px 14px -2px rgba(99, 102, 241, 0.4);
+}
+[data-bs-theme="dark"] .role-ai-chip-arrow,
+[data-bs-theme="dark"] .role-ai-chip-toggle {
+    background: #18233c;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #94a3b8;
+}
+[data-bs-theme="dark"] .role-ai-chip-arrow:hover,
+[data-bs-theme="dark"] .role-ai-chip-toggle:hover {
+    background: #223050;
+    color: #ffffff;
+    border-color: #818cf8;
+}
+[data-bs-theme="dark"] .role-ai-chips-bar.is-expanded {
+    background: #0d172e;
+}
+[data-bs-theme="dark"] .role-ai-chips-bar.is-expanded .role-ai-chips-wrap::-webkit-scrollbar-thumb {
+    background: #334155;
+}
+[data-bs-theme="dark"] .role-ai-input-form {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+[data-bs-theme="dark"] .role-ai-input {
+    color: #f1f5f9;
+}
+[data-bs-theme="dark"] .role-ai-typing {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .role-ai-floating-trigger {
+        bottom: 16px;
+        right: 16px;
+        padding: 6px 12px 6px 6px;
+    }
+    .role-ai-window {
+        bottom: 12px;
+        right: 12px;
+        width: calc(100vw - 24px);
+        height: 440px;
+    }
+}

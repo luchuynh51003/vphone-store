@@ -221,9 +221,7 @@ require_once 'app/views/includes/navbar.php';
     overflow-x: auto;
     flex-wrap: nowrap;
     scrollbar-width: none;
-    -ms-overflow-style: none;
     padding: 2px;
-    -webkit-overflow-scrolling: touch;
 }
 .brand-filter-scroll::-webkit-scrollbar {
     display: none;

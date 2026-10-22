@@ -78,10 +78,22 @@ try {
             $pdo->exec("ALTER TABLE users MODIFY COLUMN password VARCHAR(255) NULL");
         } catch (Throwable $ignore) {}
 
+        // Đảm bảo các cột order_id và is_edited luôn tồn tại trong product_reviews
+        try {
+            $revCols = $pdo->query("SHOW COLUMNS FROM product_reviews")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('order_id', $revCols)) {
+                $pdo->exec("ALTER TABLE product_reviews ADD COLUMN order_id INT NULL AFTER user_id, ADD INDEX idx_order_id (order_id)");
+            }
+            if (!in_array('is_edited', $revCols)) {
+                $pdo->exec("ALTER TABLE product_reviews ADD COLUMN is_edited TINYINT(1) DEFAULT 0 AFTER is_buyer");
+            }
+        } catch (Throwable $ignore) {}
+
         $_SESSION['db_data_synced'] = true;
     }
 } catch (PDOException $e) {
-    die("Lỗi kết nối CSDL: " . $e->getMessage());
+    error_log("Database connection error: " . $e->getMessage());
+    die("Lỗi kết nối CSDL. Vui lòng kiểm tra dịch vụ MySQL trên XAMPP Control Panel!");
 }
 
 require_once __DIR__ . '/../app/views/includes/functions.php';

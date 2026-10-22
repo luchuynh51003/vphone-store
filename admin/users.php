@@ -1,8 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../app/services/MembershipService.php';
 
 // Xử lý xuất file CSV danh sách khách hàng
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+    $membershipSvc = new MembershipService($pdo);
     $filename = 'vphone_khach_hang_' . date('Ymd_His') . '.csv';
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="' . $filename . '"');
@@ -10,7 +12,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
     fputcsv($output, ['ID', 'Họ và tên', 'Email', 'Số điện thoại', 'Địa chỉ', 'Vai trò', 'Chức danh', 'Số đơn hàng', 'Tổng chi tiêu (VNĐ)', 'Hạng thành viên', 'Ngày tham gia']);
     
-    $uStats = $pdo->query("SELECT user_id, COUNT(*) as cnt, COALESCE(SUM(CASE WHEN status = 'Đã giao thành công' THEN total_money ELSE 0 END), 0) as spent FROM orders WHERE user_id IS NOT NULL GROUP BY user_id")->fetchAll(PDO::FETCH_ASSOC);
+    $uStats = $pdo->query("SELECT user_id, COUNT(*) as cnt, COALESCE(SUM(CASE WHEN (status = 'Đã giao thành công' OR (payment_status = 'Đã thanh toán' AND status != 'Đã hủy')) THEN total_money ELSE 0 END), 0) as spent FROM orders WHERE user_id IS NOT NULL GROUP BY user_id")->fetchAll(PDO::FETCH_ASSOC);
     $map = [];
     foreach ($uStats as $s) { $map[$s['user_id']] = $s; }
 
@@ -18,7 +20,8 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     foreach ($allUsers as $u) {
         $st = $map[$u['id']] ?? ['cnt' => 0, 'spent' => 0];
         $spent = (float)$st['spent'];
-        $tier = $spent >= 50000000 ? 'VIP Kim Cương' : ($spent >= 20000000 ? 'VIP Vàng' : ($spent >= 5000000 ? 'VIP Bạc' : 'Thành viên mới'));
+        $tierInfo = $membershipSvc->getTierBySpent($spent, $u['membership_tier'] ?? null);
+        $tier = $tierInfo['name'];
         fputcsv($output, [
             $u['id'],
             $u['fullname'],
@@ -147,6 +150,9 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && isset($_POST['action']) 
 
             $updated = $userModel->updateByAdmin($uid, $fullname, $email, $phone, $address, $role, $newPassword ?: null, $avatarPath, $staffTitle);
             if ($updated) {
+                if (isset($_POST['membership_tier'])) {
+                    $userModel->updateMembershipTier($uid, trim($_POST['membership_tier']));
+                }
                 $message = "Đã cập nhật thông tin tài khoản #$uid (<strong>$fullname</strong>) thành công!";
                 // Nếu admin đang sửa chính tài khoản của mình thì đồng bộ session
                 if ($uid == $_SESSION['user']['id']) {
@@ -251,25 +257,39 @@ if (isset($_GET['delete_user_id'])) {
     } elseif (!$isSuperAdmin && (int)$delUser['role'] === 1) {
         $error = "Chỉ Super Admin (<strong>admin@vphone.vn</strong>) mới có quyền xóa tài khoản Quản trị viên!";
     } else {
-        // Cập nhật các bảng liên quan an toàn (SET NULL hoặc xóa)
-        $pdo->prepare("UPDATE orders SET user_id = NULL WHERE user_id = ?")->execute([$delId]);
-        $pdo->prepare("UPDATE warranty_claims SET user_id = NULL WHERE user_id = ?")->execute([$delId]);
-        $pdo->prepare("DELETE FROM user_notifications WHERE user_id = ?")->execute([$delId]);
-        $pdo->prepare("DELETE FROM user_addresses WHERE user_id = ?")->execute([$delId]);
-        $pdo->prepare("DELETE FROM product_reviews WHERE user_id = ?")->execute([$delId]);
-        $pdo->prepare("DELETE FROM users WHERE id = ?")->execute([$delId]);
+        // Cập nhật các bảng liên quan an toàn (SET NULL hoặc xóa) trong Transaction
+        try {
+            $pdo->beginTransaction();
+            $pdo->prepare("UPDATE orders SET user_id = NULL WHERE user_id = ?")->execute([$delId]);
+            $pdo->prepare("UPDATE warranty_claims SET user_id = NULL WHERE user_id = ?")->execute([$delId]);
+            $pdo->prepare("UPDATE callback_requests SET user_id = NULL WHERE user_id = ?")->execute([$delId]);
+            $pdo->prepare("DELETE FROM user_notifications WHERE user_id = ?")->execute([$delId]);
+            $pdo->prepare("DELETE FROM user_addresses WHERE user_id = ?")->execute([$delId]);
+            $pdo->prepare("DELETE FROM product_reviews WHERE user_id = ?")->execute([$delId]);
+            if (!empty($delUser['email'])) {
+                $pdo->prepare("DELETE FROM password_resets WHERE email = ?")->execute([$delUser['email']]);
+            }
+            $pdo->prepare("DELETE FROM users WHERE id = ?")->execute([$delId]);
+            $pdo->commit();
 
-        $message = "Đã xóa vĩnh viễn tài khoản <strong>#" . htmlspecialchars($delUser['fullname']) . " (" . htmlspecialchars($delUser['email']) . ")</strong> khỏi hệ thống!";
+            $message = "Đã xóa vĩnh viễn tài khoản <strong>#" . htmlspecialchars($delUser['fullname']) . " (" . htmlspecialchars($delUser['email']) . ")</strong> khỏi hệ thống!";
+        } catch (\Throwable $e) {
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            $error = "Không thể xóa tài khoản do lỗi hệ thống CSDL: " . htmlspecialchars($e->getMessage());
+        }
     }
 }
 
 $users = $pdo->query("SELECT * FROM users ORDER BY id ASC")->fetchAll();
 // Thống kê đơn hàng và chi tiêu
-$userStatsRaw = $pdo->query("SELECT user_id, COUNT(*) as order_count, COALESCE(SUM(CASE WHEN status = 'Đã giao thành công' THEN total_money ELSE 0 END), 0) as total_spent FROM orders WHERE user_id IS NOT NULL GROUP BY user_id")->fetchAll(PDO::FETCH_ASSOC);
+$userStatsRaw = $pdo->query("SELECT user_id, COUNT(*) as order_count, COALESCE(SUM(CASE WHEN (status = 'Đã giao thành công' OR (payment_status = 'Đã thanh toán' AND status != 'Đã hủy')) THEN total_money ELSE 0 END), 0) as total_spent FROM orders WHERE user_id IS NOT NULL GROUP BY user_id")->fetchAll(PDO::FETCH_ASSOC);
 $userStats = [];
 foreach ($userStatsRaw as $usrStat) {
     $userStats[$usrStat['user_id']] = $usrStat;
 }
+$membershipService = new MembershipService($pdo);
 ?>
 
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
@@ -319,16 +339,23 @@ foreach ($userStatsRaw as $usrStat) {
 
 <div class="admin-table-card">
     <div class="p-3.5 px-4 border-bottom bg-white d-flex flex-wrap justify-content-between align-items-center gap-3">
-        <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 520px;">
+        <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 680px;">
             <div class="input-group input-group-sm">
                 <span class="input-group-text bg-light border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
                 <input type="text" id="userSearch" class="form-control border-start-0 bg-light" placeholder="Tìm theo tên, email, số điện thoại, chức danh..." onkeyup="filterUsersTable()">
             </div>
-            <select id="userRoleFilter" class="form-select form-select-sm bg-light" style="max-width: 170px;" onchange="filterUsersTable()">
+            <select id="userRoleFilter" class="form-select form-select-sm bg-light" style="max-width: 155px;" onchange="filterUsersTable()">
                 <option value="all">Tất cả vai trò</option>
                 <option value="admin">Quản trị viên (Admin)</option>
                 <option value="staff">Nhân viên (Staff)</option>
                 <option value="customer">Khách hàng</option>
+            </select>
+            <select id="userTierFilter" class="form-select form-select-sm bg-light" style="max-width: 175px;" onchange="filterUsersTable()">
+                <option value="all">Tất cả hạng VIP</option>
+                <option value="diamond">VIP Kim Cương (≥ 500tr)</option>
+                <option value="gold">VIP Vàng (≥ 300tr)</option>
+                <option value="silver">VIP Bạc (≥ 100tr)</option>
+                <option value="standard">Tiêu chuẩn (< 100tr)</option>
             </select>
         </div>
         <div>
@@ -423,6 +450,7 @@ foreach ($userStatsRaw as $usrStat) {
                         $st = $userStats[$u['id']] ?? ['order_count' => 0, 'total_spent' => 0];
                         $ordCount = (int)$st['order_count'];
                         $spent = (float)$st['total_spent'];
+                        $userTier = $membershipService->getTierBySpent($spent, $u['membership_tier'] ?? null);
                         $roleVal = $u['role'] == 1 ? 'admin' : ($u['role'] == 2 ? 'staff' : 'customer');
                         $uAvatar = null;
                         if (!empty($u['avatar'])) {
@@ -433,7 +461,7 @@ foreach ($userStatsRaw as $usrStat) {
                             }
                         }
                     ?>
-                    <tr class="user-row" data-search="<?= htmlspecialchars(mb_strtolower($u['fullname'] . ' ' . $u['email'] . ' ' . ($u['staff_title'] ?? '') . ' ' . ($u['phone'] ?? ''), 'UTF-8')) ?>" data-role="<?= $roleVal ?>">
+                    <tr class="user-row" data-search="<?= htmlspecialchars(mb_strtolower($u['fullname'] . ' ' . $u['email'] . ' ' . ($u['staff_title'] ?? '') . ' ' . ($u['phone'] ?? ''), 'UTF-8')) ?>" data-role="<?= $roleVal ?>" data-tier="<?= $userTier['key'] ?>">
                         <td class="fw-bold text-muted ps-3 text-center text-nowrap" style="width: 45px;">#<?= $u['id'] ?></td>
                         <td class="text-nowrap">
                             <div class="table-user-cell d-flex align-items-center gap-2">
@@ -478,23 +506,7 @@ foreach ($userStatsRaw as $usrStat) {
                             </div>
                         </td>
                         <td class="text-center text-nowrap">
-                            <?php if ($spent >= 50000000): ?>
-                                <span class="badge rounded-pill text-white px-2.5 py-1 d-inline-flex align-items-center gap-1" style="background: linear-gradient(135deg, #8b5cf6, #6366f1); font-size: 0.72rem;">
-                                    <i class="fa-solid fa-crown text-warning"></i><span>VIP Kim Cương</span>
-                                </span>
-                            <?php elseif ($spent >= 20000000): ?>
-                                <span class="badge rounded-pill text-dark px-2.5 py-1 d-inline-flex align-items-center gap-1" style="background: #fef08a; border: 1px solid #fde047; font-size: 0.72rem;">
-                                    <i class="fa-solid fa-medal text-warning"></i><span>VIP Vàng</span>
-                                </span>
-                            <?php elseif ($spent >= 5000000): ?>
-                                <span class="badge rounded-pill text-secondary bg-light border px-2.5 py-1 d-inline-flex align-items-center gap-1" style="font-size: 0.72rem;">
-                                    <i class="fa-solid fa-medal"></i><span>VIP Bạc</span>
-                                </span>
-                            <?php else: ?>
-                                <span class="badge bg-light text-muted border rounded-pill px-2.5 py-1" style="font-size: 0.72rem;">
-                                    Mới
-                                </span>
-                            <?php endif; ?>
+                            <?= MembershipService::renderBadge($userTier, 'sm') ?>
                         </td>
                         <td class="text-nowrap">
                             <?php if (strtolower(trim($u['email'])) === 'admin@vphone.vn'): ?>
@@ -724,6 +736,27 @@ foreach ($userStatsRaw as $usrStat) {
                             <?php endif; ?>
                         </div>
 
+                        <!-- HẠNG THÀNH VIÊN VIP -->
+                        <?php 
+                            $mSt = $userStats[$u['id']] ?? ['order_count' => 0, 'total_spent' => 0];
+                            $mSpent = (float)$mSt['total_spent'];
+                            $mTier = $membershipService->getTierBySpent($mSpent, $u['membership_tier'] ?? null);
+                        ?>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark d-flex align-items-center justify-content-between">
+                                <span><i class="fa-solid fa-crown text-warning me-1"></i>Hạng thành viên VIP</span>
+                                <span class="text-danger fw-bold font-monospace" style="font-size: 0.72rem;">Đã chi: <?= number_format($mSpent, 0, ',', '.') ?> VNĐ</span>
+                            </label>
+                            <select name="membership_tier" class="form-select form-select-sm">
+                                <option value="auto" <?= (empty($u['membership_tier']) || $u['membership_tier'] === 'auto') ? 'selected' : '' ?>>Tự động theo chi tiêu (Hiện tại: <?= htmlspecialchars($mTier['short_name']) ?>)</option>
+                                <option value="standard" <?= ($u['membership_tier'] === 'standard') ? 'selected' : '' ?>>Thành viên Tiêu Chuẩn (< 100tr)</option>
+                                <option value="silver" <?= ($u['membership_tier'] === 'silver') ? 'selected' : '' ?>>Hạng Bạc - Silver VIP (100tr - Giảm 1.5%)</option>
+                                <option value="gold" <?= ($u['membership_tier'] === 'gold') ? 'selected' : '' ?>>Hạng Vàng - Gold VIP (300tr - Giảm 3%)</option>
+                                <option value="diamond" <?= ($u['membership_tier'] === 'diamond') ? 'selected' : '' ?>>Hạng Kim Cương - Diamond VIP (500tr - Giảm 5%)</option>
+                            </select>
+                            <small class="text-muted" style="font-size: 0.7rem;">Mặc định tự động nâng hạng theo chi tiêu: Silver 100tr, Gold 300tr, Diamond 500tr.</small>
+                        </div>
+
                         <div class="mb-2">
                             <label class="form-label small fw-bold text-dark">Đặt lại mật khẩu mới (Tùy chọn)</label>
                             <div class="input-group">
@@ -877,15 +910,18 @@ foreach ($userStatsRaw as $usrStat) {
 function filterUsersTable() {
     const q = document.getElementById('userSearch').value.toLowerCase().trim();
     const role = document.getElementById('userRoleFilter').value;
+    const tier = document.getElementById('userTierFilter') ? document.getElementById('userTierFilter').value : 'all';
 
     document.querySelectorAll('.user-row').forEach(row => {
         const text = row.getAttribute('data-search') || '';
         const rRole = row.getAttribute('data-role') || '';
+        const rTier = row.getAttribute('data-tier') || '';
 
         const matchQ = !q || text.includes(q);
         const matchRole = (role === 'all') || (rRole === role);
+        const matchTier = (tier === 'all') || (rTier === tier);
 
-        if (matchQ && matchRole) {
+        if (matchQ && matchRole && matchTier) {
             row.style.display = '';
         } else {
             row.style.display = 'none';

@@ -14,6 +14,12 @@ $hasCustomAvatar = !empty($userAvatar) && (
     file_exists(__DIR__ . '/../../' . $userAvatar)
 );
 
+require_once 'app/services/MembershipService.php';
+$membershipService = $membershipService ?? new MembershipService($pdo);
+$userTier = $userTier ?? $membershipService->getUserTier((int)($user['id'] ?? 0));
+$tierDefinitions = $tierDefinitions ?? MembershipService::getTierDefinitions();
+$totalSpent = $totalSpent ?? $membershipService->getUserSpent((int)($user['id'] ?? 0));
+
 require_once 'app/views/includes/header.php';
 require_once 'app/views/includes/navbar.php';
 require_once 'app/views/includes/functions.php';
@@ -263,6 +269,87 @@ require_once 'app/views/includes/functions.php';
     box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.18) !important;
 }
 
+/* VIP Membership Card & Elements */
+.vip-digital-card {
+    position: relative;
+    border-radius: 20px;
+    padding: 20px 24px;
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.2), 0 4px 10px rgba(15, 23, 42, 0.1);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+.vip-digital-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 60%);
+    pointer-events: none;
+    transform: rotate(25deg);
+}
+.vip-digital-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.25);
+}
+
+.vip-locked-banner {
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    transition: all 0.25s ease;
+}
+.vip-locked-icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+.vip-voucher-unlocked-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+.vip-voucher-unlocked-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.membership-matrix-table th,
+.membership-matrix-table td {
+    padding: 9px 12px;
+    vertical-align: middle;
+}
+.membership-matrix-table .current-tier-col {
+    background-color: rgba(2, 132, 199, 0.06);
+    position: relative;
+}
+
+[data-bs-theme="dark"] .vip-locked-banner {
+    background: rgba(255, 255, 255, 0.03) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
+}
+[data-bs-theme="dark"] .vip-voucher-unlocked-card {
+    background: #131f37 !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+[data-bs-theme="dark"] .membership-matrix-table thead th {
+    background-color: #0e172a !important;
+    color: #94a3b8 !important;
+}
+[data-bs-theme="dark"] .membership-matrix-table .current-tier-col {
+    background-color: rgba(56, 189, 248, 0.12) !important;
+}
+[data-bs-theme="dark"] .membership-matrix-table th.current-tier-col .tier-col-name {
+    color: #38bdf8 !important;
+}
+
 </style>
 
 <div class="profile-page">
@@ -339,9 +426,7 @@ require_once 'app/views/includes/functions.php';
                                 <i class="fa-solid fa-id-badge me-1"></i>Nhân Viên (<?= htmlspecialchars($user['staff_title'] ?? 'Nhân viên') ?>)
                             </span>
                         <?php else: ?>
-                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-2 fw-bold">
-                                <i class="fa-solid fa-gem me-1 text-warning"></i>Khách Hàng Thân Thiết
-                            </span>
+                            <?= MembershipService::renderBadge($userTier, 'normal') ?>
                         <?php endif; ?>
 
                         <?php if (($user['auth_provider'] ?? '') === 'google' || !empty($user['google_id'])): ?>
@@ -380,6 +465,11 @@ require_once 'app/views/includes/functions.php';
 
                     <!-- MENU ĐIỀU HƯỚNG TÀI KHOẢN -->
                     <div class="nav flex-column profile-nav-pills text-start" role="tablist">
+                        <button class="nav-link <?= ($activeTab === 'membership') ? 'active' : '' ?>" id="tab-profile-membership-btn" data-bs-toggle="pill" data-bs-target="#tab-profile-membership" type="button" role="tab">
+                            <i class="<?= $userTier['icon'] ?> text-warning"></i>
+                            <span>Hạng thành viên & Đặc quyền</span>
+                            <span class="badge rounded-pill text-white ms-auto small" style="background: <?= $userTier['gradient'] ?>; font-size: 0.7rem;"><?= htmlspecialchars($userTier['badge_label']) ?></span>
+                        </button>
                         <button class="nav-link <?= ($activeTab === 'addresses') ? 'active' : '' ?>" id="tab-profile-addresses-btn" data-bs-toggle="pill" data-bs-target="#tab-profile-addresses" type="button" role="tab">
                             <i class="fa-solid fa-map-location-dot text-primary"></i>
                             <span>Sổ địa chỉ & Số điện thoại</span>
@@ -426,6 +516,222 @@ require_once 'app/views/includes/functions.php';
             <div class="col-lg-8">
                 <div class="profile-card">
                     <div class="tab-content" id="profileTabContent">
+
+                        <!-- TAB 0: HẠNG THÀNH VIÊN & ĐẶC QUYỀN VIP -->
+                        <div class="tab-pane fade <?= ($activeTab === 'membership') ? 'show active' : '' ?>" id="tab-profile-membership" role="tabpanel">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pb-3 mb-3 border-bottom">
+                                <div>
+                                    <h5 class="fw-bold text-dark mb-0.5 d-flex align-items-center gap-2">
+                                        <i class="fa-solid fa-crown text-warning"></i>
+                                        <span>Hạng Thành Viên & Đặc Quyền VIP</span>
+                                    </h5>
+                                    <small class="text-secondary">Tích lũy chi tiêu tự động sau mỗi đơn hàng để nâng hạng và mở khóa ưu đãi</small>
+                                </div>
+                                <div>
+                                    <?= MembershipService::renderBadge($userTier, 'sm') ?>
+                                </div>
+                            </div>
+
+                            <!-- THẺ THÀNH VIÊN & TIẾN TRÌNH TÍCH LŨY GỌN GÀNG -->
+                            <div class="vip-digital-card mb-3 p-3 p-md-3.5" style="background: <?= $userTier['card_bg'] ?? $userTier['gradient'] ?>;">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center shadow-xs" style="width: 36px; height: 36px; font-size: 1.1rem;">
+                                            <i class="<?= $userTier['icon'] ?>" style="color: <?= $userTier['color'] ?>;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-uppercase" style="letter-spacing: 1.5px; font-size: 0.82rem;">V-Phone VIP Club</div>
+                                            <small class="text-white-50 font-monospace" style="font-size: 0.7rem;">VP-VIP-<?= str_pad((string)$user['id'], 6, '0', STR_PAD_LEFT) ?> • <?= htmlspecialchars($user['fullname']) ?></small>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge rounded-pill bg-white text-dark px-2.5 py-1 fw-bold" style="font-size: 0.74rem;">
+                                            <?= htmlspecialchars($userTier['name']) ?>
+                                        </span>
+                                        <?php if ($userTier['discount_percent'] > 0): ?>
+                                            <div class="text-warning fw-bold small mt-0.5" style="font-size: 0.72rem;">
+                                                <i class="fa-solid fa-bolt me-1"></i>Giảm <?= $userTier['discount_percent'] ?>% mọi đơn
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Thanh tiến trình tích hợp bên trong thẻ -->
+                                <div class="p-2.5 rounded-3" style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.15);">
+                                    <div class="d-flex justify-content-between align-items-baseline mb-1.5" style="font-size: 0.74rem;">
+                                        <span>Chi tiêu tích lũy: <strong class="text-warning font-monospace"><?= number_format($totalSpent, 0, ',', '.') ?> VNĐ</strong></span>
+                                        <?php if (!empty($userTier['next_tier'])): ?>
+                                            <span class="text-white-50">Cần thêm: <strong class="text-white font-monospace"><?= number_format($userTier['amount_needed'], 0, ',', '.') ?> VNĐ</strong> lên <?= htmlspecialchars($userTier['next_tier_short']) ?></span>
+                                        <?php else: ?>
+                                            <span class="text-warning fw-bold"><i class="fa-solid fa-crown me-1"></i>Đẳng Cấp Tối Thượng</span>
+                                        <?php endif; ?>
+                                    </div>
+                                    <div class="progress" style="height: 6px; border-radius: 8px; background-color: rgba(255,255,255,0.2);">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" role="progressbar" style="width: <?= $userTier['progress_percent'] ?>%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- KHO VOUCHER ĐẶC QUYỀN (CHỈ HIỂN THỊ KHI ĐỦ ĐIỀU KIỆN MỞ KHÓA) -->
+                            <?php 
+                                $unlockedVouchers = $userTier['exclusive_vouchers'] ?? [];
+                                $voucherDetails = [
+                                    'SILVER500K' => ['title' => 'Voucher 500.000 VNĐ', 'min' => '5.000.000đ', 'tier' => 'Hạng Bạc (Silver)', 'color' => '#94a3b8', 'icon' => 'fa-solid fa-medal'],
+                                    'GOLD1500K'  => ['title' => 'Voucher 1.500.000 VNĐ', 'min' => '10.000.000đ', 'tier' => 'Hạng Vàng (Gold)', 'color' => '#f59e0b', 'icon' => 'fa-solid fa-crown'],
+                                    'DIAMOND3M'  => ['title' => 'Voucher 3.000.000 VNĐ', 'min' => '15.000.000đ', 'tier' => 'Hạng Kim Cương', 'color' => '#8b5cf6', 'icon' => 'fa-solid fa-gem']
+                                ];
+                            ?>
+
+                            <?php if (empty($unlockedVouchers)): ?>
+                                <!-- Chưa đủ điều kiện: Hiển thị thông báo khóa gọn gàng, KHÔNG lộ mã -->
+                                <div class="vip-locked-banner p-3 mb-3 rounded-3 d-flex align-items-center gap-3 shadow-xs">
+                                    <div class="vip-locked-icon-box flex-shrink-0">
+                                        <i class="fa-solid fa-lock text-warning"></i>
+                                    </div>
+                                    <div class="min-w-0 flex-grow-1">
+                                        <div class="fw-bold text-dark small mb-0.5">Kho Voucher VIP (Chưa mở khóa)</div>
+                                        <div class="text-secondary small" style="font-size: 0.78rem; line-height: 1.4;">
+                                            Tích lũy chi tiêu từ <strong class="text-primary">100.000.000 VNĐ (Hạng Silver)</strong> trở lên để tự động mở khóa các voucher VIP độc quyền (Giảm từ 500k đến 3 triệu).
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <!-- Đã đủ điều kiện: Chỉ hiển thị các voucher đã mở khóa -->
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center justify-content-between mb-2">
+                                        <small class="fw-bold text-dark d-flex align-items-center gap-1.5">
+                                            <i class="fa-solid fa-ticket text-danger"></i>
+                                            <span>Voucher VIP Đã Mở Khóa (<?= count($unlockedVouchers) ?>)</span>
+                                        </small>
+                                        <small class="text-muted" style="font-size: 0.72rem;">Sử dụng tại trang thanh toán</small>
+                                    </div>
+                                    <div class="row g-2">
+                                        <?php foreach ($unlockedVouchers as $vCode): ?>
+                                            <?php if (isset($voucherDetails[$vCode])): ?>
+                                                <?php $vInfo = $voucherDetails[$vCode]; ?>
+                                                <div class="col-sm-6 col-md-4">
+                                                    <div class="vip-voucher-unlocked-card p-2.5 rounded-3 shadow-xs h-100 d-flex flex-column justify-content-between">
+                                                        <div class="d-flex align-items-center justify-content-between mb-1.5">
+                                                            <span class="badge rounded-pill text-white px-2 py-0.5" style="background: <?= $vInfo['color'] ?>; font-size: 0.65rem;">
+                                                                <i class="<?= $vInfo['icon'] ?> me-1"></i><?= $vInfo['tier'] ?>
+                                                            </span>
+                                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-1.5 py-0.5" style="font-size: 0.62rem;">Đã mở</span>
+                                                        </div>
+                                                        <div class="fw-bold text-dark small mb-0.5"><?= $vInfo['title'] ?></div>
+                                                        <small class="text-muted d-block mb-2" style="font-size: 0.7rem;">Đơn từ <?= $vInfo['min'] ?></small>
+                                                        <div class="d-flex align-items-center justify-content-between bg-light rounded-pill p-1 border">
+                                                            <code class="fw-bold px-2 text-primary small"><?= $vCode ?></code>
+                                                            <button type="button" class="btn btn-sm btn-primary rounded-pill px-2.5 py-0.5 fw-bold" style="font-size: 0.68rem;" onclick="copyVoucherCode(this, '<?= $vCode ?>')">
+                                                                Sao chép
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- BẢNG SO SÁNH QUYỀN LỢI GỌN GÀNG, RÕ RÀNG -->
+                            <div class="card border rounded-4 overflow-hidden mb-0 shadow-xs">
+                                <div class="p-2.5 px-3 bg-light border-bottom d-flex align-items-center justify-content-between">
+                                    <small class="fw-bold text-dark d-flex align-items-center gap-1.5">
+                                        <i class="fa-solid fa-award text-primary"></i>
+                                        <span>Bảng Quyền Lợi Các Hạng Thành Viên</span>
+                                    </small>
+                                    <small class="text-secondary" style="font-size: 0.72rem;">Silver 100tr • Gold 300tr • Diamond 500tr</small>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0 text-center membership-matrix-table" style="font-size: 0.8rem;">
+                                        <thead>
+                                            <tr>
+                                                <th class="text-start ps-3 py-2 text-muted fw-bold" style="width: 28%;">Đặc Quyền</th>
+                                                <th class="py-2 <?= $userTier['key'] === 'standard' ? 'current-tier-col fw-bold' : 'text-muted' ?>" style="width: 18%;">
+                                                    <div class="tier-col-name text-dark">Tiêu Chuẩn</div>
+                                                    <small class="fw-normal" style="font-size: 0.68rem;">&lt; 100tr</small>
+                                                    <?php if ($userTier['key'] === 'standard'): ?>
+                                                        <span class="badge bg-primary rounded-pill d-block mx-auto mt-0.5" style="font-size: 0.6rem; width: fit-content;">Hạng của bạn</span>
+                                                    <?php endif; ?>
+                                                </th>
+                                                <th class="py-2 <?= $userTier['key'] === 'silver' ? 'current-tier-col fw-bold' : 'text-muted' ?>" style="width: 18%;">
+                                                    <div class="tier-col-name text-secondary fw-bold"><i class="fa-solid fa-medal me-1"></i>Silver</div>
+                                                    <small class="fw-normal" style="font-size: 0.68rem;">≥ 100tr</small>
+                                                    <?php if ($userTier['key'] === 'silver'): ?>
+                                                        <span class="badge bg-secondary rounded-pill d-block mx-auto mt-0.5" style="font-size: 0.6rem; width: fit-content;">Hạng của bạn</span>
+                                                    <?php endif; ?>
+                                                </th>
+                                                <th class="py-2 <?= $userTier['key'] === 'gold' ? 'current-tier-col fw-bold' : 'text-muted' ?>" style="width: 18%;">
+                                                    <div class="tier-col-name text-warning fw-bold"><i class="fa-solid fa-crown me-1"></i>Gold</div>
+                                                    <small class="fw-normal" style="font-size: 0.68rem;">≥ 300tr</small>
+                                                    <?php if ($userTier['key'] === 'gold'): ?>
+                                                        <span class="badge bg-warning text-dark rounded-pill d-block mx-auto mt-0.5" style="font-size: 0.6rem; width: fit-content;">Hạng của bạn</span>
+                                                    <?php endif; ?>
+                                                </th>
+                                                <th class="py-2 <?= $userTier['key'] === 'diamond' ? 'current-tier-col fw-bold' : 'text-muted' ?>" style="width: 18%;">
+                                                    <div class="tier-col-name fw-bold" style="color: #8b5cf6;"><i class="fa-solid fa-gem me-1"></i>Diamond</div>
+                                                    <small class="fw-normal" style="font-size: 0.68rem;">≥ 500tr</small>
+                                                    <?php if ($userTier['key'] === 'diamond'): ?>
+                                                        <span class="badge rounded-pill text-white d-block mx-auto mt-0.5" style="background: #8b5cf6; font-size: 0.6rem; width: fit-content;">Hạng của bạn</span>
+                                                    <?php endif; ?>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="text-start ps-3 py-2 fw-semibold text-dark">Chiết khấu đơn hàng</td>
+                                                <td class="<?= $userTier['key'] === 'standard' ? 'current-tier-col' : '' ?> text-muted">0%</td>
+                                                <td class="<?= $userTier['key'] === 'silver' ? 'current-tier-col' : '' ?> fw-bold text-danger">Giảm 1.5%</td>
+                                                <td class="<?= $userTier['key'] === 'gold' ? 'current-tier-col' : '' ?> fw-bold text-danger">Giảm 3.0%</td>
+                                                <td class="<?= $userTier['key'] === 'diamond' ? 'current-tier-col' : '' ?> fw-bold text-danger">Giảm 5.0%</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-start ps-3 py-2 fw-semibold text-dark">Voucher VIP thăng hạng</td>
+                                                <td class="<?= $userTier['key'] === 'standard' ? 'current-tier-col' : '' ?> text-muted">—</td>
+                                                <td class="<?= $userTier['key'] === 'silver' ? 'current-tier-col' : '' ?> fw-bold text-primary">500.000 VNĐ</td>
+                                                <td class="<?= $userTier['key'] === 'gold' ? 'current-tier-col' : '' ?> fw-bold text-warning">1.500.000 VNĐ</td>
+                                                <td class="<?= $userTier['key'] === 'diamond' ? 'current-tier-col' : '' ?> fw-bold" style="color: #8b5cf6;">3.000.000 VNĐ</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-start ps-3 py-2 fw-semibold text-dark">Giao hàng</td>
+                                                <td class="<?= $userTier['key'] === 'standard' ? 'current-tier-col' : '' ?> text-muted">Tiêu chuẩn</td>
+                                                <td class="<?= $userTier['key'] === 'silver' ? 'current-tier-col' : '' ?> text-success fw-semibold"><i class="fa-solid fa-bolt me-1"></i>Hỏa tốc 2H</td>
+                                                <td class="<?= $userTier['key'] === 'gold' ? 'current-tier-col' : '' ?> text-success fw-semibold"><i class="fa-solid fa-bolt me-1"></i>Hỏa tốc 2H</td>
+                                                <td class="<?= $userTier['key'] === 'diamond' ? 'current-tier-col' : '' ?> text-success fw-bold"><i class="fa-solid fa-star me-1"></i>VIP 1-1 Tận Nơi</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-start ps-3 py-2 fw-semibold text-dark">Bảo hành &amp; Đổi máy</td>
+                                                <td class="<?= $userTier['key'] === 'standard' ? 'current-tier-col' : '' ?> text-muted">12T • Đổi 15 ngày</td>
+                                                <td class="<?= $userTier['key'] === 'silver' ? 'current-tier-col' : '' ?>">12T • <strong>Đổi 30 ngày</strong></td>
+                                                <td class="<?= $userTier['key'] === 'gold' ? 'current-tier-col' : '' ?> text-warning fw-semibold"><strong>18T (+6T)</strong> • Đổi 45 ngày</td>
+                                                <td class="<?= $userTier['key'] === 'diamond' ? 'current-tier-col' : '' ?> fw-bold" style="color: #8b5cf6;"><strong>Rơi vỡ 12T</strong> • Đổi 90 ngày</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-start ps-3 py-2 fw-semibold text-dark">Ưu đãi phụ kiện</td>
+                                                <td class="<?= $userTier['key'] === 'standard' ? 'current-tier-col' : '' ?> text-muted">Giá gốc</td>
+                                                <td class="<?= $userTier['key'] === 'silver' ? 'current-tier-col' : '' ?>">Giảm 10%</td>
+                                                <td class="<?= $userTier['key'] === 'gold' ? 'current-tier-col' : '' ?>">Giảm 20%</td>
+                                                <td class="<?= $userTier['key'] === 'diamond' ? 'current-tier-col' : '' ?> fw-bold text-success">Giảm 30% trọn đời</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-start ps-3 py-2 fw-semibold text-dark">Chăm sóc khách hàng</td>
+                                                <td class="<?= $userTier['key'] === 'standard' ? 'current-tier-col' : '' ?> text-muted">Trực tuyến</td>
+                                                <td class="<?= $userTier['key'] === 'silver' ? 'current-tier-col' : '' ?>">Vệ sinh máy định kỳ</td>
+                                                <td class="<?= $userTier['key'] === 'gold' ? 'current-tier-col' : '' ?>">Hotline CSKH VIP riêng</td>
+                                                <td class="<?= $userTier['key'] === 'diamond' ? 'current-tier-col' : '' ?> fw-bold text-dark"><i class="fa-solid fa-crown text-warning me-1"></i>VIP Concierge 1-1</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-start ps-3 py-2 fw-semibold text-dark">Đặc quyền Pre-Order</td>
+                                                <td class="<?= $userTier['key'] === 'standard' ? 'current-tier-col' : '' ?> text-muted">—</td>
+                                                <td class="<?= $userTier['key'] === 'silver' ? 'current-tier-col' : '' ?> text-muted">—</td>
+                                                <td class="<?= $userTier['key'] === 'gold' ? 'current-tier-col' : '' ?>">Ưu tiên giữ máy</td>
+                                                <td class="<?= $userTier['key'] === 'diamond' ? 'current-tier-col' : '' ?> fw-bold text-danger"><i class="fa-solid fa-fire me-1"></i>Nhận máy đầu tiên VN</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
 
                         <!-- TAB 1: SỔ ĐỊA CHỈ & SỐ ĐIỆN THOẠI (NHIỀU ĐỊA CHỈ, CHỌN 1 MẶC ĐỊNH) -->
                         <div class="tab-pane fade <?= ($activeTab === 'addresses') ? 'show active' : '' ?>" id="tab-profile-addresses" role="tabpanel">
@@ -1246,6 +1552,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+function copyVoucherCode(btn, code) {
+    if (!code) return;
+    navigator.clipboard.writeText(code).then(() => {
+        const origText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check me-1"></i>Đã chép';
+        btn.classList.remove('btn-outline-primary', 'btn-outline-warning', 'btn-outline-purple');
+        btn.classList.add('btn-success');
+        setTimeout(() => {
+            btn.innerHTML = origText;
+            btn.classList.remove('btn-success');
+        }, 2000);
+    }).catch(() => {
+        prompt('Sao chép mã voucher:', code);
+    });
+}
 </script>
 
 <?php require_once 'app/views/includes/footer.php'; ?>

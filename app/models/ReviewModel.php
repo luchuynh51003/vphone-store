@@ -17,6 +17,7 @@ class ReviewModel {
             id INT AUTO_INCREMENT PRIMARY KEY,
             product_id INT NOT NULL,
             user_id INT NULL,
+            order_id INT NULL,
             fullname VARCHAR(100) NOT NULL,
             email VARCHAR(100) NULL,
             phone VARCHAR(20) NULL,
@@ -30,6 +31,7 @@ class ReviewModel {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
             INDEX idx_product_id (product_id),
             INDEX idx_user_id (user_id),
+            INDEX idx_order_id (order_id),
             INDEX idx_rating (rating),
             INDEX idx_status (status),
             FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
@@ -39,6 +41,19 @@ class ReviewModel {
 
         try {
             $this->pdo->exec($sql);
+
+            // Đảm bảo cột order_id & is_edited luôn tồn tại ngay cả trên database cũ
+            try {
+                $this->pdo->exec("ALTER TABLE product_reviews ADD COLUMN order_id INT NULL AFTER user_id, ADD INDEX idx_order_id (order_id)");
+            } catch (PDOException $eCol) {
+                // Đã tồn tại cột order_id
+            }
+
+            try {
+                $this->pdo->exec("ALTER TABLE product_reviews ADD COLUMN is_edited TINYINT(1) DEFAULT 0 AFTER is_buyer");
+            } catch (PDOException $eEdit) {
+                // Đã tồn tại cột is_edited
+            }
 
             $count = (int)$this->pdo->query("SELECT COUNT(*) FROM product_reviews")->fetchColumn();
             if ($count === 0) {
@@ -374,25 +389,320 @@ class ReviewModel {
     public function addReview(array $data): int {
         $productId = (int)$data['product_id'];
         $userId = !empty($data['user_id']) ? (int)$data['user_id'] : null;
+        $orderId = !empty($data['order_id']) ? (int)$data['order_id'] : null;
         $fullname = trim($data['fullname'] ?? '');
         $email = trim($data['email'] ?? '');
         $phone = trim($data['phone'] ?? '');
         $rating = max(1, min(5, (int)($data['rating'] ?? 5)));
         $comment = trim($data['comment'] ?? '');
 
+        // Nếu đã có đánh giá trong đơn hàng này, kiểm tra quyền sửa 1 lần
+        if ($orderId > 0) {
+            $existing = $this->getReviewByOrderAndProduct($orderId, $productId);
+            if ($existing) {
+                if (!empty($existing['is_edited'])) {
+                    // Đã sửa 1 lần trước đó rồi, không cho sửa lần 2
+                    return -1;
+                }
+                // Cho phép sửa lần 1 duy nhất
+                $uStmt = $this->pdo->prepare("
+                    UPDATE product_reviews 
+                    SET rating = ?, comment = ?, fullname = ?, email = ?, phone = ?, is_edited = 1, updated_at = NOW() 
+                    WHERE id = ?
+                ");
+                $uStmt->execute([$rating, $comment, $fullname, $email, $phone, $existing['id']]);
+                return (int)$existing['id'];
+            }
+        }
+
         // Kiểm tra xem khách hàng đã mua sản phẩm này chưa
         $isBuyer = !empty($data['is_buyer']) ? 1 : 0;
         if (!$isBuyer) {
-            $isBuyer = $this->hasUserPurchased($productId, $userId, $phone) ? 1 : 0;
+            if ($orderId > 0) {
+                $isBuyer = 1;
+            } else {
+                $isBuyer = $this->hasUserPurchased($productId, $userId, $phone) ? 1 : 0;
+            }
         }
 
         $stmt = $this->pdo->prepare("
             INSERT INTO product_reviews 
-            (product_id, user_id, fullname, email, phone, rating, comment, is_buyer, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)
+            (product_id, user_id, order_id, fullname, email, phone, rating, comment, is_buyer, is_edited, status)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1)
         ");
-        $stmt->execute([$productId, $userId, $fullname, $email, $phone, $rating, $comment, $isBuyer]);
+        $stmt->execute([$productId, $userId, $orderId, $fullname, $email, $phone, $rating, $comment, $isBuyer]);
         return (int)$this->pdo->lastInsertId();
+    }
+
+    /**
+     * Lấy đánh giá cụ thể theo mã đơn hàng và mã sản phẩm
+     */
+    public function getReviewByOrderAndProduct(int $orderId, int $productId): ?array {
+        if ($orderId <= 0 || $productId <= 0) return null;
+        $stmt = $this->pdo->prepare("SELECT * FROM product_reviews WHERE order_id = ? AND product_id = ? LIMIT 1");
+        $stmt->execute([$orderId, $productId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    /**
+     * Cập nhật đánh giá đã có (Chỉ cho phép sửa 1 lần duy nhất)
+     */
+    public function updateReview(int $reviewId, array $data): array {
+        if ($reviewId <= 0) {
+            return ['success' => false, 'message' => 'Mã đánh giá không hợp lệ.'];
+        }
+
+        $stmt = $this->pdo->prepare("SELECT * FROM product_reviews WHERE id = ?");
+        $stmt->execute([$reviewId]);
+        $rev = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$rev) {
+            return ['success' => false, 'message' => 'Không tìm thấy đánh giá cần chỉnh sửa.'];
+        }
+
+        if (!empty($rev['is_edited'])) {
+            return [
+                'success' => false,
+                'message' => 'Đánh giá này đã được chỉnh sửa 1 lần trước đó. Mỗi sản phẩm chỉ được sửa đánh giá 1 lần duy nhất.'
+            ];
+        }
+
+        $rating = max(1, min(5, (int)($data['rating'] ?? 5)));
+        $comment = trim($data['comment'] ?? '');
+        $fullname = trim($data['fullname'] ?? $rev['fullname']);
+        $email = trim($data['email'] ?? $rev['email']);
+        $phone = trim($data['phone'] ?? $rev['phone']);
+
+        if (mb_strlen($comment, 'UTF-8') < 6) {
+            return ['success' => false, 'message' => 'Nội dung nhận xét tối thiểu 6 ký tự.'];
+        }
+
+        $uStmt = $this->pdo->prepare("
+            UPDATE product_reviews 
+            SET rating = ?, comment = ?, fullname = ?, email = ?, phone = ?, is_edited = 1, updated_at = NOW() 
+            WHERE id = ?
+        ");
+        $uStmt->execute([$rating, $comment, $fullname, $email, $phone, $reviewId]);
+
+        return [
+            'success' => true,
+            'message' => 'Cập nhật đánh giá thành công! (Bạn đã sử dụng quyền chỉnh sửa 1 lần duy nhất)',
+            'review_id' => $reviewId,
+            'is_edited' => 1
+        ];
+    }
+
+    /**
+     * Kiểm tra xem toàn bộ sản phẩm trong đơn hàng đã được đánh giá hay chưa
+     */
+    public function isOrderFullyReviewed(int $orderId): bool {
+        if ($orderId <= 0) return false;
+
+        $stmt = $this->pdo->prepare("SELECT user_id, phone FROM orders WHERE id = ?");
+        $stmt->execute([$orderId]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$order) return false;
+
+        $dStmt = $this->pdo->prepare("SELECT DISTINCT product_id FROM order_details WHERE order_id = ?");
+        $dStmt->execute([$orderId]);
+        $productIds = $dStmt->fetchAll(PDO::FETCH_COLUMN);
+        if (empty($productIds)) return false;
+
+        $reviewsMap = $this->getReviewsMapForUserOrder(
+            $orderId, 
+            !empty($order['user_id']) ? (int)$order['user_id'] : null, 
+            $order['phone'] ?? null
+        );
+
+        foreach ($productIds as $pid) {
+            if (!isset($reviewsMap[(int)$pid])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Lấy danh sách đánh giá theo mã đơn hàng (Map theo product_id => review)
+     */
+    public function getReviewsByOrderId(int $orderId): array {
+        if ($orderId <= 0) return [];
+        $stmt = $this->pdo->prepare("
+            SELECT * FROM product_reviews 
+            WHERE order_id = ?
+        ");
+        $stmt->execute([$orderId]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $map = [];
+        foreach ($rows as $r) {
+            $map[(int)$r['product_id']] = $r;
+        }
+        return $map;
+    }
+
+    /**
+     * Lấy bản đồ đánh giá cho sản phẩm trong một đơn hàng cụ thể,
+     * kết hợp kiểm tra cả order_id và user_id/phone
+     */
+    public function getReviewsMapForUserOrder(int $orderId, ?int $userId = null, ?string $phone = null): array {
+        $map = $this->getReviewsByOrderId($orderId);
+
+        if ($userId || $phone) {
+            $clauses = [];
+            $params = [];
+            if ($userId) {
+                $clauses[] = "user_id = ?";
+                $params[] = $userId;
+            }
+            if ($phone) {
+                $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
+                if (!empty($cleanPhone)) {
+                    $clauses[] = "REPLACE(phone, ' ', '') LIKE ?";
+                    $params[] = '%' . substr($cleanPhone, -9);
+                }
+            }
+
+            if (!empty($clauses)) {
+                $sql = "SELECT * FROM product_reviews WHERE (" . implode(" OR ", $clauses) . ") ORDER BY id DESC";
+                $stmt = $this->pdo->prepare($sql);
+                $stmt->execute($params);
+                $userReviews = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($userReviews as $ur) {
+                    $pid = (int)$ur['product_id'];
+                    if (!isset($map[$pid])) {
+                        $map[$pid] = $ur;
+                    }
+                }
+            }
+        }
+
+        return $map;
+    }
+
+    /**
+     * Lấy các sản phẩm trong các đơn hàng 'Đã giao thành công' mà khách hàng chưa đánh giá
+     */
+    public function getDeliveredUnreviewedItems(?int $userId = null, ?string $phone = null, int $limit = 6): array {
+        if (empty($userId) && empty($phone)) {
+            return [];
+        }
+
+        $sql = "
+            SELECT 
+                od.id as order_detail_id,
+                od.order_id,
+                od.product_id,
+                od.product_name,
+                od.price,
+                od.quantity,
+                o.created_at as order_date,
+                o.fullname as customer_name,
+                o.phone as customer_phone,
+                p.name as product_real_name,
+                p.image as product_image
+            FROM orders o
+            JOIN order_details od ON o.id = od.order_id
+            JOIN products p ON od.product_id = p.id
+            LEFT JOIN product_reviews pr ON (
+                (pr.order_id = o.id AND pr.product_id = od.product_id)
+                OR
+                (pr.product_id = od.product_id AND (
+                    (pr.user_id IS NOT NULL AND o.user_id IS NOT NULL AND pr.user_id = o.user_id)
+                    OR
+                    (pr.phone IS NOT NULL AND o.phone IS NOT NULL AND REPLACE(pr.phone, ' ', '') LIKE CONCAT('%', RIGHT(REPLACE(o.phone, ' ', ''), 9)))
+                ))
+            )
+            WHERE o.status = 'Đã giao thành công'
+              AND pr.id IS NULL
+        ";
+        $params = [];
+
+        if ($userId && $phone) {
+            $sql .= " AND (o.user_id = ? OR o.phone = ?)";
+            $params[] = $userId;
+            $params[] = $phone;
+        } elseif ($userId) {
+            $sql .= " AND o.user_id = ?";
+            $params[] = $userId;
+        } else {
+            $sql .= " AND o.phone = ?";
+            $params[] = $phone;
+        }
+
+        $sql .= " ORDER BY o.id DESC, od.id ASC LIMIT " . (int)$limit;
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * Lấy thông tin đơn hàng và danh sách sản phẩm cùng trạng thái đã đánh giá / chưa đánh giá
+     */
+    public function getOrderReviewDetails(int $orderId, ?int $userId = null, ?string $phone = null): ?array {
+        if ($orderId <= 0) return null;
+
+        $stmt = $this->pdo->prepare("SELECT * FROM orders WHERE id = ?");
+        $stmt->execute([$orderId]);
+        $order = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$order) return null;
+
+        // Kiểm tra quyền nếu truyền userId hoặc phone
+        if ($userId && (int)$order['user_id'] !== $userId) {
+            // Check if phone matches
+            $cleanUserPhone = $phone ? preg_replace('/[^0-9]/', '', $phone) : '';
+            $cleanOrderPhone = preg_replace('/[^0-9]/', '', $order['phone']);
+            if (!$cleanUserPhone || substr($cleanOrderPhone, -9) !== substr($cleanUserPhone, -9)) {
+                return null;
+            }
+        } elseif (!$userId && $phone) {
+            $cleanUserPhone = preg_replace('/[^0-9]/', '', $phone);
+            $cleanOrderPhone = preg_replace('/[^0-9]/', '', $order['phone']);
+            if (!$cleanUserPhone || substr($cleanOrderPhone, -9) !== substr($cleanUserPhone, -9)) {
+                return null;
+            }
+        }
+
+        $dStmt = $this->pdo->prepare("
+            SELECT od.*, p.image as fallback_image, p.name as default_name
+            FROM order_details od
+            LEFT JOIN products p ON od.product_id = p.id
+            WHERE od.order_id = ?
+            ORDER BY od.id ASC
+        ");
+        $dStmt->execute([$orderId]);
+        $details = $dStmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $reviewsMap = $this->getReviewsMapForUserOrder($orderId, $order['user_id'] ? (int)$order['user_id'] : null, $order['phone']);
+
+        $items = [];
+        $unreviewedCount = 0;
+        foreach ($details as $d) {
+            $pId = (int)$d['product_id'];
+            $rev = $reviewsMap[$pId] ?? null;
+            if (!$rev) {
+                $unreviewedCount++;
+            }
+            $items[] = [
+                'order_detail_id' => (int)$d['id'],
+                'product_id' => $pId,
+                'product_name' => $d['product_name'],
+                'product_image' => !empty($d['product_image']) ? $d['product_image'] : ($d['fallback_image'] ?? 'assets/images/products/iphone-17-pro.png'),
+                'price' => (float)$d['price'],
+                'quantity' => (int)$d['quantity'],
+                'total_price' => (float)$d['total_price'],
+                'is_reviewed' => ($rev !== null),
+                'is_edited' => (int)($rev['is_edited'] ?? 0),
+                'can_edit' => ($rev !== null && empty($rev['is_edited'])),
+                'review' => $rev
+            ];
+        }
+
+        return [
+            'order' => $order,
+            'items' => $items,
+            'unreviewed_count' => $unreviewedCount,
+            'all_reviewed' => ($unreviewedCount === 0 && !empty($items))
+        ];
     }
 
     public function getAllReviews(string $keyword = '', ?int $rating = null, $status = null, ?int $productId = null, ?bool $isBuyer = null): array {

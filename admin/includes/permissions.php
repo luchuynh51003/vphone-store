@@ -70,6 +70,14 @@ if (!defined('VPHONE_PERMISSIONS')) {
             'badge' => 'bg-info text-dark',
             'text_color' => 'text-info'
         ],
+        'ai_assistant' => [
+            'name' => 'Trợ lý AI theo Chức vụ',
+            'desc' => 'Cho phép nhân viên sử dụng Box Chatbox AI thông minh đúng theo chức vụ nghiệp vụ được giao',
+            'icon' => 'fa-solid fa-wand-magic-sparkles',
+            'page' => 'ai_assistants.php',
+            'badge' => 'bg-purple text-white',
+            'text_color' => 'text-purple'
+        ],
     ]);
 }
 

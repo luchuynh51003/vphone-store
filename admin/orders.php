@@ -77,8 +77,8 @@ if (isset($_POST['update_status'])) {
                     'order_shipping'
                 );
             } elseif ($newStatus === 'Đã giao thành công') {
-                $notifTitle = "Đơn hàng #VP-{$orderId} đã giao thành công!";
-                $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được giao thành công. Cảm ơn quý khách đã tin tưởng và ủng hộ V-Phone Store!";
+                $notifTitle = "Đơn hàng #VP-{$orderId} đã giao thành công - Đánh giá nhận quà!";
+                $notifMsg = "Đơn hàng #VP-{$orderId} (Tổng thanh toán: {$totalFmt}) đã được giao thành công. Quý khách hài lòng với sản phẩm chứ? Hãy chia sẻ đánh giá & nhận xét để nhận voucher tri ân từ V-Phone nhé!";
                 $notifModel->create(
                     $currentOrder['user_id'] ? (int)$currentOrder['user_id'] : null,
                     $currentOrder['phone'],
@@ -186,6 +186,13 @@ if ($orders) {
         $detailsByOrder[$detail['order_id']][] = $detail;
     }
 }
+
+require_once __DIR__ . '/../app/services/MembershipService.php';
+$membershipService = new MembershipService($pdo);
+
+// Lấy dữ liệu chi tiêu và hạng thành viên của khách hàng
+$uStatsRaw = $pdo->query("SELECT user_id, COALESCE(SUM(CASE WHEN (status = 'Đã giao thành công' OR (payment_status = 'Đã thanh toán' AND status != 'Đã hủy')) THEN total_money ELSE 0 END), 0) as spent FROM orders WHERE user_id IS NOT NULL GROUP BY user_id")->fetchAll(PDO::FETCH_KEY_PAIR);
+$uTiersRaw = $pdo->query("SELECT id, membership_tier FROM users")->fetchAll(PDO::FETCH_KEY_PAIR);
 
 // Lọc đơn hàng theo trạng thái
 $filterStatus = $_GET['status'] ?? 'all';
@@ -460,6 +467,11 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                     <?php foreach ($filteredOrders as $o): ?>
                         <?php
                             $details = $detailsByOrder[$o['id']] ?? [];
+                            $uId = (int)($o['user_id'] ?? 0);
+                            $uSpent = (float)($uStatsRaw[$uId] ?? 0);
+                            $uManual = $uTiersRaw[$uId] ?? null;
+                            $customerTier = $membershipService->getTierBySpent($uSpent, $uManual);
+
                             $orderDataJson = htmlspecialchars(json_encode([
                                 'id' => $o['id'],
                                 'fullname' => $o['fullname'],
@@ -473,6 +485,8 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                 'paid_at' => $o['paid_at'] ?? '',
                                 'status' => $o['status'],
                                 'created_at' => $o['created_at'],
+                                'tier_badge' => MembershipService::renderBadge($customerTier, 'xs'),
+                                'tier_name' => $customerTier['name'],
                                 'items' => $details
                             ], JSON_UNESCAPED_UNICODE), ENT_QUOTES, 'UTF-8');
                             $stMeta = getOrderStatusMeta($o['status']);
@@ -496,8 +510,9 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                                         <?= mb_substr(htmlspecialchars($o['fullname']), 0, 1, 'UTF-8') ?>
                                     </div>
                                     <div class="min-w-0">
-                                        <div class="fw-bold text-dark text-truncate" style="max-width: 170px;" title="<?= htmlspecialchars($o['fullname']) ?>">
-                                            <?= htmlspecialchars($o['fullname']) ?>
+                                        <div class="fw-bold text-dark d-flex align-items-center gap-1.5 flex-wrap" style="max-width: 220px;" title="<?= htmlspecialchars($o['fullname']) ?>">
+                                            <span class="text-truncate"><?= htmlspecialchars($o['fullname']) ?></span>
+                                            <?= MembershipService::renderBadge($customerTier, 'xs') ?>
                                         </div>
                                         <a href="tel:<?= htmlspecialchars($o['phone']) ?>" class="text-secondary text-decoration-none small d-flex align-items-center gap-1.5 my-0.5">
                                             <i class="fa-solid fa-phone text-primary small"></i><span class="fw-semibold"><?= htmlspecialchars($o['phone']) ?></span>
@@ -735,7 +750,10 @@ $filteredOrders = array_filter($orders, function($o) use ($filterStatus) {
                     <div class="col-md-6">
                         <div class="p-3 bg-light rounded-3 h-100">
                             <span class="text-uppercase fw-bold text-muted small d-block mb-2" style="font-size: 0.72rem; letter-spacing: 0.5px;">Người nhận hàng</span>
-                            <div class="fw-bold fs-6 text-dark" id="mCustomerName">--</div>
+                            <div class="fw-bold fs-6 text-dark d-flex align-items-center gap-2 flex-wrap">
+                                <span id="mCustomerName">--</span>
+                                <span id="mCustomerTier"></span>
+                            </div>
                             <div class="text-secondary small mt-1"><i class="fa-solid fa-phone me-1 text-muted"></i><span id="mCustomerPhone">--</span></div>
                             <div class="text-secondary small mt-1"><i class="fa-solid fa-location-dot me-1 text-muted"></i><span id="mCustomerAddress">--</span></div>
                         </div>
@@ -1117,6 +1135,10 @@ function viewOrderDetail(order) {
     document.getElementById('mOrderId').textContent = '#VP-' + order.id;
     document.getElementById('mOrderDate').textContent = order.created_at;
     document.getElementById('mCustomerName').textContent = order.fullname;
+    const tierEl = document.getElementById('mCustomerTier');
+    if (tierEl) {
+        tierEl.innerHTML = order.tier_badge || '';
+    }
     document.getElementById('mCustomerPhone').textContent = order.phone;
     document.getElementById('mCustomerAddress').textContent = order.address;
     document.getElementById('mPaymentMethod').textContent = order.payment_method;

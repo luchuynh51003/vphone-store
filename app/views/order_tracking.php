@@ -6,6 +6,8 @@ $trackedNotification = $trackedNotification ?? null;
 $userOrders = $userOrders ?? [];
 $userOrderDetails = $userOrderDetails ?? [];
 $userCancelledNotifs = $userCancelledNotifs ?? [];
+$orderReviewsMap = $orderReviewsMap ?? [];
+$userDeliveredReviewsMap = $userDeliveredReviewsMap ?? [];
 $statusCounts = $statusCounts ?? ['all' => 0, 'Chờ xử lý' => 0, 'Đang xử lý' => 0, 'Đang giao hàng' => 0, 'Đã giao thành công' => 0, 'Đã hủy' => 0];
 $activeTab = $activeTab ?? 'all';
 $orderMessage = $orderMessage ?? '';
@@ -906,7 +908,43 @@ require_once 'app/views/includes/functions.php';
                 </div>
             </div>
 
-            
+            <!-- BANNER CHÚC MỪNG GIAO HÀNG THÀNH CÔNG VÀ KÊU GỌI ĐÁNH GIÁ -->
+            <?php if ($isDelivered): ?>
+                <div class="delivery-celebration-card mb-4 p-4 rounded-4 position-relative overflow-hidden" 
+                     style="background: linear-gradient(135deg, #059669 0%, #10b981 50%, #047857 100%); color: #ffffff; box-shadow: 0 10px 30px -8px rgba(16, 185, 129, 0.4);">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 position-relative" style="z-index: 2;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center bg-white bg-opacity-20 text-white flex-shrink-0" style="width: 54px; height: 54px; font-size: 1.5rem;">
+                                <i class="fa-solid fa-gift text-warning"></i>
+                            </div>
+                            <div>
+                                <div class="badge rounded-pill bg-white text-success fw-bold px-2.5 py-1 mb-1 shadow-xs" style="font-size: 0.72rem;">
+                                    <i class="fa-solid fa-circle-check me-1"></i>GIAO HÀNG THÀNH CÔNG
+                                </div>
+                                <h5 class="fw-bold text-white mb-1">Cảm Ơn Quý Khách Đã Tin Chọn V-Phone Store!</h5>
+                                <p class="mb-0 text-white text-opacity-90 small" style="max-width: 580px;">
+                                    <?= !empty($isTrackedOrderFullyReviewed) 
+                                        ? 'Đơn hàng đã được bàn giao trọn vẹn. Bạn đã hoàn tất gửi đánh giá cho các sản phẩm trong đơn hàng này. V-Phone xin chân thành cảm ơn!' 
+                                        : 'Đơn hàng đã được bàn giao trọn vẹn. Hãy dành ít phút đánh giá số sao và cảm nhận sản phẩm để nhận voucher quà tặng tri ân cho lần mua sắm tiếp theo nhé!' ?>
+                                </p>
+                            </div>
+                        </div>
+                        <?php if (!empty($isTrackedOrderFullyReviewed)): ?>
+                            <div class="d-inline-flex align-items-center gap-2 px-3.5 py-2.5 rounded-pill bg-white text-success fw-bold shadow-sm" style="font-size: 0.88rem;">
+                                <i class="fa-solid fa-circle-check text-success"></i>
+                                <span>Đã hoàn tất đánh giá</span>
+                            </div>
+                        <?php else: ?>
+                            <button type="button" class="btn btn-warning text-dark fw-bold rounded-pill px-4 py-2.5 shadow-sm d-inline-flex align-items-center gap-2"
+                                    onclick="openDeliveredOrderReviews(<?= (int)$trackedOrder['id'] ?>)">
+                                <i class="fa-solid fa-star text-warning-emphasis me-1"></i>
+                                <span>Đánh Giá Đơn Hàng</span>
+                            </button>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+
             <div class="order-products-box">
                 <div class="p-3 px-4 bg-white border-bottom d-flex align-items-center justify-content-between">
                     <h5 class="fw-bold text-dark mb-0 d-flex align-items-center gap-2">
@@ -934,15 +972,15 @@ require_once 'app/views/includes/functions.php';
                         }
                         $colorHex = !empty($variantColor) ? getColorHexValue($variantColor) : '#64748b';
                         $imgUrl = !empty($item['product_image']) ? $item['product_image'] : ((isset($orderModel)) ? $orderModel->resolveDetailImage($item) : 'assets/images/products/iphone-17-pro.png');
+                        $rowPid = (int)$item['product_id'];
+                        $rowRev = $orderReviewsMap[$rowPid] ?? null;
                         ?>
 
                         <div class="product-row-item">
-                            
                             <div class="prod-thumb-container">
                                 <img src="<?= htmlspecialchars($imgUrl) ?>" alt="<?= htmlspecialchars($baseName) ?>" loading="lazy">
                             </div>
 
-                            
                             <div class="flex-grow-1 min-w-0">
                                 <h6 class="fw-bold text-dark mb-1 fs-6 text-truncate" title="<?= htmlspecialchars($rawName) ?>">
                                     <?= htmlspecialchars($baseName) ?>
@@ -966,26 +1004,64 @@ require_once 'app/views/includes/functions.php';
                                 </small>
                             </div>
 
-                            
                             <div class="text-end flex-shrink-0">
                                 <small class="text-muted d-block">Đơn giá: <?= number_format((float)$item['price'], 0, ',', '.') ?> VNĐ</small>
                                 <div class="fs-5 fw-black text-danger">
                                     <?= number_format((float)$item['total_price'], 0, ',', '.') ?> VNĐ
                                 </div>
+
+                                <!-- Nút đánh giá hoặc huy hiệu đã đánh giá -->
+                                <?php if ($isDelivered): ?>
+                                    <div class="mt-2 text-end">
+                                        <?php if ($rowRev): ?>
+                                            <div class="d-inline-flex align-items-center gap-1.5 px-3 py-1 rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 small fw-bold">
+                                                <i class="fa-solid fa-circle-check text-success"></i>
+                                                <span>Đã đánh giá (<?= (int)$rowRev['rating'] ?> <i class="fa-solid fa-star text-warning small ms-0.5"></i>)</span>
+                                            </div>
+                                            <?php if (empty($rowRev['is_edited'])): ?>
+                                                <button type="button" class="btn btn-outline-secondary btn-xs rounded-pill ms-1.5 px-2.5 py-1 small shadow-none fw-semibold" 
+                                                        title="Chỉnh sửa đánh giá (Chỉ sửa 1 lần duy nhất)"
+                                                        onclick="openEditReviewModal(<?= (int)$rowRev['id'] ?>, <?= (int)$trackedOrder['id'] ?>, <?= $rowPid ?>, '<?= addslashes(htmlspecialchars($rawName)) ?>', '<?= addslashes(htmlspecialchars($imgUrl)) ?>', <?= (int)$rowRev['rating'] ?>, '<?= addslashes(htmlspecialchars($rowRev['comment'])) ?>')">
+                                                    <i class="fa-solid fa-pen me-1"></i>Sửa (1 lần)
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <button type="button" class="btn btn-sm btn-warning text-dark fw-bold rounded-pill px-3 py-1.5 shadow-xs d-inline-flex align-items-center gap-1.5 btn-review-product" 
+                                                    data-product-id="<?= $rowPid ?>" 
+                                                    onclick="openProductReviewModal(<?= (int)$trackedOrder['id'] ?>, <?= $rowPid ?>, '<?= addslashes(htmlspecialchars($rawName)) ?>', '<?= addslashes(htmlspecialchars($imgUrl)) ?>')">
+                                                <i class="fa-solid fa-star text-dark"></i>
+                                                <span>Đánh giá sản phẩm</span>
+                                            </button>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 </div>
 
-                
                 <div class="order-cost-summary-box">
                     <div class="row align-items-center">
                         <div class="col-md-6 mb-3 mb-md-0">
                             <div class="d-flex flex-wrap gap-2">
-                                
                                 <a href="index.php?page=orders&action=reorder&order_id=<?= $trackedOrder['id'] ?>" class="btn btn-outline-primary rounded-pill px-4 fw-bold small">
-                                    <i class="fa-solid fa-cart-plus me-1"></i>Mua lại đơn hàng này
+                                    <i class="fa-solid fa-cart-plus me-1.5"></i>Mua lại đơn hàng này
                                 </a>
+
+                                <?php if ($isDelivered): ?>
+                                    <?php if (!empty($isTrackedOrderFullyReviewed)): ?>
+                                        <div class="d-inline-flex align-items-center gap-1.5 px-3.5 py-2 rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 small fw-bold">
+                                            <i class="fa-solid fa-circle-check text-success"></i>
+                                            <span>Đã hoàn tất đánh giá</span>
+                                        </div>
+                                    <?php else: ?>
+                                        <button type="button" class="btn btn-warning text-dark rounded-pill px-4 py-2 fw-bold small shadow-sm d-inline-flex align-items-center gap-1.5"
+                                                onclick="openDeliveredOrderReviews(<?= (int)$trackedOrder['id'] ?>)">
+                                            <i class="fa-solid fa-star text-dark"></i>
+                                            <span>Đánh giá đơn hàng</span>
+                                        </button>
+                                    <?php endif; ?>
+                                <?php endif; ?>
 
                                 
                                 <?php if ($isPending): ?>
@@ -1311,6 +1387,34 @@ require_once 'app/views/includes/functions.php';
                                                 <div class="fs-5 fw-black text-danger mt-0.5">
                                                     <?= number_format((float)$d['total_price'], 0, ',', '.') ?> VNĐ
                                                 </div>
+
+                                                <?php if ($ord['status'] === 'Đã giao thành công'): ?>
+                                                    <?php 
+                                                    $dPid = (int)$d['product_id'];
+                                                    $dRev = $userDeliveredReviewsMap[$oId][$dPid] ?? null;
+                                                    ?>
+                                                    <div class="mt-1.5 text-end">
+                                                        <?php if ($dRev): ?>
+                                                            <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.7rem; padding: 0.25rem 0.6rem;">
+                                                                <i class="fa-solid fa-circle-check text-success me-1"></i>Đã đánh giá (<?= (int)$dRev['rating'] ?> <i class="fa-solid fa-star text-warning small ms-0.5"></i>)
+                                                            </span>
+                                                            <?php if (empty($dRev['is_edited'])): ?>
+                                                                <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-2 py-0.5 ms-1" style="font-size: 0.68rem;" 
+                                                                        title="Chỉnh sửa đánh giá (Chỉ sửa 1 lần duy nhất)"
+                                                                        onclick="openEditReviewModal(<?= (int)$dRev['id'] ?>, <?= $oId ?>, <?= $dPid ?>, '<?= addslashes(htmlspecialchars($rawName)) ?>', '<?= addslashes(htmlspecialchars($imgUrl)) ?>', <?= (int)$dRev['rating'] ?>, '<?= addslashes(htmlspecialchars($dRev['comment'])) ?>')">
+                                                                    <i class="fa-solid fa-pen me-0.5"></i>Sửa (1 lần)
+                                                                </button>
+                                                            <?php endif; ?>
+                                                        <?php else: ?>
+                                                            <button type="button" class="btn btn-xs btn-warning text-dark fw-bold rounded-pill px-2.5 py-1 shadow-xs btn-review-product" 
+                                                                    style="font-size: 0.72rem;" 
+                                                                    data-product-id="<?= $dPid ?>" 
+                                                                    onclick="openProductReviewModal(<?= $oId ?>, <?= $dPid ?>, '<?= addslashes(htmlspecialchars($rawName)) ?>', '<?= addslashes(htmlspecialchars($imgUrl)) ?>')">
+                                                                <i class="fa-solid fa-star text-dark me-1"></i>Đánh giá
+                                                            </button>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
@@ -1324,7 +1428,7 @@ require_once 'app/views/includes/functions.php';
                                             <?= number_format((float)$ord['total_money'], 0, ',', '.') ?> VNĐ
                                         </span>
                                         <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2.5 py-1 small fw-bold">
-                                            <i class="fa-solid fa-truck-fast me-1"></i>Miễn phí vận chuyển
+                                            <i class="fa-solid fa-truck-fast me-1.5"></i>Miễn phí vận chuyển
                                         </span>
                                     </div>
 
@@ -1339,6 +1443,22 @@ require_once 'app/views/includes/functions.php';
                                                 <i class="fa-solid fa-wallet me-1.5"></i>Thanh toán MoMo
                                             </a>
                                         <?php endif; ?>
+
+                                        <?php if ($ord['status'] === 'Đã giao thành công'): ?>
+                                            <?php if (!empty($userFullyReviewedOrderIds[$oId])): ?>
+                                                <span class="badge rounded-pill bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 fw-bold d-inline-flex align-items-center gap-1.5" style="font-size: 0.78rem;">
+                                                    <i class="fa-solid fa-circle-check text-success"></i>
+                                                    <span>Đã đánh giá</span>
+                                                </span>
+                                            <?php else: ?>
+                                                <button type="button" class="btn btn-sm btn-warning text-dark rounded-pill px-3.5 py-2 fw-bold shadow-sm d-inline-flex align-items-center gap-1.5"
+                                                        onclick="openDeliveredOrderReviews(<?= $oId ?>)">
+                                                    <i class="fa-solid fa-star text-dark"></i>
+                                                    <span>Đánh giá</span>
+                                                </button>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+
                                         <a href="index.php?page=orders&order_code=<?= $oId ?>" class="btn btn-sm btn-primary rounded-pill px-3.5 py-2 fw-bold shadow-sm">
                                             <i class="fa-solid fa-route me-1.5"></i>Theo dõi chi tiết
                                         </a>
@@ -1440,6 +1560,46 @@ require_once 'app/views/includes/functions.php';
 </div>
 
 <script>
+function openDeliveredOrderReviews(orderId) {
+    if (!orderId) return;
+    fetch('index.php?page=review&action=get_order_info&order_id=' + encodeURIComponent(orderId))
+        .then(r => r.json())
+        .then(data => {
+            if (data.success && data.items && data.items.length > 0) {
+                // Ưu tiên chọn sản phẩm chưa đánh giá
+                let target = data.items.find(it => !it.is_reviewed);
+                if (!target) {
+                    // Nếu tất cả đã đánh giá, tìm sản phẩm có quyền sửa (chưa sửa lần nào)
+                    target = data.items.find(it => it.can_edit);
+                }
+
+                if (target) {
+                    if (target.is_reviewed && target.review) {
+                        window.openEditReviewModal(
+                            target.review.id,
+                            orderId,
+                            target.product_id,
+                            target.product_name,
+                            target.product_image,
+                            target.review.rating,
+                            target.review.comment
+                        );
+                    } else {
+                        window.openProductReviewModal(orderId, target.product_id, target.product_name, target.product_image);
+                    }
+                } else {
+                    alert('Bạn đã hoàn tất đánh giá cho toàn bộ sản phẩm trong đơn hàng này.');
+                }
+            } else {
+                alert(data.message || 'Không thể tìm thấy thông tin sản phẩm trong đơn hàng.');
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Không thể kết nối đến máy chủ. Vui lòng thử lại sau.');
+        });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const cancelModal = document.getElementById('cancelOrderModal');
     if (cancelModal) {

@@ -41,7 +41,7 @@ class AuthController {
                 exit;
             }
 
-            if ($password === '123456' || password_verify($password, $user['password'])) {
+            if (!empty($user['password']) && password_verify($password, $user['password'])) {
                 $userRole = (int)$user['role'];
                 $perms = [];
                 if (!empty($user['permissions'])) {
@@ -53,6 +53,7 @@ class AuthController {
                     $perms = array_keys(VPHONE_PERMISSIONS);
                 }
 
+                session_regenerate_id(true);
                 $_SESSION['user'] = [
                     'id' => (int)$user['id'],
                     'fullname' => $user['fullname'],
@@ -108,6 +109,7 @@ class AuthController {
             exit;
         }
         $newId = $userModel->create($fullname, $email, $phone, $password, 0);
+        session_regenerate_id(true);
         $_SESSION['user'] = [
             'id' => $newId,
             'fullname' => $fullname,
@@ -203,6 +205,7 @@ class AuthController {
             $perms = array_keys(VPHONE_PERMISSIONS);
         }
 
+        session_regenerate_id(true);
         $_SESSION['user'] = [
             'id' => (int)$user['id'],
             'fullname' => $user['fullname'],
@@ -346,6 +349,7 @@ class AuthController {
             $perms = array_keys(VPHONE_PERMISSIONS);
         }
 
+        session_regenerate_id(true);
         $_SESSION['user'] = [
             'id' => (int)$user['id'],
             'fullname' => $user['fullname'],

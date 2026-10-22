@@ -29,7 +29,7 @@ if (isset($_GET['export']) && $_GET['export'] === 'csv') {
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
     fputcsv($output, ['Mã NV', 'Họ và tên', 'Email', 'Số điện thoại', 'Vai trò', 'Chức danh', 'Quyền hạn', 'Trạng thái', 'Ngày tạo']);
 
-    $staffListExport = $pdo->query("SELECT * FROM users WHERE role IN (1, 2) OR email = 'admin@vphone.vn' ORDER BY role ASC, id ASC")->fetchAll(PDO::FETCH_ASSOC);
+    $staffListExport = $userModel->getStaffList();
     foreach ($staffListExport as $s) {
         if ((int)$s['role'] === 1) {
             $permsText = 'Toàn quyền hệ thống (Admin)';
@@ -202,7 +202,7 @@ if (isset($_GET['delete_staff_id'])) {
 }
 
 // Lấy danh sách nhân sự (role = 1 hoặc role = 2)
-$staffList = $pdo->query("SELECT * FROM users WHERE role IN (1, 2) OR email = 'admin@vphone.vn' ORDER BY role ASC, id ASC")->fetchAll(PDO::FETCH_ASSOC);
+$staffList = $userModel->getStaffList();
 
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -530,20 +530,20 @@ require_once __DIR__ . '/includes/header.php';
                             <span>Chọn Nhanh Mẫu Chức Danh Phổ Biến:</span>
                         </label>
                         <div class="d-flex flex-wrap gap-2 mb-2">
-                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'support', 'Chuyên viên CSKH & Tư vấn Đa kênh', ['support', 'orders', 'reviews'])">
-                                <i class="fa-solid fa-headset text-info"></i>NV CSKH & Hỗ Trợ
+                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'support', 'Chuyên viên CSKH & Tư vấn Đa kênh', ['support', 'orders', 'reviews', 'ai_assistant'])">
+                                <i class="fa-solid fa-headset text-info me-1"></i><span>NV CSKH & Hỗ Trợ</span>
                             </button>
-                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'sales', 'Nhân viên Bán hàng & Đơn hàng', ['orders', 'vouchers'])">
-                                <i class="fa-solid fa-boxes-packing text-primary"></i>NV Bán Hàng
+                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'sales', 'Nhân viên Bán hàng & Đơn hàng', ['orders', 'vouchers', 'ai_assistant'])">
+                                <i class="fa-solid fa-boxes-packing text-primary me-1"></i><span>NV Bán Hàng</span>
                             </button>
-                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'warehouse', 'Nhân viên Quản lý Kho', ['products', 'inventory'])">
-                                <i class="fa-solid fa-boxes-stacked text-warning"></i>NV Kho & Tồn Kho
+                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'warehouse', 'Nhân viên Quản lý Kho', ['products', 'inventory', 'ai_assistant'])">
+                                <i class="fa-solid fa-boxes-stacked text-warning me-1"></i><span>NV Kho & Tồn Kho</span>
                             </button>
-                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'warranty', 'Kỹ thuật viên & Bảo hành', ['warranties', 'reviews'])">
-                                <i class="fa-solid fa-shield-halved text-success"></i>NV Bảo Hành
+                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'warranty', 'Kỹ thuật viên & Bảo hành', ['warranties', 'reviews', 'ai_assistant'])">
+                                <i class="fa-solid fa-shield-halved text-success me-1"></i><span>NV Bảo Hành</span>
                             </button>
-                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'all', 'Nhân viên Vận hành Toàn diện', ['support', 'orders', 'products', 'inventory', 'warranties', 'reviews', 'vouchers', 'news'])">
-                                <i class="fa-solid fa-star text-warning"></i>NV Đa Nhiệm (Tất cả quyền)
+                            <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate('add', 'all', 'Nhân viên Vận hành Toàn diện', ['support', 'orders', 'products', 'inventory', 'warranties', 'reviews', 'vouchers', 'news', 'ai_assistant'])">
+                                <i class="fa-solid fa-star text-warning me-1"></i><span>NV Đa Nhiệm (Tất cả quyền)</span>
                             </button>
                         </div>
                         <div class="row g-2 mt-1">
@@ -575,12 +575,12 @@ require_once __DIR__ . '/includes/header.php';
                         <div class="row g-2.5">
                             <?php foreach (VPHONE_PERMISSIONS as $pKey => $pInfo): ?>
                                 <div class="col-12 col-md-6">
-                                    <label class="perm-card-item d-flex align-items-start p-3 rounded-3 border bg-white h-100 mb-0" for="perm_add_<?= $pKey ?>">
-                                        <input class="form-check-input mt-0.5 me-3 flex-shrink-0 add-perm-check" type="checkbox" name="permissions[]" value="<?= $pKey ?>" id="perm_add_<?= $pKey ?>" <?= in_array($pKey, ['orders', 'vouchers']) ? 'checked' : '' ?> style="width: 1.15em; height: 1.15em;">
+                                    <label class="perm-card-item d-flex align-items-start p-3 rounded-3 border h-100 mb-0" for="perm_add_<?= $pKey ?>">
+                                        <input class="form-check-input mt-1 me-3 flex-shrink-0 add-perm-check" type="checkbox" name="permissions[]" value="<?= $pKey ?>" id="perm_add_<?= $pKey ?>" <?= in_array($pKey, ['orders', 'vouchers']) ? 'checked' : '' ?> style="width: 1.15em; height: 1.15em;">
                                         <div class="flex-grow-1 min-w-0">
-                                            <div class="d-flex align-items-center gap-2 fw-bold text-dark small mb-1">
-                                                <i class="<?= $pInfo['icon'] ?> <?= $pInfo['text_color'] ?> fa-fw text-center" style="width: 1.25rem;"></i>
-                                                <span><?= htmlspecialchars($pInfo['name']) ?></span>
+                                            <div class="d-flex align-items-center fw-bold text-dark small mb-1">
+                                                <i class="<?= $pInfo['icon'] ?> <?= $pInfo['text_color'] ?> fa-fw me-2.5 flex-shrink-0 text-center" style="font-size: 1rem; width: 1.35rem;"></i>
+                                                <span class="lh-sm"><?= htmlspecialchars($pInfo['name']) ?></span>
                                             </div>
                                             <small class="text-secondary d-block" style="font-size: 0.72rem; line-height: 1.4;"><?= htmlspecialchars($pInfo['desc']) ?></small>
                                         </div>
@@ -679,20 +679,20 @@ require_once __DIR__ . '/includes/header.php';
                                     <span>Áp Dụng Mẫu Phân Quyền Nhanh:</span>
                                 </label>
                                 <div class="d-flex flex-wrap gap-2">
-                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'support', 'Chuyên viên CSKH & Tư vấn Đa kênh', ['support', 'orders', 'reviews'])">
-                                        <i class="fa-solid fa-headset text-info"></i>NV CSKH & Hỗ Trợ
+                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'support', 'Chuyên viên CSKH & Tư vấn Đa kênh', ['support', 'orders', 'reviews', 'ai_assistant'])">
+                                        <i class="fa-solid fa-headset text-info me-1"></i><span>NV CSKH & Hỗ Trợ</span>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'sales', 'Nhân viên Bán hàng & Đơn hàng', ['orders', 'vouchers'])">
-                                        <i class="fa-solid fa-boxes-packing text-primary"></i>NV Bán Hàng
+                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'sales', 'Nhân viên Bán hàng & Đơn hàng', ['orders', 'vouchers', 'ai_assistant'])">
+                                        <i class="fa-solid fa-boxes-packing text-primary me-1"></i><span>NV Bán Hàng</span>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'warehouse', 'Nhân viên Quản lý Kho', ['products', 'inventory'])">
-                                        <i class="fa-solid fa-boxes-stacked text-warning"></i>NV Kho
+                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'warehouse', 'Nhân viên Quản lý Kho', ['products', 'inventory', 'ai_assistant'])">
+                                        <i class="fa-solid fa-boxes-stacked text-warning me-1"></i><span>NV Kho</span>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'warranty', 'Kỹ thuật viên & Bảo hành', ['warranties', 'reviews'])">
-                                        <i class="fa-solid fa-shield-halved text-success"></i>NV Bảo Hành
+                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'warranty', 'Kỹ thuật viên & Bảo hành', ['warranties', 'reviews', 'ai_assistant'])">
+                                        <i class="fa-solid fa-shield-halved text-success me-1"></i><span>NV Bảo Hành</span>
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'all', 'Nhân viên Vận hành Toàn diện', ['support', 'orders', 'products', 'inventory', 'warranties', 'reviews', 'vouchers', 'news'])">
-                                        <i class="fa-solid fa-star text-warning"></i>Toàn Quyền
+                                    <button type="button" class="btn btn-sm btn-white border rounded-pill px-3 py-1.5 text-dark fw-semibold shadow-xs d-inline-flex align-items-center gap-1.5" onclick="applyStaffTemplate(<?= $stf['id'] ?>, 'all', 'Nhân viên Vận hành Toàn diện', ['support', 'orders', 'products', 'inventory', 'warranties', 'reviews', 'vouchers', 'news', 'ai_assistant'])">
+                                        <i class="fa-solid fa-star text-warning me-1"></i><span>Toàn Quyền</span>
                                     </button>
                                 </div>
                                 <input type="hidden" name="staff_role" id="editStaffRole<?= $stf['id'] ?>" value="<?= htmlspecialchars($stf['staff_role'] ?: 'staff') ?>">
@@ -716,12 +716,12 @@ require_once __DIR__ . '/includes/header.php';
                                     <?php foreach (VPHONE_PERMISSIONS as $pKey => $pInfo): ?>
                                         <?php $checked = in_array($pKey, $stfPerms) || (int)$stf['role'] === 1; ?>
                                         <div class="col-12 col-md-6">
-                                            <label class="perm-card-item d-flex align-items-start p-3 rounded-3 border bg-white h-100 mb-0" for="perm_edit_<?= $stf['id'] ?>_<?= $pKey ?>">
-                                                <input class="form-check-input mt-0.5 me-3 flex-shrink-0 edit-perm-check-<?= $stf['id'] ?>" type="checkbox" name="permissions[]" value="<?= $pKey ?>" id="perm_edit_<?= $stf['id'] ?>_<?= $pKey ?>" <?= $checked ? 'checked' : '' ?> style="width: 1.15em; height: 1.15em;">
+                                            <label class="perm-card-item d-flex align-items-start p-3 rounded-3 border h-100 mb-0" for="perm_edit_<?= $stf['id'] ?>_<?= $pKey ?>">
+                                                <input class="form-check-input mt-1 me-3 flex-shrink-0 edit-perm-check-<?= $stf['id'] ?>" type="checkbox" name="permissions[]" value="<?= $pKey ?>" id="perm_edit_<?= $stf['id'] ?>_<?= $pKey ?>" <?= $checked ? 'checked' : '' ?> style="width: 1.15em; height: 1.15em;">
                                                 <div class="flex-grow-1 min-w-0">
-                                                    <div class="d-flex align-items-center gap-2 fw-bold text-dark small mb-1">
-                                                        <i class="<?= $pInfo['icon'] ?> <?= $pInfo['text_color'] ?> fa-fw text-center" style="width: 1.25rem;"></i>
-                                                        <span><?= htmlspecialchars($pInfo['name']) ?></span>
+                                                    <div class="d-flex align-items-center fw-bold text-dark small mb-1">
+                                                        <i class="<?= $pInfo['icon'] ?> <?= $pInfo['text_color'] ?> fa-fw me-2.5 flex-shrink-0 text-center" style="font-size: 1rem; width: 1.35rem;"></i>
+                                                        <span class="lh-sm"><?= htmlspecialchars($pInfo['name']) ?></span>
                                                     </div>
                                                     <small class="text-secondary d-block" style="font-size: 0.72rem; line-height: 1.4;"><?= htmlspecialchars($pInfo['desc']) ?></small>
                                                 </div>

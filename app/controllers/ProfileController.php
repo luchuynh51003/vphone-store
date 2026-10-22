@@ -2,6 +2,7 @@
 require_once 'app/models/UserModel.php';
 require_once 'app/models/OrderModel.php';
 require_once 'app/models/AddressModel.php';
+require_once 'app/services/MembershipService.php';
 
 class ProfileController {
     private PDO $pdo;
@@ -332,12 +333,11 @@ class ProfileController {
         $userOrders = $orderModel->getByUserId($userId);
         $statusCounts = $orderModel->getStatusCountsByUserId($userId);
         $totalOrders = count($userOrders);
-        $totalSpent = 0;
-        foreach ($userOrders as $o) {
-            if ($o['status'] === 'Đã giao thành công') {
-                $totalSpent += (float)$o['total_money'];
-            }
-        }
+
+        $membershipService = new MembershipService($this->pdo);
+        $totalSpent = $membershipService->getUserSpent($userId);
+        $userTier = $membershipService->getUserTier($userId);
+        $tierDefinitions = MembershipService::getTierDefinitions();
 
         $profileMessage = $_SESSION['profile_message'] ?? '';
         $profileError = $_SESSION['profile_error'] ?? '';

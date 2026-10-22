@@ -154,6 +154,7 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/style.css?v=<?= file_exists(__DIR__ . '/../../assets/css/style.css') ? filemtime(__DIR__ . '/../../assets/css/style.css') : '20261016_v12' ?>">
+    <link rel="stylesheet" href="../assets/css/role_ai.css?v=<?= file_exists(__DIR__ . '/../../assets/css/role_ai.css') ? filemtime(__DIR__ . '/../../assets/css/role_ai.css') : '20261022' ?>">
     <!-- Chart.js Thư viện biểu đồ thống kê hiện đại -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <!-- SweetAlert2 Thư viện thông báo & hộp thoại popup chuẩn hiện đại -->
@@ -796,16 +797,32 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
         [data-bs-theme="dark"] .perm-card-item {
             background-color: #0e172a !important;
             border-color: rgba(255, 255, 255, 0.08) !important;
+            transition: all 0.18s ease !important;
         }
         [data-bs-theme="dark"] .perm-card-item:hover {
             background-color: #16243f !important;
             border-color: rgba(56, 189, 248, 0.35) !important;
+        }
+        [data-bs-theme="dark"] .perm-card-item:has(input:checked) {
+            background-color: rgba(2, 132, 199, 0.18) !important;
+            border-color: #0284c7 !important;
+            box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3) !important;
+        }
+        [data-bs-theme="dark"] .perm-card-item:has(input:checked):hover {
+            background-color: rgba(2, 132, 199, 0.26) !important;
+            border-color: #38bdf8 !important;
         }
         [data-bs-theme="dark"] .perm-card-item .text-dark {
             color: #f8fafc !important;
         }
         [data-bs-theme="dark"] .perm-card-item .text-secondary {
             color: #94a3b8 !important;
+        }
+        [data-bs-theme="dark"] .perm-card-item:has(input:checked) .text-dark {
+            color: #ffffff !important;
+        }
+        [data-bs-theme="dark"] .perm-card-item:has(input:checked) .text-secondary {
+            color: #cbd5e1 !important;
         }
         [data-bs-theme="dark"] .admin-order-table-card,
         [data-bs-theme="dark"] .admin-order-table-wrap {
@@ -1021,6 +1038,11 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
                 <a href="staff_dashboard.php" class="admin-nav-link <?= ($adminPage === 'staff_dashboard.php') ? 'active' : '' ?>">
                     <i class="fa-solid fa-laptop-file"></i> <span>Bàn làm việc ca trực</span>
                 </a>
+                <?php if (currentUserCan('ai_assistant')): ?>
+                    <a href="ai_assistants.php" class="admin-nav-link <?= ($adminPage === 'ai_assistants.php') ? 'active' : '' ?>" style="color: #c084fc;">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color: #c084fc;"></i> <span>Trợ lý AI Nghiệp vụ</span>
+                    </a>
+                <?php endif; ?>
 
                 <?php if (currentUserCan('products') || currentUserCan('inventory')): ?>
                     <div class="mt-2 w-100">
@@ -1239,6 +1261,10 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
                             <a href="db_sync.php" class="admin-nav-link <?= ($adminPage === 'db_sync.php') ? 'active' : '' ?>" style="color: #38bdf8;">
                                 <i class="fa-solid fa-database text-info"></i> <span class="flex-grow-1 text-truncate">Đồng bộ CSDL Git</span>
                             </a>
+                            <a href="ai_assistants.php" class="admin-nav-link <?= ($adminPage === 'ai_assistants.php') ? 'active' : '' ?>" style="color: #c084fc;">
+                                <i class="fa-solid fa-brain" style="color: #c084fc;"></i> <span class="flex-grow-1 text-truncate">Trung Tâm Trợ Lý AI</span>
+                                <span class="badge text-white rounded-pill ms-auto" style="font-size: 0.65rem; background: linear-gradient(135deg, #a855f7, #6366f1);">6 Chức Vụ</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1322,6 +1348,23 @@ if ($isAdmin || currentUserCan('support') || currentUserCan('orders') || current
                     <span class="d-none d-md-inline">Xem Cửa Hàng</span>
                     <i class="fa-solid fa-arrow-up-right-from-square small ms-1"></i>
                 </a>
+
+                <?php 
+                $canUseAi = isCurrentAdmin() || currentUserCan('ai_assistant');
+                if ($canUseAi): 
+                    $hdrAiRole = isCurrentAdmin() ? 'admin' : (in_array($_SESSION['user']['staff_role'] ?? '', ['sales','warehouse','warranty','support']) ? $_SESSION['user']['staff_role'] : 'sales');
+                    $hdrBadgeLabel = isCurrentAdmin() ? 'Quản Trị' : (
+                        $hdrAiRole === 'sales' ? 'Bán Hàng' : (
+                        $hdrAiRole === 'warehouse' ? 'Kho' : (
+                        $hdrAiRole === 'warranty' ? 'Bảo Hành' : 'CSKH'))
+                    );
+                ?>
+                <!-- NÚT MỞ TRỢ LÝ AI THEO ĐÚNG CHỨC VỤ -->
+                <button type="button" class="btn btn-sm rounded-pill px-3 py-1.5 d-flex align-items-center gap-1.5 border shadow-2xs" id="btnAdminOpenAiHeader" title="Mở Hộp Thoại Trợ Lý AI <?= $hdrBadgeLabel ?>" style="background: rgba(99, 102, 241, 0.08); border-color: rgba(99, 102, 241, 0.25) !important;">
+                    <i class="fa-solid fa-wand-magic-sparkles text-primary" style="font-size:0.85rem;"></i>
+                    <span class="d-none d-md-inline fw-bold small text-dark">AI <?= $hdrBadgeLabel ?></span>
+                </button>
+                <?php endif; ?>
 
                 <!-- DROPDOWN THÔNG BÁO THÔNG MINH -->
                 <div class="dropdown me-1 me-sm-2">

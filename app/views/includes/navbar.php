@@ -25,6 +25,22 @@ if ($currentUser && !empty($currentUser['id'])) {
             $navNotifModel = new NotificationModel($dbForNotif);
             $navUnreadNotifCount = $navNotifModel->getUnreadCount((int)$currentUser['id']);
             $navUserNotifications = $navNotifModel->getByUserId((int)$currentUser['id'], 30);
+
+            // Lấy hạng thành viên của khách hàng
+            require_once __DIR__ . '/../../services/MembershipService.php';
+            $navMembershipService = new MembershipService($dbForNotif);
+            $navUserTier = $navMembershipService->getUserTier((int)$currentUser['id']);
+            require_once __DIR__ . '/../../models/ReviewModel.php';
+            $navReviewModel = new ReviewModel($dbForNotif);
+            $navReviewedOrders = [];
+            foreach ($navUserNotifications as $nItem) {
+                if (($nItem['type'] ?? '') === 'order_delivered' && !empty($nItem['order_id'])) {
+                    $oid = (int)$nItem['order_id'];
+                    if (!isset($navReviewedOrders[$oid])) {
+                        $navReviewedOrders[$oid] = $navReviewModel->isOrderFullyReviewed($oid);
+                    }
+                }
+            }
         }
     } catch (\Throwable $e) {}
 }
@@ -88,7 +104,7 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                     <button type="submit" class="nav-search-icon-btn" title="Tìm kiếm">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </button>
-                    <input id="searchInput" class="nav-search-input" type="search" name="keyword" placeholder="Tìm kiếm iPhone 16 Pro, Galaxy S25, Xiaomi..." value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
+                    <input id="searchInput" class="nav-search-input" type="search" name="keyword" placeholder="Bạn muốn tìm gì hôm nay?..." value="<?= isset($_GET['keyword']) ? htmlspecialchars($_GET['keyword']) : '' ?>">
                 </div>
             </form>
             <div id="searchDropdown" class="search-dropdown-menu d-none">
@@ -232,8 +248,8 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                                     'badge_icon' => 'fa-solid fa-circle-check',
                                                     'unread_class' => 'notif-unread-delivered',
                                                     'dot_color' => '#16a34a',
-                                                    'action_text' => 'Xem chi tiết đơn',
-                                                    'action_color' => 'text-success'
+                                                    'action_text' => 'Đánh giá ngay',
+                                                    'action_color' => 'text-warning-emphasis fw-bold'
                                                 ],
                                                 'order_processing' => [
                                                     'icon' => 'fa-solid fa-boxes-packing',
@@ -288,10 +304,12 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                             if (preg_match('/Tổng thanh toán:\s*([^)]+)/iu', $n['message'], $mTotal)) {
                                                 $orderTotal = trim($mTotal[1]);
                                             }
+
+                                            $isOrdReviewed = ($type === 'order_delivered' && !empty($n['order_id']) && !empty($navReviewedOrders[(int)$n['order_id']]));
                                         ?>
                                         <div class="dropdown-item px-3.5 py-3 border-bottom text-wrap notif-item <?= $isExtra ? 'notif-item-extra d-none' : '' ?> <?= $isUnread ? $curCfg['unread_class'] : 'notif-read' ?>" 
                                              style="cursor: pointer; transition: all 0.15s ease;" 
-                                             onclick="handleNotifClick(<?= (int)$n['id'] ?>, <?= !empty($n['order_id']) ? (int)$n['order_id'] : 'null' ?>)">
+                                             onclick="handleNotifClick(<?= (int)$n['id'] ?>, <?= !empty($n['order_id']) ? (int)$n['order_id'] : 'null' ?>, <?= ($type === 'order_delivered' && !$isOrdReviewed) ? 'true' : 'false' ?>)">
                                             <div class="d-flex align-items-start gap-3">
                                                 <!-- Icon Trạng Thái -->
                                                 <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0 mt-0.5" 
@@ -336,6 +354,27 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                                         </div>
                                                     <?php endif; ?>
 
+                                                    <!-- Banner kêu gọi đánh giá nhanh cho đơn đã giao thành công -->
+                                                    <?php if ($type === 'order_delivered'): ?>
+                                                        <?php if (!$isOrdReviewed): ?>
+                                                            <div class="mt-2 p-2 px-2.5 rounded-3 d-flex align-items-center justify-content-between gap-2" style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35);">
+                                                                <div class="d-flex align-items-center gap-2 text-warning-emphasis fw-bold" style="font-size: 0.73rem;">
+                                                                    <i class="fa-solid fa-star text-warning"></i>
+                                                                    <span>Đánh giá sản phẩm nhận ưu đãi</span>
+                                                                </div>
+                                                                <span class="badge rounded-pill bg-warning text-dark fw-bold px-2.5 py-1 shadow-xs d-inline-flex align-items-center gap-1.5" style="font-size: 0.68rem;">
+                                                                    <i class="fa-solid fa-star text-dark small"></i>
+                                                                    <span>Đánh giá ngay &rarr;</span>
+                                                                </span>
+                                                            </div>
+                                                        <?php else: ?>
+                                                            <div class="mt-2 p-1.5 px-2.5 rounded-3 d-flex align-items-center gap-2" style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2);">
+                                                                <i class="fa-solid fa-circle-check text-success" style="font-size: 0.78rem;"></i>
+                                                                <span class="text-success fw-bold" style="font-size: 0.73rem;">Đã hoàn tất đánh giá đơn hàng</span>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    <?php endif; ?>
+
                                                     <!-- Footer hàng thông báo: Badge trạng thái & Nút thao tác -->
                                                     <div class="d-flex align-items-center justify-content-between mt-1.5 pt-1 border-top border-light text-muted" style="font-size: 0.74rem;">
                                                         <div class="d-flex align-items-center gap-1.5">
@@ -346,10 +385,18 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                                                 <span class="text-muted ms-1" style="font-size: 0.72rem;">• <?= htmlspecialchars($orderTotal) ?></span>
                                                             <?php endif; ?>
                                                         </div>
-                                                        <span class="<?= $curCfg['action_color'] ?> fw-medium d-inline-flex align-items-center gap-1">
-                                                            <span><?= $curCfg['action_text'] ?></span>
-                                                            <i class="fa-solid fa-chevron-right" style="font-size: 0.65rem;"></i>
-                                                        </span>
+                                                        <?php if ($type === 'order_delivered' && !$isOrdReviewed): ?>
+                                                            <span class="text-warning-emphasis fw-bold d-inline-flex align-items-center gap-1.5">
+                                                                <i class="fa-solid fa-star text-warning small"></i>
+                                                                <span>Đánh giá ngay</span>
+                                                                <i class="fa-solid fa-chevron-right" style="font-size: 0.65rem;"></i>
+                                                            </span>
+                                                        <?php else: ?>
+                                                            <span class="<?= ($type === 'order_delivered') ? 'text-primary' : $curCfg['action_color'] ?> fw-medium d-inline-flex align-items-center gap-1.5">
+                                                                <span><?= ($type === 'order_delivered') ? 'Chi tiết đơn' : $curCfg['action_text'] ?></span>
+                                                                <i class="fa-solid fa-chevron-right" style="font-size: 0.65rem;"></i>
+                                                            </span>
+                                                        <?php endif; ?>
                                                     </div>
                                                 </div>
                                             </div>
@@ -421,6 +468,23 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                 <div class="min-w-0 flex-grow-1">
                                     <div class="fw-bold text-dark text-truncate" title="<?= htmlspecialchars($currentUser['fullname']) ?>"><?= htmlspecialchars($currentUser['fullname']) ?></div>
                                     <div class="small text-muted text-truncate font-monospace" style="font-size: 0.74rem;"><?= htmlspecialchars($currentUser['email'] ?? '') ?></div>
+                                    <?php if ((int)($currentUser['role'] ?? 0) === 1): ?>
+                                        <div class="mt-1">
+                                            <span class="badge rounded-pill text-white fw-bold d-inline-flex align-items-center gap-1 shadow-xs px-2 py-0.5" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); font-size: 0.68rem; letter-spacing: 0.3px;">
+                                                <i class="fa-solid fa-shield-halved"></i><span>Quản Trị Viên</span>
+                                            </span>
+                                        </div>
+                                    <?php elseif ((int)($currentUser['role'] ?? 0) === 2): ?>
+                                        <div class="mt-1">
+                                            <span class="badge rounded-pill text-white fw-bold d-inline-flex align-items-center gap-1 shadow-xs px-2 py-0.5" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 0.68rem; letter-spacing: 0.3px;">
+                                                <i class="fa-solid fa-id-badge"></i><span>Nhân Viên</span>
+                                            </span>
+                                        </div>
+                                    <?php elseif (!empty($navUserTier)): ?>
+                                        <div class="mt-1">
+                                            <?= MembershipService::renderBadge($navUserTier, 'xs') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </li>
@@ -437,7 +501,8 @@ $navSearchList = $GLOBALS['vphone_nav_search_list'] ?? [];
                                 </a>
                             </li>
                         <?php endif; ?>
-                        <li><a class="dropdown-item py-2 fw-semibold <?= ($currentPage === 'profile') ? 'text-primary' : '' ?>" href="index.php?page=profile"><i class="fa-solid fa-address-card me-2 text-primary"></i>Thông tin tài khoản</a></li>
+                        <li><a class="dropdown-item py-2 fw-semibold" href="index.php?page=profile&tab=membership"><i class="fa-solid fa-crown me-2 text-warning"></i>Hạng thành viên & Đặc quyền</a></li>
+                        <li><a class="dropdown-item py-2 fw-semibold <?= ($currentPage === 'profile' && (!isset($_GET['tab']) || $_GET['tab'] !== 'membership')) ? 'text-primary' : '' ?>" href="index.php?page=profile"><i class="fa-solid fa-address-card me-2 text-primary"></i>Thông tin tài khoản</a></li>
                         <li><a class="dropdown-item py-2 fw-semibold" href="index.php?page=orders"><i class="fa-solid fa-truck-ramp-box me-2 text-primary"></i>Đơn hàng của tôi</a></li>
                         <li><a class="dropdown-item py-2" href="index.php?page=cart"><i class="fa-solid fa-cart-shopping me-2 text-primary"></i>Giỏ hàng của tôi</a></li>
                         <li><a class="dropdown-item py-2 text-danger" href="index.php?page=logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Đăng xuất</a></li>
@@ -680,12 +745,40 @@ window.vphoneGoogleConfig = <?= json_encode([
                     <?php endif; ?>
                     <div class="min-w-0 flex-grow-1">
                         <div class="fw-bold text-dark text-truncate small" style="font-size: 0.82rem; line-height: 1.2;">Xin chào, <?= htmlspecialchars($currentUser['fullname']) ?></div>
-                        <small class="text-secondary text-truncate d-block font-monospace" style="font-size: 0.7rem;"><?= htmlspecialchars($currentUser['email']) ?></small>
+                        <small class="text-secondary text-truncate d-block font-monospace" style="font-size: 0.7rem;"><?= htmlspecialchars($currentUser['email'] ?? '') ?></small>
+                        <?php if ((int)($currentUser['role'] ?? 0) === 1): ?>
+                            <div class="mt-1">
+                                <span class="badge rounded-pill text-white fw-bold d-inline-flex align-items-center gap-1 shadow-xs px-2 py-0.5" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%); font-size: 0.68rem; letter-spacing: 0.3px;">
+                                    <i class="fa-solid fa-shield-halved"></i><span>Quản Trị Viên</span>
+                                </span>
+                            </div>
+                        <?php elseif ((int)($currentUser['role'] ?? 0) === 2): ?>
+                            <div class="mt-1">
+                                <span class="badge rounded-pill text-white fw-bold d-inline-flex align-items-center gap-1 shadow-xs px-2 py-0.5" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 0.68rem; letter-spacing: 0.3px;">
+                                    <i class="fa-solid fa-id-badge"></i><span>Nhân Viên</span>
+                                </span>
+                            </div>
+                        <?php elseif (!empty($navUserTier)): ?>
+                            <div class="mt-1">
+                                <?= MembershipService::renderBadge($navUserTier, 'xs') ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <a href="index.php?page=profile" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 30px; height: 30px;" title="Chỉnh sửa thông tin">
-                    <i class="fa-solid fa-user-pen" style="font-size: 0.75rem;"></i>
-                </a>
+                <div class="d-flex align-items-center gap-1.5 flex-shrink-0">
+                    <?php if ((int)($currentUser['role'] ?? 0) === 1): ?>
+                        <a href="admin/index.php" class="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 30px; height: 30px;" title="Trang Quản Trị Admin">
+                            <i class="fa-solid fa-gear" style="font-size: 0.75rem;"></i>
+                        </a>
+                    <?php elseif ((int)($currentUser['role'] ?? 0) === 2): ?>
+                        <a href="admin/staff_dashboard.php" class="btn btn-outline-success btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 30px; height: 30px;" title="Bàn làm việc Nhân Viên">
+                            <i class="fa-solid fa-laptop-file" style="font-size: 0.75rem;"></i>
+                        </a>
+                    <?php endif; ?>
+                    <a href="index.php?page=profile" class="btn btn-outline-primary btn-sm rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 30px; height: 30px;" title="Chỉnh sửa thông tin">
+                        <i class="fa-solid fa-user-pen" style="font-size: 0.75rem;"></i>
+                    </a>
+                </div>
             </div>
         <?php else: ?>
             <button class="btn btn-primary btn-sm w-100 rounded-pill fw-bold py-1.5 shadow-xs" data-bs-dismiss="offcanvas" data-bs-toggle="modal" data-bs-target="#unifiedAuthModal" data-auth-tab="login" style="font-size: 0.84rem;">
@@ -695,24 +788,6 @@ window.vphoneGoogleConfig = <?= json_encode([
     </div>
 
     <div class="offcanvas-body p-3">
-        <!-- CHUYỂN ĐỔI CHẾ ĐỘ SÁNG / TỐI / HỆ THỐNG (MOBILE) -->
-        <div class="p-2.5 px-3 rounded-3 mb-3 bg-light border theme-toggle-card">
-            <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="small fw-bold text-dark"><i class="fa-solid fa-circle-half-stroke text-primary me-1.5"></i>Giao diện</span>
-                <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill small" id="mobileThemeStatusBadge">Theo hệ thống</span>
-            </div>
-            <div class="theme-segmented-group" role="group">
-                <button type="button" class="btn btn-theme-choice" id="mBtnLight" onclick="setVPhoneThemeMode('light')" title="Chế độ Sáng">
-                    <i class="fa-solid fa-sun text-warning"></i><span>Sáng</span>
-                </button>
-                <button type="button" class="btn btn-theme-choice" id="mBtnDark" onclick="setVPhoneThemeMode('dark')" title="Chế độ Tối">
-                    <i class="fa-solid fa-moon text-info"></i><span>Tối</span>
-                </button>
-                <button type="button" class="btn btn-theme-choice active" id="mBtnAuto" onclick="setVPhoneThemeMode('auto')" title="Theo hệ thống máy">
-                    <i class="fa-solid fa-desktop text-primary"></i><span>Tự động</span>
-                </button>
-            </div>
-        </div>
         <!-- TIỆN ÍCH MUA SẮM THIẾT YẾU -->
         <div class="text-uppercase fw-bold text-secondary mb-2 d-flex align-items-center justify-content-between" style="font-size: 0.7rem; letter-spacing: 0.4px;">
             <span><i class="fa-solid fa-compass me-1.5 text-primary"></i>Tiện Ích Nhanh</span>
@@ -893,11 +968,12 @@ function toggleMoreNotifications(event) {
     }
 }
 
-function handleNotifClick(notifId, orderId) {
+function handleNotifClick(notifId, orderId, isDelivered = false) {
     fetch('api/notifications.php?action=mark_read&id=' + notifId, { credentials: 'same-origin' })
         .finally(() => {
             if (orderId) {
-                window.location.href = 'index.php?page=orders&order_code=' + orderId;
+                const extra = isDelivered ? '&review=1' : '';
+                window.location.href = 'index.php?page=orders&order_code=' + orderId + extra;
             } else {
                 window.location.href = 'index.php?page=orders';
             }

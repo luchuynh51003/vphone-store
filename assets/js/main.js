@@ -481,6 +481,124 @@
                 searchDropdown.classList.add("d-none");
             }
         });
+
+        // --- TYPEWRITER EFFECT CHO PLACEHOLDER THANH TÌM KIẾM ---
+        function initSearchTypewriter(inputEl) {
+            if (!inputEl) return;
+
+            // Danh sách gợi ý các dòng máy tiêu biểu có trong hệ thống shop
+            const suggestions = [
+                "Bạn muốn tìm gì hôm nay?...",
+                "iPhone 18 Pro Max...",
+                "Galaxy S26 Ultra...",
+                "Galaxy Z Tri-Fold...",
+                "Xiaomi 16 Ultra...",
+                "iPhone 17 Pro Max...",
+                "Huawei Mate XT...",
+                "iPhone 16 Pro Max...",
+                "Galaxy S24 Ultra...",
+                "Google Pixel 9 Pro XL...",
+                "OPPO Find N5 Duo..."
+            ];
+
+            let phraseIndex = 0;
+            // Bắt đầu với cụm từ đầu tiên đã có sẵn trên HTML, sau đó bắt đầu xóa lùi
+            let charIndex = suggestions[0].length;
+            let isDeleting = true;
+            let typewriterTimer = null;
+            let isPaused = false;
+
+            // Tốc độ chuyển động (milliseconds)
+            const TYPE_SPEED = 70;      // Tốc độ hiện từng ký tự (70ms)
+            const DELETE_SPEED = 35;    // Tốc độ xóa lùi từng ký tự (35ms)
+            const PAUSE_END = 2000;     // Dừng lại sau khi gõ xong để người dùng kịp đọc (2s)
+            const PAUSE_START = 350;    // Dừng lại sau khi xóa hết trước khi gõ từ mới (0.35s)
+
+            function typeStep() {
+                if (isPaused) return;
+
+                // Nếu người dùng đã gõ nội dung vào ô input thì không can thiệp
+                if (inputEl.value.trim().length > 0) return;
+
+                const currentPhrase = suggestions[phraseIndex];
+
+                if (!isDeleting) {
+                    // Đang hiện từng chữ ra
+                    charIndex++;
+                    inputEl.setAttribute("placeholder", currentPhrase.substring(0, charIndex));
+
+                    if (charIndex >= currentPhrase.length) {
+                        // Đã gõ xong toàn bộ cụm từ -> Dừng lại để người dùng xem
+                        isDeleting = true;
+                        typewriterTimer = setTimeout(typeStep, PAUSE_END);
+                        return;
+                    }
+                    typewriterTimer = setTimeout(typeStep, TYPE_SPEED);
+                } else {
+                    // Đang xóa lùi từng chữ
+                    charIndex--;
+                    inputEl.setAttribute("placeholder", currentPhrase.substring(0, charIndex));
+
+                    if (charIndex <= 0) {
+                        // Đã xóa hết -> Chuyển sang cụm từ tiếp theo trong danh sách
+                        isDeleting = false;
+                        phraseIndex = (phraseIndex + 1) % suggestions.length;
+                        charIndex = 0;
+                        typewriterTimer = setTimeout(typeStep, PAUSE_START);
+                        return;
+                    }
+                    typewriterTimer = setTimeout(typeStep, DELETE_SPEED);
+                }
+            }
+
+            function startTypewriter(delay = 1600) {
+                if (inputEl.value.trim().length > 0) return;
+                isPaused = false;
+                clearTimeout(typewriterTimer);
+                typewriterTimer = setTimeout(typeStep, delay);
+            }
+
+            function pauseTypewriter() {
+                isPaused = true;
+                clearTimeout(typewriterTimer);
+            }
+
+            // Khởi động nếu ô input chưa có giá trị tìm kiếm sẵn
+            if (!inputEl.value.trim()) {
+                startTypewriter(1600);
+            }
+
+            // Khi người dùng bấm focus vào ô tìm kiếm:
+            inputEl.addEventListener("focus", function () {
+                pauseTypewriter();
+            });
+
+            // Khi người dùng rời khỏi ô tìm kiếm (blur):
+            inputEl.addEventListener("blur", function () {
+                if (!this.value.trim()) {
+                    startTypewriter(400);
+                }
+            });
+
+            // Khi người dùng đang nhập phím:
+            inputEl.addEventListener("input", function () {
+                if (this.value.trim().length > 0) {
+                    pauseTypewriter();
+                }
+            });
+
+            // Tiết kiệm CPU / Pin khi người dùng chuyển sang tab khác
+            document.addEventListener("visibilitychange", function () {
+                if (document.hidden) {
+                    pauseTypewriter();
+                } else if (!inputEl.value.trim() && document.activeElement !== inputEl) {
+                    startTypewriter(500);
+                }
+            });
+        }
+
+        // Kích hoạt Typewriter cho thanh tìm kiếm
+        initSearchTypewriter(searchInput);
     }
 
     function escapeHtml(str) {

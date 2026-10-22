@@ -30,6 +30,7 @@ if ($userMessage === '') {
 /**
  * Hàm chuẩn hóa tiếng Việt không dấu
  */
+if (!function_exists('removeVietnameseAccents')) {
 function removeVietnameseAccents(string $str): string {
     $str = mb_strtolower($str, 'UTF-8');
     $unicode = [
@@ -46,15 +47,19 @@ function removeVietnameseAccents(string $str): string {
     }
     return $str;
 }
+}
 
 $cleanText = removeVietnameseAccents($userMessage);
 
 // Helper format tiền tệ VNĐ
+if (!function_exists('formatVND')) {
 function formatVND($amount): string {
     return number_format((float)$amount, 0, ',', '.') . ' VNĐ';
 }
+}
 
 // Helper tìm kiếm sản phẩm theo keyword
+if (!function_exists('queryProducts')) {
 function queryProducts(PDO $pdo, string $keyword, int $limit = 3): array {
     try {
         $stmt = $pdo->prepare("
@@ -72,8 +77,10 @@ function queryProducts(PDO $pdo, string $keyword, int $limit = 3): array {
         return [];
     }
 }
+}
 
 // Helper tìm sản phẩm theo khoảng giá
+if (!function_exists('queryProductsByPrice')) {
 function queryProductsByPrice(PDO $pdo, ?float $minPrice, ?float $maxPrice, int $limit = 3): array {
     try {
         $sql = "SELECT id, name, price, sale_price, ram, rom, screen FROM products WHERE 1=1";
@@ -100,8 +107,10 @@ function queryProductsByPrice(PDO $pdo, ?float $minPrice, ?float $maxPrice, int 
         return [];
     }
 }
+}
 
 // Render danh sách sản phẩm dạng Glassmorphism Card hiện đại không dùng emoji
+if (!function_exists('renderProductListHtml')) {
 function renderProductListHtml(array $products, string $intro = ''): string {
     if (empty($products)) return '';
     $html = $intro ? ($intro . "<br><br>") : "";
@@ -145,6 +154,7 @@ function renderProductListHtml(array $products, string $intro = ''): string {
         $html .= "</div>";
     }
     return $html;
+}
 }
 
 $reply = '';

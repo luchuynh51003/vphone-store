@@ -36,6 +36,7 @@ class UserModel {
             }
             $this->ensureGoogleColumns();
             $this->ensureStaffColumns();
+            $this->ensureMembershipColumn();
             $this->ensurePasswordResetsTable();
         } catch (Throwable $e) {}
     }
@@ -56,6 +57,21 @@ class UserModel {
                 $this->pdo->exec("ALTER TABLE users ADD COLUMN status TINYINT(1) NOT NULL DEFAULT 1 AFTER permissions");
             }
         } catch (Throwable $e) {}
+    }
+
+    public function ensureMembershipColumn(): void {
+        try {
+            $userCols = $this->pdo->query("SHOW COLUMNS FROM users")->fetchAll(PDO::FETCH_COLUMN);
+            if (!in_array('membership_tier', $userCols)) {
+                $this->pdo->exec("ALTER TABLE users ADD COLUMN membership_tier VARCHAR(30) NULL DEFAULT 'auto' AFTER status");
+            }
+        } catch (Throwable $e) {}
+    }
+
+    public function updateMembershipTier(int $userId, ?string $tier = 'auto'): bool {
+        $this->ensureMembershipColumn();
+        $stmt = $this->pdo->prepare("UPDATE users SET membership_tier = ? WHERE id = ?");
+        return $stmt->execute([$tier ?: 'auto', $userId]);
     }
 
     public function ensureGoogleColumns(): void {
@@ -217,7 +233,7 @@ class UserModel {
     public function verifyPassword(int $userId, string $password): bool {
         $user = $this->findById($userId);
         if (!$user) return false;
-        return ($password === '123456' || password_verify($password, $user['password']));
+        return !empty($user['password']) && password_verify($password, $user['password']);
     }
 
     public function updateByAdmin(int $userId, string $fullname, string $email, string $phone, string $address, int $role, ?string $newPassword = null, ?string $avatar = null, ?string $staffTitle = null): bool {
@@ -346,7 +362,7 @@ class UserModel {
 
     public function getStaffList(): array {
         $this->ensureStaffColumns();
-        $stmt = $this->pdo->query("SELECT * FROM users WHERE role >= 1 OR email = 'admin@vphone.vn' ORDER BY role ASC, id ASC");
+        $stmt = $this->pdo->query("SELECT * FROM users WHERE role IN (1, 2) OR email = 'admin@vphone.vn' ORDER BY role ASC, id ASC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 

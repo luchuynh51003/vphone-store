@@ -55,6 +55,7 @@
 </div>
 
 <?php require_once __DIR__ . '/floating_contact.php'; ?>
+<?php require_once __DIR__ . '/review_order_modal.php'; ?>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="assets/js/main.js?v=<?= file_exists(__DIR__ . '/../../../assets/js/main.js') ? filemtime(__DIR__ . '/../../../assets/js/main.js') : '20261016_v1' ?>"></script>

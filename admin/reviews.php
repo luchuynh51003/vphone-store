@@ -317,6 +317,16 @@ $stats = $reviewModel->getAdminStats();
                                             <span class="badge badge-verified-buyer rounded-pill mt-1" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;">
                                                 <i class="fa-solid fa-circle-check"></i>Đã mua hàng
                                             </span>
+                                            <?php if (!empty($rev['order_id'])): ?>
+                                                <a href="orders.php?order_id=<?= (int)$rev['order_id'] ?>" class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill text-decoration-none mt-1" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;" title="Xem chi tiết đơn hàng #VP-<?= (int)$rev['order_id'] ?>">
+                                                    <i class="fa-solid fa-receipt me-1"></i>#VP-<?= (int)$rev['order_id'] ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (!empty($rev['is_edited'])): ?>
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 rounded-pill mt-1" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;" title="Khách đã sử dụng 1 lần chỉnh sửa duy nhất">
+                                                    <i class="fa-solid fa-pen me-1"></i>Đã sửa 1 lần
+                                                </span>
+                                            <?php endif; ?>
                                         <?php else: ?>
                                             <span class="badge bg-light text-secondary border rounded-pill mt-1" style="font-size: 0.68rem; padding: 0.2rem 0.55rem;">Khách vãng lai</span>
                                         <?php endif; ?>

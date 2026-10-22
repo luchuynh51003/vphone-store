@@ -6,5 +6,8 @@
     },
     "css.lint.vendorPrefix": "ignore",
     "scss.lint.vendorPrefix": "ignore",
-    "less.lint.vendorPrefix": "ignore"
+    "less.lint.vendorPrefix": "ignore",
+    "intelephense.diagnostics.duplicateSymbols": false,
+    "intelephense.diagnostics.undefinedVariables": false,
+    "intelephense.diagnostics.undefinedProperties": false
 }

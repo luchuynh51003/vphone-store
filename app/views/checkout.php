@@ -12,7 +12,9 @@ if (!empty($itemsToCheckout)) {
         if (!isset($it['price']) || (float)$it['price'] <= 0) {
             $pId = (int)($it['id'] ?? 0);
             if ($pId > 0 && isset($pdo)) {
-                $pRow = $pdo->query("SELECT price, sale_price FROM products WHERE id = " . $pId)->fetch();
+                $stmt = $pdo->prepare("SELECT price, sale_price FROM products WHERE id = ?");
+                $stmt->execute([$pId]);
+                $pRow = $stmt->fetch();
                 if ($pRow) {
                     $bPrice = ($pRow['sale_price'] > 0 && $pRow['sale_price'] < $pRow['price']) ? $pRow['sale_price'] : $pRow['price'];
                     $it['price'] = (float)$bPrice;
@@ -33,7 +35,9 @@ foreach ($itemsToCheckout as $item) {
 $discountAmount = $discountAmount ?? 0;
 $appliedVoucher = $appliedVoucher ?? null;
 $voucherMessage = $voucherMessage ?? '';
-$totalMoney = max(0, $subtotal - $discountAmount);
+$userTier = $userTier ?? null;
+$tierDiscountAmount = $tierDiscountAmount ?? 0;
+$totalMoney = max(0, $subtotal - $discountAmount - $tierDiscountAmount);
 $paymentMethod = $paymentMethod ?? 'COD';
 $checkoutError = $checkoutError ?? '';
 $pageTitle = $pageTitle ?? 'Thanh toán đơn hàng - V-Phone Store';
@@ -57,6 +61,7 @@ require_once 'app/views/includes/navbar.php';
 ?>
 
 <div class="container checkout-page-wrapper">
+    <!-- Stepper Navigation -->
     <div class="d-flex justify-content-center mb-4 pb-1">
         <div class="checkout-stepper-wrapper">
             <a href="index.php?page=cart" class="step-badge step-completed" title="Xem lại giỏ hàng">
@@ -81,6 +86,7 @@ require_once 'app/views/includes/navbar.php';
     </div>
 
     <?php if ($orderSuccess): ?>
+        <!-- Order Success View -->
         <div class="checkout-panel-card p-4 p-md-5 text-center col-lg-7 mx-auto my-3">
             <div style="width: 84px; height: 84px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); border: 3px solid #10b981; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px auto; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.25);">
                 <i class="fa-solid fa-check text-success fs-1"></i>
@@ -114,300 +120,347 @@ require_once 'app/views/includes/navbar.php';
             </div>
         </div>
     <?php else: ?>
-        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom">
-            <div>
-                <div class="d-flex align-items-center gap-2 mb-1.5">
-                    <a href="<?= $isBuyNowMode ? 'index.php' : 'index.php?page=cart' ?>" class="btn btn-sm btn-light border rounded-pill px-3 py-1 text-secondary fw-semibold">
-                        <i class="fa-solid fa-arrow-left me-1"></i><?= $isBuyNowMode ? 'Quay lại cửa hàng' : 'Xem lại giỏ hàng' ?>
-                    </a>
-                    <?php if ($isBuyNowMode): ?>
-                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-1 fw-bold">
-                            <i class="fa-solid fa-bolt me-1 text-primary"></i>Mua Ngay Tức Thì
-                        </span>
-                    <?php else: ?>
-                        <span class="badge bg-light text-secondary border rounded-pill px-3 py-1 fw-semibold">
-                            <i class="fa-solid fa-bag-shopping me-1 text-primary"></i><?= count($itemsToCheckout) ?> sản phẩm
-                        </span>
-                    <?php endif; ?>
-                </div>
-                <h3 class="fw-black mb-1">
-                    <?= $isBuyNowMode ? 'Xác Nhận & Thanh Toán Đơn Hàng' : 'Thanh Toán Đơn Hàng' ?>
-                </h3>
-                <small class="text-secondary">Vui lòng kiểm tra địa chỉ nhận máy và chọn phương thức thanh toán phù hợp</small>
-            </div>
-        </div>
-
-        <?php if (!empty($checkoutError)): ?>
-            <div class="alert alert-danger alert-dismissible fade show rounded-4 py-3 mb-4 shadow-sm" role="alert">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i><?= htmlspecialchars($checkoutError) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <form method="POST" action="index.php?page=checkout<?= $isBuyNowMode ? '&mode=buy_now' : '' ?>" id="checkoutMainForm">
-            <div class="row g-4">
-                <div class="col-lg-7">
-                    <!-- Delivery Info Panel -->
-                    <div class="checkout-panel-card">
-                        <div class="checkout-panel-header">
-                            <h5 class="checkout-panel-title">
-                                <span class="checkout-panel-icon"><i class="fa-solid fa-location-dot"></i></span>
-                                <span>Địa Chỉ Nhận Hàng</span>
-                            </h5>
-                            <span class="badge bg-light text-secondary border rounded-pill px-2.5 py-1 small fw-semibold">Giao tận nơi</span>
-                        </div>
-
-                        <?php if (!empty($userAddresses) && count($userAddresses) > 0): ?>
-                            <div class="saved-addr-box mb-4">
-                                <div class="d-flex align-items-center justify-content-between mb-2.5">
-                                    <label class="checkout-label mb-0">
-                                        <i class="fa-solid fa-address-book text-primary me-1"></i> Chọn nhanh từ sổ địa chỉ đã lưu (<?= count($userAddresses) ?>)
-                                    </label>
-                                    <a href="index.php?page=profile&tab=addresses" target="_blank" class="small text-primary text-decoration-none fw-semibold">
-                                        <i class="fa-solid fa-gear me-1"></i>Quản lý sổ địa chỉ
-                                    </a>
-                                </div>
-                                <div class="d-flex flex-column gap-2" id="savedAddressSelector">
-                                    <?php foreach ($userAddresses as $addr): ?>
-                                        <?php $isSelected = ($addr['address'] === $deliveryAddress && $addr['phone'] === $deliveryPhone); ?>
-                                        <div class="saved-addr-item <?= $isSelected ? 'active border-primary' : '' ?>" onclick="selectSavedAddress(<?= htmlspecialchars(json_encode($addr), ENT_QUOTES, 'UTF-8') ?>)">
-                                            <div class="custom-addr-radio mt-1">
-                                                <input class="d-none" type="radio" name="selected_saved_address" id="addr_radio_<?= $addr['id'] ?>" <?= $isSelected ? 'checked' : '' ?>>
-                                            </div>
-                                            <label class="form-check-label w-100 mb-0" for="addr_radio_<?= $addr['id'] ?>" style="cursor: pointer;">
-                                                <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                                                    <span class="fw-bold small"><?= htmlspecialchars($addr['recipient_name']) ?></span>
-                                                    <span class="text-secondary small">| <?= htmlspecialchars($addr['phone']) ?></span>
-                                                    <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-2 py-0.5" style="font-size:0.68rem;"><?= htmlspecialchars($addr['label'] ?? 'Nhà riêng') ?></span>
-                                                    <?php if ($addr['is_default'] == 1): ?>
-                                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5 ms-auto" style="font-size:0.68rem;">Mặc định</span>
-                                                    <?php endif; ?>
-                                                </div>
-                                                <div class="small text-secondary"><?= htmlspecialchars($addr['address']) ?></div>
-                                            </label>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
+        <div class="checkout-container-narrow">
+            <!-- Page Header -->
+            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4 pb-2 border-bottom">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1.5">
+                        <a href="<?= $isBuyNowMode ? 'index.php' : 'index.php?page=cart' ?>" class="btn btn-sm btn-light border rounded-pill px-3 py-1 text-secondary fw-semibold">
+                            <i class="fa-solid fa-arrow-left me-1"></i><?= $isBuyNowMode ? 'Quay lại cửa hàng' : 'Xem lại giỏ hàng' ?>
+                        </a>
+                        <?php if ($isBuyNowMode): ?>
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-3 py-1 fw-bold">
+                                <i class="fa-solid fa-bolt me-1 text-primary"></i>Mua Ngay Tức Thì
+                            </span>
+                        <?php else: ?>
+                            <span class="badge bg-light text-secondary border rounded-pill px-3 py-1 fw-semibold">
+                                <i class="fa-solid fa-bag-shopping me-1 text-primary"></i><?= count($itemsToCheckout) ?> sản phẩm
+                            </span>
                         <?php endif; ?>
-
-                        <div class="checkout-form-group">
-                            <label class="checkout-label" for="customerFullname">
-                                Họ và tên người nhận <span class="text-danger">*</span>
-                            </label>
-                            <div class="checkout-input-group">
-                                <i class="fa-solid fa-user input-icon"></i>
-                                <input type="text" name="fullname" id="customerFullname" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryName) ?>" placeholder="Ví dụ: Nguyễn Văn A">
-                            </div>
-                        </div>
-
-                        <div class="checkout-form-group">
-                            <label class="checkout-label" for="customerPhone">
-                                Số điện thoại liên hệ <span class="text-danger">*</span>
-                            </label>
-                            <div class="checkout-input-group">
-                                <i class="fa-solid fa-phone input-icon"></i>
-                                <input type="tel" name="phone" id="customerPhone" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryPhone) ?>" placeholder="Ví dụ: 0901234567">
-                            </div>
-                        </div>
-
-                        <div class="checkout-form-group">
-                            <label class="checkout-label" for="customerAddress">
-                                Địa chỉ giao hàng tận nơi <span class="text-danger">*</span>
-                            </label>
-                            <div class="checkout-input-group">
-                                <i class="fa-solid fa-map-location-dot input-icon"></i>
-                                <input type="text" name="address" id="customerAddress" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryAddress) ?>" placeholder="Số nhà, tên đường, phường/xã, quận/huyện...">
-                            </div>
-                        </div>
-
-                        <div class="checkout-form-group mb-0">
-                            <label class="checkout-label" for="customerNote">
-                                Ghi chú cho shipper (Tùy chọn)
-                            </label>
-                            <div class="checkout-input-group">
-                                <i class="fa-solid fa-pen input-icon icon-textarea"></i>
-                                <textarea name="note" id="customerNote" rows="2" class="checkout-form-control" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi giao 15 phút..."><?= htmlspecialchars($deliveryNote) ?></textarea>
-                            </div>
-                        </div>
                     </div>
-
-                    <!-- Payment Options Panel -->
-                    <div class="checkout-panel-card">
-                        <div class="checkout-panel-header">
-                            <h5 class="checkout-panel-title">
-                                <span class="checkout-panel-icon"><i class="fa-solid fa-credit-card"></i></span>
-                                <span>Phương Thức Thanh Toán</span>
-                            </h5>
-                            <span class="small text-secondary"><i class="fa-solid fa-shield-halved text-success me-1"></i>Bảo mật SSL 256-bit</span>
-                        </div>
-
-                        <div class="d-flex flex-column gap-3" id="paymentOptionsGroup">
-                            <!-- COD Option -->
-                            <label class="payment-card-luxury <?= $paymentMethod === 'COD' ? 'active' : '' ?>" for="pay_cod">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="custom-radio-circle">
-                                        <input type="radio" name="payment_method" value="COD" id="pay_cod" <?= $paymentMethod === 'COD' ? 'checked' : '' ?> class="d-none">
-                                        <span class="radio-dot"></span>
-                                    </div>
-                                    <div class="payment-icon-box" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
-                                        <i class="fa-solid fa-hand-holding-dollar"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                            <span class="fw-bold">Thanh toán tiền mặt khi nhận máy (COD)</span>
-                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Khuyên dùng</span>
-                                        </div>
-                                        <small class="text-secondary d-block">Kiểm tra máy chuẩn seal, phụ kiện đầy đủ rồi mới gửi tiền cho shipper.</small>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- VietQR Option -->
-                            <label class="payment-card-luxury <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'active' : '' ?>" for="pay_qr">
-                                <div class="d-flex align-items-start gap-3">
-                                    <div class="custom-radio-circle mt-1">
-                                        <input type="radio" name="payment_method" value="Chuyển khoản QR VietQR" id="pay_qr" <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'checked' : '' ?> class="d-none">
-                                        <span class="radio-dot"></span>
-                                    </div>
-                                    <div class="payment-icon-box" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">
-                                        <i class="fa-solid fa-qrcode"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                            <span class="fw-bold">Chuyển khoản ngân hàng qua mã VietQR 24/7</span>
-                                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Tự động nhận diện 24/7</span>
-                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.68rem;">Khuyên dùng</span>
-                                        </div>
-                                        <small class="text-secondary d-block mb-2">Tự động sinh mã VietQR Napas 24/7 chính xác số tiền & nội dung đơn hàng. Tự động kích hoạt ngay sau khi chuyển mà không cần chụp bill.</small>
-                                        <div class="d-flex align-items-center gap-1 flex-wrap pt-2 border-top" style="font-size:0.75rem;">
-                                            <span class="text-secondary me-1"><i class="fa-solid fa-bolt text-warning me-1"></i>Hỗ trợ:</span>
-                                            <span class="payment-bank-chip">MBBank</span>
-                                            <span class="payment-bank-chip">Vietcombank</span>
-                                            <span class="payment-bank-chip">Techcombank</span>
-                                            <span class="payment-bank-chip">ACB</span>
-                                            <span class="payment-bank-chip">VPBank</span>
-                                            <span class="payment-bank-chip">BIDV</span>
-                                            <span class="payment-bank-chip text-secondary">+50 ngân hàng</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </label>
-
-                            <!-- MoMo Sandbox Option -->
-                            <label class="payment-card-luxury <?= $paymentMethod === 'Ví điện tử MoMo' ? 'active' : '' ?>" for="pay_momo">
-                                <div class="d-flex align-items-start gap-3">
-                                    <div class="custom-radio-circle mt-1">
-                                        <input type="radio" name="payment_method" value="Ví điện tử MoMo" id="pay_momo" <?= $paymentMethod === 'Ví điện tử MoMo' ? 'checked' : '' ?> class="d-none">
-                                        <span class="radio-dot"></span>
-                                    </div>
-                                    <div class="payment-icon-box text-white" style="background: linear-gradient(135deg, #d82d8b, #a50064); box-shadow: 0 4px 12px rgba(165, 0, 100, 0.3);">
-                                        <i class="fa-solid fa-wallet"></i>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                            <span class="fw-bold">Ví điện tử MoMo (Sandbox Developer)</span>
-                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Cổng MoMo Test v2</span>
-                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.68rem;">Tự động duyệt</span>
-                                        </div>
-                                        <small class="text-secondary d-block">Kết nối trực tiếp Cổng MoMo Sandbox API. Hỗ trợ quét mã QR MoMo và có sẵn nút giả lập "Thanh toán thành công" chính thức của MoMo.</small>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
+                    <h3 class="fw-black mb-1">
+                        <?= $isBuyNowMode ? 'Xác Nhận & Thanh Toán Đơn Hàng' : 'Thanh Toán Đơn Hàng' ?>
+                    </h3>
+                    <small class="text-secondary">Vui lòng kiểm tra sản phẩm, địa chỉ nhận máy và chọn phương thức thanh toán</small>
                 </div>
+            </div>
 
-                <!-- Right Column: Order Summary & Voucher -->
-                <div class="col-lg-5">
-                    <div class="checkout-summary-card sticky-top" style="top: 90px; z-index: 10;">
-                        <div class="checkout-panel-header">
-                            <h5 class="checkout-panel-title">
-                                <span class="checkout-panel-icon"><i class="fa-solid fa-receipt"></i></span>
-                                <span>Tóm Tắt Đơn Hàng</span>
-                            </h5>
-                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2.5 py-1 fw-bold">
-                                <?= $isBuyNowMode ? '1 máy mua ngay' : count($itemsToCheckout) . ' sản phẩm' ?>
+            <?php if (!empty($checkoutError)): ?>
+                <div class="alert alert-danger alert-dismissible fade show rounded-4 py-3 mb-4 shadow-sm" role="alert">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i><?= htmlspecialchars($checkoutError) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="index.php?page=checkout<?= $isBuyNowMode ? '&mode=buy_now' : '' ?>" id="checkoutMainForm">
+                
+                <!-- BƯỚC 1: TÓM TẮT ĐƠN HÀNG -->
+                <div class="checkout-panel-card mb-4">
+                    <div class="checkout-panel-header">
+                        <h5 class="checkout-panel-title">
+                            <span class="checkout-section-badge">1</span>
+                            <span>Tóm Tắt Đơn Hàng</span>
+                        </h5>
+                        <span class="checkout-header-badge">
+                            <i class="fa-solid fa-bag-shopping me-1"></i><?= $isBuyNowMode ? '1 máy mua ngay' : count($itemsToCheckout) . ' sản phẩm' ?>
+                        </span>
+                    </div>
+
+                    <!-- Danh sách sản phẩm mua -->
+                    <?php if (!empty($userTier) && ($userTier['discount_percent'] ?? 0) > 0): ?>
+                        <div class="rounded-4 p-3 mb-3 d-flex align-items-center justify-content-between gap-3 text-white shadow-sm" style="background: <?= $userTier['card_bg'] ?? $userTier['gradient'] ?>; border: 1.5px solid rgba(255,255,255,0.2);">
+                            <div class="d-flex align-items-center gap-3 min-w-0">
+                                <div class="rounded-circle bg-white text-dark d-flex align-items-center justify-content-center flex-shrink-0 shadow-xs" style="width: 44px; height: 44px; font-size: 1.25rem;">
+                                    <i class="<?= $userTier['icon'] ?>" style="color: <?= $userTier['color'] ?>;"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <div class="fw-bold d-flex align-items-center gap-2 flex-wrap" style="font-size: 0.95rem;">
+                                        <span>Đặc quyền <?= htmlspecialchars($userTier['name']) ?></span>
+                                        <span class="badge rounded-pill bg-white text-dark px-2.5 py-0.5 fw-bold" style="font-size: 0.72rem;">Giảm <?= $userTier['discount_percent'] ?>%</span>
+                                    </div>
+                                    <div class="small text-white-50 mt-0.5 text-truncate" style="font-size: 0.8rem;">
+                                        Tự động chiết khấu <strong class="text-white">-<?= number_format($tierDiscountAmount, 0, ',', '.') ?> VNĐ</strong> trực tiếp vào hóa đơn của bạn!
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="badge rounded-pill text-white border border-white border-opacity-50 px-3 py-1.5 fw-bold d-none d-sm-inline-block" style="font-size: 0.78rem; background: rgba(255,255,255,0.15);">
+                                <i class="fa-solid fa-gift me-1"></i>VIP Benefit
                             </span>
                         </div>
+                    <?php endif; ?>
 
-                        <!-- Product List -->
-                        <div class="d-flex flex-column gap-2 mb-3">
-                            <?php foreach ($itemsToCheckout as $item): ?>
-                                <?php
-                                    $itemPrice = (float)($item['price'] ?? 0);
-                                    $itemQty = (int)($item['quantity'] ?? 1);
-                                    $itemSubtotal = $itemPrice * $itemQty;
-                                ?>
-                                <div class="d-flex align-items-center gap-3 p-2.5 rounded-3 border" style="background: rgba(241, 245, 249, 0.4);">
-                                    <div class="checkout-summary-thumb">
-                                        <img src="<?= htmlspecialchars($item['image'] ?? 'assets/images/products/iphone-16.png') ?>" alt="" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
+                    <div class="d-flex flex-column gap-2.5 mb-3">
+                        <?php foreach ($itemsToCheckout as $item): ?>
+                            <?php
+                                $itemPrice = (float)($item['price'] ?? 0);
+                                $itemQty = (int)($item['quantity'] ?? 1);
+                                $itemSubtotal = $itemPrice * $itemQty;
+                            ?>
+                            <div class="checkout-product-item">
+                                <div class="checkout-product-thumb">
+                                    <img src="<?= htmlspecialchars($item['image'] ?? 'assets/images/products/iphone-16.png') ?>" alt="" onerror="this.onerror=null; this.src='assets/images/products/iphone-16.png';">
+                                </div>
+                                <div class="checkout-product-info">
+                                    <div class="checkout-product-name text-truncate" title="<?= htmlspecialchars($item['name'] ?? 'Điện thoại') ?>">
+                                        <?= htmlspecialchars($item['name'] ?? 'Điện thoại') ?>
                                     </div>
-                                    <div class="flex-grow-1 min-w-0">
-                                        <div class="small fw-bold text-truncate" title="<?= htmlspecialchars($item['name'] ?? 'Điện thoại') ?>">
-                                            <?= htmlspecialchars($item['name'] ?? 'Điện thoại') ?>
-                                        </div>
-                                        <div class="d-flex gap-1 flex-wrap mt-1">
-                                            <span class="checkout-item-badge text-primary"><?= htmlspecialchars($item['rom'] ?? 'Tiêu chuẩn') ?></span>
-                                            <span class="checkout-item-badge"><?= htmlspecialchars($item['color'] ?? 'Tiêu chuẩn') ?></span>
-                                            <span class="badge bg-dark text-white rounded-2" style="font-size:0.68rem;">x<?= $itemQty ?></span>
-                                        </div>
-                                    </div>
-                                    <div class="text-end flex-shrink-0">
-                                        <div class="small fw-bold text-danger"><?= number_format($itemSubtotal, 0, ',', '.') ?> VNĐ</div>
+                                    <div class="checkout-product-tags">
+                                        <span class="checkout-product-tag tag-primary"><?= htmlspecialchars($item['rom'] ?? 'Tiêu chuẩn') ?></span>
+                                        <span class="checkout-product-tag"><?= htmlspecialchars($item['color'] ?? 'Tiêu chuẩn') ?></span>
+                                        <span class="checkout-product-tag tag-qty">SL: <?= $itemQty ?></span>
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
+                                <div class="checkout-product-price-col">
+                                    <div class="checkout-product-price"><?= number_format($itemSubtotal, 0, ',', '.') ?> VNĐ</div>
+                                    <?php if ($itemQty > 1): ?>
+                                        <div class="checkout-product-unit"><?= number_format($itemPrice, 0, ',', '.') ?>đ / cái</div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+                    <!-- Khung nhập mã voucher -->
+                    <div class="checkout-voucher-panel mb-0">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <label for="voucherInput" class="checkout-label mb-0">
+                                <i class="fa-solid fa-ticket text-primary me-1"></i>Mã giảm giá ưu đãi
+                            </label>
+                            <?php if ($appliedVoucher): ?>
+                                <button type="button" class="btn btn-link btn-sm text-danger p-0 text-decoration-none small fw-semibold" onclick="removeVoucherAjax()">
+                                    <i class="fa-solid fa-xmark me-1"></i>Gỡ mã
+                                </button>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="checkout-voucher-group">
+                            <i class="fa-solid fa-tag checkout-voucher-icon"></i>
+                            <input type="text" id="voucherInput" name="voucher_code" class="checkout-voucher-input text-uppercase" placeholder="Nhập mã voucher (VD: WELCOME50)" value="<?= htmlspecialchars($appliedVoucher['code'] ?? '') ?>">
+                            <button type="button" class="checkout-voucher-btn" id="btnApplyVoucher" onclick="applyVoucherAjax()">
+                                Áp dụng
+                            </button>
                         </div>
 
-                        <!-- Voucher Section -->
-                        <div class="checkout-voucher-panel">
-                            <div class="d-flex align-items-center justify-content-between mb-2">
-                                <label for="voucherInput" class="checkout-label mb-0">
-                                    <i class="fa-solid fa-ticket text-primary me-1"></i>Mã giảm giá ưu đãi
-                                </label>
-                                <?php if ($appliedVoucher): ?>
-                                    <button type="button" class="btn btn-link btn-sm text-danger p-0 text-decoration-none small fw-semibold" onclick="removeVoucherAjax()">
-                                        <i class="fa-solid fa-xmark me-1"></i>Gỡ mã
-                                    </button>
+                        <div id="voucherStatusMessage" class="small mt-2 <?= $appliedVoucher ? 'text-success' : 'text-danger' ?> fw-semibold <?= empty($voucherMessage) ? 'd-none' : '' ?>">
+                            <?= htmlspecialchars($voucherMessage) ?>
+                        </div>
+
+                        <div class="mt-2.5 pt-2 border-top">
+                            <small class="text-secondary d-block mb-1.5" style="font-size: 0.75rem;">Gợi ý mã hot hôm nay:</small>
+                            <div class="d-flex gap-1.5 flex-wrap">
+                                <?php if (!empty($userTier['exclusive_vouchers'])): ?>
+                                    <?php foreach ($userTier['exclusive_vouchers'] as $vipVoucher): ?>
+                                        <button type="button" class="voucher-chip-btn fw-bold text-white shadow-xs" style="background: <?= $userTier['gradient'] ?>; border: none;" onclick="fillAndApplyVoucher('<?= $vipVoucher ?>')">
+                                            <i class="<?= $userTier['icon'] ?> me-1 text-warning"></i>VIP <?= $vipVoucher ?>
+                                        </button>
+                                    <?php endforeach; ?>
                                 <?php endif; ?>
-                            </div>
-                            
-                            <div class="input-group">
-                                <span class="input-group-text border-end-0 bg-transparent text-secondary ps-3">
-                                    <i class="fa-solid fa-tag"></i>
-                                </span>
-                                <input type="text" id="voucherInput" name="voucher_code" class="form-control text-uppercase fw-bold border-start-0 border-end-0" placeholder="Mã voucher (VD: WELCOME50)" value="<?= htmlspecialchars($appliedVoucher['code'] ?? '') ?>">
-                                <button type="button" class="btn btn-primary px-3 fw-bold rounded-end-3" id="btnApplyVoucher" onclick="applyVoucherAjax()">
-                                    Áp dụng
+                                <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('WELCOME50')">
+                                    <i class="fa-solid fa-bolt-lightning text-warning me-1"></i>WELCOME50 (-50k)
+                                </button>
+                                <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('VPHONE10')">
+                                    <i class="fa-solid fa-fire text-danger me-1"></i>VPHONE10 (-10%)
+                                </button>
+                                <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('FLASH20')">
+                                    <i class="fa-solid fa-gift text-primary me-1"></i>FLASH20 (-20%)
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                </div>
 
-                            <div id="voucherStatusMessage" class="small mt-2 <?= $appliedVoucher ? 'text-success' : 'text-danger' ?> fw-semibold <?= empty($voucherMessage) ? 'd-none' : '' ?>">
-                                <?= htmlspecialchars($voucherMessage) ?>
+                <!-- BƯỚC 2: ĐỊA CHỈ NHẬN HÀNG -->
+                <div class="checkout-panel-card mb-4">
+                    <div class="checkout-panel-header">
+                        <h5 class="checkout-panel-title">
+                            <span class="checkout-section-badge">2</span>
+                            <span>Địa Chỉ Nhận Hàng</span>
+                        </h5>
+                        <span class="checkout-header-badge"><i class="fa-solid fa-truck-fast me-1"></i>Giao tận nơi</span>
+                    </div>
+
+                    <?php if (!empty($userAddresses) && count($userAddresses) > 0): ?>
+                        <div class="saved-addr-box mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-2.5">
+                                <label class="checkout-label mb-0">
+                                    <i class="fa-solid fa-address-book text-primary me-1"></i> Chọn nhanh từ sổ địa chỉ đã lưu (<?= count($userAddresses) ?>)
+                                </label>
+                                <a href="index.php?page=profile&tab=addresses" target="_blank" class="small text-primary text-decoration-none fw-semibold">
+                                    <i class="fa-solid fa-gear me-1"></i>Quản lý sổ địa chỉ
+                                </a>
                             </div>
+                            <div class="d-flex flex-column gap-2" id="savedAddressSelector">
+                                <?php foreach ($userAddresses as $addr): ?>
+                                    <?php $isSelected = ($addr['address'] === $deliveryAddress && $addr['phone'] === $deliveryPhone); ?>
+                                    <div class="saved-addr-item <?= $isSelected ? 'active border-primary' : '' ?>" onclick="selectSavedAddress(<?= htmlspecialchars(json_encode($addr), ENT_QUOTES, 'UTF-8') ?>)">
+                                        <div class="custom-addr-radio mt-1">
+                                            <input class="d-none" type="radio" name="selected_saved_address" id="addr_radio_<?= $addr['id'] ?>" <?= $isSelected ? 'checked' : '' ?>>
+                                        </div>
+                                        <label class="form-check-label w-100 mb-0" for="addr_radio_<?= $addr['id'] ?>" style="cursor: pointer;">
+                                            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                                                <span class="fw-bold small"><?= htmlspecialchars($addr['recipient_name']) ?></span>
+                                                <span class="text-secondary small">| <?= htmlspecialchars($addr['phone']) ?></span>
+                                                <span class="badge bg-secondary bg-opacity-10 text-secondary border rounded-pill px-2 py-0.5" style="font-size:0.68rem;"><?= htmlspecialchars($addr['label'] ?? 'Nhà riêng') ?></span>
+                                                <?php if ($addr['is_default'] == 1): ?>
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5 ms-auto" style="font-size:0.68rem;">Mặc định</span>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="small text-secondary"><?= htmlspecialchars($addr['address']) ?></div>
+                                        </label>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
-                            <div class="mt-2 pt-2 border-top">
-                                <small class="text-secondary d-block mb-1.5" style="font-size: 0.75rem;">Gợi ý mã hot hôm nay:</small>
-                                <div class="d-flex gap-1.5 flex-wrap">
-                                    <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('WELCOME50')">
-                                        <i class="fa-solid fa-bolt-lightning text-warning me-1"></i>WELCOME50 (-50k)
-                                    </button>
-                                    <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('VPHONE10')">
-                                        <i class="fa-solid fa-fire text-danger me-1"></i>VPHONE10 (-10%)
-                                    </button>
-                                    <button type="button" class="voucher-chip-btn" onclick="fillAndApplyVoucher('FLASH20')">
-                                        <i class="fa-solid fa-gift text-primary me-1"></i>FLASH20 (-20%)
-                                    </button>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="checkout-form-group mb-0">
+                                <label class="checkout-label" for="customerFullname">
+                                    Họ và tên người nhận <span class="text-danger">*</span>
+                                </label>
+                                <div class="checkout-input-group">
+                                    <i class="fa-solid fa-user input-icon"></i>
+                                    <input type="text" name="fullname" id="customerFullname" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryName) ?>" placeholder="Ví dụ: Nguyễn Văn A">
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Price Breakdown -->
-                        <div class="d-flex flex-column gap-2 mb-3">
+                        <div class="col-md-6">
+                            <div class="checkout-form-group mb-0">
+                                <label class="checkout-label" for="customerPhone">
+                                    Số điện thoại liên hệ <span class="text-danger">*</span>
+                                </label>
+                                <div class="checkout-input-group">
+                                    <i class="fa-solid fa-phone input-icon"></i>
+                                    <input type="tel" name="phone" id="customerPhone" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryPhone) ?>" placeholder="Ví dụ: 0901234567">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="checkout-form-group mb-0">
+                                <label class="checkout-label" for="customerAddress">
+                                    Địa chỉ giao hàng tận nơi <span class="text-danger">*</span>
+                                </label>
+                                <div class="checkout-input-group">
+                                    <i class="fa-solid fa-map-location-dot input-icon"></i>
+                                    <input type="text" name="address" id="customerAddress" class="checkout-form-control" required value="<?= htmlspecialchars($deliveryAddress) ?>" placeholder="Số nhà, tên đường, phường/xã, quận/huyện...">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="checkout-form-group mb-0">
+                                <label class="checkout-label" for="customerNote">
+                                    Ghi chú cho shipper (Tùy chọn)
+                                </label>
+                                <div class="checkout-input-group">
+                                    <i class="fa-solid fa-pen input-icon icon-textarea"></i>
+                                    <textarea name="note" id="customerNote" rows="2" class="checkout-form-control" placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi giao 15 phút..."><?= htmlspecialchars($deliveryNote) ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BƯỚC 3: PHƯƠNG THỨC THANH TOÁN & XÁC NHẬN ĐƠN HÀNG -->
+                <div class="checkout-panel-card mb-4">
+                    <div class="checkout-panel-header">
+                        <h5 class="checkout-panel-title">
+                            <span class="checkout-section-badge">3</span>
+                            <span>Phương Thức Thanh Toán</span>
+                        </h5>
+                        <span class="checkout-header-badge"><i class="fa-solid fa-shield-halved text-success me-1"></i>Bảo mật SSL 256-bit</span>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3 mb-4" id="paymentOptionsGroup">
+                        <!-- COD Option -->
+                        <label class="payment-card-luxury <?= $paymentMethod === 'COD' ? 'active' : '' ?>" for="pay_cod">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="custom-radio-circle">
+                                    <input type="radio" name="payment_method" value="COD" id="pay_cod" <?= $paymentMethod === 'COD' ? 'checked' : '' ?> class="d-none">
+                                    <span class="radio-dot"></span>
+                                </div>
+                                <div class="payment-icon-box" style="background: rgba(16, 185, 129, 0.12); color: #10b981;">
+                                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                        <span class="fw-bold">Thanh toán tiền mặt khi nhận máy (COD)</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Khuyên dùng</span>
+                                    </div>
+                                    <small class="text-secondary d-block">Kiểm tra máy chuẩn seal, phụ kiện đầy đủ rồi mới gửi tiền cho shipper.</small>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- VietQR Option -->
+                        <label class="payment-card-luxury <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'active' : '' ?>" for="pay_qr">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="custom-radio-circle mt-1">
+                                    <input type="radio" name="payment_method" value="Chuyển khoản QR VietQR" id="pay_qr" <?= $paymentMethod === 'Chuyển khoản QR VietQR' ? 'checked' : '' ?> class="d-none">
+                                    <span class="radio-dot"></span>
+                                </div>
+                                <div class="payment-icon-box" style="background: rgba(2, 132, 199, 0.12); color: #0284c7;">
+                                    <i class="fa-solid fa-qrcode"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                        <span class="fw-bold">Chuyển khoản ngân hàng qua mã VietQR 24/7</span>
+                                        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Tự động nhận diện 24/7</span>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.68rem;">Khuyên dùng</span>
+                                    </div>
+                                    <small class="text-secondary d-block mb-2">Tự động sinh mã VietQR Napas 24/7 chính xác số tiền & nội dung đơn hàng. Tự động kích hoạt ngay sau khi chuyển mà không cần chụp bill.</small>
+                                    <div class="d-flex align-items-center gap-1 flex-wrap pt-2 border-top" style="font-size:0.75rem;">
+                                        <span class="text-secondary me-1"><i class="fa-solid fa-bolt text-warning me-1"></i>Hỗ trợ:</span>
+                                        <span class="payment-bank-chip">MBBank</span>
+                                        <span class="payment-bank-chip">Vietcombank</span>
+                                        <span class="payment-bank-chip">Techcombank</span>
+                                        <span class="payment-bank-chip">ACB</span>
+                                        <span class="payment-bank-chip">VPBank</span>
+                                        <span class="payment-bank-chip">BIDV</span>
+                                        <span class="payment-bank-chip text-secondary">+50 ngân hàng</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- MoMo Sandbox Option -->
+                        <label class="payment-card-luxury <?= $paymentMethod === 'Ví điện tử MoMo' ? 'active' : '' ?>" for="pay_momo">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="custom-radio-circle mt-1">
+                                    <input type="radio" name="payment_method" value="Ví điện tử MoMo" id="pay_momo" <?= $paymentMethod === 'Ví điện tử MoMo' ? 'checked' : '' ?> class="d-none">
+                                    <span class="radio-dot"></span>
+                                </div>
+                                <div class="payment-icon-box text-white" style="background: linear-gradient(135deg, #d82d8b, #a50064); box-shadow: 0 4px 12px rgba(165, 0, 100, 0.3);">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
+                                        <span class="fw-bold">Ví điện tử MoMo (Sandbox Developer)</span>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.7rem;">Cổng MoMo Test v2</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded-pill px-2 py-0.5" style="font-size:0.68rem;">Tự động duyệt</span>
+                                    </div>
+                                    <small class="text-secondary d-block">Kết nối trực tiếp Cổng MoMo Sandbox API. Hỗ trợ quét mã QR MoMo và có sẵn nút giả lập "Thanh toán thành công" chính thức của MoMo.</small>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <!-- Bảng tính tiền & Hóa đơn tổng kết -->
+                    <div class="checkout-invoice-box">
+                        <div class="d-flex flex-column gap-2.5">
                             <div class="d-flex justify-content-between small text-secondary">
-                                <span>Tạm tính hàng hóa:</span>
-                                <span class="fw-bold" id="displaySubtotal"><?= number_format($subtotal, 0, ',', '.') ?> VNĐ</span>
+                                <span>Tạm tính tiền hàng:</span>
+                                <span class="fw-bold text-dark" id="displaySubtotal"><?= number_format($subtotal, 0, ',', '.') ?> VNĐ</span>
+                            </div>
+
+                            <div class="d-flex justify-content-between small text-primary <?= ($tierDiscountAmount > 0) ? '' : 'd-none' ?>" id="rowTierDiscount">
+                                <span id="labelTierDiscount">
+                                    <i class="<?= $userTier['icon'] ?? 'fa-solid fa-crown' ?> me-1"></i>Đặc quyền <?= htmlspecialchars($userTier['badge_label'] ?? 'VIP') ?> (-<?= $userTier['discount_percent'] ?? 0 ?>%):
+                                </span>
+                                <span class="fw-bold" id="displayTierDiscount">-<?= number_format($tierDiscountAmount, 0, ',', '.') ?> VNĐ</span>
                             </div>
 
                             <div class="d-flex justify-content-between small text-success <?= ($discountAmount > 0) ? '' : 'd-none' ?>" id="rowDiscount">
@@ -416,8 +469,8 @@ require_once 'app/views/includes/navbar.php';
                             </div>
 
                             <div class="d-flex justify-content-between small text-secondary align-items-center">
-                                <span>Phí vận chuyển:</span>
-                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 fw-bold">
+                                <span>Phí vận chuyển giao hàng:</span>
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2.5 py-1 fw-bold">
                                     <i class="fa-solid fa-shield-check me-1"></i>MIỄN PHÍ TOÀN QUỐC
                                 </span>
                             </div>
@@ -426,45 +479,53 @@ require_once 'app/views/includes/navbar.php';
 
                             <div class="d-flex justify-content-between align-items-baseline">
                                 <div>
-                                    <div class="fw-bold fs-6">Tổng thanh toán:</div>
-                                    <small class="text-secondary" style="font-size: 0.75rem;">(Đã gồm VAT & bảo hiểm)</small>
+                                    <div class="fw-bold fs-5">Tổng thanh toán:</div>
+                                    <small class="text-secondary" style="font-size: 0.75rem;">(Đã bao gồm VAT & bảo hiểm hàng)</small>
                                 </div>
                                 <div class="checkout-total-price" id="displayTotal">
                                     <?= number_format($totalMoney, 0, ',', '.') ?> VNĐ
                                 </div>
                             </div>
                         </div>
-
-                        <button type="submit" id="btnSubmitOrder" class="btn-checkout-submit">
-                            <i class="fa-solid fa-lock"></i>
-                            <span>XÁC NHẬN ĐẶT HÀNG</span>
-                        </button>
                     </div>
 
-                    <!-- Trust & Reassurance Panel -->
-                    <div class="checkout-trust-card mt-3">
-                        <div class="d-flex align-items-center gap-3 mb-2.5">
-                            <div class="checkout-trust-icon bg-primary bg-opacity-10 text-primary">
-                                <i class="fa-solid fa-shield-halved"></i>
+                    <!-- Nút xác nhận đặt hàng -->
+                    <button type="submit" id="btnSubmitOrder" class="btn-checkout-submit mb-3">
+                        <i class="fa-solid fa-lock"></i>
+                        <span>XÁC NHẬN ĐẶT HÀNG</span>
+                    </button>
+
+                    <!-- Cam kết dịch vụ & Bảo hành -->
+                    <div class="checkout-trust-card">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="checkout-trust-icon bg-primary bg-opacity-10 text-primary">
+                                        <i class="fa-solid fa-shield-halved"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block small">Bảo hành chính hãng 12 tháng</strong>
+                                        <small class="text-secondary">Lỗi 1 đổi 1 trong 30 ngày tại tất cả chi nhánh</small>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <strong class="d-block small">Bảo hành chính hãng 12 tháng</strong>
-                                <small class="text-secondary">Lỗi 1 đổi 1 trong 30 ngày tại tất cả chi nhánh</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="checkout-trust-icon bg-success bg-opacity-10 text-success">
-                                <i class="fa-solid fa-truck-fast"></i>
-                            </div>
-                            <div>
-                                <strong class="d-block small">Giao hỏa tốc 2 giờ nội thành</strong>
-                                <small class="text-secondary">Kiểm tra máy chuẩn seal 100% trước khi thanh toán</small>
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="checkout-trust-icon bg-success bg-opacity-10 text-success">
+                                        <i class="fa-solid fa-truck-fast"></i>
+                                    </div>
+                                    <div>
+                                        <strong class="d-block small">Giao hỏa tốc 2 giờ nội thành</strong>
+                                        <small class="text-secondary">Kiểm tra máy chuẩn seal 100% trước khi thanh toán</small>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
+
+            </form>
+        </div>
     <?php endif; ?>
 </div>
 
@@ -475,17 +536,17 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!submitBtn) return;
         if (method === 'Chuyển khoản QR VietQR') {
             submitBtn.innerHTML = '<i class="fa-solid fa-qrcode me-2"></i><span>TIẾP TỤC QUÉT MÃ VIETQR</span><i class="fa-solid fa-arrow-right ms-2 small"></i>';
-            submitBtn.className = 'btn-checkout-submit';
+            submitBtn.className = 'btn-checkout-submit mb-3';
             submitBtn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0369a1 100%)';
             submitBtn.style.boxShadow = '0 8px 24px -4px rgba(2, 132, 199, 0.45)';
         } else if (method === 'Ví điện tử MoMo') {
             submitBtn.innerHTML = '<i class="fa-solid fa-wallet me-2"></i><span>THANH TOÁN QUA MOMO SANDBOX</span><i class="fa-solid fa-arrow-right ms-2 small"></i>';
-            submitBtn.className = 'btn-checkout-submit';
+            submitBtn.className = 'btn-checkout-submit mb-3';
             submitBtn.style.background = 'linear-gradient(135deg, #e11d48 0%, #a50064 100%)';
             submitBtn.style.boxShadow = '0 8px 24px -4px rgba(165, 0, 100, 0.45)';
         } else {
             submitBtn.innerHTML = '<i class="fa-solid fa-lock me-2"></i><span>XÁC NHẬN ĐẶT HÀNG (COD)</span>';
-            submitBtn.className = 'btn-checkout-submit';
+            submitBtn.className = 'btn-checkout-submit mb-3';
             submitBtn.style.background = 'linear-gradient(135deg, #0284c7 0%, #0066cc 100%)';
             submitBtn.style.boxShadow = '0 8px 24px -4px rgba(2, 132, 199, 0.45)';
         }

@@ -3,6 +3,7 @@ require_once 'app/models/OrderModel.php';
 require_once 'app/models/ProductModel.php';
 require_once 'app/models/UserModel.php';
 require_once 'app/models/NotificationModel.php';
+require_once 'app/models/ReviewModel.php';
 
 class OrderController {
     private PDO $pdo;
@@ -234,6 +235,42 @@ class OrderController {
             if (!empty($userOrders)) {
                 $orderIds = array_column($userOrders, 'id');
                 $userOrderDetails = $orderModel->getDetailsForOrders($orderIds);
+            }
+        }
+
+        $reviewModel = new ReviewModel($this->pdo);
+        $orderReviewsMap = [];
+        $isTrackedOrderFullyReviewed = false;
+        if ($trackedOrder) {
+            $orderReviewsMap = $reviewModel->getReviewsMapForUserOrder(
+                (int)$trackedOrder['id'],
+                $trackedOrder['user_id'] ? (int)$trackedOrder['user_id'] : null,
+                $trackedOrder['phone']
+            );
+            $isTrackedOrderFullyReviewed = $reviewModel->isOrderFullyReviewed((int)$trackedOrder['id']);
+        }
+
+        $userDeliveredReviewsMap = [];
+        $userFullyReviewedOrderIds = [];
+        if (!empty($userOrders)) {
+            $deliveredOrderIds = [];
+            foreach ($userOrders as $uo) {
+                if ($uo['status'] === 'Đã giao thành công') {
+                    $dId = (int)$uo['id'];
+                    $deliveredOrderIds[] = $dId;
+                    if ($reviewModel->isOrderFullyReviewed($dId)) {
+                        $userFullyReviewedOrderIds[$dId] = true;
+                    }
+                }
+            }
+            if (!empty($deliveredOrderIds)) {
+                $inQuery = implode(',', array_fill(0, count($deliveredOrderIds), '?'));
+                $revStmt = $this->pdo->prepare("SELECT * FROM product_reviews WHERE order_id IN ($inQuery)");
+                $revStmt->execute($deliveredOrderIds);
+                $allOrderRevs = $revStmt->fetchAll(PDO::FETCH_ASSOC);
+                foreach ($allOrderRevs as $aor) {
+                    $userDeliveredReviewsMap[(int)$aor['order_id']][(int)$aor['product_id']] = $aor;
+                }
             }
         }
 

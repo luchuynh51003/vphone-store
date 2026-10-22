@@ -3,6 +3,7 @@ require_once 'app/models/ProductModel.php';
 require_once 'app/models/OrderModel.php';
 require_once 'app/models/UserModel.php';
 require_once 'app/models/VoucherModel.php';
+require_once 'app/services/MembershipService.php';
 
 class CartController {
     private PDO $pdo;
@@ -135,7 +136,9 @@ class CartController {
                 if (!isset($item['price']) || (float)$item['price'] <= 0) {
                     $pId = (int)($item['id'] ?? 0);
                     if ($pId > 0) {
-                        $pRow = $this->pdo->query("SELECT price, sale_price FROM products WHERE id = " . $pId)->fetch();
+                        $pStmt = $this->pdo->prepare("SELECT price, sale_price FROM products WHERE id = ?");
+                        $pStmt->execute([$pId]);
+                        $pRow = $pStmt->fetch();
                         if ($pRow) {
                             $bPrice = ($pRow['sale_price'] > 0 && $pRow['sale_price'] < $pRow['price']) ? $pRow['sale_price'] : $pRow['price'];
                             $item['price'] = (float)$bPrice;
@@ -389,6 +392,11 @@ class CartController {
             $subtotal += $itemPrice * $itemQty;
         }
 
+        $membershipService = new MembershipService($this->pdo);
+        $membershipService->ensureTierVouchers();
+        $userTier = isset($currentUser['id']) ? $membershipService->getUserTier((int)$currentUser['id']) : $membershipService->getTierBySpent(0);
+        $tierDiscountAmount = $membershipService->calculateTierDiscount($userTier, $subtotal);
+
         $voucherMessage = '';
         $appliedVoucher = null;
         $discountAmount = 0;
@@ -405,28 +413,39 @@ class CartController {
                 ];
             }
             $voucherCode = strtoupper(trim($_POST['voucher_code'] ?? ''));
-            $voucher = $voucherModel->findApplicable($voucherCode, $subtotal);
 
-            if ($voucher) {
-                $_SESSION['applied_voucher'] = ['code' => $voucher['code']];
-                $voucherMessage = 'Áp dụng mã ' . $voucher['code'] . ' thành công.';
-            } else {
+            // Kiểm tra phân quyền hạng thành viên đối với các voucher VIP độc quyền
+            $tierCheck = $membershipService->validateTierVoucher($voucherCode, $userTier);
+            if (!$tierCheck['allowed']) {
+                $voucher = null;
+                $voucherMessage = $tierCheck['message'];
                 unset($_SESSION['applied_voucher']);
-                $voucherMessage = 'Mã voucher không hợp lệ hoặc đơn hàng chưa đạt giá trị tối thiểu.';
+            } else {
+                $voucher = $voucherModel->findApplicable($voucherCode, $subtotal);
+                if ($voucher) {
+                    $_SESSION['applied_voucher'] = ['code' => $voucher['code']];
+                    $voucherMessage = 'Áp dụng mã ' . $voucher['code'] . ' thành công.';
+                } else {
+                    unset($_SESSION['applied_voucher']);
+                    $voucherMessage = 'Mã voucher không hợp lệ hoặc đơn hàng chưa đạt giá trị tối thiểu.';
+                }
             }
 
             if ((isset($_POST['ajax']) && $_POST['ajax'] == 1) || (isset($_GET['ajax']) && $_GET['ajax'] == 1)) {
                 if (ob_get_length()) ob_clean();
                 header('Content-Type: application/json; charset=utf-8');
                 $disc = $voucher ? $voucherModel->calculateDiscount($voucher, $subtotal) : 0;
+                $finalTotal = max(0, $subtotal - $disc - $tierDiscountAmount);
                 echo json_encode([
                     'success' => (bool)$voucher,
                     'message' => $voucherMessage,
                     'code' => $voucher ? $voucher['code'] : '',
                     'discount' => $disc,
                     'discount_formatted' => number_format($disc, 0, ',', '.') . ' VNĐ',
-                    'total' => max(0, $subtotal - $disc),
-                    'total_formatted' => number_format(max(0, $subtotal - $disc), 0, ',', '.') . ' VNĐ'
+                    'tier_discount' => $tierDiscountAmount,
+                    'tier_discount_formatted' => number_format($tierDiscountAmount, 0, ',', '.') . ' VNĐ',
+                    'total' => $finalTotal,
+                    'total_formatted' => number_format($finalTotal, 0, ',', '.') . ' VNĐ'
                 ], JSON_UNESCAPED_UNICODE);
                 exit;
             }
@@ -450,13 +469,16 @@ class CartController {
             if ((isset($_POST['ajax']) && $_POST['ajax'] == 1) || (isset($_GET['ajax']) && $_GET['ajax'] == 1)) {
                 if (ob_get_length()) ob_clean();
                 header('Content-Type: application/json; charset=utf-8');
+                $finalTotal = max(0, $subtotal - $tierDiscountAmount);
                 echo json_encode([
                     'success' => true,
                     'message' => 'Đã gỡ mã giảm giá.',
                     'discount' => 0,
                     'discount_formatted' => '0 VNĐ',
-                    'total' => $subtotal,
-                    'total_formatted' => number_format($subtotal, 0, ',', '.') . ' VNĐ'
+                    'tier_discount' => $tierDiscountAmount,
+                    'tier_discount_formatted' => number_format($tierDiscountAmount, 0, ',', '.') . ' VNĐ',
+                    'total' => $finalTotal,
+                    'total_formatted' => number_format($finalTotal, 0, ',', '.') . ' VNĐ'
                 ], JSON_UNESCAPED_UNICODE);
                 exit;
             }
@@ -471,12 +493,18 @@ class CartController {
         }
 
         if ($voucherState && $subtotal > 0) {
-            $appliedVoucher = $voucherModel->findApplicable($voucherState['code'], $subtotal);
-            if ($appliedVoucher) {
-                $discountAmount = $voucherModel->calculateDiscount($appliedVoucher, $subtotal);
+            $tierCheck = $membershipService->validateTierVoucher($voucherState['code'], $userTier);
+            if ($tierCheck['allowed']) {
+                $appliedVoucher = $voucherModel->findApplicable($voucherState['code'], $subtotal);
+                if ($appliedVoucher) {
+                    $discountAmount = $voucherModel->calculateDiscount($appliedVoucher, $subtotal);
+                } else {
+                    unset($_SESSION['applied_voucher']);
+                    $voucherMessage = 'Voucher đã hết hạn, hết lượt hoặc không còn đủ điều kiện.';
+                }
             } else {
                 unset($_SESSION['applied_voucher']);
-                $voucherMessage = 'Voucher đã hết hạn, hết lượt hoặc không còn đủ điều kiện.';
+                $voucherMessage = $tierCheck['message'];
             }
         }
 
@@ -495,44 +523,61 @@ class CartController {
                     $discountAmount = $voucherModel->calculateDiscount($appliedVoucher, $subtotal);
                     $note = trim($note . ' | Voucher: ' . $appliedVoucher['code'] . ' (giảm ' . number_format($discountAmount, 0, ',', '.') . ' VNĐ)');
                 }
-                $totalMoney = max(0, $subtotal - $discountAmount);
-                $orderId = $orderModel->create($currentUser['id'], $fullname, $phone, $address, $note, $totalMoney, $method);
+                if ($tierDiscountAmount > 0) {
+                    $note = trim($note . ' | Đặc quyền ' . $userTier['name'] . ' (-' . $userTier['discount_percent'] . '%: ' . number_format($tierDiscountAmount, 0, ',', '.') . ' VNĐ)');
+                }
+                $totalMoney = max(0, $subtotal - $discountAmount - $tierDiscountAmount);
+                $orderCreated = false;
+                try {
+                    $this->pdo->beginTransaction();
+                    $orderId = $orderModel->create($currentUser['id'], $fullname, $phone, $address, $note, $totalMoney, $method);
 
-                foreach ($itemsToCheckout as $item) {
-                    $itemPrice = (float)($item['price'] ?? 0);
-                    $itemQty = (int)($item['quantity'] ?? 1);
-                    $sub = $itemPrice * $itemQty;
-                    $fullVariant = $item['name'] . ' (' . ($item['rom'] ?? '256GB') . ' - Màu: ' . ($item['color'] ?? 'Tiêu chuẩn') . ')';
-                    $orderModel->addDetail($orderId, $item['id'], $fullVariant, $itemPrice, $itemQty, $sub);
-                    $prodModel->deductStock($item['id'], $itemQty, $item['color'] ?? '');
+                    foreach ($itemsToCheckout as $item) {
+                        $itemPrice = (float)($item['price'] ?? 0);
+                        $itemQty = (int)($item['quantity'] ?? 1);
+                        $sub = $itemPrice * $itemQty;
+                        $fullVariant = $item['name'] . ' (' . ($item['rom'] ?? '256GB') . ' - Màu: ' . ($item['color'] ?? 'Tiêu chuẩn') . ')';
+                        $orderModel->addDetail($orderId, $item['id'], $fullVariant, $itemPrice, $itemQty, $sub);
+                        $prodModel->deductStock($item['id'], $itemQty, $item['color'] ?? '');
+                    }
+
+                    if ($appliedVoucher) {
+                        $voucherModel->recordUse((int)$appliedVoucher['id']);
+                        unset($_SESSION['applied_voucher']);
+                    }
+
+                    $this->pdo->commit();
+                    $orderCreated = true;
+                } catch (\Throwable $e) {
+                    if ($this->pdo->inTransaction()) {
+                        $this->pdo->rollBack();
+                    }
+                    $checkoutError = 'Đã xảy ra lỗi khi tạo đơn hàng. Vui lòng thử lại!';
                 }
 
-                if ($appliedVoucher) {
-                    $voucherModel->recordUse((int)$appliedVoucher['id']);
-                    unset($_SESSION['applied_voucher']);
+                if ($orderCreated) {
+                    if ($isBuyNowMode) { unset($_SESSION['buy_now_item']); }
+                    else { $_SESSION['cart'] = []; $userModel->updateCart($currentUser['id'], null); }
+                    unset($_SESSION['checkout_form_draft']);
+
+                    // Nếu chọn phương thức VietQR, chuyển ngay sang Cổng thanh toán VietQR tự động
+                    if ($method === 'Chuyển khoản QR VietQR') {
+                        header('Location: index.php?page=checkout&step=vietqr&order_id=' . $orderId);
+                        exit;
+                    }
+
+                    // Nếu chọn phương thức MoMo Sandbox, chuyển sang Cổng MoMo Sandbox (có mã QR & nút xác nhận 1-click)
+                    if ($method === 'Ví điện tử MoMo') {
+                        header('Location: index.php?page=checkout&step=momo_sandbox&order_id=' . $orderId);
+                        exit;
+                    }
+
+                    $orderSuccess = true;
                 }
-
-                if ($isBuyNowMode) { unset($_SESSION['buy_now_item']); }
-                else { $_SESSION['cart'] = []; $userModel->updateCart($currentUser['id'], null); }
-                unset($_SESSION['checkout_form_draft']);
-
-                // Nếu chọn phương thức VietQR, chuyển ngay sang Cổng thanh toán VietQR tự động
-                if ($method === 'Chuyển khoản QR VietQR') {
-                    header('Location: index.php?page=checkout&step=vietqr&order_id=' . $orderId);
-                    exit;
-                }
-
-                // Nếu chọn phương thức MoMo Sandbox, chuyển sang Cổng MoMo Sandbox (có mã QR & nút xác nhận 1-click)
-                if ($method === 'Ví điện tử MoMo') {
-                    header('Location: index.php?page=checkout&step=momo_sandbox&order_id=' . $orderId);
-                    exit;
-                }
-
-                $orderSuccess = true;
             }
         }
 
-        $totalMoney = max(0, $subtotal - $discountAmount);
+        $totalMoney = max(0, $subtotal - $discountAmount - $tierDiscountAmount);
         $pageTitle = 'Thanh toán đơn hàng - V-Phone';
         require_once 'app/views/checkout.php';
     }
