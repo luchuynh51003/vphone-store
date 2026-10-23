@@ -8,6 +8,6 @@
     "scss.lint.vendorPrefix": "ignore",
     "less.lint.vendorPrefix": "ignore",
     "intelephense.diagnostics.duplicateSymbols": false,
-    "intelephense.diagnostics.undefinedVariables": false,
+    "intelephense.diagnostics.undefinedVariables": "off",
     "intelephense.diagnostics.undefinedProperties": false
 }
