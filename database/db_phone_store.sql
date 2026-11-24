@@ -1,6 +1,6 @@
 -- =========================================================================
 -- CƠ SỞ DỮ LIỆU ĐỒ ÁN V-PHONE STORE (ĐÃ SAO LƯU TỰ ĐỘNG)
--- Thời gian sao lưu: 2026-10-22 10:52:06 (10:52:06 - 22/10/2026)
+-- Thời gian sao lưu: 2026-11-24 12:19:32 (12:19:32 - 24/11/2026)
 -- =========================================================================
 
 CREATE DATABASE IF NOT EXISTS `db_phone_store` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -10,47 +10,19 @@ SET FOREIGN_KEY_CHECKS = 0;
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+07:00";
 
-DROP TABLE IF EXISTS `articles`;
-DROP TABLE IF EXISTS `brands`;
+DROP TABLE IF EXISTS `warranty_claims`;
+DROP TABLE IF EXISTS `user_notifications`;
+DROP TABLE IF EXISTS `password_resets`;
 DROP TABLE IF EXISTS `callback_requests`;
+DROP TABLE IF EXISTS `articles`;
+DROP TABLE IF EXISTS `vouchers`;
+DROP TABLE IF EXISTS `user_addresses`;
+DROP TABLE IF EXISTS `product_reviews`;
 DROP TABLE IF EXISTS `order_details`;
 DROP TABLE IF EXISTS `orders`;
-DROP TABLE IF EXISTS `password_resets`;
-DROP TABLE IF EXISTS `product_reviews`;
 DROP TABLE IF EXISTS `products`;
-DROP TABLE IF EXISTS `user_addresses`;
-DROP TABLE IF EXISTS `user_notifications`;
 DROP TABLE IF EXISTS `users`;
-DROP TABLE IF EXISTS `vouchers`;
-DROP TABLE IF EXISTS `warranty_claims`;
-
--- --------------------------------------------------------
--- Cấu trúc bảng `articles`
--- --------------------------------------------------------
-CREATE TABLE `articles` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) NOT NULL,
-  `badge` varchar(80) NOT NULL DEFAULT 'TIN MỚI',
-  `badge_class` varchar(40) NOT NULL DEFAULT 'bg-primary',
-  `article_date` varchar(30) NOT NULL,
-  `read_time` varchar(30) NOT NULL DEFAULT '5 phút đọc',
-  `image` varchar(255) NOT NULL,
-  `summary` text NOT NULL,
-  `content` longtext NOT NULL,
-  `is_published` tinyint(1) NOT NULL DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dữ liệu bảng `articles` (6 dòng)
-INSERT INTO `articles` (`id`, `title`, `badge`, `badge_class`, `article_date`, `read_time`, `image`, `summary`, `content`, `is_published`, `created_at`, `updated_at`) VALUES
-(1, 'Tổng hợp tin đồn iPhone 18 Pro Max: Chip A20 Pro 2nm và màn hình Dynamic Island thu nhỏ', 'TIN RÒ RỈ 2026', 'bg-danger', '24/09/2026', '5 phút đọc', 'assets/images/products/iphone-18-promax.png', 'Apple được cho là sẽ ra mắt thế hệ iPhone 18 với tiến trình 2nm siêu tiết kiệm pin, khung viền titan siêu nhẹ và camera tiềm vọng zoom quang học 10x hoàn toàn mới.', 'Theo các nguồn tin uy tín từ chuỗi cung ứng, dòng iPhone 18 Pro Max năm 2026 sẽ đánh dấu bước nhảy vọt lớn nhất của Apple. Máy sẽ sử dụng vi xử lý Apple A20 Pro xây dựng trên tiến trình 2nm của TSMC, mang lại hiệu năng đồ họa tăng 35% trong khi tiết kiệm điện năng tới 40%.\n\nNgoài ra, hệ thống camera tele tiềm vọng sẽ nâng cấp lên cảm biến 48MP hỗ trợ zoom quang học 10x và zoom kỹ thuật số lên tới 100x. Thiết kế mặt trước sẽ tiếp tục tối ưu phần viền màn hình chỉ còn 1.0mm, mang lại trải nghiệm thị giác gần như tràn viền tuyệt đối.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
-(2, 'Đánh giá chi tiết Samsung Galaxy Z Tri-Fold: Kỷ nguyên điện thoại gập ba đã đến!', 'ĐÁNH GIÁ HOT', 'bg-primary', '23/09/2026', '7 phút đọc', 'assets/images/products/samsung-tri-fold.png', 'Chiếc smartphone gập 3 màn hình đầu tiên của Samsung cho phép mở rộng không gian hiển thị lên đến 10.2 inch, biến chiếc điện thoại thành máy tính bảng trong chớp mắt.', 'Galaxy Z Tri-Fold là câu trả lời đanh thép của Samsung dành cho thị trường di động toàn cầu. Với cơ chế gập kép hình chữ Z độc đáo, người dùng có thể sử dụng máy ở dạng màn hình ngoài 6.4 inch như điện thoại thông thường, hoặc mở ra toàn bộ thành màn hình 10.2 inch Dynamic AMOLED 3X.\n\nHệ thống bản lề FlexHinge thế hệ mới được gia cố bằng chất liệu Armor Aluminum siêu bền, cam kết độ bền trên 300.000 lần gập mở. Giao diện One UI 8.0 được tinh chỉnh đặc biệt cho khả năng chạy đa nhiệm cùng lúc 4 ứng dụng trên màn hình lớn.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
-(3, 'Bí quyết chọn mua iPhone cũ 99%: Cách kiểm tra pin, màn hình và camera tránh bị lừa', 'MẸO CÔNG NGHỆ', 'bg-success', '22/09/2026', '4 phút đọc', 'assets/images/products/iphone-15-promax.png', 'Hướng dẫn chi tiết từng bước kiểm tra từ vỏ máy, màn hình TrueTone, 3uTools cho đến dung lượng pin thực tế khi đi mua iPhone cũ đã qua sử dụng.', 'Khi mua iPhone cũ 99%, điều quan trọng nhất là kiểm tra xem máy đã bị thay màn hình hoặc ép kính hay chưa. Bạn hãy vào Cài đặt -> Màn hình & Độ sáng kiểm tra tính năng TrueTone. Sau đó, vuốt thanh tăng giảm độ sáng để xem cảm ứng có mượt không.\n\nTiếp theo, hãy kiểm tra số lần sạc và độ chai pin trong Cài đặt -> Pin. Đối với máy cũ 99%, pin chuẩn thường dao động từ 88% đến 96%. Tại V-Phone, mọi máy cũ đều được kỹ thuật viên kiểm tra 32 bước nghiêm ngặt và cam kết zin 100% kèm bảo hành 6 tháng 1 đổi 1.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
-(4, 'So sánh Galaxy S26 Ultra và iPhone 17 Pro Max: Cuộc chiến của các vì sao', 'SO SÁNH', 'bg-info text-dark', '20/09/2026', '6 phút đọc', 'assets/images/products/samsung-s26-ultra.png', 'Nên chọn Galaxy S26 Ultra với bút S-Pen quyền năng và camera 200MP, hay chọn iPhone 17 Pro Max với sự mượt mà và hệ sinh thái iOS bền bỉ?', 'Cả Galaxy S26 Ultra và iPhone 17 Pro Max đều là những siêu phẩm đứng đầu thế giới hiện nay. Trong khi Samsung chiếm ưu thế hoàn toàn về camera siêu zoom và các tính năng Galaxy AI phục vụ công việc hàng ngày, thì Apple lại ghi điểm ở khả năng quay video ProRes đỉnh cao và giữ giá tốt hơn sau nhiều năm sử dụng.\n\nNếu bạn là người thích vọc vạch công nghệ và cần ghi chú nhanh bằng bút thì S26 Ultra là lựa chọn số 1. Còn nếu bạn cần một thiết bị ổn định tuyệt đối, chơi game mát và đồng bộ tốt với iPad/MacBook thì iPhone 17 Pro Max là chân ái.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
-(5, 'Xiaomi 16 Ultra Leica Edition: Đưa máy ảnh chuyên nghiệp vào trong túi quần bạn', 'TIN MỚI', 'bg-warning text-dark', '18/09/2026', '4 phút đọc', 'assets/images/products/xiaomi-16-ultra.png', 'Cụm camera hợp tác cùng huyền thoại Leica với cảm biến 1 inch thế hệ mới và lớp phủ chống lóa T*, biến Xiaomi 16 Ultra thành quái vật nhiếp ảnh.', 'Xiaomi tiếp tục chứng minh vị thế dẫn đầu về nhiếp ảnh di động khi trang bị cho 16 Ultra cảm biến chính Sony Lytia 1 inch cùng ống kính quang học Leica Summilux. Màu ảnh chụp ra có độ sâu trường ảnh tự nhiên, tương phản cao và tái tạo màu da cực kỳ chân thực, gần như xóa nhòa ranh giới giữa điện thoại và máy ảnh DSLR.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
-(6, 'Top 4 điện thoại cũ giá dưới 10 triệu đáng mua nhất cho học sinh, sinh viên 2026', 'TƯ VẤN MUA', 'bg-secondary', '15/09/2026', '5 phút đọc', 'assets/images/products/iphone-11.png', 'Với ngân sách dưới 10 triệu, bạn hoàn toàn có thể sở hữu iPhone 11 cũ giá 5tr4, iPhone 13 cũ giá 10tr hay Galaxy A55 5G nguyên zin bảo hành dài hạn.', '1. iPhone 11 64GB cũ (5.490.000 VNĐ): Dù đã ra mắt lâu nhưng chip A13 Bionic vẫn lướt TikTok, Facebook và chơi Liên Quân cực mượt.\n\n2. iPhone 13 128GB cũ (10.490.000 VNĐ): Thiết kế vuông vức thời thượng, màn hình tai thỏ nhỏ gọn và thời lượng pin cực trâu.\n\n3. Samsung Galaxy A55 5G cũ (5.990.000 VNĐ): Màn hình 120Hz siêu mượt, hỗ trợ 5G và pin 5000 mAh dùng thoải mái 2 ngày.', 1, '2026-10-08 09:52:37', '2026-10-17 17:28:17');
+DROP TABLE IF EXISTS `brands`;
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `brands`
@@ -74,178 +46,46 @@ INSERT INTO `brands` (`id`, `name`) VALUES
 (9, 'Huawei & Honor');
 
 -- --------------------------------------------------------
--- Cấu trúc bảng `callback_requests`
+-- Cấu trúc bảng `users`
 -- --------------------------------------------------------
-CREATE TABLE `callback_requests` (
+CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
   `fullname` varchar(100) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
-  `topic` varchar(100) DEFAULT 'Tư vấn mua máy',
-  `department` varchar(50) DEFAULT 'cskh',
-  `note` text DEFAULT NULL,
-  `reply_message` text DEFAULT NULL,
-  `replied_by` int(11) DEFAULT NULL,
-  `replied_by_name` varchar(100) DEFAULT NULL,
-  `replied_by_title` varchar(100) DEFAULT NULL,
-  `replied_at` datetime DEFAULT NULL,
-  `status` varchar(50) DEFAULT 'pending',
-  `created_at` datetime DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `phone` (`phone`),
-  KEY `status` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dữ liệu bảng `callback_requests` (3 dòng)
-INSERT INTO `callback_requests` (`id`, `user_id`, `fullname`, `phone`, `email`, `topic`, `department`, `note`, `reply_message`, `replied_by`, `replied_by_name`, `replied_by_title`, `replied_at`, `status`, `created_at`) VALUES
-(1, NULL, 'Nguyen Van A', '0987654321', NULL, 'Tu van iPhone 17', 'cskh', 'Goi buoi chieu', NULL, NULL, NULL, NULL, NULL, 'pending', '2026-10-16 15:43:50'),
-(3, NULL, 'Lực Huỳnh', '0888443655', 'beluc5102003@gmail.com', 'Hỗ trợ trả góp 0% / Lên đời thu cũ đổi mới', 'sales', 'hihi', 'cc', 3, 'Quản Trị Viên V-Phone', 'Quản Trị Tối Cao', '2026-10-17 13:12:39', 'replied', '2026-10-17 13:12:02'),
-(4, NULL, 'Tester', '0912345678', NULL, 'Tu van iPhone', 'sales', '', NULL, NULL, NULL, NULL, NULL, 'pending', '2026-10-19 11:10:16');
-
--- --------------------------------------------------------
--- Cấu trúc bảng `order_details`
--- --------------------------------------------------------
-CREATE TABLE `order_details` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `order_id` int(11) DEFAULT NULL,
-  `product_id` int(11) DEFAULT NULL,
-  `product_name` varchar(150) DEFAULT NULL,
-  `price` decimal(12,0) DEFAULT NULL,
-  `quantity` int(11) DEFAULT NULL,
-  `total_price` decimal(12,0) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `order_id` (`order_id`),
-  KEY `product_id` (`product_id`),
-  CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dữ liệu bảng `order_details` (15 dòng)
-INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `product_name`, `price`, `quantity`, `total_price`) VALUES
-(1, 1, 11, 'iPhone 17 Pro (128 GB - Màu: Titan Tự Nhiên)', '28490000', 1, '28490000'),
-(2, 2, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
-(3, 3, 58, '[Cũ 99%] Samsung Galaxy Z Fold5 5G (512 GB - Màu: Đen Phantom)', '25990000', 1, '25990000'),
-(4, 7, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
-(5, 8, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
-(7, 11, 7, 'Huawei Mate XT (Gập 3 Màn) (128 GB - Màu: Đỏ Ruihong)', '74990000', 1, '74990000'),
-(8, 12, 31, 'Galaxy Z Flip6 5G (128 GB - Màu: Xám Metal)', '24490000', 1, '24490000'),
-(9, 13, 5, 'Galaxy Z Tri-Fold (Gập 3 Màn) (256 GB - Màu: Đen Phantom)', '56990000', 1, '56990000'),
-(10, 14, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
-(12, 16, 9, 'OPPO Find N5 Duo (Hologram) (256 GB - Màu: Đen)', '42990000', 1, '42990000'),
-(13, 17, 5, 'Galaxy Z Tri-Fold (Gập 3 Màn) (256 GB - Màu: Đen Phantom)', '56990000', 1, '56990000'),
-(14, 18, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
-(15, 19, 10, 'iPhone 17 Pro Max (256 GB - Màu: Cam)', '32990000', 1, '32990000'),
-(16, 20, 8, 'Xiaomi 16 Ultra (Leica Edition) (256 GB - Màu: Đen Da Thuần)', '32490000', 1, '32490000'),
-(17, 21, 5, 'Galaxy Z Tri-Fold (Gập 3 Màn) (256 GB - Màu: Đen Phantom)', '56990000', 1, '56990000');
-
--- --------------------------------------------------------
--- Cấu trúc bảng `orders`
--- --------------------------------------------------------
-CREATE TABLE `orders` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
-  `fullname` varchar(100) NOT NULL,
-  `phone` varchar(20) NOT NULL,
-  `address` varchar(255) NOT NULL,
-  `note` text DEFAULT NULL,
-  `total_money` decimal(12,0) NOT NULL,
-  `payment_method` varchar(50) DEFAULT 'COD',
-  `payment_status` varchar(50) NOT NULL DEFAULT 'Chưa thanh toán',
-  `transaction_code` varchar(100) DEFAULT NULL,
-  `paid_at` datetime DEFAULT NULL,
-  `status` varchar(50) DEFAULT 'Chờ xử lý',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dữ liệu bảng `orders` (15 dòng)
-INSERT INTO `orders` (`id`, `user_id`, `fullname`, `phone`, `address`, `note`, `total_money`, `payment_method`, `payment_status`, `transaction_code`, `paid_at`, `status`, `created_at`) VALUES
-(1, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '', '28490000', 'Chuyển khoản QR VietQR', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-08 19:06:22'),
-(2, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '| Voucher: GIAM100K (giảm 100.000 VNĐ)', '64890000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã hủy', '2026-10-09 12:00:34'),
-(3, 3, 'Quản Trị Viên V-Phone', '18006868', 'Trụ sở V-Phone', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 16/10/2026 03:00:51 - Mã GD: VQR20261016030051869] (Admin xác nhận trực tiếp)', '25990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'VQR20261016030051869', '2026-10-16 03:00:51', 'Đã giao thành công', '2026-10-15 17:21:29'),
-(7, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 12:36:37 - Mã GD: SIM-VQR-123637-3527] (Giả lập khách chuyển khoản thành công)', '64990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-123637-3527', '2026-10-15 12:36:37', 'Đang xử lý', '2026-10-15 17:36:30'),
-(8, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 12:38:00 - Mã GD: SIM-VQR-123800-9330] (Giả lập khách chuyển khoản thành công)', '64990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-123800-9330', '2026-10-15 12:38:00', 'Đang xử lý', '2026-10-15 17:36:54'),
-(11, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', '[MoMo Sandbox: Đã thanh toán qua MoMo lúc 15/10/2026 12:58:58 - Mã GD: MOMO-MOMO_1258588195] [MoMo Sandbox: Đã thanh toán qua MoMo lúc 15/10/2026 12:58:58 - Mã GD: MOMO-MOMO_1258588195]', '74990000', 'Ví điện tử MoMo', 'Đã thanh toán', 'MOMO-MOMO_1258588195', '2026-10-15 12:58:58', 'Đang xử lý', '2026-10-15 17:48:20'),
-(12, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 13:03:36 - Mã GD: SIM-VQR-130336-4178] (Giả lập khách chuyển khoản thành công)', '24490000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-130336-4178', '2026-10-15 13:03:36', 'Đã giao thành công', '2026-10-15 17:59:21'),
-(13, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 13:36:06 - Mã GD: SIM-VQR-133606-7104] (Giả lập khách chuyển khoản thành công)', '56990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-133606-7104', '2026-10-15 13:36:06', 'Đang xử lý', '2026-10-15 18:35:57'),
-(14, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 14:04:49 - Mã GD: SIM-VQR-140449-9019] (Giả lập khách chuyển khoản thành công)', '64990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-140449-9019', '2026-10-15 14:04:49', 'Đang xử lý', '2026-10-15 19:04:36'),
-(16, 17, 'Trương Trí Thiện', '123456', 'Chưa cập nhật', '', '42990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-21 23:46:52'),
-(17, 18, 'Võ Minh Thái', '123456', 'Chưa cập nhật', '| Voucher: VPHONE10 (giảm 500.000 VNĐ)', '56490000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đang xử lý', '2026-10-21 23:47:26'),
-(18, 19, 'Nguyễn Ảnh Minh Hoàng', '123456', 'Chưa cập nhật', '| Voucher: FLASH20 (giảm 2.000.000 VNĐ)', '62990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Chờ xử lý', '2026-10-21 23:48:06'),
-(19, 20, 'Đặng Tiến Hưng', '123456', 'Chưa cập nhật', '| Voucher: FLASH20 (giảm 2.000.000 VNĐ)', '30990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-21 23:49:05'),
-(20, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', '| Voucher: VPHONE10 (giảm 500.000 VNĐ)', '31990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đang xử lý', '2026-10-22 00:35:53'),
-(21, 17, 'Trương Trí Thiện', '123456', 'Chưa cập nhật', '[MoMo Sandbox: Đã thanh toán qua MoMo lúc 22/10/2026 08:55:44 - Mã GD: MOMO-MOMO_0855448610] [MoMo Sandbox: Đã thanh toán qua MoMo lúc 22/10/2026 08:55:44 - Mã GD: MOMO-MOMO_0855448610]', '56990000', 'Ví điện tử MoMo', 'Đã thanh toán', 'MOMO-MOMO_0855448610', '2026-10-22 08:55:44', 'Đang xử lý', '2026-10-22 08:55:42');
-
--- --------------------------------------------------------
--- Cấu trúc bảng `password_resets`
--- --------------------------------------------------------
-CREATE TABLE `password_resets` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(100) NOT NULL,
-  `token` varchar(64) NOT NULL,
-  `otp` varchar(10) NOT NULL,
-  `expires_at` datetime NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  KEY `email` (`email`),
-  KEY `token` (`token`),
-  KEY `otp` (`otp`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dữ liệu bảng `password_resets` (1 dòng)
-INSERT INTO `password_resets` (`id`, `email`, `token`, `otp`, `expires_at`, `created_at`) VALUES
-(4, 'luc@vphone.vn', 'a19dce53cf36517696406b740182f4fb10c3e260c0b536a559ba96eaa17e4d8a', '730867', '2026-10-21 23:53:01', '2026-10-21 23:38:01');
-
--- --------------------------------------------------------
--- Cấu trúc bảng `product_reviews`
--- --------------------------------------------------------
-CREATE TABLE `product_reviews` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `product_id` int(11) NOT NULL,
-  `user_id` int(11) DEFAULT NULL,
-  `order_id` int(11) DEFAULT NULL,
-  `fullname` varchar(100) NOT NULL,
-  `email` varchar(100) DEFAULT NULL,
+  `google_id` varchar(100) DEFAULT NULL,
+  `auth_provider` varchar(30) NOT NULL DEFAULT 'local',
   `phone` varchar(20) DEFAULT NULL,
-  `rating` tinyint(4) NOT NULL DEFAULT 5,
-  `comment` text NOT NULL,
-  `is_buyer` tinyint(1) DEFAULT 0,
-  `is_edited` tinyint(1) DEFAULT 0,
-  `status` tinyint(1) DEFAULT 1,
-  `admin_reply` text DEFAULT NULL,
-  `admin_reply_at` timestamp NULL DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `role` tinyint(4) DEFAULT 0,
+  `cart_data` longtext DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `staff_role` varchar(50) DEFAULT NULL,
+  `staff_title` varchar(100) DEFAULT NULL,
+  `permissions` text DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 1,
+  `membership_tier` varchar(30) DEFAULT 'auto',
   PRIMARY KEY (`id`),
-  KEY `idx_product_id` (`product_id`),
-  KEY `idx_user_id` (`user_id`),
-  KEY `idx_rating` (`rating`),
-  KEY `idx_status` (`status`),
-  KEY `idx_order_id` (`order_id`),
-  CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
-) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dữ liệu bảng `product_reviews` (15 dòng)
-INSERT INTO `product_reviews` (`id`, `product_id`, `user_id`, `order_id`, `fullname`, `email`, `phone`, `rating`, `comment`, `is_buyer`, `is_edited`, `status`, `admin_reply`, `admin_reply_at`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, NULL, 'Võ Minh Hiếu', 'hieu@vphone.vn', '0912345678', 5, 'Máy quá đỉnh! Khung titan nhôm cầm đầm tay, vi xử lý A20 Pro chạy cực mát. Màn hình Promotion siêu mượt, nhận hàng sau 1h tại TP.HCM. Rất hài lòng với V-Phone!', 1, 0, 1, 'Dạ V-Phone cảm ơn anh Hiếu rất nhiều đã luôn tin tưởng và ủng hộ siêu phẩm tại V-Phone. Chúc anh có những trải nghiệm tuyệt vời cùng máy ạ!', '2026-10-14 12:10:39', '2026-10-13 12:10:39', '2026-10-15 17:10:39'),
-(2, 1, NULL, NULL, 'Trần Hải Đăng', 'dang.tran@gmail.com', '0933123456', 5, 'Camera chụp đêm sắc nét không bị bệt màu, zoom quang học 10x chi tiết rõ mồn một. Shop tư vấn nhiệt tình, đóng gói cẩn thận 2 lớp chống sốc.', 1, 0, 1, 'V-Phone cảm ơn anh Đăng đã đánh giá 5 sao. Bộ quà tặng ốp lưng và dán cường lực VIP đã kích hoạt bảo hành điện tử chính hãng 12 tháng rồi anh nhé!', '2026-10-13 12:10:39', '2026-10-12 12:10:39', '2026-10-15 17:10:39'),
-(3, 1, NULL, NULL, 'Nguyễn Bích Phương', 'phuong.bich@gmail.com', '0988776655', 5, 'Màu sắc bên ngoài đẹp hơn trong hình nhiều, máy nguyên seal nguyên kiện tem mác đầy đủ. Đổi từ 13 Pro Max lên thấy pin trâu gấp rưỡi.', 1, 0, 1, NULL, NULL, '2026-10-11 12:10:39', '2026-10-15 17:10:39'),
-(4, 3, 2, NULL, 'Huỳnh Bá Lực', 'luc@vphone.vn', '0909888999', 5, 'Bản gập đầu tiên của Apple thực sự là bước nhảy vọt, bản lề titan gập rất chắc chắn và gần như không thấy nếp nhăn. Cảm giác cầm sang trọng bậc nhất!', 1, 0, 1, 'Cảm ơn anh Lực đã là một trong những khách hàng đầu tiên sở hữu iPhone Duo tại Việt Nam! V-Phone có kỹ thuật viên hỗ trợ tận nơi 24/7 ạ.', '2026-10-14 12:10:39', '2026-10-13 12:10:39', '2026-10-15 17:10:39'),
-(5, 3, NULL, NULL, 'Lê Quốc Hưng', 'hung.le@fpt.vn', '0977223344', 5, 'Màn hình OLED mở rộng đa nhiệm cực tốt, đọc tài liệu và xem biểu đồ kinh doanh mượt mà. Đáng đồng tiền bát gạo.', 0, 0, 1, NULL, NULL, '2026-10-10 12:10:39', '2026-10-15 17:10:39'),
-(6, 5, NULL, NULL, 'Hoàng Minh Tuấn', 'tuan.hm@gmail.com', '0918112233', 5, 'Gập 3 màn hình công nghệ tương lai! Khi mở full ra như một chiếc tablet 10.2 inch, làm việc và vẽ đồ họa cùng S-Pen rất tiện lợi. Ship giao hỏa tốc 2 tiếng đúng cam kết.', 1, 0, 1, 'Cảm ơn anh Tuấn! Dòng máy Tri-Fold được tặng kèm gói bảo hiểm rơi vỡ toàn diện 1 năm độc quyền từ V-Phone anh nhé!', '2026-10-13 12:10:39', '2026-10-12 12:10:39', '2026-10-15 17:10:39'),
-(7, 6, NULL, NULL, 'Phạm Gia Bảo', 'giabao.pham@gmail.com', '0903445566', 5, 'Chip Snapdragon 8 Gen 5 chiến game mượt khỏi bàn, AI dịch thuật trực tiếp trong cuộc gọi siêu tiện. Màn hình phẳng viền siêu mỏng, bút S-Pen viết rất êm tay.', 1, 0, 1, 'Dạ V-Phone cảm ơn anh Bảo đã tin tưởng lựa chọn Galaxy S26 Ultra chính hãng tại V-Phone. Chúc anh có những trải nghiệm công nghệ đỉnh cao!', '2026-10-14 12:10:39', '2026-10-13 12:10:39', '2026-10-15 17:10:39'),
-(8, 6, NULL, NULL, 'Ngô Thùy Trang', 'thuytrang.ngo@yahoo.com', '0938667788', 4, 'Máy chụp chân dung rất đẹp, pin trâu dùng cả ngày xem phim lướt web còn hơn 40%. Trừ 1 sao vì hộp không kèm củ sạc nhưng được shop tặng kèm sạc nhanh 45W bù lại.', 1, 0, 1, 'Dạ cảm ơn chị Trang nhiều ạ. Do chính sách chung của hãng nên hộp máy không kèm sạc, V-Phone đã tặng ngay củ sạc 45W chính hãng để chị an tâm sử dụng tốt nhất ạ!', '2026-10-13 12:10:39', '2026-10-11 12:10:39', '2026-10-15 17:10:39'),
-(9, 8, NULL, NULL, 'Đặng Anh Khoa', 'khoa.dang@gmail.com', '0944556677', 5, 'Ống kính Leica chụp ảnh màu sắc cổ điển cực kỳ có hồn, cảm biến 1 inch thu sáng ban đêm xuất sắc. Giao diện mượt mà, sạc 120W chỉ 18 phút là đầy pin!', 1, 0, 1, 'V-Phone cảm ơn anh Khoa! Đội ngũ Leica đã tối ưu thuật toán xử lý ảnh thế hệ mới nhất cho dòng 16 Ultra, chúc anh có thật nhiều bức ảnh đẹp!', '2026-10-12 12:10:39', '2026-10-10 12:10:39', '2026-10-15 17:10:39'),
-(10, 10, NULL, NULL, 'Nguyễn Minh Khang', 'khang.minh@outlook.com', '0908771122', 5, 'Màu sắc Titan sa mạc quá sang, máy chạy mát lạnh dù quay video 4K liên tục. Nhân viên giao hàng kiểm tra kỹ lưỡng kích hoạt bảo hành tại chỗ.', 1, 0, 1, 'V-Phone xin chân thành cảm ơn anh Khang đã ủng hộ! Nếu cần hỗ trợ chuyển đổi dữ liệu hay phụ kiện anh liên hệ hotline 1800 6868 bất cứ lúc nào nhé.', '2026-10-14 12:10:39', '2026-10-12 12:10:39', '2026-10-15 17:10:39'),
-(11, 11, 2, NULL, 'Huỳnh Bá Lực', 'luc@vphone.vn', '0909888999', 5, 'Kích thước 6.3 inch cầm vừa tay, Dynamic Island tiện lợi. Đơn hàng trước mình đặt giao rất chuẩn chỉ, máy nguyên seal chưa active.', 1, 0, 1, 'Dạ cảm ơn anh Lực rất nhiều đã quay lại ủng hộ đơn hàng tiếp theo tại hệ thống V-Phone Store!', '2026-10-13 12:10:39', '2026-10-11 12:10:39', '2026-10-15 17:10:39'),
-(12, 14, NULL, NULL, 'Lý Gia Hân', 'giahan.ly@gmail.com', '0932889900', 5, 'Giá hiện tại quá hời cho một chiếc Flagship toàn diện. Nút Camera Control chụp nhanh rất nhạy, màn hình to 6.9 inch xem phim đã mắt.', 1, 0, 1, 'Cảm ơn chị Hân đã dành thời gian gửi lời đánh giá 5 sao cho V-Phone! Chúc chị có những phút giây trải nghiệm thật vui cùng máy.', '2026-10-12 12:10:39', '2026-10-09 12:10:39', '2026-10-15 17:19:52'),
-(13, 26, NULL, NULL, 'Bùi Tiến Dũng', 'tiendung.bui@gmail.com', '0917228899', 5, 'Máy dùng rất mượt, viền titan nhám chống bám vân tay tốt. Tính năng khoanh tròn để tìm kiếm bằng AI cực tiện dụng khi lướt web.', 1, 0, 1, NULL, NULL, '2026-10-10 12:10:39', '2026-10-15 17:10:39'),
-(18, 58, 3, 3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', '18006868', 5, 'Chất lượng máy thực sự xuất sắc, pin trâu dùng 2 ngày.', 1, 0, 1, NULL, NULL, '2026-10-22 00:32:53', '2026-10-22 00:48:24'),
-(19, 9, 17, 16, 'Trương Trí Thiện', 'thien@vphone.vn', '123456', 5, 'Màn hình mượt mà, cảm ứng rất nhạy!', 1, 0, 1, NULL, NULL, '2026-10-22 08:56:02', '2026-10-22 08:56:02');
+-- Dữ liệu bảng `users` (14 dòng)
+INSERT INTO `users` (`id`, `fullname`, `email`, `google_id`, `auth_provider`, `phone`, `address`, `avatar`, `password`, `role`, `cart_data`, `created_at`, `staff_role`, `staff_title`, `permissions`, `status`, `membership_tier`) VALUES
+(1, 'Võ Minh Hiếu', 'hieu@vphone.vn', NULL, 'local', '0901234567', 'Quận 1, TP.HCM', NULL, '$2y$10$33vtXT.qs4BNnJHX6h0beO7FJR2yZtucxlwkwu.KIKWx3qvzN8u1G', 1, '[]', '2026-10-08 09:30:19', 'admin', 'Quản trị viên', NULL, 1, 'auto'),
+(2, 'Huỳnh Bá Lực', 'luc@vphone.vn', NULL, 'local', '0909888999', 'Quận 7, TP.HCM', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 2, '[]', '2026-10-08 09:30:19', 'staff', 'Nhân viên bán hàng', '[\"orders\",\"warranties\",\"reviews\"]', 1, 'auto'),
+(3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', NULL, 'local', '18006868', 'Trụ sở V-Phone', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 1, '{\"25_8990000_64GBenMidnight\":{\"cart_key\":\"25_8990000_64GBenMidnight\",\"id\":25,\"name\":\"iPhone SE 2022\",\"rom\":\"64 GB\",\"color\":\"Đen Midnight\",\"price\":8990000,\"image\":\"assets\\/images\\/products\\/iphone-se-2022.jpg\",\"quantity\":1}}', '2026-10-08 09:30:19', 'super_admin', 'Quản Trị Tối Cao', NULL, 1, 'auto'),
+(8, 'Lực Huỳnh', 'beluc5102003@gmail.com', '112858085185933992393', 'google', '0888443655', 'Chưa cập nhật', 'assets/images/users/avatar_user_8.png', NULL, 1, '{\"3_64990000_256GBTrngnhSao\":{\"cart_key\":\"3_64990000_256GBTrngnhSao\",\"id\":3,\"name\":\"iPhone Duo (Màn Gập Apple)\",\"rom\":\"256 GB\",\"color\":\"Trắng Ánh Sao\",\"price\":64990000,\"image\":\"assets\\/images\\/products\\/iphone-18-duo-trang-anh-sao.png\",\"quantity\":1}}', '2026-10-15 19:23:57', 'admin', 'Quản trị viên', NULL, 1, 'auto'),
+(10, 'lokidptri2k3', 'ongnoitapchoi2003@gmail.com', '108680907798119891576', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_10.png', NULL, 0, '[]', '2026-10-15 19:45:59', NULL, NULL, NULL, 1, 'auto'),
+(12, 'Nguyễn Văn Bán (NV Bán Hàng)', 'nhanvien@vphone.vn', NULL, 'local', '0908889999', 'Cửa hàng V-Phone', NULL, '$2y$10$Q9ReBr6uvYmSZd9ZXBsImOMjHiGNbYtn8NV37w575UAPeWJvcZrRa', 2, '[]', '2026-10-16 08:43:18', 'sales', 'Nhân viên Bán hàng & Đơn hàng', '[\"orders\", \"vouchers\", \"ai_assistant\"]', 1, 'auto'),
+(13, 'Trần Văn Kho (NV Kho)', 'kho@vphone.vn', NULL, 'local', '0907778888', 'Cửa hàng V-Phone', NULL, '$2y$10$/hwVIOgM0h6HiOgHc/X/MesEzw4fB9gaYKlOz6Og5r6JfylX/mkU.', 2, '[]', '2026-10-16 08:43:19', 'warehouse', 'Nhân viên Quản lý Kho', '[\"products\",\"inventory\",\"ai_assistant\"]', 1, 'auto'),
+(14, 'Lê Kỹ Thuật (NV Bảo Hành & CSKH)', 'baohanh@vphone.vn', NULL, 'local', '0906667777', 'Cửa hàng V-Phone', NULL, '$2y$10$jzUiNXhVKIostXxvQsI6Ce2Ti2IP8kzoKiDF4UezvrVFrXEu6X9Fe', 2, NULL, '2026-10-16 08:43:19', 'support', 'Chuyên viên CSKH & Bảo hành', '[\"warranties\",\"reviews\"]', 1, 'auto'),
+(15, 'Nghiện Nhạc', 'ongnoitapchoi2009@gmail.com', '104701851243694340335', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_15.png', NULL, 0, NULL, '2026-10-17 14:24:29', NULL, NULL, NULL, 1, 'auto'),
+(16, 'octiukiu l7', 'l7octiukiu@gmail.com', '110911761992361094636', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_16.png', NULL, 0, NULL, '2026-10-20 11:17:37', NULL, NULL, NULL, 1, 'auto'),
+(17, 'Trương Trí Thiện', 'thien@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$cVHfuJM1qlBtUiWO4Vn8RuSBUVzi80lgnQluAlSVmaxJPPHjU5HYe', 0, '[]', '2026-10-21 23:46:48', NULL, NULL, NULL, 1, 'auto'),
+(18, 'Võ Minh Thái', 'thai@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$9vAtYxdJ8l2Mlywvm8bKQuITRt6Gj5MnjjOpL5TlWHzqBByvfhEf6', 0, '[]', '2026-10-21 23:47:17', NULL, NULL, NULL, 1, 'auto'),
+(19, 'Nguyễn Ảnh Minh Hoàng', 'hoang@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$35lz4AaKxNLVGpnDSDKkueP4M.9it17g5iwtJAzM7P2HlTPViK5aS', 0, '[]', '2026-10-21 23:47:56', NULL, NULL, NULL, 1, 'auto'),
+(20, 'Đặng Tiến Hưng', 'hung@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$HkEXasZ/5Mxxjz47047dseRPc5jOWwAtU.mLT0AW9CVubhtRcGpny', 0, '[]', '2026-10-21 23:48:48', NULL, NULL, NULL, 1, 'auto');
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `products`
@@ -336,6 +176,130 @@ INSERT INTO `products` (`id`, `brand_id`, `name`, `price`, `sale_price`, `image`
 (58, 2, '[Cũ 99%] Samsung Galaxy Z Fold5 5G', '32990000', '21990000', 'assets/images/products/samsung-z-fold5.png', '7.6\" Gập', 'Snapdragon 8 Gen 2', '12 GB', '256 GB', '4400 mAh', 2, 0, 1, 'Bản gập nguyên zin 99%', 'Xanh Icy Blue, Đen Phantom', '2026-09-25 15:55:29', NULL, '[{\"color\":\"Xanh Icy Blue\",\"quantity\":2},{\"color\":\"Đen Phantom\",\"quantity\":0}]');
 
 -- --------------------------------------------------------
+-- Cấu trúc bảng `orders`
+-- --------------------------------------------------------
+CREATE TABLE `orders` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `fullname` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `note` text DEFAULT NULL,
+  `total_money` decimal(12,0) NOT NULL,
+  `payment_method` varchar(50) DEFAULT 'COD',
+  `payment_status` varchar(50) NOT NULL DEFAULT 'Chưa thanh toán',
+  `transaction_code` varchar(100) DEFAULT NULL,
+  `paid_at` datetime DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'Chờ xử lý',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu bảng `orders` (15 dòng)
+INSERT INTO `orders` (`id`, `user_id`, `fullname`, `phone`, `address`, `note`, `total_money`, `payment_method`, `payment_status`, `transaction_code`, `paid_at`, `status`, `created_at`) VALUES
+(1, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '', '28490000', 'Chuyển khoản QR VietQR', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-08 19:06:22'),
+(2, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '| Voucher: GIAM100K (giảm 100.000 VNĐ)', '64890000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã hủy', '2026-10-09 12:00:34'),
+(3, 3, 'Quản Trị Viên V-Phone', '18006868', 'Trụ sở V-Phone', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 16/10/2026 03:00:51 - Mã GD: VQR20261016030051869] (Admin xác nhận trực tiếp)', '25990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'VQR20261016030051869', '2026-10-16 03:00:51', 'Đã giao thành công', '2026-10-15 17:21:29'),
+(7, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 12:36:37 - Mã GD: SIM-VQR-123637-3527] (Giả lập khách chuyển khoản thành công)', '64990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-123637-3527', '2026-10-15 12:36:37', 'Đang xử lý', '2026-10-15 17:36:30'),
+(8, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 12:38:00 - Mã GD: SIM-VQR-123800-9330] (Giả lập khách chuyển khoản thành công)', '64990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-123800-9330', '2026-10-15 12:38:00', 'Đang xử lý', '2026-10-15 17:36:54'),
+(11, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', '[MoMo Sandbox: Đã thanh toán qua MoMo lúc 15/10/2026 12:58:58 - Mã GD: MOMO-MOMO_1258588195] [MoMo Sandbox: Đã thanh toán qua MoMo lúc 15/10/2026 12:58:58 - Mã GD: MOMO-MOMO_1258588195]', '74990000', 'Ví điện tử MoMo', 'Đã thanh toán', 'MOMO-MOMO_1258588195', '2026-10-15 12:58:58', 'Đang xử lý', '2026-10-15 17:48:20'),
+(12, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 13:03:36 - Mã GD: SIM-VQR-130336-4178] (Giả lập khách chuyển khoản thành công)', '24490000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-130336-4178', '2026-10-15 13:03:36', 'Đã giao thành công', '2026-10-15 17:59:21'),
+(13, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 13:36:06 - Mã GD: SIM-VQR-133606-7104] (Giả lập khách chuyển khoản thành công)', '56990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-133606-7104', '2026-10-15 13:36:06', 'Đang xử lý', '2026-10-15 18:35:57'),
+(14, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', '[VietQR Auto-Pay: Đã thanh toán tự động qua mã QR lúc 15/10/2026 14:04:49 - Mã GD: SIM-VQR-140449-9019] (Giả lập khách chuyển khoản thành công)', '64990000', 'Chuyển khoản QR VietQR', 'Đã thanh toán', 'SIM-VQR-140449-9019', '2026-10-15 14:04:49', 'Đang xử lý', '2026-10-15 19:04:36'),
+(16, 17, 'Trương Trí Thiện', '123456', 'Chưa cập nhật', '', '42990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-21 23:46:52'),
+(17, 18, 'Võ Minh Thái', '123456', 'Chưa cập nhật', '| Voucher: VPHONE10 (giảm 500.000 VNĐ)', '56490000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đang xử lý', '2026-10-21 23:47:26'),
+(18, 19, 'Nguyễn Ảnh Minh Hoàng', '123456', 'Chưa cập nhật', '| Voucher: FLASH20 (giảm 2.000.000 VNĐ)', '62990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Chờ xử lý', '2026-10-21 23:48:06'),
+(19, 20, 'Đặng Tiến Hưng', '123456', 'Chưa cập nhật', '| Voucher: FLASH20 (giảm 2.000.000 VNĐ)', '30990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đã giao thành công', '2026-10-21 23:49:05'),
+(20, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', '| Voucher: VPHONE10 (giảm 500.000 VNĐ)', '31990000', 'COD', 'Chưa thanh toán', NULL, NULL, 'Đang xử lý', '2026-10-22 00:35:53'),
+(21, 17, 'Trương Trí Thiện', '123456', 'Chưa cập nhật', '[MoMo Sandbox: Đã thanh toán qua MoMo lúc 22/10/2026 08:55:44 - Mã GD: MOMO-MOMO_0855448610] [MoMo Sandbox: Đã thanh toán qua MoMo lúc 22/10/2026 08:55:44 - Mã GD: MOMO-MOMO_0855448610]', '56990000', 'Ví điện tử MoMo', 'Đã thanh toán', 'MOMO-MOMO_0855448610', '2026-10-22 08:55:44', 'Đang xử lý', '2026-10-22 08:55:42');
+
+-- --------------------------------------------------------
+-- Cấu trúc bảng `order_details`
+-- --------------------------------------------------------
+CREATE TABLE `order_details` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `order_id` int(11) DEFAULT NULL,
+  `product_id` int(11) DEFAULT NULL,
+  `product_name` varchar(150) DEFAULT NULL,
+  `price` decimal(12,0) DEFAULT NULL,
+  `quantity` int(11) DEFAULT NULL,
+  `total_price` decimal(12,0) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `order_id` (`order_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `order_details_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `order_details_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu bảng `order_details` (15 dòng)
+INSERT INTO `order_details` (`id`, `order_id`, `product_id`, `product_name`, `price`, `quantity`, `total_price`) VALUES
+(1, 1, 11, 'iPhone 17 Pro (128 GB - Màu: Titan Tự Nhiên)', '28490000', 1, '28490000'),
+(2, 2, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
+(3, 3, 58, '[Cũ 99%] Samsung Galaxy Z Fold5 5G (512 GB - Màu: Đen Phantom)', '25990000', 1, '25990000'),
+(4, 7, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
+(5, 8, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
+(7, 11, 7, 'Huawei Mate XT (Gập 3 Màn) (128 GB - Màu: Đỏ Ruihong)', '74990000', 1, '74990000'),
+(8, 12, 31, 'Galaxy Z Flip6 5G (128 GB - Màu: Xám Metal)', '24490000', 1, '24490000'),
+(9, 13, 5, 'Galaxy Z Tri-Fold (Gập 3 Màn) (256 GB - Màu: Đen Phantom)', '56990000', 1, '56990000'),
+(10, 14, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
+(12, 16, 9, 'OPPO Find N5 Duo (Hologram) (256 GB - Màu: Đen)', '42990000', 1, '42990000'),
+(13, 17, 5, 'Galaxy Z Tri-Fold (Gập 3 Màn) (256 GB - Màu: Đen Phantom)', '56990000', 1, '56990000'),
+(14, 18, 3, 'iPhone Duo (Màn Gập Apple) (256 GB - Màu: Trắng Ánh Sao)', '64990000', 1, '64990000'),
+(15, 19, 10, 'iPhone 17 Pro Max (256 GB - Màu: Cam)', '32990000', 1, '32990000'),
+(16, 20, 8, 'Xiaomi 16 Ultra (Leica Edition) (256 GB - Màu: Đen Da Thuần)', '32490000', 1, '32490000'),
+(17, 21, 5, 'Galaxy Z Tri-Fold (Gập 3 Màn) (256 GB - Màu: Đen Phantom)', '56990000', 1, '56990000');
+
+-- --------------------------------------------------------
+-- Cấu trúc bảng `product_reviews`
+-- --------------------------------------------------------
+CREATE TABLE `product_reviews` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `product_id` int(11) NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `order_id` int(11) DEFAULT NULL,
+  `fullname` varchar(100) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `rating` tinyint(4) NOT NULL DEFAULT 5,
+  `comment` text NOT NULL,
+  `is_buyer` tinyint(1) DEFAULT 0,
+  `is_edited` tinyint(1) DEFAULT 0,
+  `status` tinyint(1) DEFAULT 1,
+  `admin_reply` text DEFAULT NULL,
+  `admin_reply_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_product_id` (`product_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_rating` (`rating`),
+  KEY `idx_status` (`status`),
+  KEY `idx_order_id` (`order_id`),
+  CONSTRAINT `product_reviews_ibfk_1` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `product_reviews_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu bảng `product_reviews` (15 dòng)
+INSERT INTO `product_reviews` (`id`, `product_id`, `user_id`, `order_id`, `fullname`, `email`, `phone`, `rating`, `comment`, `is_buyer`, `is_edited`, `status`, `admin_reply`, `admin_reply_at`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, NULL, 'Võ Minh Hiếu', 'hieu@vphone.vn', '0912345678', 5, 'Máy quá đỉnh! Khung titan nhôm cầm đầm tay, vi xử lý A20 Pro chạy cực mát. Màn hình Promotion siêu mượt, nhận hàng sau 1h tại TP.HCM. Rất hài lòng với V-Phone!', 1, 0, 1, 'Dạ V-Phone cảm ơn anh Hiếu rất nhiều đã luôn tin tưởng và ủng hộ siêu phẩm tại V-Phone. Chúc anh có những trải nghiệm tuyệt vời cùng máy ạ!', '2026-10-14 12:10:39', '2026-10-13 12:10:39', '2026-10-15 17:10:39'),
+(2, 1, NULL, NULL, 'Trần Hải Đăng', 'dang.tran@gmail.com', '0933123456', 5, 'Camera chụp đêm sắc nét không bị bệt màu, zoom quang học 10x chi tiết rõ mồn một. Shop tư vấn nhiệt tình, đóng gói cẩn thận 2 lớp chống sốc.', 1, 0, 1, 'V-Phone cảm ơn anh Đăng đã đánh giá 5 sao. Bộ quà tặng ốp lưng và dán cường lực VIP đã kích hoạt bảo hành điện tử chính hãng 12 tháng rồi anh nhé!', '2026-10-13 12:10:39', '2026-10-12 12:10:39', '2026-10-15 17:10:39'),
+(3, 1, NULL, NULL, 'Nguyễn Bích Phương', 'phuong.bich@gmail.com', '0988776655', 5, 'Màu sắc bên ngoài đẹp hơn trong hình nhiều, máy nguyên seal nguyên kiện tem mác đầy đủ. Đổi từ 13 Pro Max lên thấy pin trâu gấp rưỡi.', 1, 0, 1, NULL, NULL, '2026-10-11 12:10:39', '2026-10-15 17:10:39'),
+(4, 3, 2, NULL, 'Huỳnh Bá Lực', 'luc@vphone.vn', '0909888999', 5, 'Bản gập đầu tiên của Apple thực sự là bước nhảy vọt, bản lề titan gập rất chắc chắn và gần như không thấy nếp nhăn. Cảm giác cầm sang trọng bậc nhất!', 1, 0, 1, 'Cảm ơn anh Lực đã là một trong những khách hàng đầu tiên sở hữu iPhone Duo tại Việt Nam! V-Phone có kỹ thuật viên hỗ trợ tận nơi 24/7 ạ.', '2026-10-14 12:10:39', '2026-10-13 12:10:39', '2026-10-15 17:10:39'),
+(5, 3, NULL, NULL, 'Lê Quốc Hưng', 'hung.le@fpt.vn', '0977223344', 5, 'Màn hình OLED mở rộng đa nhiệm cực tốt, đọc tài liệu và xem biểu đồ kinh doanh mượt mà. Đáng đồng tiền bát gạo.', 0, 0, 1, NULL, NULL, '2026-10-10 12:10:39', '2026-10-15 17:10:39'),
+(6, 5, NULL, NULL, 'Hoàng Minh Tuấn', 'tuan.hm@gmail.com', '0918112233', 5, 'Gập 3 màn hình công nghệ tương lai! Khi mở full ra như một chiếc tablet 10.2 inch, làm việc và vẽ đồ họa cùng S-Pen rất tiện lợi. Ship giao hỏa tốc 2 tiếng đúng cam kết.', 1, 0, 1, 'Cảm ơn anh Tuấn! Dòng máy Tri-Fold được tặng kèm gói bảo hiểm rơi vỡ toàn diện 1 năm độc quyền từ V-Phone anh nhé!', '2026-10-13 12:10:39', '2026-10-12 12:10:39', '2026-10-15 17:10:39'),
+(7, 6, NULL, NULL, 'Phạm Gia Bảo', 'giabao.pham@gmail.com', '0903445566', 5, 'Chip Snapdragon 8 Gen 5 chiến game mượt khỏi bàn, AI dịch thuật trực tiếp trong cuộc gọi siêu tiện. Màn hình phẳng viền siêu mỏng, bút S-Pen viết rất êm tay.', 1, 0, 1, 'Dạ V-Phone cảm ơn anh Bảo đã tin tưởng lựa chọn Galaxy S26 Ultra chính hãng tại V-Phone. Chúc anh có những trải nghiệm công nghệ đỉnh cao!', '2026-10-14 12:10:39', '2026-10-13 12:10:39', '2026-10-15 17:10:39'),
+(8, 6, NULL, NULL, 'Ngô Thùy Trang', 'thuytrang.ngo@yahoo.com', '0938667788', 4, 'Máy chụp chân dung rất đẹp, pin trâu dùng cả ngày xem phim lướt web còn hơn 40%. Trừ 1 sao vì hộp không kèm củ sạc nhưng được shop tặng kèm sạc nhanh 45W bù lại.', 1, 0, 1, 'Dạ cảm ơn chị Trang nhiều ạ. Do chính sách chung của hãng nên hộp máy không kèm sạc, V-Phone đã tặng ngay củ sạc 45W chính hãng để chị an tâm sử dụng tốt nhất ạ!', '2026-10-13 12:10:39', '2026-10-11 12:10:39', '2026-10-15 17:10:39'),
+(9, 8, NULL, NULL, 'Đặng Anh Khoa', 'khoa.dang@gmail.com', '0944556677', 5, 'Ống kính Leica chụp ảnh màu sắc cổ điển cực kỳ có hồn, cảm biến 1 inch thu sáng ban đêm xuất sắc. Giao diện mượt mà, sạc 120W chỉ 18 phút là đầy pin!', 1, 0, 1, 'V-Phone cảm ơn anh Khoa! Đội ngũ Leica đã tối ưu thuật toán xử lý ảnh thế hệ mới nhất cho dòng 16 Ultra, chúc anh có thật nhiều bức ảnh đẹp!', '2026-10-12 12:10:39', '2026-10-10 12:10:39', '2026-10-15 17:10:39'),
+(10, 10, NULL, NULL, 'Nguyễn Minh Khang', 'khang.minh@outlook.com', '0908771122', 5, 'Màu sắc Titan sa mạc quá sang, máy chạy mát lạnh dù quay video 4K liên tục. Nhân viên giao hàng kiểm tra kỹ lưỡng kích hoạt bảo hành tại chỗ.', 1, 0, 1, 'V-Phone xin chân thành cảm ơn anh Khang đã ủng hộ! Nếu cần hỗ trợ chuyển đổi dữ liệu hay phụ kiện anh liên hệ hotline 1800 6868 bất cứ lúc nào nhé.', '2026-10-14 12:10:39', '2026-10-12 12:10:39', '2026-10-15 17:10:39'),
+(11, 11, 2, NULL, 'Huỳnh Bá Lực', 'luc@vphone.vn', '0909888999', 5, 'Kích thước 6.3 inch cầm vừa tay, Dynamic Island tiện lợi. Đơn hàng trước mình đặt giao rất chuẩn chỉ, máy nguyên seal chưa active.', 1, 0, 1, 'Dạ cảm ơn anh Lực rất nhiều đã quay lại ủng hộ đơn hàng tiếp theo tại hệ thống V-Phone Store!', '2026-10-13 12:10:39', '2026-10-11 12:10:39', '2026-10-15 17:10:39'),
+(12, 14, NULL, NULL, 'Lý Gia Hân', 'giahan.ly@gmail.com', '0932889900', 5, 'Giá hiện tại quá hời cho một chiếc Flagship toàn diện. Nút Camera Control chụp nhanh rất nhạy, màn hình to 6.9 inch xem phim đã mắt.', 1, 0, 1, 'Cảm ơn chị Hân đã dành thời gian gửi lời đánh giá 5 sao cho V-Phone! Chúc chị có những phút giây trải nghiệm thật vui cùng máy.', '2026-10-12 12:10:39', '2026-10-09 12:10:39', '2026-10-15 17:19:52'),
+(13, 26, NULL, NULL, 'Bùi Tiến Dũng', 'tiendung.bui@gmail.com', '0917228899', 5, 'Máy dùng rất mượt, viền titan nhám chống bám vân tay tốt. Tính năng khoanh tròn để tìm kiếm bằng AI cực tiện dụng khi lướt web.', 1, 0, 1, NULL, NULL, '2026-10-10 12:10:39', '2026-10-15 17:10:39'),
+(18, 58, 3, 3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', '18006868', 5, 'Chất lượng máy thực sự xuất sắc, pin trâu dùng 2 ngày.', 1, 0, 1, NULL, NULL, '2026-10-22 00:32:53', '2026-10-22 00:48:24'),
+(19, 9, 17, 16, 'Trương Trí Thiện', 'thien@vphone.vn', '123456', 5, 'Màn hình mượt mà, cảm ứng rất nhạy!', 1, 0, 1, NULL, NULL, '2026-10-22 08:56:02', '2026-10-22 08:56:02');
+
+-- --------------------------------------------------------
 -- Cấu trúc bảng `user_addresses`
 -- --------------------------------------------------------
 CREATE TABLE `user_addresses` (
@@ -357,6 +321,120 @@ INSERT INTO `user_addresses` (`id`, `user_id`, `recipient_name`, `phone`, `addre
 (1, 1, 'Võ Minh Hiếu', '0901234567', 'Quận 1, TP.HCM', 'Nhà riêng', 1, '2026-10-15 09:19:32'),
 (2, 2, 'Huỳnh Bá Lực', '0909888999', 'Quận 7, TP.HCM', 'Nhà riêng', 1, '2026-10-15 09:19:32'),
 (3, 3, 'Quản Trị Viên V-Phone', '18006868', 'Trụ sở V-Phone', 'Nhà riêng', 1, '2026-10-15 09:19:32');
+
+-- --------------------------------------------------------
+-- Cấu trúc bảng `vouchers`
+-- --------------------------------------------------------
+CREATE TABLE `vouchers` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(40) NOT NULL,
+  `discount_type` enum('percent','fixed') NOT NULL,
+  `discount_value` decimal(12,0) NOT NULL,
+  `minimum_order` decimal(12,0) NOT NULL DEFAULT 0,
+  `max_discount` decimal(12,0) DEFAULT NULL,
+  `starts_at` datetime DEFAULT NULL,
+  `expires_at` datetime DEFAULT NULL,
+  `usage_limit` int(11) DEFAULT NULL,
+  `used_count` int(11) NOT NULL DEFAULT 0,
+  `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=452 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu bảng `vouchers` (13 dòng)
+INSERT INTO `vouchers` (`id`, `code`, `discount_type`, `discount_value`, `minimum_order`, `max_discount`, `starts_at`, `expires_at`, `usage_limit`, `used_count`, `is_active`, `created_at`) VALUES
+(1, 'VPHONE5', 'percent', '5', '500000', '250000', NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
+(2, 'VPHONE10', 'percent', '10', '1000000', '500000', NULL, NULL, NULL, 2, 1, '2026-10-08 09:30:19'),
+(3, 'VPHONE15', 'percent', '15', '5000000', '1000000', NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
+(4, 'FLASH20', 'percent', '20', '10000000', '2000000', NULL, NULL, NULL, 2, 1, '2026-10-08 09:30:19'),
+(5, 'WELCOME50', 'fixed', '50000', '500000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
+(6, 'GIAM100K', 'fixed', '100000', '1000000', NULL, NULL, NULL, NULL, 1, 1, '2026-10-08 09:30:19'),
+(7, 'GIAM200K', 'fixed', '200000', '2000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
+(8, 'GIAM500K', 'fixed', '500000', '5000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
+(361, 'VPHONE500', 'fixed', '500000', '15000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-19 11:18:38'),
+(362, 'FLAGSHIP2026', 'fixed', '1000000', '20000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-19 11:18:38'),
+(435, 'SILVER500K', 'fixed', '500000', '5000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-22 08:51:29'),
+(436, 'GOLD1500K', 'fixed', '1500000', '10000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-22 08:51:29'),
+(437, 'DIAMOND3M', 'fixed', '3000000', '15000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-22 08:51:29');
+
+-- --------------------------------------------------------
+-- Cấu trúc bảng `articles`
+-- --------------------------------------------------------
+CREATE TABLE `articles` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `badge` varchar(80) NOT NULL DEFAULT 'TIN MỚI',
+  `badge_class` varchar(40) NOT NULL DEFAULT 'bg-primary',
+  `article_date` varchar(30) NOT NULL,
+  `read_time` varchar(30) NOT NULL DEFAULT '5 phút đọc',
+  `image` varchar(255) NOT NULL,
+  `summary` text NOT NULL,
+  `content` longtext NOT NULL,
+  `is_published` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu bảng `articles` (6 dòng)
+INSERT INTO `articles` (`id`, `title`, `badge`, `badge_class`, `article_date`, `read_time`, `image`, `summary`, `content`, `is_published`, `created_at`, `updated_at`) VALUES
+(1, 'Tổng hợp tin đồn iPhone 18 Pro Max: Chip A20 Pro 2nm và màn hình Dynamic Island thu nhỏ', 'TIN RÒ RỈ 2026', 'bg-danger', '24/09/2026', '5 phút đọc', 'assets/images/products/iphone-18-promax.png', 'Apple được cho là sẽ ra mắt thế hệ iPhone 18 với tiến trình 2nm siêu tiết kiệm pin, khung viền titan siêu nhẹ và camera tiềm vọng zoom quang học 10x hoàn toàn mới.', 'Theo các nguồn tin uy tín từ chuỗi cung ứng, dòng iPhone 18 Pro Max năm 2026 sẽ đánh dấu bước nhảy vọt lớn nhất của Apple. Máy sẽ sử dụng vi xử lý Apple A20 Pro xây dựng trên tiến trình 2nm của TSMC, mang lại hiệu năng đồ họa tăng 35% trong khi tiết kiệm điện năng tới 40%.\n\nNgoài ra, hệ thống camera tele tiềm vọng sẽ nâng cấp lên cảm biến 48MP hỗ trợ zoom quang học 10x và zoom kỹ thuật số lên tới 100x. Thiết kế mặt trước sẽ tiếp tục tối ưu phần viền màn hình chỉ còn 1.0mm, mang lại trải nghiệm thị giác gần như tràn viền tuyệt đối.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
+(2, 'Đánh giá chi tiết Samsung Galaxy Z Tri-Fold: Kỷ nguyên điện thoại gập ba đã đến!', 'ĐÁNH GIÁ HOT', 'bg-primary', '23/09/2026', '7 phút đọc', 'assets/images/products/samsung-tri-fold.png', 'Chiếc smartphone gập 3 màn hình đầu tiên của Samsung cho phép mở rộng không gian hiển thị lên đến 10.2 inch, biến chiếc điện thoại thành máy tính bảng trong chớp mắt.', 'Galaxy Z Tri-Fold là câu trả lời đanh thép của Samsung dành cho thị trường di động toàn cầu. Với cơ chế gập kép hình chữ Z độc đáo, người dùng có thể sử dụng máy ở dạng màn hình ngoài 6.4 inch như điện thoại thông thường, hoặc mở ra toàn bộ thành màn hình 10.2 inch Dynamic AMOLED 3X.\n\nHệ thống bản lề FlexHinge thế hệ mới được gia cố bằng chất liệu Armor Aluminum siêu bền, cam kết độ bền trên 300.000 lần gập mở. Giao diện One UI 8.0 được tinh chỉnh đặc biệt cho khả năng chạy đa nhiệm cùng lúc 4 ứng dụng trên màn hình lớn.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
+(3, 'Bí quyết chọn mua iPhone cũ 99%: Cách kiểm tra pin, màn hình và camera tránh bị lừa', 'MẸO CÔNG NGHỆ', 'bg-success', '22/09/2026', '4 phút đọc', 'assets/images/products/iphone-15-promax.png', 'Hướng dẫn chi tiết từng bước kiểm tra từ vỏ máy, màn hình TrueTone, 3uTools cho đến dung lượng pin thực tế khi đi mua iPhone cũ đã qua sử dụng.', 'Khi mua iPhone cũ 99%, điều quan trọng nhất là kiểm tra xem máy đã bị thay màn hình hoặc ép kính hay chưa. Bạn hãy vào Cài đặt -> Màn hình & Độ sáng kiểm tra tính năng TrueTone. Sau đó, vuốt thanh tăng giảm độ sáng để xem cảm ứng có mượt không.\n\nTiếp theo, hãy kiểm tra số lần sạc và độ chai pin trong Cài đặt -> Pin. Đối với máy cũ 99%, pin chuẩn thường dao động từ 88% đến 96%. Tại V-Phone, mọi máy cũ đều được kỹ thuật viên kiểm tra 32 bước nghiêm ngặt và cam kết zin 100% kèm bảo hành 6 tháng 1 đổi 1.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
+(4, 'So sánh Galaxy S26 Ultra và iPhone 17 Pro Max: Cuộc chiến của các vì sao', 'SO SÁNH', 'bg-info text-dark', '20/09/2026', '6 phút đọc', 'assets/images/products/samsung-s26-ultra.png', 'Nên chọn Galaxy S26 Ultra với bút S-Pen quyền năng và camera 200MP, hay chọn iPhone 17 Pro Max với sự mượt mà và hệ sinh thái iOS bền bỉ?', 'Cả Galaxy S26 Ultra và iPhone 17 Pro Max đều là những siêu phẩm đứng đầu thế giới hiện nay. Trong khi Samsung chiếm ưu thế hoàn toàn về camera siêu zoom và các tính năng Galaxy AI phục vụ công việc hàng ngày, thì Apple lại ghi điểm ở khả năng quay video ProRes đỉnh cao và giữ giá tốt hơn sau nhiều năm sử dụng.\n\nNếu bạn là người thích vọc vạch công nghệ và cần ghi chú nhanh bằng bút thì S26 Ultra là lựa chọn số 1. Còn nếu bạn cần một thiết bị ổn định tuyệt đối, chơi game mát và đồng bộ tốt với iPad/MacBook thì iPhone 17 Pro Max là chân ái.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
+(5, 'Xiaomi 16 Ultra Leica Edition: Đưa máy ảnh chuyên nghiệp vào trong túi quần bạn', 'TIN MỚI', 'bg-warning text-dark', '18/09/2026', '4 phút đọc', 'assets/images/products/xiaomi-16-ultra.png', 'Cụm camera hợp tác cùng huyền thoại Leica với cảm biến 1 inch thế hệ mới và lớp phủ chống lóa T*, biến Xiaomi 16 Ultra thành quái vật nhiếp ảnh.', 'Xiaomi tiếp tục chứng minh vị thế dẫn đầu về nhiếp ảnh di động khi trang bị cho 16 Ultra cảm biến chính Sony Lytia 1 inch cùng ống kính quang học Leica Summilux. Màu ảnh chụp ra có độ sâu trường ảnh tự nhiên, tương phản cao và tái tạo màu da cực kỳ chân thực, gần như xóa nhòa ranh giới giữa điện thoại và máy ảnh DSLR.', 1, '2026-10-08 09:52:37', '2026-10-08 09:52:37'),
+(6, 'Top 4 điện thoại cũ giá dưới 10 triệu đáng mua nhất cho học sinh, sinh viên 2026', 'TƯ VẤN MUA', 'bg-secondary', '15/09/2026', '5 phút đọc', 'assets/images/products/iphone-11.png', 'Với ngân sách dưới 10 triệu, bạn hoàn toàn có thể sở hữu iPhone 11 cũ giá 5tr4, iPhone 13 cũ giá 10tr hay Galaxy A55 5G nguyên zin bảo hành dài hạn.', '1. iPhone 11 64GB cũ (5.490.000 VNĐ): Dù đã ra mắt lâu nhưng chip A13 Bionic vẫn lướt TikTok, Facebook và chơi Liên Quân cực mượt.\n\n2. iPhone 13 128GB cũ (10.490.000 VNĐ): Thiết kế vuông vức thời thượng, màn hình tai thỏ nhỏ gọn và thời lượng pin cực trâu.\n\n3. Samsung Galaxy A55 5G cũ (5.990.000 VNĐ): Màn hình 120Hz siêu mượt, hỗ trợ 5G và pin 5000 mAh dùng thoải mái 2 ngày.', 1, '2026-10-08 09:52:37', '2026-10-17 17:28:17');
+
+-- --------------------------------------------------------
+-- Cấu trúc bảng `callback_requests`
+-- --------------------------------------------------------
+CREATE TABLE `callback_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `fullname` varchar(100) NOT NULL,
+  `phone` varchar(20) NOT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `topic` varchar(100) DEFAULT 'Tư vấn mua máy',
+  `department` varchar(50) DEFAULT 'cskh',
+  `note` text DEFAULT NULL,
+  `reply_message` text DEFAULT NULL,
+  `replied_by` int(11) DEFAULT NULL,
+  `replied_by_name` varchar(100) DEFAULT NULL,
+  `replied_by_title` varchar(100) DEFAULT NULL,
+  `replied_at` datetime DEFAULT NULL,
+  `status` varchar(50) DEFAULT 'pending',
+  `created_at` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `phone` (`phone`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu bảng `callback_requests` (3 dòng)
+INSERT INTO `callback_requests` (`id`, `user_id`, `fullname`, `phone`, `email`, `topic`, `department`, `note`, `reply_message`, `replied_by`, `replied_by_name`, `replied_by_title`, `replied_at`, `status`, `created_at`) VALUES
+(1, NULL, 'Nguyen Van A', '0987654321', NULL, 'Tu van iPhone 17', 'cskh', 'Goi buoi chieu', NULL, NULL, NULL, NULL, NULL, 'pending', '2026-10-16 15:43:50'),
+(3, NULL, 'Lực Huỳnh', '0888443655', 'beluc5102003@gmail.com', 'Hỗ trợ trả góp 0% / Lên đời thu cũ đổi mới', 'sales', 'hihi', 'cc', 3, 'Quản Trị Viên V-Phone', 'Quản Trị Tối Cao', '2026-10-17 13:12:39', 'replied', '2026-10-17 13:12:02'),
+(4, NULL, 'Tester', '0912345678', NULL, 'Tu van iPhone', 'sales', '', NULL, NULL, NULL, NULL, NULL, 'pending', '2026-10-19 11:10:16');
+
+-- --------------------------------------------------------
+-- Cấu trúc bảng `password_resets`
+-- --------------------------------------------------------
+CREATE TABLE `password_resets` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(100) NOT NULL,
+  `token` varchar(64) NOT NULL,
+  `otp` varchar(10) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `email` (`email`),
+  KEY `token` (`token`),
+  KEY `otp` (`otp`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dữ liệu bảng `password_resets` (1 dòng)
+INSERT INTO `password_resets` (`id`, `email`, `token`, `otp`, `expires_at`, `created_at`) VALUES
+(4, 'luc@vphone.vn', 'a19dce53cf36517696406b740182f4fb10c3e260c0b536a559ba96eaa17e4d8a', '730867', '2026-10-21 23:53:01', '2026-10-21 23:38:01');
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `user_notifications`
@@ -396,84 +474,6 @@ INSERT INTO `user_notifications` (`id`, `user_id`, `phone`, `order_id`, `title`,
 (14, 17, '123456', 16, 'Đơn hàng #VP-16 đã giao thành công!', 'Đơn hàng #VP-16 (Tổng thanh toán: 42.990.000 VNĐ) đã được giao thành công. Cảm ơn quý khách đã tin tưởng và ủng hộ V-Phone Store!', NULL, 'order_delivered', 1, '2026-10-21 23:49:47'),
 (15, 17, '123456', 21, 'Thanh toán thành công đơn hàng #VP-21!', 'Đơn hàng #VP-21 (Tổng thanh toán: 56.990.000 VNĐ) đã được xác nhận thanh toán thành công qua MoMo. Cửa hàng đang chuẩn bị sản phẩm.', NULL, 'order_processing', 0, '2026-10-22 08:55:44'),
 (16, 17, '123456', 21, 'Thanh toán thành công đơn hàng #VP-21!', 'Đơn hàng #VP-21 (Tổng thanh toán: 56.990.000 VNĐ) đã được xác nhận thanh toán thành công qua MoMo. Cửa hàng đang chuẩn bị sản phẩm.', NULL, 'order_processing', 0, '2026-10-22 08:55:44');
-
--- --------------------------------------------------------
--- Cấu trúc bảng `users`
--- --------------------------------------------------------
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `fullname` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `google_id` varchar(100) DEFAULT NULL,
-  `auth_provider` varchar(30) NOT NULL DEFAULT 'local',
-  `phone` varchar(20) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `avatar` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `role` tinyint(4) DEFAULT 0,
-  `cart_data` longtext DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `staff_role` varchar(50) DEFAULT NULL,
-  `staff_title` varchar(100) DEFAULT NULL,
-  `permissions` text DEFAULT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT 1,
-  `membership_tier` varchar(30) DEFAULT 'auto',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dữ liệu bảng `users` (14 dòng)
-INSERT INTO `users` (`id`, `fullname`, `email`, `google_id`, `auth_provider`, `phone`, `address`, `avatar`, `password`, `role`, `cart_data`, `created_at`, `staff_role`, `staff_title`, `permissions`, `status`, `membership_tier`) VALUES
-(1, 'Võ Minh Hiếu', 'hieu@vphone.vn', NULL, 'local', '0901234567', 'Quận 1, TP.HCM', NULL, '$2y$10$33vtXT.qs4BNnJHX6h0beO7FJR2yZtucxlwkwu.KIKWx3qvzN8u1G', 1, '[]', '2026-10-08 09:30:19', 'admin', 'Quản trị viên', NULL, 1, 'auto'),
-(2, 'Huỳnh Bá Lực', 'luc@vphone.vn', NULL, 'local', '0909888999', 'Quận 7, TP.HCM', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 2, '[]', '2026-10-08 09:30:19', 'staff', 'Nhân viên bán hàng', '[\"orders\",\"warranties\",\"reviews\"]', 1, 'auto'),
-(3, 'Quản Trị Viên V-Phone', 'admin@vphone.vn', NULL, 'local', '18006868', 'Trụ sở V-Phone', NULL, '$2y$10$kZ76ftCCfjpFJkWv8aOyFuYo2fmvz5loyyGZyQzqRvajascv78iKu', 1, '{\"25_8990000_64GBenMidnight\":{\"cart_key\":\"25_8990000_64GBenMidnight\",\"id\":25,\"name\":\"iPhone SE 2022\",\"rom\":\"64 GB\",\"color\":\"Đen Midnight\",\"price\":8990000,\"image\":\"assets\\/images\\/products\\/iphone-se-2022.jpg\",\"quantity\":1}}', '2026-10-08 09:30:19', 'super_admin', 'Quản Trị Tối Cao', NULL, 1, 'auto'),
-(8, 'Lực Huỳnh', 'beluc5102003@gmail.com', '112858085185933992393', 'google', '0888443655', 'Chưa cập nhật', 'assets/images/users/avatar_user_8.png', NULL, 1, '{\"3_64990000_256GBTrngnhSao\":{\"cart_key\":\"3_64990000_256GBTrngnhSao\",\"id\":3,\"name\":\"iPhone Duo (Màn Gập Apple)\",\"rom\":\"256 GB\",\"color\":\"Trắng Ánh Sao\",\"price\":64990000,\"image\":\"assets\\/images\\/products\\/iphone-18-duo-trang-anh-sao.png\",\"quantity\":1}}', '2026-10-15 19:23:57', 'admin', 'Quản trị viên', NULL, 1, 'auto'),
-(10, 'lokidptri2k3', 'ongnoitapchoi2003@gmail.com', '108680907798119891576', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_10.png', NULL, 0, '[]', '2026-10-15 19:45:59', NULL, NULL, NULL, 1, 'auto'),
-(12, 'Nguyễn Văn Bán (NV Bán Hàng)', 'nhanvien@vphone.vn', NULL, 'local', '0908889999', 'Cửa hàng V-Phone', NULL, '$2y$10$Q9ReBr6uvYmSZd9ZXBsImOMjHiGNbYtn8NV37w575UAPeWJvcZrRa', 2, '[]', '2026-10-16 08:43:18', 'sales', 'Nhân viên Bán hàng & Đơn hàng', '[\"orders\", \"vouchers\", \"ai_assistant\"]', 1, 'auto'),
-(13, 'Trần Văn Kho (NV Kho)', 'kho@vphone.vn', NULL, 'local', '0907778888', 'Cửa hàng V-Phone', NULL, '$2y$10$/hwVIOgM0h6HiOgHc/X/MesEzw4fB9gaYKlOz6Og5r6JfylX/mkU.', 2, '[]', '2026-10-16 08:43:19', 'warehouse', 'Nhân viên Quản lý Kho', '[\"products\",\"inventory\",\"ai_assistant\"]', 1, 'auto'),
-(14, 'Lê Kỹ Thuật (NV Bảo Hành & CSKH)', 'baohanh@vphone.vn', NULL, 'local', '0906667777', 'Cửa hàng V-Phone', NULL, '$2y$10$jzUiNXhVKIostXxvQsI6Ce2Ti2IP8kzoKiDF4UezvrVFrXEu6X9Fe', 2, NULL, '2026-10-16 08:43:19', 'support', 'Chuyên viên CSKH & Bảo hành', '[\"warranties\",\"reviews\"]', 1, 'auto'),
-(15, 'Nghiện Nhạc', 'ongnoitapchoi2009@gmail.com', '104701851243694340335', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_15.png', NULL, 0, NULL, '2026-10-17 14:24:29', NULL, NULL, NULL, 1, 'auto'),
-(16, 'octiukiu l7', 'l7octiukiu@gmail.com', '110911761992361094636', 'google', '', 'Chưa cập nhật', 'assets/images/users/avatar_user_16.png', NULL, 0, NULL, '2026-10-20 11:17:37', NULL, NULL, NULL, 1, 'auto'),
-(17, 'Trương Trí Thiện', 'thien@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$cVHfuJM1qlBtUiWO4Vn8RuSBUVzi80lgnQluAlSVmaxJPPHjU5HYe', 0, '[]', '2026-10-21 23:46:48', NULL, NULL, NULL, 1, 'auto'),
-(18, 'Võ Minh Thái', 'thai@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$9vAtYxdJ8l2Mlywvm8bKQuITRt6Gj5MnjjOpL5TlWHzqBByvfhEf6', 0, '[]', '2026-10-21 23:47:17', NULL, NULL, NULL, 1, 'auto'),
-(19, 'Nguyễn Ảnh Minh Hoàng', 'hoang@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$35lz4AaKxNLVGpnDSDKkueP4M.9it17g5iwtJAzM7P2HlTPViK5aS', 0, '[]', '2026-10-21 23:47:56', NULL, NULL, NULL, 1, 'auto'),
-(20, 'Đặng Tiến Hưng', 'hung@vphone.vn', NULL, 'local', '123456', 'Chưa cập nhật', NULL, '$2y$10$HkEXasZ/5Mxxjz47047dseRPc5jOWwAtU.mLT0AW9CVubhtRcGpny', 0, '[]', '2026-10-21 23:48:48', NULL, NULL, NULL, 1, 'auto');
-
--- --------------------------------------------------------
--- Cấu trúc bảng `vouchers`
--- --------------------------------------------------------
-CREATE TABLE `vouchers` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `code` varchar(40) NOT NULL,
-  `discount_type` enum('percent','fixed') NOT NULL,
-  `discount_value` decimal(12,0) NOT NULL,
-  `minimum_order` decimal(12,0) NOT NULL DEFAULT 0,
-  `max_discount` decimal(12,0) DEFAULT NULL,
-  `starts_at` datetime DEFAULT NULL,
-  `expires_at` datetime DEFAULT NULL,
-  `usage_limit` int(11) DEFAULT NULL,
-  `used_count` int(11) NOT NULL DEFAULT 0,
-  `is_active` tinyint(1) NOT NULL DEFAULT 1,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=452 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Dữ liệu bảng `vouchers` (13 dòng)
-INSERT INTO `vouchers` (`id`, `code`, `discount_type`, `discount_value`, `minimum_order`, `max_discount`, `starts_at`, `expires_at`, `usage_limit`, `used_count`, `is_active`, `created_at`) VALUES
-(1, 'VPHONE5', 'percent', '5', '500000', '250000', NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
-(2, 'VPHONE10', 'percent', '10', '1000000', '500000', NULL, NULL, NULL, 2, 1, '2026-10-08 09:30:19'),
-(3, 'VPHONE15', 'percent', '15', '5000000', '1000000', NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
-(4, 'FLASH20', 'percent', '20', '10000000', '2000000', NULL, NULL, NULL, 2, 1, '2026-10-08 09:30:19'),
-(5, 'WELCOME50', 'fixed', '50000', '500000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
-(6, 'GIAM100K', 'fixed', '100000', '1000000', NULL, NULL, NULL, NULL, 1, 1, '2026-10-08 09:30:19'),
-(7, 'GIAM200K', 'fixed', '200000', '2000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
-(8, 'GIAM500K', 'fixed', '500000', '5000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-08 09:30:19'),
-(361, 'VPHONE500', 'fixed', '500000', '15000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-19 11:18:38'),
-(362, 'FLAGSHIP2026', 'fixed', '1000000', '20000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-19 11:18:38'),
-(435, 'SILVER500K', 'fixed', '500000', '5000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-22 08:51:29'),
-(436, 'GOLD1500K', 'fixed', '1500000', '10000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-22 08:51:29'),
-(437, 'DIAMOND3M', 'fixed', '3000000', '15000000', NULL, NULL, NULL, NULL, 0, 1, '2026-10-22 08:51:29');
 
 -- --------------------------------------------------------
 -- Cấu trúc bảng `warranty_claims`
